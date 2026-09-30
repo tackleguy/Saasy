@@ -3,7 +3,8 @@
  * - .stl  → fully parsed with Three's STLLoader (triangles, bounding box, preview mesh)
  * - .dxf  → text scan of the ENTITIES / LAYER tables (entity counts, layers, units)
  * - .dwg  → binary header sniff (AutoCAD release version)
- * Nothing is uploaded — it all runs in the browser.
+ * Nothing is uploaded — it all runs in the browser. The facts it extracts are
+ * streamed into the ingestion terminal in CadUploadModal.
  */
 import * as THREE from "three";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -13,7 +14,6 @@ export interface CadReport {
   sizeKb: number;
   format: "STL" | "DXF" | "DWG";
   facts: { label: string; value: string }[];
-  geometry?: THREE.BufferGeometry;
   estimatedFloors?: number;
 }
 
@@ -49,13 +49,13 @@ export async function parseCadFile(file: File): Promise<CadReport> {
     const size = new THREE.Vector3();
     bb.getSize(size);
     const tris = geo.getAttribute("position").count / 3;
+    geo.dispose(); // only the stats are needed
     // Rough heuristic: treat the tallest axis as height and assume ~3.5 units per storey
     const h = Math.max(size.y, size.z);
     return {
       fileName: file.name,
       sizeKb,
       format: "STL",
-      geometry: geo,
       estimatedFloors: Math.max(1, Math.round(h / 3.5)),
       facts: [
         { label: "Triangles", value: tris.toLocaleString() },
@@ -110,7 +110,7 @@ export async function parseCadFile(file: File): Promise<CadReport> {
       facts: [
         { label: "Release", value: DWG_VERSIONS[code] ?? `Unknown (${code})` },
         { label: "Header", value: code },
-        { label: "Next step", value: "Full DWG geometry is extracted server-side in the paid pipeline" },
+        { label: "Geometry", value: "Binary DWG — header only (full extraction runs server-side)" },
       ],
     };
   }
