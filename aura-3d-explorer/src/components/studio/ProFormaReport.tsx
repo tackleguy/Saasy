@@ -1,0 +1,101 @@
+/**
+ * ProFormaReport — print-only development appraisal.
+ * Hidden on screen; "Export Pro Forma (PDF)" calls window.print(), and the
+ * print stylesheet (globals.css) shows only `.print-area`, so the browser's
+ * "Save as PDF" produces a clean, paginated report.
+ */
+import type { Building, BuildingId, SiteMetrics, YieldInputs, YieldMetrics } from "@/types";
+import { ZONE_ORDER, ZONES } from "@/lib/tower";
+import { fmtMoney, fmtNum } from "@/lib/format";
+
+interface Props {
+  projectName: string;
+  city: string;
+  buildings: Building[];
+  inputsById: Record<BuildingId, YieldInputs>;
+  metricsById: Record<BuildingId, YieldMetrics>;
+  site: SiteMetrics;
+}
+
+const pct = (v: number | null, d = 1) => (v === null ? "—" : `${v.toFixed(d)}%`);
+
+export default function ProFormaReport({ projectName, city, buildings, inputsById, metricsById, site }: Props) {
+  return (
+    <div className="print-area hidden bg-white p-0 text-[11px] text-black print:block">
+      <header className="mb-6 border-b border-black pb-3">
+        <p className="text-[10px] uppercase tracking-wider">AURA · Development appraisal</p>
+        <h1 className="font-serif text-3xl">{projectName}</h1>
+        <p>
+          {city} · generated {new Date().toLocaleDateString()} · illustrative figures only
+        </p>
+      </header>
+
+      <table className="mb-6 w-full border-collapse">
+        <thead>
+          <tr className="border-b border-black text-left">
+            <th className="py-1">Site summary</th>
+            <th className="py-1 text-right">GDV</th>
+            <th className="py-1 text-right">TDC</th>
+            <th className="py-1 text-right">Profit</th>
+            <th className="py-1 text-right">On cost</th>
+            <th className="py-1 text-right">Margin</th>
+            <th className="py-1 text-right">Equity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="py-1">
+              {buildings.length} building(s) · {site.totalFloors} floors · {fmtNum(site.totalSqFt)} sf · {fmtNum(site.totalUnits)} units
+            </td>
+            <td className="text-right">{fmtMoney(site.gdv)}</td>
+            <td className="text-right">{fmtMoney(site.totalDevelopmentCost)}</td>
+            <td className="text-right">{fmtMoney(site.profit)}</td>
+            <td className="text-right">{pct(site.profitOnCostPct)}</td>
+            <td className="text-right">{pct(site.marginOnGdvPct)}</td>
+            <td className="text-right">{fmtMoney(site.equityRequired)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {buildings.map((b) => {
+        const i = inputsById[b.id];
+        const m = metricsById[b.id];
+        const rows: [string, string][] = [
+          ["Buildable area", `${fmtNum(i.totalBuildableSqFt)} sf`],
+          ...ZONE_ORDER.map((z) => [`${ZONES[z].short} price`, `$${fmtNum(i.pricePerSqFt[z])}/sf`] as [string, string]),
+          ["Absorption", `${i.absorptionUnitsPerMonth} units/mo`],
+          ["Land", fmtMoney(m.landCost, false)],
+          ["Hard cost", `${fmtMoney(m.hardCost, false)} ($${fmtNum(i.hardCostPerSqFt)}/sf)`],
+          ["Soft cost", `${fmtMoney(m.softCost, false)} (${i.softCostPct}%)`],
+          ["Contingency", `${fmtMoney(m.contingency, false)} (${i.contingencyPct}%)`],
+          ["Finance", `${fmtMoney(m.financeCost, false)} (${i.ltcPct}% LTC, ${i.interestRatePct}%, ${i.termMonths} mo)`],
+          ["Sales commission", `${fmtMoney(m.salesCommission, false)} (${i.salesCommissionPct}%)`],
+          ["AURA fee", `${fmtMoney(m.platformFee, false)} (${i.auraFeePct}%)`],
+          ["GDV", fmtMoney(m.gdv, false)],
+          ["Total development cost", fmtMoney(m.totalDevelopmentCost, false)],
+          ["Profit", fmtMoney(m.profit, false)],
+          ["Profit on cost / margin", `${pct(m.profitOnCostPct)} / ${pct(m.marginOnGdvPct)}`],
+          ["Equity IRR / multiple", `${pct(m.irrPct)} / ${m.equityMultiple.toFixed(2)}×`],
+          ["Equity required / peak debt", `${fmtMoney(m.equityRequired, false)} / ${fmtMoney(m.peakDebt, false)}`],
+          [`Residual land value (${i.targetProfitOnCostPct}% on cost)`, fmtMoney(m.residualLandValue, false)],
+        ];
+        return (
+          <section key={b.id} className="mb-6 break-inside-avoid">
+            <h2 className="mb-1 border-b border-black font-serif text-xl">{b.name}</h2>
+            <table className="w-full border-collapse">
+              <tbody>
+                {rows.map(([k, v]) => (
+                  <tr key={k} className="border-b border-gray-300">
+                    <td className="py-0.5 pr-4">{k}</td>
+                    <td className="py-0.5 text-right tabular-nums">{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        );
+      })}
+      <p className="mt-6 text-[9px]">Illustrative figures only. Not investment, valuation or financial advice. Generated by AURA.</p>
+    </div>
+  );
+}

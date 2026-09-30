@@ -9,10 +9,11 @@
  *   • content  — name, client / architect, city, status, key facts, program mix
  *   • imagery  — hero renders under /public/projects/<slug>/ (placeholders ship)
  *   • massing  — one ProjectMassing per building, rendered live in 3D
- *   • finance  — default pro-forma inputs per building for the yield engine
+ *   • finance  — default pro-forma inputs per building (see lib/finance `proforma`)
  */
 import type { Building, BuildingId, ProjectImage, ProjectStatus, YieldInputs, ZoneId } from "@/types";
 import { buildingFromMassing, buildSite, type ProjectMassing } from "@/lib/tower";
+import { proforma } from "@/lib/finance";
 
 export interface Project {
   slug: string;
@@ -102,9 +103,9 @@ export const PROJECTS: Project[] = [
       },
     ],
     finance: {
-      meridian: { totalBuildableSqFt: 120_000, avgPricePerSqFt: 1_450, buildCostPerSqFt: 650, unitMixStrategy: "balanced" },
-      spire: { totalBuildableSqFt: 185_000, avgPricePerSqFt: 1_650, buildCostPerSqFt: 720, unitMixStrategy: "luxury_heavy" },
-      lofts: { totalBuildableSqFt: 68_000, avgPricePerSqFt: 1_150, buildCostPerSqFt: 560, unitMixStrategy: "balanced" },
+      meridian: proforma(120_000, 1_450, 650, "balanced"),
+      spire: proforma(185_000, 1_650, 720, "luxury_heavy"),
+      lofts: proforma(68_000, 1_150, 560, "balanced"),
     },
   },
   {
@@ -134,7 +135,7 @@ export const PROJECTS: Project[] = [
         facade: { finSpacing: 0, balconies: true, arches: false },
       },
     ],
-    finance: { seaform: { totalBuildableSqFt: 162_000, avgPricePerSqFt: 1_380, buildCostPerSqFt: 690, unitMixStrategy: "luxury_heavy" } },
+    finance: { seaform: proforma(162_000, 1_380, 690, "luxury_heavy") },
   },
   {
     slug: "chess-towers",
@@ -162,8 +163,8 @@ export const PROJECTS: Project[] = [
       facade: { finSpacing: 0.45 },
     })),
     finance: {
-      "chess-a": { totalBuildableSqFt: 220_000, avgPricePerSqFt: 1_150, buildCostPerSqFt: 610, unitMixStrategy: "commercial_focus" },
-      "chess-b": { totalBuildableSqFt: 190_000, avgPricePerSqFt: 1_120, buildCostPerSqFt: 600, unitMixStrategy: "commercial_focus" },
+      "chess-a": proforma(220_000, 1_150, 610, "commercial_focus"),
+      "chess-b": proforma(190_000, 1_120, 600, "commercial_focus"),
     },
   },
   {
@@ -193,9 +194,9 @@ export const PROJECTS: Project[] = [
       facade: { finSpacing: 0.8, balconies: false },
     })),
     finance: {
-      "infiniti-1": { totalBuildableSqFt: 190_000, avgPricePerSqFt: 1_900, buildCostPerSqFt: 780, unitMixStrategy: "luxury_heavy" },
-      "infiniti-2": { totalBuildableSqFt: 230_000, avgPricePerSqFt: 2_050, buildCostPerSqFt: 820, unitMixStrategy: "luxury_heavy" },
-      "infiniti-3": { totalBuildableSqFt: 205_000, avgPricePerSqFt: 1_950, buildCostPerSqFt: 800, unitMixStrategy: "luxury_heavy" },
+      "infiniti-1": proforma(190_000, 1_900, 780, "luxury_heavy"),
+      "infiniti-2": proforma(230_000, 2_050, 820, "luxury_heavy"),
+      "infiniti-3": proforma(205_000, 1_950, 800, "luxury_heavy"),
     },
   },
   {
@@ -225,7 +226,7 @@ export const PROJECTS: Project[] = [
         facade: { finSpacing: 0.6 },
       },
     ],
-    finance: { refad: { totalBuildableSqFt: 215_000, avgPricePerSqFt: 980, buildCostPerSqFt: 560, unitMixStrategy: "commercial_focus" } },
+    finance: { refad: proforma(215_000, 980, 560, "commercial_focus") },
   },
   {
     slug: "broadway-bayonne",
@@ -254,7 +255,7 @@ export const PROJECTS: Project[] = [
         facade: { finSpacing: 1.2, arches: true },
       },
     ],
-    finance: { broadway: { totalBuildableSqFt: 118_000, avgPricePerSqFt: 890, buildCostPerSqFt: 470, unitMixStrategy: "balanced" } },
+    finance: { broadway: proforma(118_000, 890, 470, "balanced") },
   },
   {
     slug: "lorenskog-quarter",
@@ -282,8 +283,8 @@ export const PROJECTS: Project[] = [
       facade: { finSpacing: 1.1, balconies: true },
     })),
     finance: {
-      "lorenskog-1": { totalBuildableSqFt: 46_000, avgPricePerSqFt: 820, buildCostPerSqFt: 430, unitMixStrategy: "balanced" },
-      "lorenskog-2": { totalBuildableSqFt: 50_000, avgPricePerSqFt: 840, buildCostPerSqFt: 440, unitMixStrategy: "balanced" },
+      "lorenskog-1": proforma(46_000, 820, 430, "balanced"),
+      "lorenskog-2": proforma(50_000, 840, 440, "balanced"),
     },
   },
   {
@@ -313,7 +314,7 @@ export const PROJECTS: Project[] = [
         facade: { finSpacing: 0.4 },
       },
     ],
-    finance: { sports: { totalBuildableSqFt: 188_000, avgPricePerSqFt: 1_050, buildCostPerSqFt: 590, unitMixStrategy: "balanced" } },
+    finance: { sports: proforma(188_000, 1_050, 590, "balanced") },
   },
 ];
 

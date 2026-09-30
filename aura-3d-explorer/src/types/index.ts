@@ -97,17 +97,37 @@ export interface Building extends BuildingSpec {
 
 /* ------------------------------------------------------------ yield engine */
 
-/** How the value of the scheme is distributed across programmes. */
+/** Preset that sets relative zone prices and residential unit sizes. */
 export type UnitMixStrategy = "balanced" | "luxury_heavy" | "commercial_focus";
 
-/** User-controlled financial assumptions (one set per building). */
+/** Developer pro-forma assumptions for one building. */
 export interface YieldInputs {
-  /** Total buildable (gross) area, 50,000 – 300,000 sq ft. */
+  /** Total buildable (gross) area, sq ft. */
   totalBuildableSqFt: number;
-  /** Average achieved sale price, $800 – $2,500 per sq ft. */
-  avgPricePerSqFt: number;
-  /** Hard construction cost, $400 – $1,200 per sq ft. */
-  buildCostPerSqFt: number;
+  /** Land acquisition cost, $. */
+  landCost: number;
+  /** Hard construction cost, $ per sq ft. */
+  hardCostPerSqFt: number;
+  /** Soft costs (design, fees, permits, marketing) as % of hard cost. */
+  softCostPct: number;
+  /** Contingency as % of hard + soft cost. */
+  contingencyPct: number;
+  /** Construction loan as % of land + development cost (loan-to-cost). */
+  ltcPct: number;
+  /** Annual interest rate on the construction loan, %. */
+  interestRatePct: number;
+  /** Construction / loan term, months. */
+  termMonths: number;
+  /** Achieved sale price per sq ft for each programme zone, $. */
+  pricePerSqFt: Record<ZoneId, number>;
+  /** Units sold per month once sales launch. */
+  absorptionUnitsPerMonth: number;
+  /** Agency / broker commission, % of sales. */
+  salesCommissionPct: number;
+  /** AURA success fee, % of sales (1%). */
+  auraFeePct: number;
+  /** Target profit on cost used for the residual land value, %. */
+  targetProfitOnCostPct: number;
   unitMixStrategy: UnitMixStrategy;
 }
 
@@ -126,6 +146,7 @@ export interface FloorYield {
   sqFt: number;
   units: number;
   revenue: number;
+  /** Share of total development cost, by area. */
   cost: number;
   profit: number;
 }
@@ -139,34 +160,68 @@ export interface ZoneYield {
   sqFt: number;
   units: number;
   revenue: number;
-  /** Share of gross revenue, 0 – 1. */
+  /** Share of GDV, 0 – 1. */
   share: number;
 }
 
-/** Full output of the yield engine for one building. */
+/** One month of the development cash flow. */
+export interface CashflowMonth {
+  month: number;
+  /** Land + development spend this month (positive = outflow). */
+  spend: number;
+  /** Net sales receipts this month (after commission and fee). */
+  receipts: number;
+  equityIn: number;
+  equityOut: number;
+  /** Outstanding loan incl. capitalised interest, end of month. */
+  debt: number;
+  /** Cumulative equity position (distributions − contributions). */
+  equityPosition: number;
+}
+
+/** Full pro-forma output for one building. */
 export interface YieldMetrics {
-  grossProjectRevenue: number;
-  totalConstructionCost: number;
-  grossProfit: number;
-  /** Gross profit ÷ gross revenue × 100. */
-  grossMarginPct: number;
-  /** Revenue × 0.99 − construction cost. */
-  developerNetRevenue: number;
-  /** Revenue × 0.01. */
-  platformSuccessFee: number;
+  /** Gross development value (total sales). */
+  gdv: number;
+  landCost: number;
+  hardCost: number;
+  softCost: number;
+  contingency: number;
+  financeCost: number;
+  salesCommission: number;
+  /** AURA success fee (auraFeePct × GDV). */
+  platformFee: number;
+  totalDevelopmentCost: number;
+  profit: number;
+  /** Profit ÷ total development cost × 100. */
+  profitOnCostPct: number;
+  /** Profit ÷ GDV × 100. */
+  marginOnGdvPct: number;
+  /** Total equity contributed. */
+  equityRequired: number;
+  peakDebt: number;
+  /** Annualised equity IRR, %, or null if it can't be computed. */
+  irrPct: number | null;
+  equityMultiple: number;
+  /** Land value that hits the target profit on cost. */
+  residualLandValue: number;
+  /** Months from land purchase to last sale closing. */
+  durationMonths: number;
   totalUnits: number;
+  cashflow: CashflowMonth[];
   floors: FloorYield[];
   zones: ZoneYield[];
 }
 
 /** Site-wide roll-up across all buildings. */
 export interface SiteMetrics {
-  grossProjectRevenue: number;
-  totalConstructionCost: number;
-  grossProfit: number;
-  grossMarginPct: number;
-  developerNetRevenue: number;
-  platformSuccessFee: number;
+  gdv: number;
+  totalDevelopmentCost: number;
+  profit: number;
+  profitOnCostPct: number;
+  marginOnGdvPct: number;
+  platformFee: number;
+  equityRequired: number;
   totalUnits: number;
   totalFloors: number;
   totalSqFt: number;

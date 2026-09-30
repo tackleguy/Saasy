@@ -16,6 +16,8 @@ import { useYieldCalculator } from "@/hooks/useYieldCalculator";
 import ExplorerViewport from "@/components/explorer/ExplorerViewport";
 import FinancialSidebar from "@/components/ui/FinancialSidebar";
 import CommissionModelCard from "@/components/ui/CommissionModelCard";
+import FinancialChart from "@/components/ui/FinancialChart";
+import SensitivityTable from "@/components/ui/SensitivityTable";
 import StackingPlan, { type UnitInfo } from "./StackingPlan";
 import EnquiryForm from "./EnquiryForm";
 
@@ -74,6 +76,8 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
               onReset={() => yieldCalc.reset(building.id)}
               onFocusZone={x.focusZone}
             />
+            <FinancialChart metrics={metrics} buildingName={building.name} />
+            <SensitivityTable inputs={yieldCalc.inputsById[building.id]} floors={building.floors} buildingName={building.short} />
             <CommissionModelCard metrics={metrics} site={yieldCalc.site} buildingName={building.short} />
           </div>
         </div>

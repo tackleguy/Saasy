@@ -76,7 +76,7 @@ function buildScript(report: CadReport, inputs: YieldInputs, building: Building)
     {
       stage: 3,
       at: 0.55,
-      text: `Pro forma linked · ${fmtNum(inputs.totalBuildableSqFt)} sf @ $${fmtNum(inputs.avgPricePerSqFt)}/sf`,
+      text: `Pro forma linked · ${fmtNum(inputs.totalBuildableSqFt)} sf · hard cost $${fmtNum(inputs.hardCostPerSqFt)}/sf · ${inputs.ltcPct}% LTC`,
       tone: "ok",
     },
     { stage: 3, at: 0.95, text: "Ingestion complete ✓", tone: "ok" },

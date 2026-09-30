@@ -1,116 +1,141 @@
 "use client";
 /**
- * FinancialChart — Recharts breakdown of the pro forma.
- * -----------------------------------------------------------------------------
- * Two views:
- *   • "Pro Forma"  — Revenue vs. Construction Cost vs. Platform Fee vs.
- *                    Developer Net (handles loss-making schemes: negative bars
- *                    drop below the zero line in rose).
- *   • "Programme"  — revenue attributed to each zone under the chosen mix.
+ * FinancialChart — Recharts views of the pro forma.
+ *   • Costs — land, hard, soft, contingency, finance, sales & AURA fee and
+ *     profit, which together add up to GDV.
+ *   • Cash flow — monthly cumulative equity position and outstanding debt
+ *     (the classic J-curve: equity goes in, debt peaks, sales pay it back).
+ *   • Zones — GDV attributed to each programme zone.
  */
 import { useState } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { BarChart3 } from "lucide-react";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { YieldMetrics } from "@/types";
 import { fmtMoney } from "@/lib/format";
 import { Panel, SegmentedControl } from "./primitives";
 
-type ChartView = "proforma" | "programme";
+type View = "stack" | "cashflow" | "programme";
 
 interface Datum {
   name: string;
   value: number;
   color: string;
-  note: string;
 }
 
-const AXIS_TICK = { fill: "#64748b", fontSize: 10 };
+const AXIS_TICK = { fill: "rgb(110 106 99)", fontSize: 10 };
+const GRID = "rgba(28,27,25,0.08)";
 
-function ChartTooltip({ active, payload }: { active?: boolean; payload?: { payload: Datum }[] }) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
+function TooltipBox({ title, rows }: { title: string; rows: [string, string, string?][] }) {
   return (
-    <div className="overlay rounded-[3px] px-3 py-2 text-xs shadow-xl">
-      <div className="flex items-center gap-2 text-ink">
-        <span className="h-2 w-2 rounded-full" style={{ background: d.color }} />
-        {d.name}
-      </div>
-      <div className="mt-0.5 font-serif text-base tabular-nums text-ink">{fmtMoney(d.value, false)}</div>
-      <div className="text-ash/80">{d.note}</div>
+    <div className="panel px-3 py-2 text-xs shadow-sm">
+      <p className="mb-1 text-ink">{title}</p>
+      {rows.map(([k, v, c]) => (
+        <p key={k} className="flex items-center gap-2 tabular-nums text-ash">
+          {c && <span className="h-2 w-2" style={{ background: c }} />}
+          {k} <span className="ml-auto pl-3 text-ink">{v}</span>
+        </p>
+      ))}
     </div>
   );
 }
 
 export default function FinancialChart({ metrics: m, buildingName }: { metrics: YieldMetrics; buildingName: string }) {
-  const [view, setView] = useState<ChartView>("proforma");
+  const [view, setView] = useState<View>("stack");
 
-  const proforma: Datum[] = [
-    { name: "Revenue", value: m.grossProjectRevenue, color: "#d4af37", note: "Gross project revenue" },
-    { name: "Build Cost", value: m.totalConstructionCost, color: "#f43f5e", note: "Total construction cost" },
-    { name: "1% Fee", value: m.platformSuccessFee, color: "#f3e5ab", note: "Platform success fee" },
-    {
-      name: "Dev. Net",
-      value: m.developerNetRevenue,
-      color: m.developerNetRevenue >= 0 ? "#10b981" : "#f43f5e",
-      note: "Revenue × 0.99 − cost",
-    },
+  const stack: Datum[] = [
+    { name: "Land", value: m.landCost, color: "#B89A5C" },
+    { name: "Hard", value: m.hardCost, color: "#9C7A52" },
+    { name: "Soft", value: m.softCost, color: "#b8a88f" },
+    { name: "Cont.", value: m.contingency, color: "#cfc3ae" },
+    { name: "Finance", value: m.financeCost, color: "#8E9E86" },
+    { name: "Sales", value: m.salesCommission + m.platformFee, color: "#6E6A63" },
+    { name: "Profit", value: m.profit, color: m.profit >= 0 ? "rgb(74 120 88)" : "rgb(170 78 62)" },
   ];
-
-  const programme: Datum[] = m.zones.map((z) => ({
-    name: z.label,
-    value: z.revenue,
-    color: z.accent,
-    note: `${z.floorCount} floor${z.floorCount > 1 ? "s" : ""} · ${Math.round(z.share * 100)}% of revenue`,
-  }));
-
-  const data = view === "proforma" ? proforma : programme;
+  const programme: Datum[] = m.zones.map((z) => ({ name: z.label, value: z.revenue, color: z.accent }));
+  const cash = m.cashflow.map((c) => ({ month: c.month, equity: c.equityPosition, debt: -c.debt }));
+  const bars = view === "stack" ? stack : programme;
 
   return (
     <Panel
       index={3}
       kicker={`Breakdown · ${buildingName}`}
-      icon={<BarChart3 size={11} />}
-      title="Cost vs. Revenue"
+      title="Cost, Cash & Value"
       action={
-        <div className="w-[176px]">
+        <div className="w-[200px]">
           <SegmentedControl
             ariaLabel="Chart view"
-            layoutId="chart-view"
+            layoutId={`chart-${buildingName}`}
             size="sm"
             value={view}
             options={[
-              { value: "proforma", label: "Pro Forma" },
-              { value: "programme", label: "Programme" },
+              { value: "stack", label: "Costs" },
+              { value: "cashflow", label: "Cash flow" },
+              { value: "programme", label: "Zones" },
             ]}
             onChange={setView}
           />
         </div>
       }
     >
-      <div className="h-[220px]">
+      <div className="h-[220px]" role="img" aria-label={view === "cashflow" ? "Cumulative equity position and debt by month" : "Cost and value breakdown"}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barCategoryGap="22%">
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.05)" />
-            <XAxis dataKey="name" tick={AXIS_TICK} axisLine={false} tickLine={false} interval={0} />
-            <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={52} tickFormatter={(v: number) => fmtMoney(v)} />
-            <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" />
-            <Tooltip cursor={{ fill: "rgba(212,175,55,0.06)" }} content={<ChartTooltip />} />
-            <Bar dataKey="value" radius={[4, 4, 0, 0]} animationDuration={500}>
-              {data.map((d) => (
-                <Cell key={d.name} fill={d.color} fillOpacity={0.9} />
-              ))}
-            </Bar>
-          </BarChart>
+          {view === "cashflow" ? (
+            <AreaChart data={cash} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
+              <CartesianGrid vertical={false} stroke={GRID} />
+              <XAxis dataKey="month" tick={AXIS_TICK} axisLine={false} tickLine={false} tickFormatter={(v: number) => `M${v}`} minTickGap={24} />
+              <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={54} tickFormatter={(v: number) => fmtMoney(v)} />
+              <ReferenceLine y={0} stroke="rgba(28,27,25,0.3)" />
+              <Tooltip
+                content={({ active, payload, label }) =>
+                  active && payload?.length ? (
+                    <TooltipBox
+                      title={`Month ${label}`}
+                      rows={[
+                        ["Equity position", fmtMoney(Number(payload[0]?.value ?? 0)), "#9C7A52"],
+                        ["Debt outstanding", fmtMoney(-Number(payload[1]?.value ?? 0)), "#8E9E86"],
+                      ]}
+                    />
+                  ) : null
+                }
+              />
+              <Area type="monotone" dataKey="equity" stroke="#9C7A52" fill="#9C7A52" fillOpacity={0.18} strokeWidth={1.5} isAnimationActive={false} />
+              <Area type="monotone" dataKey="debt" stroke="#8E9E86" fill="#8E9E86" fillOpacity={0.15} strokeWidth={1.5} isAnimationActive={false} />
+            </AreaChart>
+          ) : (
+            <BarChart data={bars} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barCategoryGap="18%">
+              <CartesianGrid vertical={false} stroke={GRID} />
+              <XAxis dataKey="name" tick={AXIS_TICK} axisLine={false} tickLine={false} interval={0} />
+              <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} width={54} tickFormatter={(v: number) => fmtMoney(v)} />
+              <ReferenceLine y={0} stroke="rgba(28,27,25,0.3)" />
+              <Tooltip
+                cursor={{ fill: "rgba(28,27,25,0.04)" }}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const d = payload[0].payload as Datum;
+                  return (
+                    <TooltipBox
+                      title={d.name}
+                      rows={[
+                        ["Amount", fmtMoney(d.value, false), d.color],
+                        ["Share of GDV", `${((d.value / (m.gdv || 1)) * 100).toFixed(1)}%`],
+                      ]}
+                    />
+                  );
+                }}
+              />
+              <Bar dataKey="value" animationDuration={500}>
+                {bars.map((d) => (
+                  <Cell key={d.name} fill={d.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          )}
         </ResponsiveContainer>
       </div>
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-        {data.map((d) => (
-          <span key={d.name} className="flex items-center gap-1.5 text-[11px] text-ash">
-            <span className="h-2 w-2 rounded-full" style={{ background: d.color }} />
-            {d.name}
-          </span>
-        ))}
-      </div>
+      <p className="caption mt-3">
+        {view === "stack" && `Costs + profit = GDV ${fmtMoney(m.gdv)}.`}
+        {view === "cashflow" && `Equity in first, then debt; sales repay debt, then equity. Peak debt ${fmtMoney(m.peakDebt)}.`}
+        {view === "programme" && "GDV attributed to each zone by area × zone price."}
+      </p>
     </Panel>
   );
 }

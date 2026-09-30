@@ -15,6 +15,8 @@
  * stack: viewport on top, cards below.
  */
 import { useState } from "react";
+import dynamic from "next/dynamic";
+import { FileDown } from "lucide-react";
 import type { Project } from "@/content/projects";
 import { projectSite } from "@/content/projects";
 import { siteFloorCount } from "@/lib/tower";
@@ -24,9 +26,14 @@ import ExplorerViewport from "@/components/explorer/ExplorerViewport";
 import FinancialSidebar from "@/components/ui/FinancialSidebar";
 import FinancialChart from "@/components/ui/FinancialChart";
 import CommissionModelCard from "@/components/ui/CommissionModelCard";
-import CadUploadModal from "@/components/ui/CadUploadModal";
+import SensitivityTable from "@/components/ui/SensitivityTable";
 import { SegmentedControl } from "@/components/ui/primitives";
 import StudioToolbar from "./StudioToolbar";
+import ScenarioDrawer from "./ScenarioDrawer";
+import ProFormaReport from "./ProFormaReport";
+
+// The CAD modal pulls in Three's STL loader — load it only when first opened.
+const CadUploadModal = dynamic(() => import("@/components/ui/CadUploadModal"), { ssr: false });
 
 export default function StudioApp({ project }: { project: Project }) {
   const siteBuildings = projectSite(project);
@@ -46,11 +53,16 @@ export default function StudioApp({ project }: { project: Project }) {
         subtitle={`${project.name} · ${siteBuildings.length} building${siteBuildings.length > 1 ? "s" : ""} · ${siteFloorCount(siteBuildings)} floors`}
         viewMode={x.viewMode}
         onViewModeChange={x.setViewMode}
-        siteRevenue={yieldCalc.site.grossProjectRevenue}
-        siteMarginPct={yieldCalc.site.grossMarginPct}
+        siteRevenue={yieldCalc.site.gdv}
+        siteMarginPct={yieldCalc.site.marginOnGdvPct}
         onImportCad={() => setCadOpen(true)}
       >
-        <div className="hidden w-[132px] lg:block" title={x.autoLowered ? "Switched to Low automatically to keep the frame rate smooth" : undefined}>
+        <ScenarioDrawer projectSlug={project.slug} current={yieldCalc.inputsById} onLoad={yieldCalc.load} />
+        <button onClick={() => window.print()} className="btn-secondary py-2 text-xs" aria-label="Export pro forma as PDF">
+          <FileDown size={14} aria-hidden />
+          <span className="hidden sm:inline">Export PDF</span>
+        </button>
+        <div className="hidden w-[132px] xl:block" title={x.autoLowered ? "Switched to Low automatically to keep the frame rate smooth" : undefined}>
           <SegmentedControl
             ariaLabel="Rendering quality"
             layoutId="quality"
@@ -86,21 +98,33 @@ export default function StudioApp({ project }: { project: Project }) {
             onFocusZone={x.focusZone}
           />
           <FinancialChart metrics={metrics} buildingName={building.name} />
+          <SensitivityTable inputs={inputs} floors={building.floors} buildingName={building.short} />
           <CommissionModelCard metrics={metrics} site={yieldCalc.site} buildingName={building.short} />
           <p className="caption pb-2 pt-1 text-center">Illustrative figures only · not investment advice</p>
         </aside>
       </div>
 
-      <CadUploadModal
-        open={cadOpen}
-        onOpenChange={setCadOpen}
-        inputs={inputs}
-        building={building}
-        onComplete={() => {
-          setCadOpen(false);
-          x.reveal();
-        }}
+      <ProFormaReport
+        projectName={project.name}
+        city={project.city}
+        buildings={siteBuildings}
+        inputsById={yieldCalc.inputsById}
+        metricsById={yieldCalc.metricsById}
+        site={yieldCalc.site}
       />
+
+      {cadOpen && (
+        <CadUploadModal
+          open={cadOpen}
+          onOpenChange={setCadOpen}
+          inputs={inputs}
+          building={building}
+          onComplete={() => {
+            setCadOpen(false);
+            x.reveal();
+          }}
+        />
+      )}
     </div>
   );
 }
