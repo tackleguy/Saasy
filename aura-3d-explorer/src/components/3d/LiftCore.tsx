@@ -18,7 +18,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { liftDims, liftState } from "@/lib/lift";
-import { liftDoors } from "./facadeGeometry";
+import { liftBankDoors, LiftBankSignals } from "./interior/LiftBank";
 import { concreteTexture } from "./textures";
 
 const noRaycast = () => null;
@@ -46,12 +46,11 @@ export default function LiftCore({ coreSize, floorHeight, slab }: Props) {
   const cw = L.cabW / 2;
   const ow = L.opening / 2;
   const top = slab + L.cabH;
-  const doorH = Math.min((H - slab) * 0.8, 0.62);
 
   const concrete = useMemo(() => new THREE.MeshStandardMaterial({ map: concreteTexture(), color: "#e2dcd1", roughness: 0.9 }), []);
   const steel = useMemo(() => new THREE.MeshStandardMaterial({ color: "#c7ccd2", metalness: 0.85, roughness: 0.32 }), []);
   const leafMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#b9a78a", metalness: 0.85, roughness: 0.3 }), []);
-  const others = liftDoors(c, slab, doorH, true);
+  const others = liftBankDoors(c, slab, L.cabH, true);
 
   const left = useRef<THREE.Mesh>(null);
   const right = useRef<THREE.Mesh>(null);
@@ -129,8 +128,9 @@ export default function LiftCore({ coreSize, floorHeight, slab }: Props) {
         <meshStandardMaterial color="#1c1b19" emissive="#f5c07a" emissiveIntensity={0.6} />
       </mesh>
 
-      {/* The other lift doors, as flat panels */}
+      {/* The rest of the lift bank + stair door */}
       <mesh geometry={others} material={leafMat} raycast={noRaycast} />
+      <LiftBankSignals coreSize={c} floorHeight={H} slab={slab} />
     </group>
   );
 }
