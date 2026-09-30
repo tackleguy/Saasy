@@ -22,6 +22,9 @@ export default function HeroExplorer({ project }: { project: Project }) {
           </p>
         </div>
         <div className="flex gap-2">
+          <Link href="/tour" className="btn-secondary py-2 text-xs">
+            Play live reel
+          </Link>
           <Link href={`/projects/${project.slug}`} className="btn-secondary py-2 text-xs">
             View project
           </Link>

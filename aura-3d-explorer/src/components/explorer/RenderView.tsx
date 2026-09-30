@@ -56,6 +56,11 @@ export default function RenderView({ project }: { project: Project }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [building.id, params.angle, params.walk, params.floor, params.view]);
 
+  // Walk flag so the capture script can wait for the walk-through to start.
+  useEffect(() => {
+    document.documentElement.toggleAttribute("data-walking", x.walking);
+  }, [x.walking]);
+
   // Ready flag for the capture script (the scene needs a few frames to settle).
   useEffect(() => {
     const t = setTimeout(() => document.documentElement.setAttribute("data-render-ready", "1"), 6000);

@@ -26,10 +26,19 @@ Node 20+. `STATIC_EXPORT=1 npm run build` also writes a static site to `/out`.
 | `/studio` | **AURA Studio**: explorer + full yield engine + CAD import, saved scenarios (localStorage) and Export Pro Forma (PDF, via print stylesheet) |
 | `/developers` | How it works, 1% success-fee pricing, placeholder testimonials (labelled), FAQ, demo request |
 
-## Replace the placeholder images
+## Project photos
 
-Each project ships three generated placeholders (1600 × 1000). Drop real renders in
-with **the same file names** — no code changes:
+Each project ships three 1600 × 1000 hero images **photographed from the live 3D
+scene** (waterfront, street level, and an interior walk-through view). Re-shoot them
+after changing a project's massing or the scene:
+
+```bash
+npm run build && npm start          # in one terminal
+node scripts/capture-heroes.mjs     # in another (add --only <slug> for one project)
+```
+
+The script drives the bare `/render/<slug>` route in headless Chrome. To use your
+own renders instead, drop them in with **the same file names** — no code changes:
 
 ```
 public/projects/meridian-tower/hero-1.jpg     hero-2.jpg   hero-3.jpg
@@ -44,14 +53,15 @@ public/projects/sports-world/hero-1.jpg       hero-2.jpg   hero-3.jpg
 
 `hero-1` is the exterior hero (also the OpenGraph image), `hero-2` a secondary
 exterior or amenity, `hero-3` an interior. 16:10, sRGB JPG, ideally < 400 KB.
-Update alt text in `src/content/projects.ts`. Regenerate placeholders with
-`node scripts/generate-placeholders.mjs`. See `public/projects/README.md`.
+Update alt text in `src/content/projects.ts`. `node scripts/generate-placeholders.mjs`
+still produces flat gradient placeholders if you need them. See `public/projects/README.md`.
 
 ## Where things live
 
 ```
 src/
-├── app/                         routes (/, /projects, /projects/[slug], /studio, /developers)
+├── app/(site)/                  public routes (/, /projects, /projects/[slug], /studio, /developers)
+├── app/render/[slug]            bare full-screen scene used by scripts/capture-heroes.mjs
 ├── content/projects.ts          8 sample projects: copy, massing, renders, finance defaults
 ├── lib/
 │   ├── tower.ts                 ProjectMassing → BuildingSpec → floor plates (buildSite)
@@ -64,8 +74,9 @@ src/
 │   ├── useYieldCalculator.ts    per-building pro-forma state + site roll-up
 │   └── useCameraTween.ts        GSAP camera: focus / pose / overview + intro dolly
 ├── components/
-│   ├── 3d/                      scene, floor plates, facades, furniture, context, post FX, walk
-│   ├── explorer/                ExplorerViewport (full / hero)
+│   ├── 3d/                      scene, floor plates, facades, furniture, textures, post FX, walk
+│   ├── 3d/context/              city grid, ground & roads, water & boats, trees, cars, people, lamps
+│   ├── explorer/                ExplorerViewport (full / hero / bare) + RenderView
 │   ├── project/                 carousel, key facts, stacking plan, enquiry, workspace
 │   ├── portfolio/               project card, masonry grid, status pill
 │   ├── studio/                  studio app, toolbar, scenarios drawer, printable report
@@ -77,7 +88,10 @@ src/
 Common edits:
 
 - **Projects / massing / defaults** — `src/content/projects.ts` (`massing` per building:
-  zone floor counts, plate sizes, twist, `facade.finSpacing`, `balconies`, `arches`).
+  zone floor counts, plate sizes, twist, `taper` for supertalls, `facade.finSpacing`,
+  `balconies`, `arches`). The flagship site includes the 100-storey Meridian Pinnacle.
+- **City context** — `src/components/3d/context/cityPlan.ts` (block grid, heights,
+  facade kinds) and the components beside it; textures in `src/components/3d/textures.ts`.
 - **Finance model** — `src/lib/finance.ts` (method is documented at the top of the file).
 - **Theme** — CSS tokens in `src/app/globals.css` (`--paper`, `--stone`, `--plaster`,
   `--ink`, `--ash`, `--oak`, `--sage`, `--brass`); dark variant via `<html data-theme="dark">`.
@@ -101,7 +115,14 @@ a target profit on cost, and a price ±10% × cost ±10% sensitivity grid.
   field on the isolated floor, vignette, ACES at exposure 1.05. Low quality drops
   post-processing and reflections and renders at dpr 1; the Studio switches to Low
   automatically if the frame rate stays low.
-- Photo angles (Street, Waterfront, Aerial, Podium) and a 2× PNG "Capture".
+- Photo angles (Street, Waterfront, Aerial, Podium, Skyline, Drone) and a 2× PNG "Capture".
+- All surface textures are procedural (canvas noise): concrete, asphalt with lane
+  markings, paving, stone, plaster, wood grain, fabric weave, marble, bark, leaves,
+  roof gravel and a scrolling water normal map. Neighbour facades tile per storey via
+  a small instancing shader patch (`tilePerUnit`).
+- Context is fully instanced: ~200 city blocks in four facade kinds, 60 cars (two
+  moving lanes + parked), ~110 pedestrians, ~90 trees in three species, lamps,
+  benches and boats — about 25 draw calls in total.
 - three.js r18x removed `PCFSoftShadowMap`; shadows use PCF with `shadow.radius`.
 - Reflections use `public/hdri/potsdamer_platz_1k.hdr` (Poly Haven, CC0) — bundled,
   so nothing loads from a CDN at runtime. Fonts are bundled too.

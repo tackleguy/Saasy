@@ -15,6 +15,7 @@ const NAV = [
   { href: "/projects", label: "Projects" },
   { href: "/studio", label: "Studio" },
   { href: "/developers", label: "For Developers" },
+  { href: "/tour", label: "Live Reel" },
 ];
 
 export default function SiteHeader() {

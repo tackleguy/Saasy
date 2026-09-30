@@ -21,12 +21,19 @@ interface Props {
   onWalk: () => void;
 }
 
-const MATERIALS = {
-  podium: "Stone arcade · recessed lobby glazing",
-  office: "Curtain wall · bronze vertical fins",
-  residential: "Curtain wall · curved balcony bands",
-  crown: "Ultra-clear glass · warm interior light",
-} as const;
+/** Envelope description per zone, reflecting the building's facade options. */
+function materialLine(zone: FloorData["zone"], facade: Building["facade"]) {
+  switch (zone) {
+    case "podium":
+      return facade.arches ? "Stone arcade · recessed lobby glazing" : "Curtain wall · bronze mullions";
+    case "office":
+      return facade.finSpacing > 0 ? "Curtain wall · bronze vertical fins" : "Curtain wall · slim mullions";
+    case "residential":
+      return facade.balconies ? "Curtain wall · curved balcony bands" : "Curtain wall · slim mullions";
+    default:
+      return "Ultra-clear glass · warm interior light";
+  }
+}
 
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
@@ -78,7 +85,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             <Row label="Floor revenue" value={fmtMoney(floorYield.revenue)} accent />
           </dl>
 
-          <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash">{MATERIALS[floor.zone]}</p>
+          <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash">{materialLine(floor.zone, building.facade)}</p>
 
           <button
             onClick={onWalk}
