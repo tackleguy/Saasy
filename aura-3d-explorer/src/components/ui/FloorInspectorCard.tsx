@@ -31,8 +31,8 @@ const MATERIALS = {
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <>
-      <dt className="text-slate-500">{label}</dt>
-      <dd className={`text-right tabular-nums ${accent ? "font-serif text-base text-gold-metal" : "text-white"}`}>{value}</dd>
+      <dt className="text-ash/80">{label}</dt>
+      <dd className={`text-right tabular-nums ${accent ? "font-serif text-base text-ink" : "text-ink"}`}>{value}</dd>
     </>
   );
 }
@@ -48,26 +48,26 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
           animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, x: -12, filter: "blur(4px)" }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          className="glass-card pointer-events-auto absolute left-3 top-3 z-10 w-[min(300px,calc(100%-1.5rem))] rounded-2xl border-gold/25 p-4 shadow-gold sm:left-4 sm:top-4"
+          className="overlay pointer-events-auto absolute left-3 top-3 z-10 w-[min(300px,calc(100%-1.5rem))] rounded-[3px] border-oak/25 p-4 sm:left-4 sm:top-4"
         >
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="eyebrow" style={{ color: ZONES[floor.zone].accent }}>
+              <p className="caption" style={{ color: ZONES[floor.zone].accent }}>
                 {building.short} · {ZONES[floor.zone].label}
               </p>
-              <h4 className="font-serif text-[34px] leading-none text-white">
+              <h4 className="font-serif text-[34px] leading-none text-ink">
                 Floor {floor.number}
-                <span className="ml-1.5 text-base text-slate-500">/ {floorCount}</span>
+                <span className="ml-1.5 text-base text-ash/80">/ {floorCount}</span>
               </h4>
             </div>
-            <button onClick={onClose} className="rounded-full p-1 text-slate-400 transition hover:bg-white/5 hover:text-white" aria-label="Close floor inspector">
+            <button onClick={onClose} className="rounded-full p-1 text-ash transition hover:bg-stone hover:text-ink" aria-label="Close floor inspector">
               <X size={16} />
             </button>
           </div>
 
-          <p className="mt-2 text-xs leading-relaxed text-slate-400">{ZONES[floor.zone].description}</p>
+          <p className="mt-2 text-xs leading-relaxed text-ash">{ZONES[floor.zone].description}</p>
 
-          <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-white/[0.06] pt-3 text-xs">
+          <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-plaster pt-3 text-xs">
             <Row label="Model plate (W×D×H)" value={`${floor.width} × ${floor.depth} × ${floor.height}`} />
             <Row label="Real plate" value={`${toMetres(floor.width).toFixed(0)} × ${toMetres(floor.depth).toFixed(0)} m · ${toMetres(floor.height).toFixed(1)} m f2f`} />
             <Row label="Twist (R_y)" value={`${((floor.rotationY * 180) / Math.PI).toFixed(1)}°`} />
@@ -78,11 +78,11 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             <Row label="Floor revenue" value={fmtMoney(floorYield.revenue)} accent />
           </dl>
 
-          <p className="mt-3 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em] text-slate-500">{MATERIALS[floor.zone]}</p>
+          <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash/80">{MATERIALS[floor.zone]}</p>
 
           <button
             onClick={onWalk}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-gold-light to-gold py-2 text-xs font-semibold uppercase tracking-[0.14em] text-obsidian transition hover:brightness-110"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] bg-ink py-2 text-xs font-semibold text-paper transition hover:brightness-110"
           >
             <Footprints size={14} /> Walk inside
           </button>
@@ -91,14 +91,14 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             <button
               disabled={floor.index === 0}
               onClick={() => onStep(-1)}
-              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-white/10 py-1.5 text-xs text-slate-400 transition hover:border-gold/40 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+              className="flex flex-1 items-center justify-center gap-1 rounded-[3px] border border-plaster py-1.5 text-xs text-ash transition hover:border-oak/40 hover:text-ink disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronDown size={14} /> Below
             </button>
             <button
               disabled={floor.index === floorCount - 1}
               onClick={() => onStep(1)}
-              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-white/10 py-1.5 text-xs text-slate-400 transition hover:border-gold/40 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+              className="flex flex-1 items-center justify-center gap-1 rounded-[3px] border border-plaster py-1.5 text-xs text-ash transition hover:border-oak/40 hover:text-ink disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronUp size={14} /> Above
             </button>

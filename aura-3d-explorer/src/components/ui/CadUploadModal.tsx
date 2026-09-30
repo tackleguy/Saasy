@@ -231,7 +231,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild>
               <motion.div
-                className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+                className="fixed inset-0 z-40 bg-ink/30 backdrop-blur-sm"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -244,18 +244,18 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 12, scale: 0.98 }}
                   transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                  className="glass-card aura-scroll pointer-events-auto max-h-[92dvh] w-full max-w-[600px] overflow-y-auto rounded-2xl bg-obsidian-800/90 p-5 shadow-2xl sm:p-6"
+                  className="overlay thin-scroll pointer-events-auto max-h-[92dvh] w-full max-w-[600px] overflow-y-auto rounded-[3px] bg-paper p-5  sm:p-6"
                 >
                   {/* Header */}
                   <div className="mb-5 flex items-start justify-between gap-4">
                     <div>
-                      <p className="eyebrow mb-1 text-gold">Automated Ingestion</p>
-                      <Dialog.Title className="font-serif text-3xl text-white">Import CAD Model</Dialog.Title>
-                      <Dialog.Description id="cad-desc" className="mt-1 text-sm text-slate-400">
+                      <p className="caption mb-1 text-oak">Automated Ingestion</p>
+                      <Dialog.Title className="font-serif text-3xl text-ink">Import CAD Model</Dialog.Title>
+                      <Dialog.Description id="cad-desc" className="mt-1 text-sm text-ash">
                         Drop a massing model and AURA parses it into floor plates, furniture grids and a live pro forma.
                       </Dialog.Description>
                     </div>
-                    <Dialog.Close className="rounded-full p-1.5 text-slate-400 transition hover:bg-white/5 hover:text-white" aria-label="Close">
+                    <Dialog.Close className="rounded-full p-1.5 text-ash transition hover:bg-stone hover:text-ink" aria-label="Close">
                       <X size={18} />
                     </Dialog.Close>
                   </div>
@@ -279,8 +279,8 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                         }}
                         onClick={() => inputRef.current?.click()}
                         className={clsx(
-                          "group flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-6 py-10 text-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50",
-                          dragging ? "scale-[1.01] border-gold bg-gold/[0.07]" : "border-white/15 hover:border-gold/50 hover:bg-white/[0.02]"
+                          "group flex cursor-pointer flex-col items-center justify-center rounded-[3px] border border-dashed px-6 py-10 text-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50",
+                          dragging ? "scale-[1.01] border-oak bg-oak/[0.07]" : "border-plaster hover:border-oak/50 hover:bg-stone/40"
                         )}
                       >
                         <input
@@ -294,12 +294,12 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                           }}
                         />
                         <motion.div animate={dragging ? { y: -4, scale: 1.1 } : { y: 0, scale: 1 }}>
-                          <UploadCloud className="mb-3 text-gold" size={34} />
+                          <UploadCloud className="mb-3 text-oak" size={34} />
                         </motion.div>
-                        <p className="text-sm text-white">Drag & drop your CAD file, or click to browse</p>
+                        <p className="text-sm text-ink">Drag & drop your CAD file, or click to browse</p>
                         <div className="mt-3 flex gap-1.5">
                           {ACCEPTED.map((ext) => (
-                            <span key={ext} className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 font-mono text-[11px] text-slate-400">
+                            <span key={ext} className="rounded-md border border-plaster bg-stone/50 px-2 py-0.5 font-mono text-[11px] text-ash">
                               {ext}
                             </span>
                           ))}
@@ -307,12 +307,12 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                       </div>
                       <button
                         onClick={() => handleFile(makeSampleStl())}
-                        className="mx-auto mt-3 flex items-center gap-1.5 text-xs text-slate-400 underline-offset-4 transition hover:text-gold hover:underline"
+                        className="mx-auto mt-3 flex items-center gap-1.5 text-xs text-ash underline-offset-4 transition hover:text-oak hover:underline"
                       >
                         <Sparkles size={12} /> No file handy? Run the pipeline on a sample tower
                       </button>
                       {error && (
-                        <p className="mt-3 flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">
+                        <p className="mt-3 flex items-center gap-2 rounded-[3px] border border-negative/30 bg-negative/10 px-3 py-2 text-xs text-negative">
                           <AlertTriangle size={14} className="shrink-0" /> {error}
                         </p>
                       )}
@@ -322,16 +322,16 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                   {/* Pipeline (running / done) */}
                   {(phase === "running" || phase === "done") && (
                     <div className="space-y-4">
-                      <div className="flex items-center gap-2 text-sm text-white">
-                        <FileBox size={16} className="text-gold" />
+                      <div className="flex items-center gap-2 text-sm text-ink">
+                        <FileBox size={16} className="text-oak" />
                         <span className="truncate">{fileName}</span>
-                        <span className="ml-auto font-serif text-2xl tabular-nums text-gold-metal">{Math.round(progress)}%</span>
+                        <span className="ml-auto font-serif text-2xl tabular-nums text-ink">{Math.round(progress)}%</span>
                       </div>
 
                       {/* Overall bar */}
-                      <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
+                      <div className="h-1.5 overflow-hidden rounded-full bg-stone">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-gold-dim via-gold to-gold-light"
+                          className="h-full rounded-full bg-ink"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -348,19 +348,19 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                                 <span
                                   className={clsx(
                                     "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-[9px]",
-                                    done ? "border-emerald-500 bg-emerald-500/20 text-emerald-400" : active ? "border-gold text-gold" : "border-white/20 text-slate-500"
+                                    done ? "border-positive bg-positive/15 text-positive" : active ? "border-oak text-oak" : "border-plaster text-ash/80"
                                   )}
                                 >
                                   {done ? "✓" : i + 1}
                                 </span>
-                                <span className={done ? "text-slate-300" : active ? "text-white" : "text-slate-500"}>{s.label}</span>
-                                <span className="ml-auto font-mono text-[10px] tabular-nums text-slate-500">
+                                <span className={done ? "text-ink/80" : active ? "text-ink" : "text-ash/80"}>{s.label}</span>
+                                <span className="ml-auto font-mono text-[10px] tabular-nums text-ash/80">
                                   {s.from}–{s.to}%
                                 </span>
                               </div>
-                              <div className="ml-6 h-1 overflow-hidden rounded-full bg-white/5">
+                              <div className="ml-6 h-1 overflow-hidden rounded-full bg-stone">
                                 <div
-                                  className={clsx("h-full rounded-full", done ? "bg-emerald-500/70" : "bg-gold")}
+                                  className={clsx("h-full rounded-full", done ? "bg-positive/70" : "bg-ink")}
                                   style={{ width: `${sp * 100}%` }}
                                 />
                               </div>
@@ -370,29 +370,29 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                       </ol>
 
                       {/* Status terminal */}
-                      <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-black/60">
-                        <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-slate-500">
+                      <div className="overflow-hidden rounded-[3px] border border-plaster bg-ink">
+                        <div className="flex items-center gap-2 border-b border-plaster px-3 py-1.5 text-[10px] text-ash/80">
                           <Terminal size={11} /> aura-ingest
-                          {phase === "running" && <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-gold" />}
+                          {phase === "running" && <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-ink" />}
                         </div>
-                        <div ref={terminalRef} className="aura-scroll h-40 overflow-y-auto px-3 py-2 font-mono text-[11px] leading-relaxed">
+                        <div ref={terminalRef} className="thin-scroll h-40 overflow-y-auto px-3 py-2 font-mono text-[11px] leading-relaxed">
                           {lines.map((l) => (
                             <motion.div
                               key={l.id}
                               initial={{ opacity: 0, x: -4 }}
                               animate={{ opacity: 1, x: 0 }}
                               className={clsx(
-                                l.tone === "cmd" && "text-gold",
-                                l.tone === "ok" && "text-emerald-400",
-                                l.tone === "info" && "text-slate-400",
-                                l.tone === "warn" && "text-rose-400"
+                                l.tone === "cmd" && "text-oak",
+                                l.tone === "ok" && "text-positive",
+                                l.tone === "info" && "text-ash",
+                                l.tone === "warn" && "text-negative"
                               )}
                             >
                               {l.tone === "cmd" ? "$ " : l.tone === "ok" ? "✓ " : "› "}
                               {l.text}
                             </motion.div>
                           ))}
-                          {phase === "running" && <span className="inline-block h-3 w-1.5 animate-pulse bg-gold/70 align-middle" />}
+                          {phase === "running" && <span className="inline-block h-3 w-1.5 animate-pulse bg-oak/70 align-middle" />}
                         </div>
                       </div>
 
@@ -402,25 +402,25 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                           <motion.div
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="flex flex-col gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] p-4 sm:flex-row sm:items-center"
+                            className="flex flex-col gap-3 rounded-[3px] border border-positive/30 bg-positive/10 p-4 sm:flex-row sm:items-center"
                           >
                             <div className="flex items-center gap-2.5">
-                              <CheckCircle2 size={22} className="shrink-0 text-emerald-400" />
+                              <CheckCircle2 size={22} className="shrink-0 text-positive" />
                               <div>
-                                <p className="text-sm text-white">Model ready</p>
-                                <p className="text-xs text-slate-400">Linked to the live pro forma.</p>
+                                <p className="text-sm text-ink">Model ready</p>
+                                <p className="text-xs text-ash">Linked to the live pro forma.</p>
                               </div>
                             </div>
                             <div className="flex gap-2 sm:ml-auto">
                               <button
                                 onClick={resetState}
-                                className="rounded-lg border border-white/10 px-3 py-2 text-xs text-slate-300 transition hover:border-gold/40 hover:text-white"
+                                className="rounded-[3px] border border-plaster px-3 py-2 text-xs text-ink/80 transition hover:border-oak/40 hover:text-ink"
                               >
                                 Ingest another
                               </button>
                               <button
                                 onClick={onComplete}
-                                className="rounded-lg bg-gradient-to-b from-gold-light to-gold px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-obsidian transition hover:brightness-110"
+                                className="rounded-[3px] bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:brightness-110"
                               >
                                 Open in Explorer
                               </button>
@@ -431,7 +431,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                     </div>
                   )}
 
-                  <p className="mt-5 text-center text-[10px] uppercase tracking-[0.16em] text-slate-500">
+                  <p className="mt-5 text-center text-[10px] text-ash/80">
                     Files are read locally · geometry reconstruction is a simulated preview
                   </p>
                 </motion.div>

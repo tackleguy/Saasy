@@ -1,45 +1,50 @@
 "use client";
 /**
- * Small shared UI building blocks used by the cards and HUD:
- * GlassCard, RangeSlider, SegmentedControl, AnimatedValue and Metric.
+ * Small shared UI building blocks: Panel, RangeSlider, SegmentedControl,
+ * AnimatedValue and Metric. Light, flat, hairline-bordered — whitespace does
+ * the work, not glass or glow. Motion is slow and restrained (no springs).
  */
 import { ReactNode } from "react";
 import clsx from "clsx";
 import * as RSlider from "@radix-ui/react-slider";
 import { AnimatePresence, motion } from "framer-motion";
 
-/* ------------------------------------------------------------------ GlassCard */
+/** Calm ease used across the app. */
+export const EASE = [0.22, 1, 0.36, 1] as const;
 
-interface GlassCardProps {
-  eyebrow?: string;
+/* --------------------------------------------------------------------- Panel */
+
+interface PanelProps {
+  /** Small grey caption above the title. */
+  kicker?: string;
   title?: string;
   icon?: ReactNode;
   action?: ReactNode;
   children: ReactNode;
   className?: string;
-  /** Stagger index for the entrance animation. */
+  /** Stagger index for the entrance fade. */
   index?: number;
 }
 
-/** Glassmorphism panel with a staggered fade-up entrance. */
-export function GlassCard({ eyebrow, title, icon, action, children, className, index = 0 }: GlassCardProps) {
+/** Flat paper panel with a hairline border and a gentle fade-up entrance. */
+export function Panel({ kicker, title, icon, action, children, className, index = 0 }: PanelProps) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55, delay: 0.1 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className={clsx("glass-card rounded-2xl p-5 shadow-card", className)}
+      transition={{ duration: 0.6, delay: 0.05 + index * 0.06, ease: EASE }}
+      className={clsx("panel p-5", className)}
     >
-      {(eyebrow || title) && (
+      {(kicker || title) && (
         <header className="mb-4 flex items-start justify-between gap-3">
           <div>
-            {eyebrow && (
-              <p className="eyebrow mb-1 flex items-center gap-1.5 text-gold/85">
+            {kicker && (
+              <p className="caption mb-1 flex items-center gap-1.5">
                 {icon}
-                {eyebrow}
+                {kicker}
               </p>
             )}
-            {title && <h3 className="font-serif text-[22px] leading-tight text-white">{title}</h3>}
+            {title && <h3 className="font-serif text-[22px] leading-tight text-ink">{title}</h3>}
           </div>
           {action}
         </header>
@@ -66,16 +71,16 @@ interface RangeSliderProps {
   compact?: boolean;
 }
 
-/** Radix slider in brushed gold with a live serif readout. */
+/** Keyboard-operable Radix slider (arrows, PageUp/Down, Home/End). */
 export function RangeSlider({ label, value, min, max, step = 1, display, onChange, icon, bounds, compact }: RangeSliderProps) {
   return (
-    <div className={compact ? "space-y-1.5" : "space-y-2.5"}>
+    <div className={compact ? "space-y-1.5" : "space-y-2"}>
       <div className="flex items-baseline justify-between gap-3">
-        <span className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+        <span className="flex items-center gap-1.5 text-xs text-ash">
           {icon}
           {label}
         </span>
-        <span className={clsx("font-serif tabular-nums text-white", compact ? "text-base" : "text-lg")}>{display}</span>
+        <span className={clsx("tabular-nums text-ink", compact ? "text-sm" : "font-serif text-lg leading-none")}>{display}</span>
       </div>
       <RSlider.Root
         className="relative flex h-5 w-full cursor-pointer touch-none select-none items-center"
@@ -86,13 +91,16 @@ export function RangeSlider({ label, value, min, max, step = 1, display, onChang
         onValueChange={([v]) => onChange(v)}
         aria-label={label}
       >
-        <RSlider.Track className="relative h-[3px] grow overflow-hidden rounded-full bg-white/10">
-          <RSlider.Range className="absolute h-full rounded-full bg-gradient-to-r from-gold-dim via-gold to-gold-light" />
+        <RSlider.Track className="relative h-px grow bg-plaster">
+          <RSlider.Range className="absolute h-full bg-ink" />
         </RSlider.Track>
-        <RSlider.Thumb className="block h-4 w-4 rounded-full border-2 border-gold bg-obsidian shadow-gold outline-none transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-gold/50" />
+        <RSlider.Thumb
+          aria-label={label}
+          className="block h-3.5 w-3.5 rounded-full border border-ink bg-paper outline-none transition-transform duration-300 hover:scale-110 focus-visible:ring-4 focus-visible:ring-oak/30"
+        />
       </RSlider.Root>
       {bounds && (
-        <div className="flex justify-between text-[10px] tabular-nums text-slate-500">
+        <div className="caption flex justify-between tabular-nums">
           <span>{bounds[0]}</span>
           <span>{bounds[1]}</span>
         </div>
@@ -107,16 +115,16 @@ interface SegmentedControlProps<T extends string> {
   value: T;
   options: { value: T; label: string; icon?: ReactNode }[];
   onChange: (v: T) => void;
-  /** Unique id so the animated pill doesn't jump between separate controls. */
+  /** Unique id so the sliding indicator doesn't jump between separate controls. */
   layoutId: string;
   size?: "sm" | "md";
   ariaLabel: string;
 }
 
-/** Pill toggle group with a sliding gold indicator. */
+/** Toggle group with a sliding ink indicator. */
 export function SegmentedControl<T extends string>({ value, options, onChange, layoutId, size = "md", ariaLabel }: SegmentedControlProps<T>) {
   return (
-    <div role="radiogroup" aria-label={ariaLabel} className="flex rounded-full border border-white/[0.08] bg-black/30 p-1">
+    <div role="radiogroup" aria-label={ariaLabel} className="flex border border-plaster bg-paper p-0.5">
       {options.map((o) => {
         const active = o.value === value;
         return (
@@ -126,18 +134,12 @@ export function SegmentedControl<T extends string>({ value, options, onChange, l
             aria-checked={active}
             onClick={() => onChange(o.value)}
             className={clsx(
-              "relative flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-medium transition-colors",
+              "relative flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40",
               size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs",
-              active ? "text-obsidian" : "text-slate-400 hover:text-white"
+              active ? "text-paper" : "text-ash hover:text-ink"
             )}
           >
-            {active && (
-              <motion.span
-                layoutId={layoutId}
-                className="absolute inset-0 rounded-full bg-gradient-to-b from-gold-light to-gold"
-                transition={{ type: "spring", stiffness: 420, damping: 34 }}
-              />
-            )}
+            {active && <motion.span layoutId={layoutId} className="absolute inset-0 bg-ink" transition={{ duration: 0.35, ease: EASE }} />}
             <span className="relative flex items-center gap-1.5">
               {o.icon}
               {o.label}
@@ -158,10 +160,10 @@ export function AnimatedValue({ value, className }: { value: string; className?:
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={value}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.18 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.25, ease: EASE }}
           className={className}
         >
           {value}
@@ -178,29 +180,28 @@ interface MetricProps {
   value: string;
   icon?: ReactNode;
   sub?: string;
-  tone?: "default" | "gold" | "positive" | "negative";
+  tone?: "default" | "accent" | "positive" | "negative";
 }
 
 const TONES = {
-  default: { box: "border-white/[0.06] bg-white/[0.02]", text: "text-white" },
-  gold: { box: "border-gold/30 bg-gold/[0.06]", text: "text-gold-metal" },
-  positive: { box: "border-emerald-500/25 bg-emerald-500/[0.06]", text: "text-emerald-400" },
-  negative: { box: "border-rose-500/25 bg-rose-500/[0.06]", text: "text-rose-400" },
+  default: "text-ink",
+  accent: "text-oak",
+  positive: "text-positive",
+  negative: "text-negative",
 };
 
-/** KPI tile with a serif figure. */
+/** KPI tile: small caption, large serif figure. */
 export function Metric({ label, value, icon, sub, tone = "default" }: MetricProps) {
-  const t = TONES[tone];
   return (
-    <div className={clsx("rounded-xl border p-3.5", t.box)}>
-      <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">
+    <div className="border border-plaster bg-stone/40 p-3.5">
+      <div className="caption mb-1 flex items-center gap-1.5">
         {icon}
         {label}
       </div>
-      <div className="font-serif text-[24px] leading-tight tabular-nums">
-        <AnimatedValue value={value} className={t.text} />
+      <div className="font-serif text-[26px] leading-tight tabular-nums">
+        <AnimatedValue value={value} className={TONES[tone]} />
       </div>
-      {sub && <div className="mt-0.5 text-[11px] text-slate-500">{sub}</div>}
+      {sub && <div className="caption mt-0.5">{sub}</div>}
     </div>
   );
 }

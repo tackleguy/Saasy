@@ -14,7 +14,7 @@ import type { Building, BuildingId, SiteMetrics, UnitMixStrategy, YieldInputs, Y
 import { INPUT_RANGES, STRATEGIES } from "@/hooks/useYieldCalculator";
 import { SITE, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum, fmtPct } from "@/lib/format";
-import { GlassCard, Metric, RangeSlider, SegmentedControl } from "./primitives";
+import { Panel, Metric, RangeSlider, SegmentedControl } from "./primitives";
 
 interface Props {
   building: Building;
@@ -42,7 +42,7 @@ export default function FinancialSidebar({ building, inputs, metrics: m, metrics
   return (
     <>
       {/* ---------------------------------------------------- Site */}
-      <GlassCard index={0} eyebrow="The Meridian Quarter" icon={<Landmark size={11} />} title="Site Portfolio">
+      <Panel index={0} kicker="The Meridian Quarter" icon={<Landmark size={11} />} title="Site Portfolio">
         <ul className="space-y-1.5">
           {SITE.map((b) => {
             const bm = metricsById[b.id];
@@ -53,20 +53,20 @@ export default function FinancialSidebar({ building, inputs, metrics: m, metrics
                   onClick={() => onBuildingChange(b.id)}
                   aria-pressed={active}
                   className={clsx(
-                    "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition",
-                    active ? "border-gold/40 bg-gold/[0.07]" : "border-white/[0.06] bg-white/[0.02] hover:border-white/15"
+                    "flex w-full items-center gap-3 rounded-[3px] border px-3 py-2.5 text-left transition",
+                    active ? "border-oak/40 bg-oak/[0.07]" : "border-plaster bg-stone/40 hover:border-plaster"
                   )}
                 >
-                  <span className={clsx("h-2 w-2 shrink-0 rounded-full", active ? "bg-gold" : "bg-slate-600")} />
+                  <span className={clsx("h-2 w-2 shrink-0 rounded-full", active ? "bg-ink" : "bg-plaster")} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-white">{b.name}</span>
-                    <span className="block truncate text-[11px] text-slate-500">
+                    <span className="block truncate text-sm text-ink">{b.name}</span>
+                    <span className="block truncate text-[11px] text-ash/80">
                       {b.floors.length} floors · {fmtNum(bm.totalUnits)} units
                     </span>
                   </span>
                   <span className="text-right">
-                    <span className="block font-serif text-lg tabular-nums leading-tight text-white">{fmtMoney(bm.grossProjectRevenue)}</span>
-                    <span className={clsx("block text-[11px] tabular-nums", bm.grossMarginPct >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                    <span className="block font-serif text-lg tabular-nums leading-tight text-ink">{fmtMoney(bm.grossProjectRevenue)}</span>
+                    <span className={clsx("block text-[11px] tabular-nums", bm.grossMarginPct >= 0 ? "text-positive" : "text-negative")}>
                       {fmtPct(bm.grossMarginPct)} margin
                     </span>
                   </span>
@@ -75,30 +75,30 @@ export default function FinancialSidebar({ building, inputs, metrics: m, metrics
             );
           })}
         </ul>
-        <div className="mt-3 flex items-end justify-between border-t border-white/[0.06] pt-3">
+        <div className="mt-3 flex items-end justify-between border-t border-plaster pt-3">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.14em] text-slate-500">Site total</p>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[10px] text-ash/80">Site total</p>
+            <p className="text-[11px] text-ash/80">
               {site.totalFloors} floors · {fmtNum(site.totalSqFt)} sf · {fmtNum(site.totalUnits)} units
             </p>
           </div>
           <div className="text-right">
-            <p className="font-serif text-2xl tabular-nums leading-tight text-gold-metal">{fmtMoney(site.grossProjectRevenue)}</p>
-            <p className="text-[11px] tabular-nums text-emerald-400">{fmtMoney(site.grossProfit)} profit</p>
+            <p className="font-serif text-2xl tabular-nums leading-tight text-ink">{fmtMoney(site.grossProjectRevenue)}</p>
+            <p className="text-[11px] tabular-nums text-positive">{fmtMoney(site.grossProfit)} profit</p>
           </div>
         </div>
-      </GlassCard>
+      </Panel>
 
       {/* ---------------------------------------------------- Assumptions */}
-      <GlassCard
+      <Panel
         index={1}
-        eyebrow={`Yield Calculator · ${building.short}`}
+        kicker={`Yield Calculator · ${building.short}`}
         icon={<Calculator size={11} />}
         title="Development Inputs"
         action={
           <button
             onClick={onReset}
-            className="flex items-center gap-1 rounded-full border border-white/[0.08] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-slate-400 transition hover:border-gold/40 hover:text-white"
+            className="flex items-center gap-1 rounded-full border border-plaster px-2.5 py-1 text-[10px] text-ash transition hover:border-oak/40 hover:text-ink"
             aria-label="Reset inputs to defaults"
           >
             <RotateCcw size={11} /> Reset
@@ -135,7 +135,7 @@ export default function FinancialSidebar({ building, inputs, metrics: m, metrics
           />
 
           <div className="space-y-2">
-            <span className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+            <span className="flex items-center gap-2 text-[11px] font-medium text-ash">
               <Building2 size={12} /> Unit Mix Strategy
             </span>
             <SegmentedControl
@@ -146,15 +146,15 @@ export default function FinancialSidebar({ building, inputs, metrics: m, metrics
               options={STRATEGY_OPTIONS}
               onChange={(v) => setInput("unitMixStrategy", v)}
             />
-            <p className="text-[11px] leading-relaxed text-slate-500">{STRATEGIES[inputs.unitMixStrategy].description}</p>
+            <p className="text-[11px] leading-relaxed text-ash/80">{STRATEGIES[inputs.unitMixStrategy].description}</p>
           </div>
         </div>
-      </GlassCard>
+      </Panel>
 
       {/* ---------------------------------------------------- KPIs */}
-      <GlassCard index={2} eyebrow={`Live Output · ${building.short}`} icon={<TrendingUp size={11} />} title="Projected Yield">
+      <Panel index={2} kicker={`Live Output · ${building.short}`} icon={<TrendingUp size={11} />} title="Projected Yield">
         <div className="grid grid-cols-2 gap-2.5">
-          <Metric label="Gross Revenue" icon={<TrendingUp size={11} />} value={fmtMoney(m.grossProjectRevenue)} sub="Area × price / sf" tone="gold" />
+          <Metric label="Gross Revenue" icon={<TrendingUp size={11} />} value={fmtMoney(m.grossProjectRevenue)} sub="Area × price / sf" tone="accent" />
           <Metric label="Construction" icon={<Hammer size={11} />} value={fmtMoney(m.totalConstructionCost)} sub="Area × cost / sf" tone="negative" />
           <Metric
             label="Gross Profit"
@@ -175,12 +175,12 @@ export default function FinancialSidebar({ building, inputs, metrics: m, metrics
         {/* Programme mix — share of revenue by zone */}
         <div className="mt-5">
           <div className="mb-2 flex items-baseline justify-between">
-            <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Revenue by Programme</span>
-            <span className="flex items-center gap-1 text-[11px] text-slate-500">
+            <span className="text-[11px] font-medium text-ash">Revenue by Programme</span>
+            <span className="flex items-center gap-1 text-[11px] text-ash/80">
               <Home size={11} /> {fmtNum(m.totalUnits)} units
             </span>
           </div>
-          <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-white/5">
+          <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-stone">
             {m.zones.map((z) => (
               <motion.div
                 key={z.zone}
@@ -196,18 +196,18 @@ export default function FinancialSidebar({ building, inputs, metrics: m, metrics
               <li key={z.zone}>
                 <button
                   onClick={() => onFocusZone(z.zone)}
-                  className="group flex w-full items-center gap-2 rounded-md py-0.5 text-left text-xs text-slate-400 transition hover:text-white"
+                  className="group flex w-full items-center gap-2 rounded-md py-0.5 text-left text-xs text-ash transition hover:text-ink"
                   title={`Fly to ${ZONES[z.zone].label}`}
                 >
                   <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: z.accent }} />
                   <span className="truncate">{z.label}</span>
-                  <span className="ml-auto tabular-nums text-white/80">{fmtPct(z.share * 100, 0)}</span>
+                  <span className="ml-auto tabular-nums text-ink/80">{fmtPct(z.share * 100, 0)}</span>
                 </button>
               </li>
             ))}
           </ul>
         </div>
-      </GlassCard>
+      </Panel>
     </>
   );
 }

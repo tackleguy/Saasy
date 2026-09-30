@@ -13,7 +13,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer,
 import { BarChart3 } from "lucide-react";
 import type { YieldMetrics } from "@/types";
 import { fmtMoney } from "@/lib/format";
-import { GlassCard, SegmentedControl } from "./primitives";
+import { Panel, SegmentedControl } from "./primitives";
 
 type ChartView = "proforma" | "programme";
 
@@ -30,13 +30,13 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: { paylo
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="glass-card rounded-lg px-3 py-2 text-xs shadow-xl">
-      <div className="flex items-center gap-2 text-white">
+    <div className="overlay rounded-[3px] px-3 py-2 text-xs shadow-xl">
+      <div className="flex items-center gap-2 text-ink">
         <span className="h-2 w-2 rounded-full" style={{ background: d.color }} />
         {d.name}
       </div>
-      <div className="mt-0.5 font-serif text-base tabular-nums text-white">{fmtMoney(d.value, false)}</div>
-      <div className="text-slate-500">{d.note}</div>
+      <div className="mt-0.5 font-serif text-base tabular-nums text-ink">{fmtMoney(d.value, false)}</div>
+      <div className="text-ash/80">{d.note}</div>
     </div>
   );
 }
@@ -66,9 +66,9 @@ export default function FinancialChart({ metrics: m, buildingName }: { metrics: 
   const data = view === "proforma" ? proforma : programme;
 
   return (
-    <GlassCard
+    <Panel
       index={3}
-      eyebrow={`Breakdown · ${buildingName}`}
+      kicker={`Breakdown · ${buildingName}`}
       icon={<BarChart3 size={11} />}
       title="Cost vs. Revenue"
       action={
@@ -105,12 +105,12 @@ export default function FinancialChart({ metrics: m, buildingName }: { metrics: 
       </div>
       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
         {data.map((d) => (
-          <span key={d.name} className="flex items-center gap-1.5 text-[11px] text-slate-400">
+          <span key={d.name} className="flex items-center gap-1.5 text-[11px] text-ash">
             <span className="h-2 w-2 rounded-full" style={{ background: d.color }} />
             {d.name}
           </span>
         ))}
       </div>
-    </GlassCard>
+    </Panel>
   );
 }

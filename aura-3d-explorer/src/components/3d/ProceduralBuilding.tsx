@@ -107,10 +107,10 @@ export default function ProceduralBuilding({ building, explosion, active, select
           style={{ pointerEvents: "none" }}
           zIndexRange={[20, 0]}
         >
-          <div className="glass-card whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[11px] text-white">
-            <span className="text-slate-400">{building.short} · </span>
+          <div className="overlay whitespace-nowrap rounded-[3px] px-2.5 py-1.5 text-[11px] text-ink">
+            <span className="text-ash">{building.short} · </span>
             <span className="font-serif text-sm">Floor {hoveredHere.number}</span>
-            <span className="ml-2 text-slate-400">{ZONES[hoveredHere.zone].short}</span>
+            <span className="ml-2 text-ash">{ZONES[hoveredHere.zone].short}</span>
           </div>
         </Html>
       )}
