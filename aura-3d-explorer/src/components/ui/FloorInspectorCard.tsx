@@ -6,7 +6,7 @@
  * its share of the pro forma, and lets the user step up / down the tower.
  */
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Footprints, X } from "lucide-react";
 import type { Building, FloorData, FloorYield } from "@/types";
 import { toMetres, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
@@ -17,6 +17,8 @@ interface Props {
   floorYield: FloorYield | null;
   onClose: () => void;
   onStep: (delta: 1 | -1) => void;
+  /** Enter the first-person walk-through of this floor. */
+  onWalk: () => void;
 }
 
 const MATERIALS = {
@@ -35,7 +37,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   );
 }
 
-export default function FloorInspectorCard({ building, floor, floorYield, onClose, onStep }: Props) {
+export default function FloorInspectorCard({ building, floor, floorYield, onClose, onStep, onWalk }: Props) {
   const floorCount = building.floors.length;
   return (
     <AnimatePresence mode="wait">
@@ -78,7 +80,14 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
 
           <p className="mt-3 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em] text-slate-500">{MATERIALS[floor.zone]}</p>
 
-          <div className="mt-3 flex gap-2">
+          <button
+            onClick={onWalk}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-gold-light to-gold py-2 text-xs font-semibold uppercase tracking-[0.14em] text-obsidian transition hover:brightness-110"
+          >
+            <Footprints size={14} /> Walk inside
+          </button>
+
+          <div className="mt-2 flex gap-2">
             <button
               disabled={floor.index === 0}
               onClick={() => onStep(-1)}

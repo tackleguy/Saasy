@@ -35,12 +35,14 @@ interface Options {
   duration?: number;
   /** Bump this number to force a re-run even if the goal is unchanged (e.g. "Reset view"). */
   nonce?: number;
+  /** While false the rig is idle (e.g. walk mode owns the camera); re-enabling flies back to the goal. */
+  enabled?: boolean;
 }
 
 // Keep tweens time-accurate on slow frames (no GSAP lag-smoothing slow-motion).
 gsap.ticker.lagSmoothing(0);
 
-export function useCameraTween(goal: CameraGoal, { duration = 1.2, nonce = 0 }: Options = {}) {
+export function useCameraTween(goal: CameraGoal, { duration = 1.2, nonce = 0, enabled = true }: Options = {}) {
   const camera = useThree((s) => s.camera);
   const controls = useThree((s) => s.controls) as OrbitControlsImpl | null;
   const tween = useRef<gsap.core.Tween | null>(null);
@@ -52,6 +54,10 @@ export function useCameraTween(goal: CameraGoal, { duration = 1.2, nonce = 0 }: 
 
   useEffect(() => {
     if (!controls) return;
+    if (!enabled) {
+      tween.current?.kill();
+      return;
+    }
     const g = JSON.parse(goalKey) as CameraGoal;
 
     const toTarget = new THREE.Vector3(...g.target);
@@ -86,7 +92,7 @@ export function useCameraTween(goal: CameraGoal, { duration = 1.2, nonce = 0 }: 
     });
     firstRun.current = false;
     lastNonce.current = nonce;
-  }, [goalKey, nonce, controls, camera, duration]);
+  }, [goalKey, nonce, controls, camera, duration, enabled]);
 
   // Clean up on unmount.
   useEffect(() => () => void tween.current?.kill(), []);

@@ -28,6 +28,7 @@ import FinancialSidebar from "@/components/ui/FinancialSidebar";
 import FinancialChart from "@/components/ui/FinancialChart";
 import CommissionModelCard from "@/components/ui/CommissionModelCard";
 import CadUploadModal from "@/components/ui/CadUploadModal";
+import WalkHud from "@/components/ui/WalkHud";
 
 // Three.js needs `window`, so the canvas is never server-rendered.
 const BuildingScene = dynamic(() => import("@/components/3d/BuildingScene"), {
@@ -52,6 +53,10 @@ export default function Page() {
   const [xray, setXray] = useState(false);
   const [resetNonce, setResetNonce] = useState(0);
   const [cadOpen, setCadOpen] = useState(false);
+  // First-person walk-through of the isolated floor
+  const [walking, setWalking] = useState(false);
+  const [viewIndex, setViewIndex] = useState(0);
+  const [viewNonce, setViewNonce] = useState(0);
 
   const building = getBuilding(activeBuildingId);
   const inputs = inputsById[activeBuildingId];
@@ -77,6 +82,21 @@ export default function Page() {
     },
     [building]
   );
+
+  const startWalk = useCallback(() => {
+    setViewIndex(0);
+    setViewNonce((n) => n + 1);
+    setWalking(true);
+  }, []);
+  const goToView = useCallback((i: number) => {
+    setViewIndex(i);
+    setViewNonce((n) => n + 1);
+  }, []);
+
+  // Walking needs an isolated floor; leaving the floor ends the walk.
+  useEffect(() => {
+    if (selectedIndex === null) setWalking(false);
+  }, [selectedIndex]);
 
   /** Switch the active building (keeps the explosion, clears the selection). */
   const selectBuilding = useCallback((id: BuildingId) => {
@@ -118,9 +138,14 @@ export default function Page() {
   }, []);
 
   // Keyboard: Esc releases the floor, ↑ / ↓ step through the active tower.
+  // While walking, arrows move the walker and Esc exits the walk-through.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (cadOpen) return;
+      if (walking) {
+        if (e.key === "Escape") setWalking(false);
+        return;
+      }
       const el = e.target as HTMLElement;
       if (el.closest("input, textarea, [role='slider'], [role='radio']")) return;
       if (e.key === "Escape") setSelectedIndex(null);
@@ -132,7 +157,7 @@ export default function Page() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [cadOpen, floorCount]);
+  }, [cadOpen, floorCount, walking]);
 
   return (
     <div className="flex min-h-dvh flex-col bg-obsidian lg:h-dvh lg:overflow-hidden">
@@ -157,26 +182,37 @@ export default function Page() {
             xray={xray}
             onSelect={handleSceneSelect}
             resetNonce={resetNonce}
+            walking={walking}
+            viewIndex={viewIndex}
+            viewNonce={viewNonce}
           />
-          <ViewportHud
-            building={building}
-            onBuildingChange={selectBuilding}
-            explosion={explosion}
-            onExplosionChange={setExplosion}
-            xray={xray}
-            onXrayChange={setXray}
-            onResetView={resetView}
-            onFocusZone={focusZone}
-            selectedZone={selectedFloor?.zone ?? null}
-            showBuildingTabs={selectedIndex === null}
-          />
-          <FloorInspectorCard
-            building={building}
-            floor={selectedFloor}
-            floorYield={selectedIndex !== null ? metrics.floors[selectedIndex] : null}
-            onClose={() => setSelectedIndex(null)}
-            onStep={stepFloor}
-          />
+          {walking && selectedFloor ? (
+            <WalkHud building={building} floor={selectedFloor} viewIndex={viewIndex} onView={goToView} onExit={() => setWalking(false)} />
+          ) : (
+            <>
+              <ViewportHud
+                building={building}
+                onBuildingChange={selectBuilding}
+                explosion={explosion}
+                onExplosionChange={setExplosion}
+                xray={xray}
+                onXrayChange={setXray}
+                onResetView={resetView}
+                onFocusZone={focusZone}
+                selectedZone={selectedFloor?.zone ?? null}
+                showBuildingTabs={selectedIndex === null}
+                onWalk={selectedIndex !== null ? startWalk : undefined}
+              />
+              <FloorInspectorCard
+                building={building}
+                floor={selectedFloor}
+                floorYield={selectedIndex !== null ? metrics.floors[selectedIndex] : null}
+                onClose={() => setSelectedIndex(null)}
+                onStep={stepFloor}
+                onWalk={startWalk}
+              />
+            </>
+          )}
         </section>
 
         {/* ------------------------------------------------ Sidebar (32%) */}

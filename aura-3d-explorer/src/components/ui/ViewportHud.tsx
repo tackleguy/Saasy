@@ -5,7 +5,7 @@
  * the zone legend for the active building.
  */
 import { AnimatePresence, motion } from "framer-motion";
-import { Expand, RotateCcw, ScanEye } from "lucide-react";
+import { Expand, Footprints, RotateCcw, ScanEye } from "lucide-react";
 import clsx from "clsx";
 import type { Building, BuildingId, ZoneId } from "@/types";
 import { EXPLODE_MAX, EXPLODE_MIN, SITE, ZONE_ORDER, ZONES } from "@/lib/tower";
@@ -23,6 +23,8 @@ interface Props {
   selectedZone: ZoneId | null;
   /** Hidden while a floor is isolated (the inspector takes the space). */
   showBuildingTabs: boolean;
+  /** Present when a floor is isolated: enter the walk-through. */
+  onWalk?: () => void;
 }
 
 export default function ViewportHud({
@@ -36,6 +38,7 @@ export default function ViewportHud({
   onFocusZone,
   selectedZone,
   showBuildingTabs,
+  onWalk,
 }: Props) {
   return (
     <>
@@ -77,7 +80,7 @@ export default function ViewportHud({
                 );
               })}
             </div>
-            <p className="hidden text-[11px] text-slate-500 sm:block">{building.tagline} · click any floor to isolate it</p>
+            <p className="glass-card hidden rounded-full px-3 py-1 text-[11px] text-slate-400 sm:block">{building.tagline} · click any floor to isolate it</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -128,6 +131,14 @@ export default function ViewportHud({
             onChange={onExplosionChange}
           />
         </div>
+        {onWalk && (
+          <button
+            onClick={onWalk}
+            className="flex shrink-0 items-center gap-1.5 self-end rounded-lg bg-gradient-to-b from-gold-light to-gold px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-obsidian transition hover:brightness-110"
+          >
+            <Footprints size={13} /> <span className="hidden sm:inline">Walk in</span>
+          </button>
+        )}
         <button
           onClick={() => onXrayChange(!xray)}
           aria-pressed={xray}

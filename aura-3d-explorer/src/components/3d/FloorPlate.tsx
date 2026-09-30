@@ -8,6 +8,8 @@
  *   • Slab     — thin brushed-aluminium plate that reads as the edge trim.
  *   • Body     — the floor volume in its zone material (basalt / glass).
  *   • Edges    — crisp outline + vertical curtain-wall mullions.
+ *   • Ceiling  — warm lit ceiling that glows through the glass at dusk, and
+ *                forms the ceiling when walking through the floor.
  *   • Extras   — warm light and glow in crown penthouses.
  *   • Interior — floor finish + real furniture, mounted only when isolated.
  *
@@ -15,7 +17,7 @@
  * X-ray) is eased per frame with frame-rate-independent damping, so
  * transitions stay smooth at 60 FPS without React re-renders.
  */
-import { useMemo, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 import * as THREE from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { FloorData, ZoneId } from "@/types";
@@ -137,11 +139,13 @@ interface Props {
   hovered: boolean;
   /** X-ray mode: facades fade so the cores read through the whole site. */
   xray: boolean;
+  /** First-person walk-through of this (selected) floor. */
+  walking: boolean;
   onSelect: (floor: FloorData) => void;
   onHover: (floor: FloorData | null) => void;
 }
 
-export default function FloorPlate({ floor, explosion, coreSize, selected, dimmed, hovered, xray, onSelect, onHover }: Props) {
+export default function FloorPlate({ floor, explosion, coreSize, selected, dimmed, hovered, xray, walking, onSelect, onHover }: Props) {
   const look = LOOKS[floor.zone];
   const bodyH = floor.height - SLAB_THICKNESS;
   const doorH = Math.min(bodyH * 0.8, 0.62);
@@ -156,6 +160,16 @@ export default function FloorPlate({ floor, explosion, coreSize, selected, dimme
   const doorMat = useRef<THREE.MeshStandardMaterial>(null);
   const glowMat = useRef<THREE.MeshStandardMaterial>(null);
   const light = useRef<THREE.PointLight>(null);
+  const ceilMat = useRef<THREE.MeshStandardMaterial>(null);
+  const ceilMesh = useRef<THREE.Mesh>(null);
+
+  // Seen from inside while walking, the glazing must render its back faces.
+  useEffect(() => {
+    const m = bodyMat.current;
+    if (!m) return;
+    m.side = walking ? THREE.DoubleSide : THREE.FrontSide;
+    m.needsUpdate = true;
+  }, [walking]);
 
   const edgeIdle = useMemo(() => new THREE.Color(look.edgeColor), [look.edgeColor]);
   const edges = edgeGeometry(floor.width, floor.depth, bodyH);
@@ -176,6 +190,7 @@ export default function FloorPlate({ floor, explosion, coreSize, selected, dimme
     if (body) {
       let target = look.opacity;
       if (dimmed) target = DIMMED_OPACITY * (look.opacity < 1 ? 0.6 : 1);
+      else if (walking) target = 0.1; // faint glazing seen from inside
       else if (selected) target = 0.12; // open the facade to reveal the interior
       else if (xray) target = XRAY_OPACITY;
       body.opacity = lerp(body.opacity, target, k);
@@ -195,7 +210,17 @@ export default function FloorPlate({ floor, explosion, coreSize, selected, dimme
       edgeMat.current.color.lerp(selected || hovered ? GOLD : edgeIdle, k);
       edgeMat.current.opacity = lerp(edgeMat.current.opacity, dimmed ? DIMMED_OPACITY : xray ? 0.35 : 0.9, k);
     }
-    if (mullionMat.current) mullionMat.current.opacity = lerp(mullionMat.current.opacity, dimmed || xray || selected ? 0.04 : 0.35, k);
+    const mullionTarget = walking ? 0.6 : dimmed || xray || selected ? 0.04 : 0.35; // window frames when inside
+    if (mullionMat.current) mullionMat.current.opacity = lerp(mullionMat.current.opacity, mullionTarget, k);
+    if (ceilMat.current && ceilMesh.current) {
+      const target = selected ? (walking ? 1 : 0) : dimmed || xray ? 0.04 : 0.55;
+      ceilMat.current.opacity = lerp(ceilMat.current.opacity, target, k);
+      ceilMat.current.depthWrite = ceilMat.current.opacity > 0.95;
+      ceilMesh.current.visible = ceilMat.current.opacity > 0.01;
+      // Softer, neutral ceiling when seen from inside
+      const glow = walking ? 0.08 : floor.zone === "office" ? 0.35 : 0.45;
+      ceilMat.current.emissiveIntensity = lerp(ceilMat.current.emissiveIntensity, glow, k);
+    }
     if (coreMat.current) {
       coreMat.current.opacity = lerp(coreMat.current.opacity, dimmed ? DIMMED_OPACITY : 1, k);
       coreMat.current.depthWrite = coreMat.current.opacity > 0.95;
@@ -282,6 +307,22 @@ export default function FloorPlate({ floor, explosion, coreSize, selected, dimme
         <lineSegments geometry={mullions} raycast={() => null}>
           <lineBasicMaterial ref={mullionMat} color={look.edgeColor} transparent opacity={0.35} depthWrite={false} />
         </lineSegments>
+
+        {/* Warm lit ceiling */}
+        <mesh ref={ceilMesh} rotation-x={Math.PI / 2} position={[0, floor.height - 0.004, 0]} raycast={() => null}>
+          <planeGeometry args={[floor.width - 0.02, floor.depth - 0.02]} />
+          <meshStandardMaterial
+            ref={ceilMat}
+            color="#f2ede4"
+            roughness={0.9}
+            emissive={floor.zone === "office" ? "#dfe9ff" : "#ffd29a"}
+            emissiveIntensity={floor.zone === "office" ? 0.35 : 0.45}
+            side={THREE.DoubleSide}
+            transparent
+            opacity={0.55}
+            depthWrite={false}
+          />
+        </mesh>
 
         {/* Crown: warm golden interior */}
         {floor.zone === "crown" && (

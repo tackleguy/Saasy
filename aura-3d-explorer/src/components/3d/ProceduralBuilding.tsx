@@ -24,6 +24,8 @@ interface Props {
   selectedIndex: number | null;
   hovered: FloorData | null;
   xray: boolean;
+  /** Walk-through active on this building's selected floor. */
+  walking: boolean;
   onSelect: (floor: FloorData) => void;
   onHover: (floor: FloorData | null) => void;
 }
@@ -71,7 +73,7 @@ function ActiveRing({ radius, active }: { radius: number; active: boolean }) {
   );
 }
 
-export default function ProceduralBuilding({ building, explosion, active, selectedIndex, hovered, xray, onSelect, onHover }: Props) {
+export default function ProceduralBuilding({ building, explosion, active, selectedIndex, hovered, xray, walking, onSelect, onHover }: Props) {
   const floors = building.floors;
   const top = floors[floors.length - 1];
   const podium = floors[0];
@@ -89,6 +91,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
           dimmed={selectedIndex !== null && selectedIndex !== floor.index}
           hovered={hovered?.buildingId === building.id && hovered.index === floor.index}
           xray={xray}
+          walking={walking && selectedIndex === floor.index}
           onSelect={onSelect}
           onHover={onHover}
         />
@@ -98,7 +101,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
       <ActiveRing radius={Math.hypot(podium.width, podium.depth) / 2 + 1.5} active={active} />
 
       {/* Hover label pinned beside the hovered floor */}
-      {hoveredHere && (
+      {hoveredHere && !walking && (
         <Html
           position={[hoveredHere.width / 2 + 0.8, explodedY(hoveredHere, explosion) + hoveredHere.height / 2, 0]}
           style={{ pointerEvents: "none" }}

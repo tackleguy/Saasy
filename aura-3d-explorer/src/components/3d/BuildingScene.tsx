@@ -20,6 +20,8 @@ import { buildingHeight, floorCentre, getBuilding, SITE } from "@/lib/tower";
 import { useCameraTween, type CameraGoal, type Vec3 } from "@/hooks/useCameraTween";
 import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
+import CityContext from "./CityContext";
+import WalkControls from "./WalkControls";
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
 export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
@@ -36,10 +38,15 @@ interface Props {
   onSelect: (floor: FloorData | null) => void;
   /** Increment to snap back to the default overview angle. */
   resetNonce: number;
+  /** First-person walk-through of the selected floor. */
+  walking: boolean;
+  /** Curated viewpoint to glide to while walking. */
+  viewIndex: number;
+  viewNonce: number;
 }
 
 /** Translates app state into a camera goal and hands it to the GSAP tween hook. */
-function CameraRig({ activeBuildingId, explosion, selectedIndex, resetNonce }: Pick<Props, "activeBuildingId" | "explosion" | "selectedIndex" | "resetNonce">) {
+function CameraRig({ activeBuildingId, explosion, selectedIndex, resetNonce, walking }: Pick<Props, "activeBuildingId" | "explosion" | "selectedIndex" | "resetNonce" | "walking">) {
   const building = getBuilding(activeBuildingId);
   let goal: CameraGoal;
   if (selectedIndex !== null) {
@@ -54,21 +61,22 @@ function CameraRig({ activeBuildingId, explosion, selectedIndex, resetNonce }: P
       resetDirection: OVERVIEW_DIRECTION,
     };
   }
-  useCameraTween(goal, { nonce: resetNonce });
+  useCameraTween(goal, { nonce: resetNonce, enabled: !walking });
   return null;
 }
 
-export default function BuildingScene({ activeBuildingId, explosion, selectedIndex, xray, onSelect, resetNonce }: Props) {
+export default function BuildingScene({ activeBuildingId, explosion, selectedIndex, xray, onSelect, resetNonce, walking, viewIndex, viewNonce }: Props) {
   const [hovered, setHovered] = useState<FloorData | null>(null);
   const [dpr, setDpr] = useState(1.5);
 
   // Clicking the selected floor again releases it.
   const handleSelect = useCallback(
     (floor: FloorData) => {
+      if (walking) return; // clicks while walking are look-drags, not selections
       const same = floor.buildingId === activeBuildingId && floor.index === selectedIndex;
       onSelect(same ? null : floor);
     },
-    [onSelect, activeBuildingId, selectedIndex]
+    [onSelect, activeBuildingId, selectedIndex, walking]
   );
 
   return (
@@ -77,7 +85,7 @@ export default function BuildingScene({ activeBuildingId, explosion, selectedInd
       dpr={dpr}
       camera={{ position: [60, 36, 60], fov: 40, near: 0.1, far: 1200 }}
       gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, powerPreference: "high-performance" }}
-      onPointerMissed={() => onSelect(null)}
+      onPointerMissed={() => !walking && onSelect(null)}
       className="!absolute inset-0"
     >
       {/* Drop resolution on slow GPUs to hold 60 FPS, raise it on fast ones */}
@@ -85,6 +93,7 @@ export default function BuildingScene({ activeBuildingId, explosion, selectedInd
       <AdaptiveDpr pixelated={false} />
 
       <LightingEnvironment />
+      <CityContext />
       {SITE.map((b) => {
         const active = b.id === activeBuildingId;
         return (
@@ -96,14 +105,24 @@ export default function BuildingScene({ activeBuildingId, explosion, selectedInd
             selectedIndex={active ? selectedIndex : null}
             hovered={hovered}
             xray={xray}
+            walking={walking && active}
             onSelect={handleSelect}
             onHover={setHovered}
           />
         );
       })}
 
-      <OrbitControls makeDefault enableDamping dampingFactor={0.08} minDistance={6} maxDistance={260} maxPolarAngle={Math.PI / 2.05} />
-      <CameraRig activeBuildingId={activeBuildingId} explosion={explosion} selectedIndex={selectedIndex} resetNonce={resetNonce} />
+      {walking && selectedIndex !== null && (
+        <WalkControls
+          building={getBuilding(activeBuildingId)}
+          floor={getBuilding(activeBuildingId).floors[selectedIndex]}
+          explosion={explosion}
+          viewIndex={viewIndex}
+          viewNonce={viewNonce}
+        />
+      )}
+      <OrbitControls enabled={!walking} makeDefault enableDamping dampingFactor={0.08} minDistance={6} maxDistance={260} maxPolarAngle={Math.PI / 2.05} />
+      <CameraRig activeBuildingId={activeBuildingId} explosion={explosion} selectedIndex={selectedIndex} resetNonce={resetNonce} walking={walking} />
     </Canvas>
   );
 }

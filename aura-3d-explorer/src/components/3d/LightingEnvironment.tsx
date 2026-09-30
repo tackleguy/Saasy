@@ -13,7 +13,8 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { ContactShadows, Environment, Lightformer } from "@react-three/drei";
 
-const BG = "#090a0f";
+/** Scene background / fog colour — a deep dusk blue that melts into the sky horizon. */
+const BG = "#0e1320";
 
 /** Large inverted sphere shaded with a vertical obsidian → blue-slate gradient + gold horizon haze. */
 function SkyDome() {
@@ -24,9 +25,9 @@ function SkyDome() {
         depthWrite: false,
         fog: false,
         uniforms: {
-          top: { value: new THREE.Color("#0b1020") },
+          top: { value: new THREE.Color("#0c1630") },
           bottom: { value: new THREE.Color(BG) },
-          haze: { value: new THREE.Color("#3a2f14") },
+          haze: { value: new THREE.Color("#b0703c") },
         },
         vertexShader: /* glsl */ `
           varying vec3 vWorld;
@@ -39,8 +40,9 @@ function SkyDome() {
           varying vec3 vWorld;
           void main() {
             float h = vWorld.y;
-            vec3 col = mix(bottom, top, smoothstep(-0.05, 0.6, h));
-            col += haze * exp(-abs(h) * 14.0) * 0.55;   // warm glow on the horizon
+            vec3 col = mix(bottom, top, smoothstep(-0.02, 0.55, h));
+            col += vec3(0.05, 0.08, 0.16) * smoothstep(0.0, 0.25, h) * (1.0 - smoothstep(0.25, 0.8, h)); // dusk blue band
+            col += haze * exp(-abs(h) * 11.0) * 0.5;   // warm sunset glow on the horizon
             gl_FragColor = vec4(col, 1.0);
           }`,
       }),
@@ -57,11 +59,11 @@ export default function LightingEnvironment() {
   return (
     <>
       <color attach="background" args={[BG]} />
-      <fog attach="fog" args={[BG, 70, 220]} />
+      <fog attach="fog" args={[BG, 110, 430]} />
       <SkyDome />
 
       {/* Soft ambient fill */}
-      <hemisphereLight args={["#c8d2e0", "#090a0f", 0.5]} />
+      <hemisphereLight args={["#aebfdc", "#0e1320", 0.6]} />
 
       {/* Warm key light with soft shadows */}
       <directionalLight
