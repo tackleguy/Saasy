@@ -1,38 +1,42 @@
 "use client";
 /**
- * CadUploadModal — drag-and-drop CAD ingestion with a simulated pipeline.
+ * CadUploadModal — drag-and-drop CAD / 3D model import.
  * -----------------------------------------------------------------------------
- * Accepts .stl, .dwg and .dxf. Dropping a file runs a 4-stage ingestion
- * pipeline with animated progress bars and a live status terminal:
+ * Accepts .stl, .obj, .glb/.gltf (single file), .fbx, .dxf and .dwg. The file
+ * is read entirely in the browser, then a 4-stage pipeline plays with
+ * progress bars and a status terminal that prints what was actually found:
  *
- *   1.  0 – 25%  Parsing CAD Layer Vectors & Mesh Topologies…
- *   2. 25 – 55%  Extracting Floor Boundaries & Structural Cores…
- *   3. 55 – 85%  Generating Procedural Furniture Grids & Spatial Volumes…
- *   4. 85 – 100% Compiling WebGL glTF Scene & Linking Financial Pro Forma…
+ *   1.  0 – 25%  Parsing geometry — format facts from `parseCadFile`
+ *   2. 25 – 55%  Normalising — up axis, detected units, scale, height,
+ *                storeys, triangles (`normalizeImport`, lib/importNormalize)
+ *   3. 55 – 85%  Archviz materials — plaster / glass split, edge overlay
+ *                (`applyArchMaterials`)
+ *   4. 85 – 100% Placing on the active building's plot
  *
- * Stage 1 is partly real: `parseCadFile` reads the file locally (STL
- * triangles/bounds, DXF entities/layers, DWG release) and those facts are
- * streamed into the terminal. Stages 2–4 are a scripted simulation.
- * Nothing leaves the browser.
+ * The work itself is done up-front; the stage timing only paces the reveal.
+ * `onComplete(model)` hands the normalised Object3D (or null for DWG / 2D-only
+ * DXF) to the explorer. Nothing leaves the browser.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, CheckCircle2, FileBox, Sparkles, Terminal, UploadCloud, X } from "lucide-react";
 import clsx from "clsx";
+import type { Object3D } from "three";
 import type { Building, IngestionStage, YieldInputs } from "@/types";
 import { ACCEPTED, makeSampleStl, parseCadFile, type CadReport } from "@/lib/cadParser";
+import { applyArchMaterials, normalizeImport, type MaterialReport, type NormalizeReport } from "@/lib/importNormalize";
 import { fmtNum } from "@/lib/format";
 
 export const INGESTION_STAGES: IngestionStage[] = [
-  { label: "Parsing CAD Layer Vectors & Mesh Topologies...", from: 0, to: 25 },
-  { label: "Extracting Floor Boundaries & Structural Cores...", from: 25, to: 55 },
-  { label: "Generating Procedural Furniture Grids & Spatial Volumes...", from: 55, to: 85 },
-  { label: "Compiling WebGL glTF Scene & Linking Financial Pro Forma...", from: 85, to: 100 },
+  { label: "Parsing geometry & mesh topology...", from: 0, to: 25 },
+  { label: "Normalising up-axis, units & scale...", from: 25, to: 55 },
+  { label: "Applying architectural materials...", from: 55, to: 85 },
+  { label: "Placing on site & linking pro forma...", from: 85, to: 100 },
 ];
 
-/** Wall-clock duration of each stage, ms. */
-const STAGE_MS = [1700, 2100, 1900, 1500];
+/** Wall-clock duration of each stage, ms (paces the reveal; the work is already done). */
+const STAGE_MS = [1300, 1600, 1300, 1000];
 
 type Phase = "idle" | "running" | "done" | "error";
 
@@ -50,37 +54,80 @@ interface ScriptLine {
   tone: TerminalLine["tone"];
 }
 
-/** Build the terminal script for a parsed file. */
-function buildScript(report: CadReport, inputs: YieldInputs, building: Building): ScriptLine[] {
+const fmtM = (m: number) => (m >= 100 ? m.toFixed(0) : m.toFixed(1));
+
+/** Build the terminal script from what the parser / normaliser actually found. */
+function buildScript(
+  report: CadReport,
+  norm: NormalizeReport | null,
+  mats: MaterialReport | null,
+  inputs: YieldInputs,
+  building: Building
+): ScriptLine[] {
   const floors = building.floors.length;
-  const officeFloors = building.floors.filter((f) => f.zone === "office").length;
-  const resiFloors = building.floors.filter((f) => f.zone === "residential").length;
-  return [
+  const lines: ScriptLine[] = [
     { stage: 0, at: 0, text: `aura ingest ./${report.fileName}`, tone: "cmd" },
     { stage: 0, at: 0.15, text: `Format ${report.format} · ${report.sizeKb.toFixed(1)} KB · decoded locally`, tone: "info" },
-    ...report.facts.map((f, i) => ({ stage: 0, at: 0.35 + i * 0.15, text: `${f.label}: ${f.value}`, tone: "ok" as const })),
-    { stage: 1, at: 0.1, text: "Slicing volume on Z-axis at storey intervals", tone: "info" },
-    {
-      stage: 1,
-      at: 0.45,
-      text: report.estimatedFloors
-        ? `Model suggests ~${report.estimatedFloors} storeys → mapped to ${building.name} (${floors} floors)`
-        : `Mapped geometry to ${building.name} (${floors} floors)`,
-      tone: "ok",
-    },
-    { stage: 1, at: 0.75, text: "Lift & stair core located · 4 zones classified (podium / office / residential / crown)", tone: "ok" },
-    { stage: 2, at: 0.1, text: `Office fit-out: desk clusters, conference suite, kitchen × ${officeFloors} floors`, tone: "info" },
-    { stage: 2, at: 0.45, text: `Residential fit-out: 4 apartments (living, kitchen, dining, bedroom) × ${resiFloors} floors`, tone: "info" },
-    { stage: 2, at: 0.8, text: `Spatial volumes computed · twist ${building.twistDeg}°/floor applied`, tone: "ok" },
-    { stage: 3, at: 0.1, text: `glTF scene compiled · ${floors} nodes · 4 PBR materials`, tone: "ok" },
+    ...report.facts.map((f, i) => ({ stage: 0, at: 0.3 + i * 0.12, text: `${f.label}: ${f.value}`, tone: "ok" as const })),
+  ];
+
+  if (norm && mats) {
+    const scaleTxt = norm.scale >= 0.01 ? norm.scale.toFixed(3) : norm.scale.toExponential(2);
+    lines.push(
+      {
+        stage: 1,
+        at: 0.1,
+        text: norm.upAxis === "Z" ? `Up axis: Z-up (${norm.upSource}) → rotated −90° about X to Y-up` : `Up axis: Y-up (${norm.upSource}) · no rotation`,
+        tone: "ok",
+      },
+      {
+        stage: 1,
+        at: 0.3,
+        text: `Units: ${norm.unitsLabel} (${norm.metresPerUnit} m/unit) → scale ×${scaleTxt} (1 unit ≈ 3.57 m)`,
+        tone: norm.units === "unitless" ? "warn" : "ok",
+      },
+      ...(norm.units === "unitless"
+        ? [{ stage: 1, at: 0.4, text: "Height outside 10–400 m in any unit — fitted to 60 m as a massing study", tone: "warn" as const }]
+        : []),
+      {
+        stage: 1,
+        at: 0.55,
+        text: `Height ${fmtM(norm.heightM)} m · footprint ${fmtM(norm.footprintM[0])} × ${fmtM(norm.footprintM[1])} m · ≈${norm.storeys} storeys @ 3.5 m`,
+        tone: "ok",
+      },
+      { stage: 1, at: 0.75, text: `${norm.triangles.toLocaleString()} triangles · ${norm.meshes} meshes · centred on plot, base at grade`, tone: "info" },
+      {
+        stage: 2,
+        at: 0.15,
+        text: `Plaster (warm white, r 0.75) → ${mats.plaster} mesh${mats.plaster === 1 ? "" : "es"} · glazing → ${mats.glass}`,
+        tone: "ok",
+      },
+      {
+        stage: 2,
+        at: 0.5,
+        text: mats.edges ? `Edge overlay: ${Math.round(mats.edgeSegments).toLocaleString()} segments at 30° crease` : "Edge overlay skipped (mesh too heavy)",
+        tone: mats.edges ? "ok" : "info",
+      },
+      { stage: 2, at: 0.8, text: "Cast + receive shadows enabled", tone: "info" },
+      { stage: 3, at: 0.1, text: `Placed on ${building.name} plot · replaces procedural massing (${floors} floors)`, tone: "ok" }
+    );
+  } else {
+    lines.push(
+      { stage: 1, at: 0.2, text: "No 3D geometry in this file — nothing to normalise", tone: "warn" },
+      { stage: 2, at: 0.2, text: "Materials skipped", tone: "info" },
+      { stage: 3, at: 0.1, text: `Keeping the procedural massing of ${building.name} (${floors} floors)`, tone: "info" }
+    );
+  }
+  lines.push(
     {
       stage: 3,
       at: 0.55,
       text: `Pro forma linked · ${fmtNum(inputs.totalBuildableSqFt)} sf · hard cost $${fmtNum(inputs.hardCostPerSqFt)}/sf · ${inputs.ltcPct}% LTC`,
       tone: "ok",
     },
-    { stage: 3, at: 0.95, text: "Ingestion complete ✓", tone: "ok" },
-  ];
+    { stage: 3, at: 0.95, text: "Ingestion complete ✓", tone: "ok" }
+  );
+  return lines;
 }
 
 /** Progress (0–100) → per-stage completion (0–1). */
@@ -95,8 +142,8 @@ interface Props {
   inputs: YieldInputs;
   /** Building the model is mapped onto. */
   building: Building;
-  /** Called when the user opens the ingested model in the explorer. */
-  onComplete: () => void;
+  /** Called when the user opens the import in the explorer, with the normalised model (null if the file had no 3D geometry). */
+  onComplete: (model: Object3D | null) => void;
 }
 
 export default function CadUploadModal({ open, onOpenChange, inputs, building, onComplete }: Props) {
@@ -111,6 +158,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
   const terminalRef = useRef<HTMLDivElement>(null);
   const raf = useRef<number | null>(null);
   const runId = useRef(0);
+  const modelRef = useRef<Object3D | null>(null);
 
   /** Cancel any running pipeline animation. */
   const cancel = useCallback(() => {
@@ -126,6 +174,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
     setLines([]);
     setFileName(null);
     setError(null);
+    modelRef.current = null;
   }, [cancel]);
 
   // Reset shortly after closing (after the exit animation) and on unmount.
@@ -171,8 +220,26 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
       }
       if (id !== runId.current) return; // superseded or closed
 
+      // Normalise + dress the geometry now; the stages below just reveal the facts.
+      let norm: NormalizeReport | null = null;
+      let mats: MaterialReport | null = null;
+      modelRef.current = null;
+      if (report.model) {
+        try {
+          const n = normalizeImport(report.model, { upHint: report.upHint, metresPerUnit: report.metresPerUnit });
+          mats = applyArchMaterials(n.root);
+          norm = n.report;
+          n.root.userData.fileName = report.fileName;
+          modelRef.current = n.root;
+        } catch (e) {
+          setPhase("error");
+          setError(`Parsed the file but could not prepare its geometry: ${e instanceof Error ? e.message : String(e)}`);
+          return;
+        }
+      }
+
       // Drive progress + terminal output from a single rAF clock.
-      const script = buildScript(report, inputs, building);
+      const script = buildScript(report, norm, mats, inputs, building);
       const totalMs = STAGE_MS.reduce((a, b) => a + b, 0);
       let printed = 0;
       let lineId = 0;
@@ -252,7 +319,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                       <p className="caption mb-1 text-oak">Automated Ingestion</p>
                       <Dialog.Title className="font-serif text-3xl text-ink">Import CAD Model</Dialog.Title>
                       <Dialog.Description id="cad-desc" className="mt-1 text-sm text-ash">
-                        Drop a massing model and AURA parses it into floor plates, furniture grids and a live pro forma.
+                        Drop a massing or BIM export. AURA reads it in your browser, fixes axis and units, dresses it in archviz materials and stands it on the site.
                       </Dialog.Description>
                     </div>
                     <Dialog.Close className="rounded-full p-1.5 text-ash transition hover:bg-stone hover:text-ink" aria-label="Close">
@@ -297,7 +364,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                           <UploadCloud className="mb-3 text-oak" size={34} />
                         </motion.div>
                         <p className="text-sm text-ink">Drag & drop your CAD file, or click to browse</p>
-                        <div className="mt-3 flex gap-1.5">
+                        <div className="mt-3 flex flex-wrap justify-center gap-1.5">
                           {ACCEPTED.map((ext) => (
                             <span key={ext} className="rounded-md border border-plaster bg-stone/50 px-2 py-0.5 font-mono text-[11px] text-ash">
                               {ext}
@@ -407,8 +474,10 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                             <div className="flex items-center gap-2.5">
                               <CheckCircle2 size={22} className="shrink-0 text-positive" />
                               <div>
-                                <p className="text-sm text-ink">Model ready</p>
-                                <p className="text-xs text-ash">Linked to the live pro forma.</p>
+                                <p className="text-sm text-ink">{modelRef.current ? "Model ready" : "Report ready"}</p>
+                                <p className="text-xs text-ash">
+                                  {modelRef.current ? `Stands on the ${building.short} plot.` : "No 3D geometry — procedural massing kept."}
+                                </p>
                               </div>
                             </div>
                             <div className="flex gap-2 sm:ml-auto">
@@ -419,7 +488,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                                 Ingest another
                               </button>
                               <button
-                                onClick={onComplete}
+                                onClick={() => onComplete(modelRef.current)}
                                 className="rounded-[3px] bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:brightness-110"
                               >
                                 Open in Explorer
@@ -432,7 +501,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                   )}
 
                   <p className="mt-5 text-center text-[10px] text-ash">
-                    Files are read locally · geometry reconstruction is a simulated preview
+                    Files are read locally · single-file .glb / embedded .gltf · DWG reads the header only
                   </p>
                 </motion.div>
               </Dialog.Content>

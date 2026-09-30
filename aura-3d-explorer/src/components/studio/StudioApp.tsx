@@ -13,6 +13,9 @@
  * One building is "active" at a time: it explodes, its floors can be
  * isolated, and the sidebar edits its pro forma. On small screens the panes
  * stack: viewport on top, cards below.
+ *
+ * "Import CAD" opens CadUploadModal; a model with geometry replaces the
+ * active building's procedural tower (see useExplorer.setImportedModel).
  */
 import { useState } from "react";
 import dynamic from "next/dynamic";
@@ -32,14 +35,14 @@ import StudioToolbar from "./StudioToolbar";
 import ScenarioDrawer from "./ScenarioDrawer";
 import ProFormaReport from "./ProFormaReport";
 
-// The CAD modal pulls in Three's STL loader — load it only when first opened.
+// The CAD modal pulls in Three's model loaders — load it only when first opened.
 const CadUploadModal = dynamic(() => import("@/components/ui/CadUploadModal"), { ssr: false });
 
 export default function StudioApp({ project }: { project: Project }) {
   const siteBuildings = projectSite(project);
   const [cadOpen, setCadOpen] = useState(false);
   const yieldCalc = useYieldCalculator(siteBuildings, project.finance);
-  const x = useExplorer(siteBuildings, { keyboard: true, keyboardPaused: cadOpen });
+  const x = useExplorer(siteBuildings, { keyboard: true, keyboardPaused: cadOpen, city: project.backdrop });
 
   const building = x.building;
   const inputs = yieldCalc.inputsById[building.id];
@@ -119,9 +122,15 @@ export default function StudioApp({ project }: { project: Project }) {
           onOpenChange={setCadOpen}
           inputs={inputs}
           building={building}
-          onComplete={() => {
+          onComplete={(model) => {
             setCadOpen(false);
-            x.reveal();
+            if (model) {
+              // Stand the import on the active plot and fly the hero camera to it.
+              x.setImportedModel(model);
+              x.resetView();
+            } else {
+              x.reveal();
+            }
           }}
         />
       )}

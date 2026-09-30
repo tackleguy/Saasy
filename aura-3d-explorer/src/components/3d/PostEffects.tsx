@@ -8,8 +8,11 @@
  *                 and warm interior lamps bloom.
  *   3. DoF      — only when a floor is isolated (and not while walking):
  *                 focuses on that floor so the rest of the site softens.
- *   4. Vignette — 0.25, a photographic fall-off.
- *   5. ACES tone mapping, exposure 1.05.
+ *   4. Grade    — a touch of contrast and saturation, like a camera profile.
+ *   5. Vignette — 0.25, a photographic fall-off.
+ *   6. ACES tone mapping, exposure 1.05.
+ *   7. Grain    — very faint film grain after tone mapping, which breaks up
+ *                 banding in the sky gradient and fog.
  *
  * With a composer, three.js only tone-maps when rendering to the screen, so
  * the renderer's tone mapping is effectively bypassed and the ToneMapping
@@ -17,8 +20,8 @@
  */
 import { useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
-import { Bloom, DepthOfField, EffectComposer, ToneMapping, Vignette } from "@react-three/postprocessing";
-import { ToneMappingMode } from "postprocessing";
+import { Bloom, BrightnessContrast, DepthOfField, EffectComposer, HueSaturation, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { BlendFunction, ToneMappingMode } from "postprocessing";
 import { N8AOPostPass } from "n8ao";
 import * as THREE from "three";
 
@@ -59,8 +62,11 @@ export default function PostEffects({ focus }: Props) {
       <N8AO />
       <Bloom luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={0.35} mipmapBlur />
       {target ? <DepthOfField target={target} focalLength={0.02} bokehScale={2} /> : <></>}
+      <BrightnessContrast brightness={0} contrast={0.05} />
+      <HueSaturation hue={0} saturation={0.06} />
       <Vignette offset={0.3} darkness={0.25} />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+      <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.18} />
     </EffectComposer>
   );
 }

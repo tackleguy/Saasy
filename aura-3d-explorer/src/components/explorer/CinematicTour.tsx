@@ -78,11 +78,19 @@ const SHOTS: Shot[] = [
       return v.length ? `${v[0].label}, then ${v[v.length - 1].label.toLowerCase()}` : "Interior walk-through";
     },
     run: (x) => {
-      if (x.selectedIndex === null) x.selectFloor(showcaseFloor(x));
-      x.startWalk();
+      // Walking needs an isolated floor; when arriving from another shot, isolate it and let the focus land first.
+      const needsFloor = x.selectedIndex === null;
+      if (needsFloor) {
+        x.setExplosion(Math.max(x.explosion, 1));
+        x.selectFloor(showcaseFloor(x));
+      }
       const views = viewpointsFor(showcaseFloor(x)).length;
-      const t = setTimeout(() => x.goToView(Math.max(0, views - 1)), 5200);
-      return () => clearTimeout(t);
+      const t1 = setTimeout(() => x.startWalk(), needsFloor ? 700 : 0);
+      const t2 = setTimeout(() => x.goToView(Math.max(0, views - 1)), 5200);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     },
   },
   {
@@ -103,34 +111,34 @@ const SHOTS: Shot[] = [
 /** One project's reel. Remounted (key) per project so each gets a fresh scene. */
 function Reel({ project, playing, onDone, shotSkip }: { project: Project; playing: boolean; onDone: () => void; shotSkip: number }) {
   const site = useMemo(() => projectSite(project), [project]);
-  const x = useExplorer(site, { lockQuality: false });
-  const [shot, setShot] = useState(0);
-  const [elapsed, setElapsed] = useState(0);
+  const x = useExplorer(site, { city: project.backdrop });
+  // Shot index and time into it change together, so a new shot never inherits the old clock.
+  const [{ shot, elapsed }, setClock] = useState({ shot: 0, elapsed: 0 });
   const xRef = useRef(x);
   xRef.current = x;
+  const doneRef = useRef(onDone);
+  doneRef.current = onDone;
 
-  // External ←/→ skips arrive as a signed nonce delta.
+  const go = useCallback((n: number) => {
+    if (n >= SHOTS.length) return doneRef.current();
+    setClock({ shot: Math.max(0, n), elapsed: 0 });
+  }, []);
+
+  // External ←/→ skips arrive as a nonce; apply the whole delta once.
   const lastSkip = useRef(shotSkip);
+  const shotRef = useRef(shot);
+  shotRef.current = shot;
   useEffect(() => {
-    const d = Math.sign(shotSkip - lastSkip.current);
+    const d = shotSkip - lastSkip.current;
     lastSkip.current = shotSkip;
-    if (!d) return;
-    setShot((s) => {
-      const n = s + d;
-      if (n >= SHOTS.length) {
-        onDone();
-        return s;
-      }
-      return Math.max(0, n);
-    });
-  }, [shotSkip, onDone]);
+    if (d) go(shotRef.current + d);
+  }, [shotSkip, go]);
 
-  // Run the shot's action whenever it changes. Wait for the scene chunk first.
+  // Run the shot's action whenever it changes. The first waits for the scene chunk.
+  const cleanupRef = useRef<(() => void) | null>(null);
   useEffect(() => {
-    setElapsed(0);
     const t = setTimeout(() => {
-      const cleanup = SHOTS[shot].run(xRef.current);
-      cleanupRef.current = cleanup || null;
+      cleanupRef.current = SHOTS[shot].run(xRef.current) || null;
     }, shot === 0 ? 900 : 0);
     return () => {
       clearTimeout(t);
@@ -138,9 +146,8 @@ function Reel({ project, playing, onDone, shotSkip }: { project: Project; playin
       cleanupRef.current = null;
     };
   }, [shot]);
-  const cleanupRef = useRef<(() => void) | null>(null);
 
-  // Clock: advances only while playing.
+  // Clock: advances only while playing; rolls over to the next shot.
   useEffect(() => {
     if (!playing) return;
     let prev = performance.now();
@@ -148,47 +155,51 @@ function Reel({ project, playing, onDone, shotSkip }: { project: Project; playin
     const tick = (now: number) => {
       const dt = now - prev;
       prev = now;
-      setElapsed((e) => e + dt);
+      setClock((c) => (c.elapsed + dt >= SHOTS[c.shot].ms && c.shot + 1 < SHOTS.length ? { shot: c.shot + 1, elapsed: 0 } : { ...c, elapsed: c.elapsed + dt }));
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [playing]);
 
+  // End of the last shot hands over to the next project (outside the updater, so it runs once).
+  const handedOver = useRef(false);
   useEffect(() => {
-    if (elapsed < SHOTS[shot].ms) return;
-    if (shot + 1 >= SHOTS.length) onDone();
-    else setShot(shot + 1);
-  }, [elapsed, shot, onDone]);
+    if (shot === SHOTS.length - 1 && elapsed >= SHOTS[shot].ms && !handedOver.current) {
+      handedOver.current = true;
+      doneRef.current();
+    }
+  }, [shot, elapsed]);
 
   const s = SHOTS[shot];
   const progress = (shot + Math.min(1, elapsed / s.ms)) / SHOTS.length;
 
   return (
     <>
-      <ExplorerViewport explorer={x} variant="bare" intro={false} className="h-dvh w-screen" />
+      {/* Own stacking layer, so the canvas can never paint over the captions. */}
+      <div className="absolute inset-0 isolate z-0">
+        <ExplorerViewport explorer={x} variant="bare" intro={false} className="h-dvh w-screen" />
+      </div>
 
       {/* Lower third */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[9vh] z-20 px-6 sm:px-12">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${project.slug}-${s.id}`}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-3xl"
-          >
-            <p className="mb-2 text-[11px] uppercase tracking-[0.22em] text-white/75 [text-shadow:0_1px_8px_rgba(0,0,0,.45)]">
-              {project.name} · {s.kicker}
-            </p>
-            <h2 className="font-serif text-3xl leading-[1.05] text-white [text-shadow:0_2px_24px_rgba(0,0,0,.45)] sm:text-5xl">{s.title(project, x)}</h2>
-          </motion.div>
-        </AnimatePresence>
+      <div className="pointer-events-none absolute inset-x-0 bottom-[9vh] z-30 px-6 sm:px-12">
+        {/* Keyed enter-only animation: an exit phase could strand the caption during rapid skips. */}
+        <motion.div
+          key={`${project.slug}-${s.id}`}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-3xl"
+        >
+          <p className="mb-2 text-[11px] uppercase tracking-[0.22em] text-white/75 [text-shadow:0_1px_8px_rgba(0,0,0,.45)]">
+            {project.name} · {s.kicker}
+          </p>
+          <h2 className="font-serif text-3xl leading-[1.05] text-white [text-shadow:0_2px_24px_rgba(0,0,0,.45)] sm:text-5xl">{s.title(project, x)}</h2>
+        </motion.div>
       </div>
 
       {/* Progress */}
-      <div className="absolute inset-x-0 bottom-[6.5vh] z-20 flex gap-1 px-6 sm:px-12" aria-hidden>
+      <div className="absolute inset-x-0 bottom-[6.5vh] z-30 flex gap-1 px-6 sm:px-12" aria-hidden>
         {SHOTS.map((sh, i) => (
           <div key={sh.id} className="h-[2px] flex-1 overflow-hidden bg-white/25">
             <div className="h-full bg-white" style={{ width: `${i < shot ? 100 : i > shot ? 0 : Math.min(100, (elapsed / s.ms) * 100)}%` }} />
