@@ -1,22 +1,29 @@
 "use client";
 /**
- * FinancialSidebar — pro-forma inputs and live yield KPIs.
+ * FinancialSidebar — site summary, pro-forma inputs and live yield KPIs.
  * -----------------------------------------------------------------------------
- * Three sliders + the unit-mix strategy drive `useYieldCalculator`; the KPI
- * grid and programme-mix bar update on every change. Clicking a programme in
- * the mix bar flies the camera to the first floor of that zone.
+ * The site card lists all three buildings (click one to make it active) with
+ * a development-wide total. Below it, three sliders + the unit-mix strategy
+ * drive the ACTIVE building's pro forma; the KPI grid and programme-mix bar
+ * update on every change. Clicking a programme flies the camera to that zone.
  */
 import { motion } from "framer-motion";
-import { Building2, Calculator, DollarSign, Hammer, Home, Percent, RotateCcw, Ruler, TrendingUp } from "lucide-react";
-import type { UnitMixStrategy, YieldInputs, YieldMetrics, ZoneId } from "@/types";
+import clsx from "clsx";
+import { Building2, Calculator, DollarSign, Hammer, Home, Landmark, Percent, RotateCcw, Ruler, TrendingUp } from "lucide-react";
+import type { Building, BuildingId, SiteMetrics, UnitMixStrategy, YieldInputs, YieldMetrics, ZoneId } from "@/types";
 import { INPUT_RANGES, STRATEGIES } from "@/hooks/useYieldCalculator";
-import { ZONES } from "@/lib/tower";
+import { SITE, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum, fmtPct } from "@/lib/format";
 import { GlassCard, Metric, RangeSlider, SegmentedControl } from "./primitives";
 
 interface Props {
+  building: Building;
   inputs: YieldInputs;
   metrics: YieldMetrics;
+  metricsById: Record<BuildingId, YieldMetrics>;
+  site: SiteMetrics;
+  onBuildingChange: (id: BuildingId) => void;
+  /** Edits the active building's inputs. */
   setInput: <K extends keyof YieldInputs>(key: K, value: YieldInputs[K]) => void;
   onReset: () => void;
   /** Jump to the first floor of a zone. */
@@ -28,16 +35,64 @@ const STRATEGY_OPTIONS = (Object.keys(STRATEGIES) as UnitMixStrategy[]).map((val
   label: STRATEGIES[value].label,
 }));
 
-export default function FinancialSidebar({ inputs, metrics: m, setInput, onReset, onFocusZone }: Props) {
+export default function FinancialSidebar({ building, inputs, metrics: m, metricsById, site, onBuildingChange, setInput, onReset, onFocusZone }: Props) {
   const R = INPUT_RANGES;
   const profitable = m.grossProfit >= 0;
 
   return (
     <>
+      {/* ---------------------------------------------------- Site */}
+      <GlassCard index={0} eyebrow="The Meridian Quarter" icon={<Landmark size={11} />} title="Site Portfolio">
+        <ul className="space-y-1.5">
+          {SITE.map((b) => {
+            const bm = metricsById[b.id];
+            const active = b.id === building.id;
+            return (
+              <li key={b.id}>
+                <button
+                  onClick={() => onBuildingChange(b.id)}
+                  aria-pressed={active}
+                  className={clsx(
+                    "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition",
+                    active ? "border-gold/40 bg-gold/[0.07]" : "border-white/[0.06] bg-white/[0.02] hover:border-white/15"
+                  )}
+                >
+                  <span className={clsx("h-2 w-2 shrink-0 rounded-full", active ? "bg-gold" : "bg-slate-600")} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm text-white">{b.name}</span>
+                    <span className="block truncate text-[11px] text-slate-500">
+                      {b.floors.length} floors · {fmtNum(bm.totalUnits)} units
+                    </span>
+                  </span>
+                  <span className="text-right">
+                    <span className="block font-serif text-lg tabular-nums leading-tight text-white">{fmtMoney(bm.grossProjectRevenue)}</span>
+                    <span className={clsx("block text-[11px] tabular-nums", bm.grossMarginPct >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                      {fmtPct(bm.grossMarginPct)} margin
+                    </span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="mt-3 flex items-end justify-between border-t border-white/[0.06] pt-3">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.14em] text-slate-500">Site total</p>
+            <p className="text-[11px] text-slate-500">
+              {site.totalFloors} floors · {fmtNum(site.totalSqFt)} sf · {fmtNum(site.totalUnits)} units
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="font-serif text-2xl tabular-nums leading-tight text-gold-metal">{fmtMoney(site.grossProjectRevenue)}</p>
+            <p className="text-[11px] tabular-nums text-emerald-400">{fmtMoney(site.grossProfit)} profit</p>
+          </div>
+        </div>
+      </GlassCard>
+
       {/* ---------------------------------------------------- Assumptions */}
       <GlassCard
-        index={0}
-        eyebrow="Yield Calculator"
+        index={1}
+        eyebrow={`Yield Calculator · ${building.short}`}
         icon={<Calculator size={11} />}
         title="Development Inputs"
         action={
@@ -97,7 +152,7 @@ export default function FinancialSidebar({ inputs, metrics: m, setInput, onReset
       </GlassCard>
 
       {/* ---------------------------------------------------- KPIs */}
-      <GlassCard index={1} eyebrow="Live Output" icon={<TrendingUp size={11} />} title="Projected Yield">
+      <GlassCard index={2} eyebrow={`Live Output · ${building.short}`} icon={<TrendingUp size={11} />} title="Projected Yield">
         <div className="grid grid-cols-2 gap-2.5">
           <Metric label="Gross Revenue" icon={<TrendingUp size={11} />} value={fmtMoney(m.grossProjectRevenue)} sub="Area × price / sf" tone="gold" />
           <Metric label="Construction" icon={<Hammer size={11} />} value={fmtMoney(m.totalConstructionCost)} sub="Area × cost / sf" tone="negative" />

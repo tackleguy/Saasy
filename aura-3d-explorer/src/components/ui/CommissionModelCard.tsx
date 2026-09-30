@@ -11,14 +11,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { BadgePercent, Handshake, Scale } from "lucide-react";
-import type { YieldMetrics } from "@/types";
+import type { SiteMetrics, YieldMetrics } from "@/types";
 import { PLATFORM_FEE_RATE } from "@/hooks/useYieldCalculator";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import { AnimatedValue, GlassCard, RangeSlider } from "./primitives";
 
 const SPRING = { type: "spring", stiffness: 140, damping: 22 } as const;
 
-export default function CommissionModelCard({ metrics: m }: { metrics: YieldMetrics }) {
+interface Props {
+  metrics: YieldMetrics;
+  site: SiteMetrics;
+  buildingName: string;
+}
+
+export default function CommissionModelCard({ metrics: m, site, buildingName }: Props) {
   /** Traditional brokerage / sales-load rate, in percent. */
   const [traditionalPct, setTraditionalPct] = useState(5);
 
@@ -36,8 +42,8 @@ export default function CommissionModelCard({ metrics: m }: { metrics: YieldMetr
 
   return (
     <GlassCard
-      index={3}
-      eyebrow="Aligned Incentives"
+      index={4}
+      eyebrow={`Aligned Incentives · ${buildingName}`}
       icon={<Handshake size={11} />}
       title="1% Performance Fee"
       action={
@@ -106,6 +112,12 @@ export default function CommissionModelCard({ metrics: m }: { metrics: YieldMetr
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Site-wide fee */}
+      <div className="mt-3 flex items-center justify-between rounded-xl border border-white/[0.06] px-4 py-2.5 text-xs">
+        <span className="text-slate-400">Site-wide 1% fee · all 3 towers</span>
+        <span className="font-serif text-base tabular-nums text-white">{fmtMoney(site.platformSuccessFee)}</span>
       </div>
     </GlassCard>
   );

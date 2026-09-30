@@ -20,9 +20,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, CheckCircle2, FileBox, Sparkles, Terminal, UploadCloud, X } from "lucide-react";
 import clsx from "clsx";
-import type { IngestionStage, YieldInputs } from "@/types";
+import type { Building, IngestionStage, YieldInputs } from "@/types";
 import { ACCEPTED, makeSampleStl, parseCadFile, type CadReport } from "@/lib/cadParser";
-import { TOWER } from "@/lib/tower";
 import { fmtNum } from "@/lib/format";
 
 export const INGESTION_STAGES: IngestionStage[] = [
@@ -52,10 +51,10 @@ interface ScriptLine {
 }
 
 /** Build the terminal script for a parsed file. */
-function buildScript(report: CadReport, inputs: YieldInputs): ScriptLine[] {
-  const floors = TOWER.length;
-  const officeFloors = TOWER.filter((f) => f.zone === "office").length;
-  const resiFloors = TOWER.filter((f) => f.zone === "residential").length;
+function buildScript(report: CadReport, inputs: YieldInputs, building: Building): ScriptLine[] {
+  const floors = building.floors.length;
+  const officeFloors = building.floors.filter((f) => f.zone === "office").length;
+  const resiFloors = building.floors.filter((f) => f.zone === "residential").length;
   return [
     { stage: 0, at: 0, text: `aura ingest ./${report.fileName}`, tone: "cmd" },
     { stage: 0, at: 0.15, text: `Format ${report.format} · ${report.sizeKb.toFixed(1)} KB · decoded locally`, tone: "info" },
@@ -65,14 +64,14 @@ function buildScript(report: CadReport, inputs: YieldInputs): ScriptLine[] {
       stage: 1,
       at: 0.45,
       text: report.estimatedFloors
-        ? `Model suggests ~${report.estimatedFloors} storeys → normalised to ${floors}-floor AURA template`
-        : `Mapped geometry to ${floors}-floor AURA template`,
+        ? `Model suggests ~${report.estimatedFloors} storeys → mapped to ${building.name} (${floors} floors)`
+        : `Mapped geometry to ${building.name} (${floors} floors)`,
       tone: "ok",
     },
-    { stage: 1, at: 0.75, text: "Structural core located · 4 zones classified (podium / office / residential / crown)", tone: "ok" },
-    { stage: 2, at: 0.1, text: `Office grid: 4 desk clusters + conference table × ${officeFloors} floors`, tone: "info" },
-    { stage: 2, at: 0.45, text: `Residential grid: living, master bed, kitchen island × ${resiFloors} floors`, tone: "info" },
-    { stage: 2, at: 0.8, text: "Spatial volumes computed · twist 3.5°/floor applied", tone: "ok" },
+    { stage: 1, at: 0.75, text: "Lift & stair core located · 4 zones classified (podium / office / residential / crown)", tone: "ok" },
+    { stage: 2, at: 0.1, text: `Office fit-out: desk clusters, conference suite, kitchen × ${officeFloors} floors`, tone: "info" },
+    { stage: 2, at: 0.45, text: `Residential fit-out: 4 apartments (living, kitchen, dining, bedroom) × ${resiFloors} floors`, tone: "info" },
+    { stage: 2, at: 0.8, text: `Spatial volumes computed · twist ${building.twistDeg}°/floor applied`, tone: "ok" },
     { stage: 3, at: 0.1, text: `glTF scene compiled · ${floors} nodes · 4 PBR materials`, tone: "ok" },
     {
       stage: 3,
@@ -94,11 +93,13 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   /** Current pro-forma inputs (echoed in the terminal). */
   inputs: YieldInputs;
+  /** Building the model is mapped onto. */
+  building: Building;
   /** Called when the user opens the ingested model in the explorer. */
   onComplete: () => void;
 }
 
-export default function CadUploadModal({ open, onOpenChange, inputs, onComplete }: Props) {
+export default function CadUploadModal({ open, onOpenChange, inputs, building, onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [dragging, setDragging] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -171,7 +172,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, onComplete 
       if (id !== runId.current) return; // superseded or closed
 
       // Drive progress + terminal output from a single rAF clock.
-      const script = buildScript(report, inputs);
+      const script = buildScript(report, inputs, building);
       const totalMs = STAGE_MS.reduce((a, b) => a + b, 0);
       let printed = 0;
       let lineId = 0;
@@ -218,7 +219,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, onComplete 
       };
       raf.current = requestAnimationFrame(tick);
     },
-    [cancel, inputs]
+    [cancel, inputs, building]
   );
 
   const activeStage = INGESTION_STAGES.findIndex((s) => progress < s.to);

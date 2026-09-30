@@ -7,14 +7,14 @@
  */
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
-import type { FloorData, FloorYield } from "@/types";
-import { ZONES } from "@/lib/tower";
+import type { Building, FloorData, FloorYield } from "@/types";
+import { toMetres, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
 
 interface Props {
+  building: Building;
   floor: FloorData | null;
   floorYield: FloorYield | null;
-  floorCount: number;
   onClose: () => void;
   onStep: (delta: 1 | -1) => void;
 }
@@ -35,12 +35,13 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   );
 }
 
-export default function FloorInspectorCard({ floor, floorYield, floorCount, onClose, onStep }: Props) {
+export default function FloorInspectorCard({ building, floor, floorYield, onClose, onStep }: Props) {
+  const floorCount = building.floors.length;
   return (
     <AnimatePresence mode="wait">
       {floor && floorYield && (
         <motion.aside
-          key={floor.index}
+          key={`${building.id}:${floor.index}`}
           initial={{ opacity: 0, x: -18, filter: "blur(4px)" }}
           animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, x: -12, filter: "blur(4px)" }}
@@ -50,7 +51,7 @@ export default function FloorInspectorCard({ floor, floorYield, floorCount, onCl
           <div className="flex items-start justify-between gap-2">
             <div>
               <p className="eyebrow" style={{ color: ZONES[floor.zone].accent }}>
-                {ZONES[floor.zone].label}
+                {building.short} · {ZONES[floor.zone].label}
               </p>
               <h4 className="font-serif text-[34px] leading-none text-white">
                 Floor {floor.number}
@@ -65,7 +66,8 @@ export default function FloorInspectorCard({ floor, floorYield, floorCount, onCl
           <p className="mt-2 text-xs leading-relaxed text-slate-400">{ZONES[floor.zone].description}</p>
 
           <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-white/[0.06] pt-3 text-xs">
-            <Row label="Plate (W × D × H)" value={`${floor.width} × ${floor.depth} × ${floor.height} m`} />
+            <Row label="Model plate (W×D×H)" value={`${floor.width} × ${floor.depth} × ${floor.height}`} />
+            <Row label="Real plate" value={`${toMetres(floor.width).toFixed(0)} × ${toMetres(floor.depth).toFixed(0)} m · ${toMetres(floor.height).toFixed(1)} m f2f`} />
             <Row label="Twist (R_y)" value={`${((floor.rotationY * 180) / Math.PI).toFixed(1)}°`} />
             <Row label="Gross area" value={`${fmtNum(floorYield.sqFt)} sf`} />
             <Row label="Units" value={`${floorYield.units} ${ZONES[floor.zone].unitNoun}`} />

@@ -65,19 +65,19 @@ export default function LightingEnvironment() {
 
       {/* Warm key light with soft shadows */}
       <directionalLight
-        position={[28, 46, 18]}
+        position={[40, 70, 26]}
         intensity={2.2}
         color="#fff1d6"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[4096, 4096]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.02}
-        shadow-camera-left={-30}
-        shadow-camera-right={30}
-        shadow-camera-top={80}
-        shadow-camera-bottom={-10}
+        shadow-camera-left={-55}
+        shadow-camera-right={55}
+        shadow-camera-top={70}
+        shadow-camera-bottom={-45}
         shadow-camera-near={1}
-        shadow-camera-far={160}
+        shadow-camera-far={240}
       />
 
       {/* Cool rim light from behind */}
@@ -96,12 +96,13 @@ export default function LightingEnvironment() {
         <circleGeometry args={[400, 64]} />
         <meshStandardMaterial color="#0c0e14" roughness={0.95} metalness={0.1} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.005} raycast={() => null}>
-        <ringGeometry args={[9.5, 9.6, 96]} />
-        <meshBasicMaterial color="#d4af37" transparent opacity={0.35} />
+      {/* Paved site plinth tying the three towers together */}
+      <mesh rotation-x={-Math.PI / 2} rotation-z={-Math.PI / 4} position-y={0.004} receiveShadow raycast={() => null}>
+        <planeGeometry args={[34, 78]} />
+        <meshStandardMaterial color="#141821" roughness={0.8} metalness={0.2} />
       </mesh>
-      <gridHelper args={[120, 60, "#232836", "#141821"]} position-y={0.01} />
-      <ContactShadows position={[0, 0.02, 0]} opacity={0.65} scale={40} blur={2.2} far={20} resolution={512} />
+      <gridHelper args={[160, 80, "#232836", "#141821"]} position-y={0.001} />
+      <ContactShadows position={[0, 0.02, 0]} opacity={0.6} scale={100} blur={2.2} far={20} resolution={1024} />
     </>
   );
 }

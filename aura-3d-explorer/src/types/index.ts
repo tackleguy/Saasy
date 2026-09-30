@@ -5,26 +5,21 @@
  * is typed here so the scene, the sidebar and the yield engine agree on shape.
  */
 
-/* ------------------------------------------------------------------ 3D tower */
+/* ------------------------------------------------------------------ 3D site */
 
-/** The four architectural programmes stacked in the tower. */
+/** The four architectural programmes stacked in every tower. */
 export type ZoneId = "podium" | "office" | "residential" | "crown";
 
-/** Static description of one programme zone (dimensions, look, economics). */
-export interface ZoneSpec {
+/** The three buildings on the development site. */
+export type BuildingId = "meridian" | "spire" | "lofts";
+
+/** Programme metadata shared by every building (look, economics, copy). */
+export interface ZoneMeta {
   id: ZoneId;
   /** Long display name, e.g. "Podium & Grand Lobby". */
   label: string;
   /** Compact name for legends and chart axes. */
   short: string;
-  /** 1-based floor range covered by this zone (inclusive). */
-  floors: [first: number, last: number];
-  /** Plate width (X) in metres. */
-  width: number;
-  /** Plate depth (Z) in metres. */
-  depth: number;
-  /** Floor-to-floor height in metres. */
-  height: number;
   /** Accent colour for legends, charts and selection glow. */
   accent: string;
   /** Average saleable unit size in sq ft — drives the unit count. */
@@ -35,8 +30,37 @@ export interface ZoneSpec {
   description: string;
 }
 
-/** One individually addressable floor plate in the procedural tower. */
+/** Physical massing of one zone within a specific building. */
+export interface ZoneGeometry {
+  /** 1-based floor range covered by this zone (inclusive). */
+  floors: [first: number, last: number];
+  /** Plate width (X), scene units. */
+  width: number;
+  /** Plate depth (Z), scene units. */
+  depth: number;
+  /** Floor-to-floor height, scene units. */
+  height: number;
+}
+
+/** Static definition of one building on the site. */
+export interface BuildingSpec {
+  id: BuildingId;
+  name: string;
+  /** One-word label for chips and legends. */
+  short: string;
+  tagline: string;
+  /** Ground-plane position of the tower's centre [x, z]. */
+  position: [x: number, z: number];
+  /** Degrees of twist added per floor from the first residential floor up (0 = none). */
+  twistDeg: number;
+  /** Side length of the square lift & stair core, scene units. */
+  coreSize: number;
+  zones: Record<ZoneId, ZoneGeometry>;
+}
+
+/** One individually addressable floor plate. */
 export interface FloorData {
+  buildingId: BuildingId;
   /** 0-based index from the ground up — used by the explosion formula. */
   index: number;
   /** 1-based floor number shown to users ("Floor 1" is the lobby). */
@@ -49,10 +73,15 @@ export interface FloorData {
   height: number;
   /** Y of the floor's underside when the tower is NOT exploded. */
   baseY: number;
-  /** Rotation about the vertical axis, in radians. */
+  /** Rotation of the plate about the vertical axis, radians (the core never rotates). */
   rotationY: number;
-  /** Plate footprint area in m² (width × depth). */
+  /** Plate footprint area, scene units² (width × depth). */
   footprintM2: number;
+}
+
+/** A building spec with its generated floors. */
+export interface Building extends BuildingSpec {
+  floors: FloorData[];
 }
 
 /* ------------------------------------------------------------ yield engine */
@@ -60,7 +89,7 @@ export interface FloorData {
 /** How the value of the scheme is distributed across programmes. */
 export type UnitMixStrategy = "balanced" | "luxury_heavy" | "commercial_focus";
 
-/** User-controlled financial assumptions. */
+/** User-controlled financial assumptions (one set per building). */
 export interface YieldInputs {
   /** Total buildable (gross) area, 50,000 – 300,000 sq ft. */
   totalBuildableSqFt: number;
@@ -103,7 +132,7 @@ export interface ZoneYield {
   share: number;
 }
 
-/** Full output of the yield engine. */
+/** Full output of the yield engine for one building. */
 export interface YieldMetrics {
   grossProjectRevenue: number;
   totalConstructionCost: number;
@@ -117,6 +146,19 @@ export interface YieldMetrics {
   totalUnits: number;
   floors: FloorYield[];
   zones: ZoneYield[];
+}
+
+/** Site-wide roll-up across all buildings. */
+export interface SiteMetrics {
+  grossProjectRevenue: number;
+  totalConstructionCost: number;
+  grossProfit: number;
+  grossMarginPct: number;
+  developerNetRevenue: number;
+  platformSuccessFee: number;
+  totalUnits: number;
+  totalFloors: number;
+  totalSqFt: number;
 }
 
 /* ------------------------------------------------------------- view state */

@@ -1,186 +1,116 @@
 "use client";
 /**
- * FurnitureOverlay — procedural low-poly wireframe furniture.
+ * FurnitureOverlay — real-size procedural furniture for the isolated floor.
  * -----------------------------------------------------------------------------
- * Spawned inside a floor plate when that floor is isolated (selected).
- * Layouts are generated per zone in the floor's LOCAL coordinates (the parent
- * group already carries the floor's twist), then merged into one geometry:
+ * 1. `layoutFloor` places ensembles (desk clusters, living rooms, kitchens,
+ *    beds, pools…) on the plate in real metres, avoiding the core.
+ * 2. Each ensemble expands into primitive `Part`s from the furniture kit.
+ * 3. Parts are grouped by (geometry, material) into InstancedMeshes, so a
+ *    fully furnished floor costs ~20 draw calls however many chairs it has.
+ * 4. The whole set is scaled by MODEL_SCALE into scene units and "grows" up
+ *    from the slab when it mounts.
  *
- *   • Office       — 4 desk clusters (each 4 × 1.2 m × 0.8 m desks + chairs)
- *                    around a central conference table.
- *   • Residential  — L-shaped living-room sofa arrangement, master bed frame,
- *                    kitchen island with stools.
- *   • Crown        — penthouse set: lounge, king bed, island, plunge pool.
- *   • Podium       — reception desk, lift core and lobby lounge seating.
- *
- * Footprints are real metres. Heights are expressed as a fraction of the
- * floor's clear height, because the tower's storeys are stylised (0.85–1.8 m)
- * and true furniture heights would fill the plate.
- *
- * Geometry is cached per zone and shared by every floor of that zone.
+ * Only the selected floor mounts this component, so the rest of the site
+ * pays nothing for furniture.
  */
-import { useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import type { FloorData, ZoneId } from "@/types";
+import type { FloorData } from "@/types";
+import { MODEL_SCALE } from "@/lib/tower";
+import { getGeometries, getMaterials, PIECES, type GeoKey, type MatKey, type Part } from "./furniture/kit";
+import { layoutFloor } from "./furniture/layouts";
+import { place } from "./furniture/kit";
 
 /** Thickness of the structural slab under each floor (shared with FloorPlate). */
 export const SLAB_THICKNESS = 0.08;
 
-/** An axis-aligned furniture block: centre x/z, footprint w×d (m), height as a fraction of clear height. */
-interface Block {
-  x: number;
-  z: number;
-  w: number;
-  d: number;
-  h: number;
+interface Batch {
+  key: string;
+  geo: GeoKey;
+  mat: MatKey;
+  matrices: THREE.Matrix4[];
 }
 
-/* ------------------------------------------------------------------ layouts */
+const batchCache = new Map<string, Batch[]>();
 
-/** Four desks (1.2 × 0.8 m) facing each other in a 2 × 2 cluster, with a chair on each. */
-function deskCluster(cx: number, cz: number): Block[] {
-  const out: Block[] = [];
-  for (const sx of [-1, 1]) {
-    for (const sz of [-1, 1]) {
-      const x = cx + sx * 0.62;
-      const z = cz + sz * 0.41;
-      out.push({ x, z, w: 1.2, d: 0.8, h: 0.36 }); // desk
-      out.push({ x, z: z + sz * 0.72, w: 0.45, d: 0.45, h: 0.44 }); // chair
-    }
-  }
-  return out;
-}
-
-function officeLayout(): Block[] {
-  const blocks: Block[] = [];
-  for (const [cx, cz] of [[-2.9, -2.9], [2.9, -2.9], [-2.9, 2.9], [2.9, 2.9]]) {
-    blocks.push(...deskCluster(cx, cz));
-  }
-  // Central conference table with six chairs
-  blocks.push({ x: 0, z: 0, w: 2.6, d: 1.1, h: 0.36 });
-  for (const x of [-0.85, 0, 0.85]) {
-    blocks.push({ x, z: -0.85, w: 0.45, d: 0.45, h: 0.44 });
-    blocks.push({ x, z: 0.85, w: 0.45, d: 0.45, h: 0.44 });
-  }
-  return blocks;
-}
-
-function residentialLayout(): Block[] {
-  return [
-    // Living room: L-shaped sofa + coffee table + media console
-    { x: -2.0, z: 3.1, w: 2.4, d: 0.8, h: 0.4 },
-    { x: -3.5, z: 2.0, w: 0.8, d: 1.6, h: 0.4 },
-    { x: -2.0, z: 1.8, w: 1.1, d: 0.65, h: 0.22 },
-    { x: -2.0, z: -0.2, w: 2.0, d: 0.4, h: 0.3 },
-    // Master bedroom: bed frame, headboard, nightstands
-    { x: 2.4, z: -2.3, w: 1.8, d: 2.1, h: 0.28 },
-    { x: 2.4, z: -3.45, w: 1.9, d: 0.12, h: 0.62 },
-    { x: 1.2, z: -3.2, w: 0.45, d: 0.45, h: 0.32 },
-    { x: 3.6, z: -3.2, w: 0.45, d: 0.45, h: 0.32 },
-    // Kitchen: island block, rear counter run, stools
-    { x: 2.2, z: 1.6, w: 2.2, d: 0.9, h: 0.45 },
-    { x: 2.2, z: 3.5, w: 3.0, d: 0.6, h: 0.45 },
-    { x: 1.6, z: 0.7, w: 0.4, d: 0.4, h: 0.38 },
-    { x: 2.8, z: 0.7, w: 0.4, d: 0.4, h: 0.38 },
-  ];
-}
-
-function crownLayout(): Block[] {
-  return [
-    { x: 1.4, z: -1.4, w: 2.0, d: 2.2, h: 0.2 }, // king bed
-    { x: 1.4, z: -2.6, w: 2.1, d: 0.12, h: 0.45 }, // headboard
-    { x: -1.2, z: 2.3, w: 2.6, d: 0.85, h: 0.25 }, // lounge sofa
-    { x: -1.2, z: 1.2, w: 1.1, d: 0.7, h: 0.15 }, // coffee table
-    { x: 1.6, z: 1.6, w: 1.8, d: 0.8, h: 0.3 }, // kitchen island
-    { x: -2.2, z: -1.3, w: 1.2, d: 2.4, h: 0.06 }, // plunge pool
-  ];
-}
-
-function podiumLayout(): Block[] {
-  return [
-    { x: 0, z: -1.5, w: 3.0, d: 2.4, h: 1 }, // lift & stair core
-    { x: 0, z: 3.4, w: 3.6, d: 0.8, h: 0.25 }, // reception desk
-    ...[[-4, 3.5], [4, 3.5], [-4, -3.5], [4, -3.5]].flatMap(([x, z]) => [
-      { x, z, w: 2.2, d: 0.8, h: 0.15 }, // lounge sofa
-      { x, z: z - Math.sign(z) * 1.1, w: 0.9, d: 0.9, h: 0.1 }, // side table
-    ]),
-  ];
-}
-
-const LAYOUTS: Record<ZoneId, () => Block[]> = {
-  office: officeLayout,
-  residential: residentialLayout,
-  crown: crownLayout,
-  podium: podiumLayout,
-};
-
-/* ----------------------------------------------------------------- geometry */
-
-interface FurnitureGeometry {
-  edges: THREE.BufferGeometry;
-  fill: THREE.BufferGeometry;
-}
-
-const cache = new Map<string, FurnitureGeometry>();
-
-/** Build (or fetch from cache) the merged wireframe + ghost-fill geometry for a zone. */
-function furnitureFor(zone: ZoneId, floorHeight: number): FurnitureGeometry {
-  const key = `${zone}:${floorHeight}`;
-  const hit = cache.get(key);
+/** Expand a floor's layout into instanced batches (cached per plate shape). */
+function batchesFor(floor: FloorData, coreSize: number): Batch[] {
+  // The core stays square to the world while the plate twists, so in the
+  // plate's local frame it is rotated: widen its keep-out to the rotated bounds.
+  const r = floor.rotationY;
+  const coreHalfM = ((coreSize / 2) * (Math.abs(Math.cos(r)) + Math.abs(Math.sin(r)))) / MODEL_SCALE;
+  const variant = floor.zone === "crown" ? floor.zoneIndex : 0;
+  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), variant].join(":");
+  const hit = batchCache.get(key);
   if (hit) return hit;
 
-  const clear = floorHeight - SLAB_THICKNESS;
-  const boxes = LAYOUTS[zone]().map((b) => {
-    const h = Math.max(0.02, b.h * clear * 0.95);
-    const g = new THREE.BoxGeometry(b.w, h, b.d);
-    g.translate(b.x, SLAB_THICKNESS + h / 2 + 0.002, b.z);
-    return g;
-  });
-  const fill = mergeGeometries(boxes, false)!;
-  boxes.forEach((g) => g.dispose());
-  const result = { fill, edges: new THREE.EdgesGeometry(fill) };
-  cache.set(key, result);
-  return result;
+  const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, variant);
+  const parts: Part[] = placements.flatMap((pl) => place(PIECES[pl.piece].build(), pl.x, pl.z, pl.rot));
+
+  const map = new Map<string, Batch>();
+  const q = new THREE.Quaternion();
+  const up = new THREE.Vector3(0, 1, 0);
+  for (const p of parts) {
+    const k = `${p.g}|${p.m}`;
+    let b = map.get(k);
+    if (!b) map.set(k, (b = { key: k, geo: p.g, mat: p.m, matrices: [] }));
+    q.setFromAxisAngle(up, p.r ?? 0);
+    b.matrices.push(new THREE.Matrix4().compose(new THREE.Vector3(...p.p), q, new THREE.Vector3(...p.s)));
+  }
+  const batches = [...map.values()];
+  batchCache.set(key, batches);
+  return batches;
 }
 
-/* ---------------------------------------------------------------- component */
+/** One InstancedMesh for a (geometry, material) batch. */
+function BatchMesh({ batch }: { batch: Batch }) {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  const geometry = getGeometries()[batch.geo];
+  const material = getMaterials()[batch.mat];
 
-const noRaycast = () => null;
+  useLayoutEffect(() => {
+    const mesh = ref.current;
+    if (!mesh) return;
+    batch.matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.computeBoundingSphere();
+  }, [batch]);
+
+  const transparent = batch.mat === "water";
+  return (
+    <instancedMesh
+      ref={ref}
+      args={[geometry, material, batch.matrices.length]}
+      castShadow={!transparent && batch.mat !== "lamp"}
+      receiveShadow
+      raycast={() => null}
+    />
+  );
+}
 
 interface Props {
   floor: FloorData;
-  /** When true the furniture grows in; when false it retracts and hides. */
-  visible: boolean;
+  coreSize: number;
 }
 
-export default function FurnitureOverlay({ floor, visible }: Props) {
-  const geo = useMemo(() => furnitureFor(floor.zone, floor.height), [floor.zone, floor.height]);
+export default function FurnitureOverlay({ floor, coreSize }: Props) {
+  const batches = useMemo(() => batchesFor(floor, coreSize), [floor, coreSize]);
   const group = useRef<THREE.Group>(null);
-  const lineMat = useRef<THREE.LineBasicMaterial>(null);
-  const fillMat = useRef<THREE.MeshBasicMaterial>(null);
 
-  // Ease the "spawn": scale up from the slab and fade in; reverse when hidden.
+  // Grow up from the slab on mount.
   useFrame((_, dt) => {
     const g = group.current;
-    if (!g || !lineMat.current || !fillMat.current) return;
-    const k = 1 - Math.pow(0.0005, dt);
-    const target = visible ? 1 : 0;
-    g.scale.y = THREE.MathUtils.lerp(g.scale.y, Math.max(target, 0.001), k);
-    lineMat.current.opacity = THREE.MathUtils.lerp(lineMat.current.opacity, target * 0.95, k);
-    fillMat.current.opacity = THREE.MathUtils.lerp(fillMat.current.opacity, target * 0.1, k);
-    g.visible = lineMat.current.opacity > 0.01;
+    if (!g || g.scale.y >= MODEL_SCALE - 1e-4) return;
+    const k = 1 - Math.pow(0.002, dt);
+    g.scale.y = Math.min(MODEL_SCALE, THREE.MathUtils.lerp(g.scale.y, MODEL_SCALE, k) + 1e-4);
   });
 
   return (
-    <group ref={group} scale={[1, 0.001, 1]} visible={false}>
-      <lineSegments geometry={geo.edges} raycast={noRaycast} renderOrder={3}>
-        <lineBasicMaterial ref={lineMat} color="#f3e5ab" transparent opacity={0} depthWrite={false} />
-      </lineSegments>
-      <mesh geometry={geo.fill} raycast={noRaycast} renderOrder={2}>
-        <meshBasicMaterial ref={fillMat} color="#d4af37" transparent opacity={0} depthWrite={false} />
-      </mesh>
+    <group ref={group} position={[0, SLAB_THICKNESS + 0.036, 0]} scale={[MODEL_SCALE, 0.001, MODEL_SCALE]}>
+      {batches.map((b) => (
+        <BatchMesh key={b.key} batch={b} />
+      ))}
     </group>
   );
 }

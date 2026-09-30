@@ -16,21 +16,35 @@
  * earn a premium, how revenue is attributed floor by floor, and how large
  * the residential units are (and therefore how many there are).
  *
+ * Each building on the site has its own set of inputs; `site` rolls all
+ * three up into a development-wide total.
+ *
  * `computeYield` is exported as a pure function so it can be unit-tested or
  * moved server-side without React.
  */
 import { useCallback, useMemo, useState } from "react";
-import type { FloorData, FloorYield, InputRange, UnitMixStrategy, YieldInputs, YieldMetrics, ZoneId, ZoneYield } from "@/types";
-import { TOWER, ZONE_ORDER, ZONES } from "@/lib/tower";
+import type {
+  BuildingId,
+  FloorData,
+  FloorYield,
+  InputRange,
+  SiteMetrics,
+  UnitMixStrategy,
+  YieldInputs,
+  YieldMetrics,
+  ZoneId,
+  ZoneYield,
+} from "@/types";
+import { getBuilding, SITE, ZONE_ORDER, ZONES } from "@/lib/tower";
 
 /** The platform's success fee: 1% of gross project revenue. */
 export const PLATFORM_FEE_RATE = 0.01;
 
-export const DEFAULT_INPUTS: YieldInputs = {
-  totalBuildableSqFt: 120_000,
-  avgPricePerSqFt: 1_450,
-  buildCostPerSqFt: 650,
-  unitMixStrategy: "balanced",
+/** Default assumptions per building (The Meridian uses the brief's defaults). */
+export const DEFAULT_INPUTS: Record<BuildingId, YieldInputs> = {
+  meridian: { totalBuildableSqFt: 120_000, avgPricePerSqFt: 1_450, buildCostPerSqFt: 650, unitMixStrategy: "balanced" },
+  spire: { totalBuildableSqFt: 185_000, avgPricePerSqFt: 1_650, buildCostPerSqFt: 720, unitMixStrategy: "luxury_heavy" },
+  lofts: { totalBuildableSqFt: 68_000, avgPricePerSqFt: 1_150, buildCostPerSqFt: 560, unitMixStrategy: "balanced" },
 };
 
 export const INPUT_RANGES: Record<Exclude<keyof YieldInputs, "unitMixStrategy">, InputRange> = {
@@ -70,7 +84,7 @@ export const STRATEGIES: Record<UnitMixStrategy, StrategyProfile> = {
 };
 
 /** Pure calculation — deterministic for a given set of inputs and floors. */
-export function computeYield(inputs: YieldInputs, floors: FloorData[] = TOWER): YieldMetrics {
+export function computeYield(inputs: YieldInputs, floors: FloorData[]): YieldMetrics {
   const { totalBuildableSqFt, avgPricePerSqFt, buildCostPerSqFt, unitMixStrategy } = inputs;
   const strategy = STRATEGIES[unitMixStrategy];
 
@@ -134,19 +148,48 @@ export function computeYield(inputs: YieldInputs, floors: FloorData[] = TOWER): 
   };
 }
 
-/** React state wrapper around `computeYield`. */
-export function useYieldCalculator(initial: YieldInputs = DEFAULT_INPUTS) {
-  const [inputs, setInputs] = useState<YieldInputs>(initial);
+/** Sum every building's metrics into a site-wide total. */
+export function computeSite(all: YieldMetrics[]): SiteMetrics {
+  const sum = (f: (m: YieldMetrics) => number) => all.reduce((s, m) => s + f(m), 0);
+  const grossProjectRevenue = sum((m) => m.grossProjectRevenue);
+  const grossProfit = sum((m) => m.grossProfit);
+  return {
+    grossProjectRevenue,
+    totalConstructionCost: sum((m) => m.totalConstructionCost),
+    grossProfit,
+    grossMarginPct: grossProjectRevenue > 0 ? (grossProfit / grossProjectRevenue) * 100 : 0,
+    developerNetRevenue: sum((m) => m.developerNetRevenue),
+    platformSuccessFee: sum((m) => m.platformSuccessFee),
+    totalUnits: sum((m) => m.totalUnits),
+    totalFloors: sum((m) => m.floors.length),
+    totalSqFt: sum((m) => m.floors.reduce((s, f) => s + f.sqFt, 0)),
+  };
+}
 
-  const setInput = useCallback(<K extends keyof YieldInputs>(key: K, value: YieldInputs[K]) => {
-    setInputs((prev) => ({ ...prev, [key]: value }));
+/** React state wrapper: one set of inputs per building + a site roll-up. */
+export function useYieldCalculator() {
+  const [inputsById, setInputsById] = useState<Record<BuildingId, YieldInputs>>(DEFAULT_INPUTS);
+
+  const setInput = useCallback(<K extends keyof YieldInputs>(building: BuildingId, key: K, value: YieldInputs[K]) => {
+    setInputsById((prev) => ({ ...prev, [building]: { ...prev[building], [key]: value } }));
   }, []);
 
-  const reset = useCallback(() => setInputs(initial), [initial]);
+  const reset = useCallback((building: BuildingId) => {
+    setInputsById((prev) => ({ ...prev, [building]: DEFAULT_INPUTS[building] }));
+  }, []);
 
-  const metrics = useMemo(() => computeYield(inputs), [inputs]);
+  const metricsById = useMemo(
+    () =>
+      Object.fromEntries(SITE.map((b) => [b.id, computeYield(inputsById[b.id], getBuilding(b.id).floors)])) as Record<
+        BuildingId,
+        YieldMetrics
+      >,
+    [inputsById]
+  );
 
-  return { inputs, setInput, reset, metrics };
+  const site = useMemo(() => computeSite(Object.values(metricsById)), [metricsById]);
+
+  return { inputsById, setInput, reset, metricsById, site };
 }
 
 export type YieldCalculator = ReturnType<typeof useYieldCalculator>;

@@ -12,8 +12,10 @@ import { SegmentedControl, AnimatedValue } from "./primitives";
 interface Props {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
-  grossRevenue: number;
-  grossMarginPct: number;
+  /** Site-wide gross development value (all buildings). */
+  siteRevenue: number;
+  siteMarginPct: number;
+  buildingCount: number;
   floorCount: number;
   onImportCad: () => void;
 }
@@ -38,7 +40,7 @@ function StatusBadge({ label, tone = "gold" }: { label: string; tone?: "gold" | 
   );
 }
 
-export default function HeaderNav({ viewMode, onViewModeChange, grossRevenue, grossMarginPct, floorCount, onImportCad }: Props) {
+export default function HeaderNav({ viewMode, onViewModeChange, siteRevenue, siteMarginPct, buildingCount, floorCount, onImportCad }: Props) {
   return (
     <motion.header
       initial={{ opacity: 0, y: -12 }}
@@ -55,7 +57,7 @@ export default function HeaderNav({ viewMode, onViewModeChange, grossRevenue, gr
           <h1 className="truncate font-serif text-[22px] leading-none tracking-wide text-white">
             AURA <span className="italic text-gold-metal">3D Explorer</span>
           </h1>
-          <p className="mt-1 truncate text-[10px] uppercase tracking-[0.22em] text-slate-500">Yield Engine · The Meridian Tower</p>
+          <p className="mt-1 truncate text-[10px] uppercase tracking-[0.22em] text-slate-500">Yield Engine · The Meridian Quarter</p>
         </div>
       </div>
 
@@ -68,18 +70,18 @@ export default function HeaderNav({ viewMode, onViewModeChange, grossRevenue, gr
       <div className="no-scrollbar hidden items-center gap-2 overflow-x-auto xl:flex">
         <StatusBadge label="Live Pro Forma" tone="emerald" />
         <span className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">
-          <Layers3 size={11} className="text-gold" /> {floorCount} Floors · Procedural
+          <Layers3 size={11} className="text-gold" /> {buildingCount} Towers · {floorCount} Floors
         </span>
       </div>
 
       {/* GDV + CTA */}
       <div className="ml-auto flex shrink-0 items-center gap-4">
         <div className="hidden text-right sm:block">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Projected GDV · Margin</p>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Site GDV · Margin</p>
           <p className="font-serif text-xl tabular-nums leading-tight">
-            <AnimatedValue value={fmtMoney(grossRevenue)} className="text-gold-metal" />
-            <span className={`ml-2 text-sm ${grossMarginPct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-              <AnimatedValue value={`${grossMarginPct.toFixed(1)}%`} />
+            <AnimatedValue value={fmtMoney(siteRevenue)} className="text-gold-metal" />
+            <span className={`ml-2 text-sm ${siteMarginPct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+              <AnimatedValue value={`${siteMarginPct.toFixed(1)}%`} />
             </span>
           </p>
         </div>

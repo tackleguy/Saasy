@@ -41,7 +41,7 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: { paylo
   );
 }
 
-export default function FinancialChart({ metrics: m }: { metrics: YieldMetrics }) {
+export default function FinancialChart({ metrics: m, buildingName }: { metrics: YieldMetrics; buildingName: string }) {
   const [view, setView] = useState<ChartView>("proforma");
 
   const proforma: Datum[] = [
@@ -67,8 +67,8 @@ export default function FinancialChart({ metrics: m }: { metrics: YieldMetrics }
 
   return (
     <GlassCard
-      index={2}
-      eyebrow="Breakdown"
+      index={3}
+      eyebrow={`Breakdown · ${buildingName}`}
       icon={<BarChart3 size={11} />}
       title="Cost vs. Revenue"
       action={
