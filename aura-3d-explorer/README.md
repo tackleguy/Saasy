@@ -16,6 +16,25 @@ npm run build && npm start
 
 Node 20+. `STATIC_EXPORT=1 npm run build` also writes a static site to `/out`.
 
+## Local AI assistant
+
+"Ask AURA" (bottom-right on every page) is a chat assistant that runs on a **local** model, so nothing leaves the machine. It answers from the page's project, massing and pro-forma, and can drive the 3D explorer: views, floors, explode, walk-through, city backdrop, tour.
+
+```bash
+ollama serve                 # or open the Ollama app
+ollama pull llama3.2         # ~2 GB, 3B params; any chat model works
+npm run dev                  # the assistant needs a server: `next dev` or `next start`
+```
+
+| Env var | Default | |
+|---|---|---|
+| `OLLAMA_URL` | `http://127.0.0.1:11434` | Ollama server |
+| `AURA_AI_MODEL` | `llama3.2:latest` | Ollama model tag |
+| `LMSTUDIO_URL` | `http://127.0.0.1:1234` | Fallback: LM Studio's OpenAI-compatible server, used if Ollama is unreachable |
+| `LMSTUDIO_MODEL` | first loaded model | LM Studio model id |
+
+The route is `src/app/api/assistant/route.ts` (`GET` = health, `POST` = streamed reply). The UI and the explorer bridge live in `src/components/assistant/`. A page shares its explorer with one line, `useRegisterExplorer(x, { project, yieldCalc })`. The model controls the scene by writing commands such as `[[action:photo angle=aerial]]` or `[[action:floor n=12]]` on their own line (full list in `protocol.ts`). If no local model is running, or the site is a static export (which has no API routes), the panel shows "Local AI offline" with the commands to copy.
+
 ## Routes
 
 | Route | What it is |

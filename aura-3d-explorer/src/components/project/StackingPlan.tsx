@@ -107,12 +107,12 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
       {/* Legend + totals */}
       <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2">
         {(Object.keys(counts) as UnitStatus[]).map((k) => (
-          <span key={k} className="flex items-center gap-2 text-xs text-ink">
+          <span key={k} className="flex items-center gap-2 text-[13px] text-ink">
             <span className={clsx("h-3 w-3 border", CELL[k].split(" ").slice(0, 2).join(" "))} aria-hidden />
             {k} <span className="tabular-nums text-ash">{counts[k]}</span>
           </span>
         ))}
-        <span className="caption ml-auto">Sample availability · {building.name}</span>
+        <span className="ml-auto text-xs text-ash">Sample availability · {building.name}</span>
       </div>
 
       <div className="thin-scroll max-h-[560px] overflow-y-auto border-y border-plaster">
@@ -140,7 +140,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                           key={u.code}
                           onClick={() => setUnit(u)}
                           aria-label={`Unit ${u.code}, ${u.status}, ${fmtNum(u.sqFt)} square feet`}
-                          className={clsx("h-6 border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50", CELL[u.status])}
+                          className={clsx("h-7 border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50", CELL[u.status])}
                           style={{ gridColumn: `span ${Math.max(1, Math.floor(MAX_PER_ROW / row.length))}` }}
                         />
                       ))}

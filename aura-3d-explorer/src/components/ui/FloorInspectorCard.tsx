@@ -10,6 +10,7 @@ import { ChevronDown, ChevronUp, Footprints, X } from "lucide-react";
 import type { Building, FloorData, FloorYield } from "@/types";
 import { toMetres, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
+import FloorPlanMini from "./FloorPlanMini";
 
 interface Props {
   building: Building;
@@ -19,6 +20,8 @@ interface Props {
   onStep: (delta: 1 | -1) => void;
   /** Enter the first-person walk-through of this floor. */
   onWalk: () => void;
+  /** Walk in from a specific viewpoint (plan minimap). */
+  onViewpoint?: (i: number) => void;
 }
 
 /** Envelope description per zone, reflecting the building's facade options. */
@@ -44,7 +47,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   );
 }
 
-export default function FloorInspectorCard({ building, floor, floorYield, onClose, onStep, onWalk }: Props) {
+export default function FloorInspectorCard({ building, floor, floorYield, onClose, onStep, onWalk, onViewpoint }: Props) {
   const floorCount = building.floors.length;
   return (
     <AnimatePresence mode="wait">
@@ -55,7 +58,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
           animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, x: -12, filter: "blur(4px)" }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          className="overlay pointer-events-auto absolute left-3 top-3 z-10 w-[min(300px,calc(100%-1.5rem))] rounded-[3px] border-oak/25 p-4 sm:left-4 sm:top-4"
+          className="overlay pointer-events-auto absolute left-3 top-3 z-10 w-[min(300px,calc(100%-1.5rem))] no-scrollbar max-h-[calc(100%-1.5rem)] overflow-y-auto rounded-[3px] border-oak/25 p-4 sm:left-4 sm:top-4 sm:max-h-[calc(100%-2rem)]"
         >
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -86,6 +89,8 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
           </dl>
 
           <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash">{materialLine(floor.zone, building.facade)}</p>
+
+          <FloorPlanMini floor={floor} coreSize={building.coreSize} onViewpoint={onViewpoint} />
 
           <button
             onClick={onWalk}

@@ -5,8 +5,14 @@
  * planner rejects any piece that would leave the plate, clip the lift core
  * (plus a circulation corridor) or collide with a piece already placed, so
  * the same recipe adapts to every building's plate size.
+ *
+ * Non-rect plan shapes: the recipes still work on the bounding box, but the
+ * planner also rejects any piece whose footprint (plus the wall margin) is
+ * not fully inside the plan outline, so ellipses, triangles, L's and crosses
+ * are furnished only where there is floor.
  */
-import type { ZoneId } from "@/types";
+import type { PlanShape, ZoneId } from "@/types";
+import { planOutline, pointInPolygon, type PlanPoint } from "@/lib/tower";
 import { PIECES, type PieceId } from "./kit";
 
 export interface Placement {
@@ -31,7 +37,7 @@ class Planner {
   private rects: Rect[] = [];
   private core: Rect;
 
-  constructor(private halfW: number, private halfD: number, coreHalf: number) {
+  constructor(private halfW: number, private halfD: number, coreHalf: number, private outline: PlanPoint[] | null = null) {
     const c = coreHalf + CORRIDOR;
     this.core = { x0: -c, x1: c, z0: -c, z1: c };
   }
@@ -48,6 +54,7 @@ class Planner {
 
     const inside = r.x0 >= -this.halfW + WALL_MARGIN && r.x1 <= this.halfW - WALL_MARGIN && r.z0 >= -this.halfD + WALL_MARGIN && r.z1 <= this.halfD - WALL_MARGIN;
     if (!inside || overlaps(r, this.core) || this.rects.some((o) => overlaps(r, o))) return false;
+    if (this.outline && !rectInPolygon(r, this.outline, WALL_MARGIN)) return false;
 
     this.rects.push(r);
     this.placements.push({ piece, x, z, rot });
@@ -63,6 +70,19 @@ class Planner {
     const mirrored = Math.atan2(sx * Math.sin(rot), sz * Math.cos(rot));
     return this.add(piece, sx * u, sz * v, mirrored);
   }
+}
+
+/**
+ * Rect (grown by `margin`) fully inside a simple polygon: its corners and
+ * edge midpoints are inside, and no polygon vertex (e.g. the inner corner of
+ * an L) falls within it.
+ */
+function rectInPolygon(r: Rect, poly: PlanPoint[], margin: number): boolean {
+  const x0 = r.x0 - margin, x1 = r.x1 + margin, z0 = r.z0 - margin, z1 = r.z1 + margin;
+  const xm = (x0 + x1) / 2, zm = (z0 + z1) / 2;
+  const probes: PlanPoint[] = [[x0, z0], [x1, z0], [x1, z1], [x0, z1], [xm, z0], [xm, z1], [x0, zm], [x1, zm]];
+  if (!probes.every(([x, z]) => pointInPolygon(poly, x, z))) return false;
+  return !poly.some(([x, z]) => x > x0 && x < x1 && z > z0 && z < z1);
 }
 
 const overlaps = (a: Rect, b: Rect) => a.x0 < b.x1 && a.x1 > b.x0 && a.z0 < b.z1 && a.z1 > b.z0;
@@ -138,11 +158,13 @@ function podium(p: Planner, A: number, B: number) {
  * @param depthM   plate depth in metres
  * @param coreHalfM half the core size in metres
  * @param variant  per-floor variation (e.g. zone index)
+ * @param shape    plan shape (outline fitted to widthM × depthM); rect = no extra test
  */
-export function layoutFloor(zone: ZoneId, widthM: number, depthM: number, coreHalfM: number, variant = 0): Placement[] {
+export function layoutFloor(zone: ZoneId, widthM: number, depthM: number, coreHalfM: number, variant = 0, shape?: PlanShape): Placement[] {
   const A = widthM / 2;
   const B = depthM / 2;
-  const p = new Planner(A, B, coreHalfM);
+  const outline = shape && shape.kind !== "rect" ? planOutline(shape, widthM, depthM) : null;
+  const p = new Planner(A, B, coreHalfM, outline);
   if (zone === "office") office(p, A, B);
   else if (zone === "residential") residential(p, A, B);
   else if (zone === "crown") crown(p, A, B, variant);

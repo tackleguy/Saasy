@@ -14,6 +14,9 @@ import { Html } from "@react-three/drei";
 import type { Building, FloorData } from "@/types";
 import { explodedY, ZONES } from "@/lib/tower";
 import FloorPlate from "./FloorPlate";
+import CoreShaft from "./CoreShaft";
+import SectionCut from "./SectionCut";
+import FloorAnnotations from "./FloorAnnotations";
 
 interface Props {
   building: Building;
@@ -28,6 +31,8 @@ interface Props {
   walking: boolean;
   onSelect: (floor: FloorData) => void;
   onHover: (floor: FloorData | null) => void;
+  /** Section cutaway through this (active) building. */
+  section?: boolean;
 }
 
 /** Gold spire + rooftop plant screen that ride on top of the last floor. */
@@ -73,7 +78,7 @@ function ActiveRing({ radius, active }: { radius: number; active: boolean }) {
   );
 }
 
-export default function ProceduralBuilding({ building, explosion, active, selectedIndex, hovered, xray, walking, onSelect, onHover }: Props) {
+export default function ProceduralBuilding({ building, explosion, active, selectedIndex, hovered, xray, walking, onSelect, onHover, section = false }: Props) {
   const floors = building.floors;
   const top = floors[floors.length - 1];
   const podium = floors[0];
@@ -95,11 +100,26 @@ export default function ProceduralBuilding({ building, explosion, active, select
           walking={walking && selectedIndex === floor.index}
           onSelect={onSelect}
           onHover={onHover}
+          coreGhost={active && (xray || section || explosion > 0.05)}
         />
       ))}
 
       <RoofCrown top={top} explosion={explosion} dimmed={selectedIndex !== null && selectedIndex !== top.index} tall={floors.length >= 20} />
       <ActiveRing radius={Math.hypot(podium.width, podium.depth) / 2 + 1.5} active={active} />
+
+      {/* Core as one continuous shaft, section cutaway, level labels + isolated-floor outline */}
+      <CoreShaft building={building} explosion={explosion} active={active && !walking} xray={xray} section={section && active} focused={selectedIndex !== null} />
+      {section && active && !walking && <SectionCut building={building} explosion={explosion} />}
+      {active && (
+        <FloorAnnotations
+          building={building}
+          explosion={explosion}
+          selectedIndex={selectedIndex}
+          labels={explosion > 0.25 && !walking}
+          outline={!walking}
+          onSelect={onSelect}
+        />
+      )}
 
       {/* Hover label pinned beside the hovered floor */}
       {hoveredHere && !walking && (

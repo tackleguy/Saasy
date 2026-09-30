@@ -30,6 +30,53 @@ export interface ZoneMeta {
   description: string;
 }
 
+/* -------------------------------------------------------------- plan shapes */
+
+/**
+ * Floor-plate plan shapes. Every outline is generated inside the plate's
+ * width × depth bounding box (see `planOutline` in lib/tower.ts).
+ *   rect      — plain rectangle (default)
+ *   rounded   — rectangle with rounded corners
+ *   ellipse   — ellipse (a circle when width = depth)
+ *   hexagon   — six-sided, points on ±X
+ *   octagon   — regular-looking octagon (a chamfer of ≈29%)
+ *   triangle  — isosceles triangle with rounded corners, apex towards −Z
+ *   l-shape   — rectangle with the +X / −Z quadrant notched out
+ *   cross     — plus / cruciform plan
+ *   chamfer   — rectangle with 45° cut corners
+ */
+export type PlanShapeKind = "rect" | "rounded" | "ellipse" | "hexagon" | "octagon" | "triangle" | "l-shape" | "cross" | "chamfer";
+
+export interface PlanShape {
+  kind: PlanShapeKind;
+  /**
+   * Shape parameter, 0 – 1, meaning depends on the kind:
+   * rounded → corner radius (fraction of half the short side), triangle →
+   * corner radius (fraction of the short side), chamfer → cut (fraction of
+   * the short side), l-shape → notch size (fraction of each side), cross →
+   * arm width (fraction of each side). Ignored by the others.
+   */
+  amount?: number;
+}
+
+/** Vertical profile modifiers applied on top of the per-zone plate sizes. */
+export interface MassingProfile {
+  /**
+   * Wedding-cake setbacks: from floor fraction `at` (0 – 1 of the total floor
+   * count) upward, office / residential plates are scaled by `scale` (≤ 1).
+   * The last matching entry wins, so list them in ascending `at`.
+   */
+  setbacks: { at: number; scale: number }[];
+  /** Easing of the residential taper (linear = the original straight taper). */
+  taperCurve: "linear" | "ease-in" | "ease-out" | "ease-in-out";
+  /**
+   * Belly profile over the office + residential shaft: 0 = straight; 0.2 =
+   * the ends are 20% smaller than the zone plate at mid-height. The zone
+   * width / depth is always the widest point, so plates stay in the box.
+   */
+  bulge: number;
+}
+
 /** Physical massing of one zone within a specific building. */
 export interface ZoneGeometry {
   /** 1-based floor range covered by this zone (inclusive). */
@@ -40,6 +87,8 @@ export interface ZoneGeometry {
   depth: number;
   /** Floor-to-floor height, scene units. */
   height: number;
+  /** Plan shape of this zone's plates (width × depth is its bounding box). */
+  shape: PlanShape;
 }
 
 /** Facade articulation for a building. */
@@ -70,6 +119,8 @@ export interface BuildingSpec {
   taper: number;
   /** Side length of the square lift & stair core, scene units. */
   coreSize: number;
+  /** Setbacks, taper easing and bulge. */
+  profile: MassingProfile;
   facade: FacadeSpec;
   zones: Record<ZoneId, ZoneGeometry>;
 }
@@ -84,14 +135,18 @@ export interface FloorData {
   zone: ZoneId;
   /** 0-based position of this floor within its zone. */
   zoneIndex: number;
+  /** Bounding-box width (X) of the plate outline, scene units. */
   width: number;
+  /** Bounding-box depth (Z) of the plate outline, scene units. */
   depth: number;
+  /** Plan shape; the outline is `planOutline(shape, width, depth)`. */
+  shape: PlanShape;
   height: number;
   /** Y of the floor's underside when the tower is NOT exploded. */
   baseY: number;
   /** Rotation of the plate about the vertical axis, radians (the core never rotates). */
   rotationY: number;
-  /** Plate footprint area, scene units² (width × depth). */
+  /** Plate footprint area, scene units² — the true outline area (≤ width × depth). */
   footprintM2: number;
 }
 

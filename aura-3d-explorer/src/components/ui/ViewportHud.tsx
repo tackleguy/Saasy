@@ -6,7 +6,7 @@
  * the active building (hidden while the site map is open).
  */
 import { AnimatePresence, motion } from "framer-motion";
-import { Camera, Expand, Footprints, Map as MapIcon, RotateCcw, ScanEye } from "lucide-react";
+import { Camera, Expand, Footprints, Map as MapIcon, RotateCcw, ScanEye, SquareSplitHorizontal } from "lucide-react";
 import clsx from "clsx";
 import type { Building, BuildingId, ZoneId } from "@/types";
 import { EXPLODE_MAX, EXPLODE_MIN, ZONE_ORDER, ZONES } from "@/lib/tower";
@@ -24,6 +24,9 @@ interface Props {
   onExplosionChange: (v: number) => void;
   xray: boolean;
   onXrayChange: (v: boolean) => void;
+  /** Section cutaway toggle (shown when provided). */
+  section?: boolean;
+  onSectionChange?: (v: boolean) => void;
   onResetView: () => void;
   onFocusZone: (zone: ZoneId) => void;
   selectedZone: ZoneId | null;
@@ -52,6 +55,8 @@ export default function ViewportHud({
   onExplosionChange,
   xray,
   onXrayChange,
+  section = false,
+  onSectionChange,
   onResetView,
   onFocusZone,
   selectedZone,
@@ -176,6 +181,20 @@ export default function ViewportHud({
           >
             <ScanEye size={13} aria-hidden /> <span className="hidden sm:inline">Core</span>
           </button>
+          {onSectionChange && (
+            <button
+              onClick={() => onSectionChange(!section)}
+              aria-pressed={section}
+              aria-label="Section cut"
+              title="Section: slice the tower through its core to see every floor and slab in section"
+              className={clsx(
+                "flex shrink-0 items-center gap-1.5 self-end border px-2.5 py-1.5 text-[11px] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40",
+                section ? "border-oak bg-oak/10 text-oak" : "border-plaster text-ash hover:border-ink/30 hover:text-ink"
+              )}
+            >
+              <SquareSplitHorizontal size={13} aria-hidden /> <span className="hidden sm:inline">Section</span>
+            </button>
+          )}
           <button
             onClick={onMapToggle}
             aria-pressed={mapOpen}

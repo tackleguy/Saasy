@@ -30,6 +30,18 @@ const config: Config = {
       },
       letterSpacing: {
         caption: "-0.005em",
+        display: "-0.035em",
+        label: "0.08em",
+      },
+      fontSize: {
+        // Editorial display scale — fluid, capped at 6rem.
+        "display-xl": ["clamp(3rem, 7.4vw, 6rem)", { lineHeight: "0.94", letterSpacing: "-0.035em" }],
+        "display-lg": ["clamp(2.5rem, 5.4vw, 4.5rem)", { lineHeight: "0.98", letterSpacing: "-0.03em" }],
+        "display-md": ["clamp(2rem, 3.6vw, 3.25rem)", { lineHeight: "1.02", letterSpacing: "-0.025em" }],
+        "display-sm": ["clamp(1.625rem, 2.4vw, 2.25rem)", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+      },
+      maxWidth: {
+        site: "1600px",
       },
       transitionTimingFunction: {
         calm: "cubic-bezier(0.22, 1, 0.36, 1)",

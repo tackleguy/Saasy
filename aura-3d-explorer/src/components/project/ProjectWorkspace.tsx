@@ -13,6 +13,7 @@ import type { Project } from "@/content/projects";
 import { projectSite } from "@/content/projects";
 import { useExplorer } from "@/hooks/useExplorer";
 import { useYieldCalculator } from "@/hooks/useYieldCalculator";
+import { useRegisterExplorer } from "@/components/assistant/AssistantBridge";
 import ExplorerViewport from "@/components/explorer/ExplorerViewport";
 import FinancialSidebar from "@/components/ui/FinancialSidebar";
 import CommissionModelCard from "@/components/ui/CommissionModelCard";
@@ -20,22 +21,13 @@ import FinancialChart from "@/components/ui/FinancialChart";
 import SensitivityTable from "@/components/ui/SensitivityTable";
 import StackingPlan, { type UnitInfo } from "./StackingPlan";
 import EnquiryForm from "./EnquiryForm";
-
-function SectionHeading({ id, title, caption }: { id: string; title: string; caption: string }) {
-  return (
-    <header className="mb-5 flex flex-wrap items-end justify-between gap-2">
-      <h2 id={id} className="font-serif text-3xl text-ink sm:text-4xl">
-        {title}
-      </h2>
-      <p className="caption max-w-md">{caption}</p>
-    </header>
-  );
-}
+import SectionHeading from "@/components/site/SectionHeading";
 
 export default function ProjectWorkspace({ project }: { project: Project }) {
   const site = projectSite(project);
   const yieldCalc = useYieldCalculator(site, project.finance);
   const x = useExplorer(site, { city: project.backdrop });
+  useRegisterExplorer(x, { project, yieldCalc }); // lets the AURA assistant see + drive this explorer
   const [enquiryUnit, setEnquiryUnit] = useState<string | null>(null);
 
   const building = x.building;
@@ -58,8 +50,10 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
   return (
     <>
       {/* 1 — Explorer + yield engine */}
-      <section aria-labelledby="explore" className="mx-auto w-full max-w-[1600px] scroll-mt-20 px-4 py-12 sm:px-6">
-        <SectionHeading id="explore" title="Explore in 3D" caption="Orbit, explode the stack, isolate a floor and walk inside. Figures update live with the pro forma." />
+      <section aria-labelledby="explore" className="shell pb-16 sm:pb-24">
+        <SectionHeading id="explore" title="Explore in 3D" size="md" className="mb-10">
+          Orbit, explode the stack, isolate a floor and walk inside. The pro forma beside the model updates as you change it.
+        </SectionHeading>
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
           <ExplorerViewport explorer={x} metricsById={yieldCalc.metricsById} intro={false} className="h-[60vh] min-h-[420px] lg:h-[74vh]" />
           <div className="thin-scroll space-y-4 lg:h-[74vh] lg:overflow-y-auto">
@@ -84,8 +78,10 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
       </section>
 
       {/* 2 — Stacking plan */}
-      <section aria-labelledby="availability" className="mx-auto w-full max-w-[1600px] px-4 py-12 sm:px-6">
-        <SectionHeading id="availability" title="Unit Availability" caption="Each row is a floor, each cell a unit. Select a unit for its sheet, or a floor to see it in 3D." />
+      <section aria-labelledby="availability" className="shell pb-16 sm:pb-24">
+        <SectionHeading id="availability" title="Unit availability" size="md" className="mb-10">
+          Each row is a floor, each cell a unit. Select a unit for its sheet, or a floor number to see it in 3D.
+        </SectionHeading>
         {site.length > 1 && (
           <div className="mb-4 flex flex-wrap gap-1" role="group" aria-label="Building">
             {site.map((b) => (
@@ -94,8 +90,8 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
                 onClick={() => x.selectBuilding(b.id)}
                 aria-pressed={b.id === building.id}
                 className={clsx(
-                  "border px-3 py-1.5 text-xs transition-colors duration-300",
-                  b.id === building.id ? "border-ink bg-ink text-paper" : "border-plaster text-ash hover:text-ink"
+                  "border px-3.5 py-2 text-[13px] transition-colors duration-300",
+                  b.id === building.id ? "border-ink bg-ink text-paper" : "border-plaster text-ink hover:border-ink/50"
                 )}
               >
                 {b.name}
@@ -107,17 +103,19 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
       </section>
 
       {/* 3 — Enquiry */}
-      <section aria-labelledby="enquire" className="mx-auto w-full max-w-[1600px] scroll-mt-20 px-4 pb-16 pt-12 sm:px-6">
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
-          <div>
-            <h2 id="enquire" className="font-serif text-3xl text-ink sm:text-4xl">
-              Request Pro Forma / Book Viewing
+      <section aria-labelledby="enquire" className="bg-stone">
+        <div className="shell grid gap-10 py-16 sm:py-24 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <h2 id="enquire" className="font-serif text-display-md text-ink">
+              Request the pro forma, or book a viewing.
             </h2>
-            <p className="mt-3 max-w-md text-ash">
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ash">
               Get the full development appraisal for {project.name}, or arrange a guided viewing of the marketing suite and show apartment.
             </p>
           </div>
-          <EnquiryForm projectName={project.name} unitCode={enquiryUnit} />
+          <div className="lg:col-span-6 lg:col-start-7">
+            <EnquiryForm projectName={project.name} unitCode={enquiryUnit} />
+          </div>
         </div>
       </section>
     </>

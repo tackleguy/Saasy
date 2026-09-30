@@ -73,6 +73,8 @@ interface Props {
   explosion: number;
   selectedIndex: number | null;
   xray: boolean;
+  /** Section cutaway through the active building. */
+  section?: boolean;
   /** Select a floor (in any building), or clear the selection with null. */
   onSelect: (floor: FloorData | null) => void;
   /** Increment to snap back to the default hero view. */
@@ -204,6 +206,7 @@ export default function BuildingScene({
   explosion,
   selectedIndex,
   xray,
+  section = false,
   onSelect,
   resetNonce,
   walking,
@@ -280,6 +283,7 @@ export default function BuildingScene({
             selectedIndex={active ? selectedIndex : null}
             hovered={hovered}
             xray={xray}
+            section={section && active}
             walking={walking && active}
             onSelect={handleSelect}
             onHover={setHovered}

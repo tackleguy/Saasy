@@ -23,6 +23,12 @@
  * X-ray, transmission is eased to 0 and plain opacity takes over so the glass
  * can fade (transmissive surfaces can't be see-through-and-faded at once).
  *
+ * Plan shapes: rectangular plates use the original box geometry. Any other
+ * `floor.shape` (ellipse, hexagon, triangle, L, cross…) swaps in outline-based
+ * geometry from facadeGeometry — extruded slab and curtain wall, fins walked
+ * along the perimeter, balcony rings that follow the outline, arcade panels on
+ * the straight runs, and outline-shaped ceiling / floor finish.
+ *
  * All state changes (explode height, hover, dimming to 0.15, X-ray, walking)
  * are eased per frame with frame-rate-independent damping, without React
  * re-renders.
@@ -33,7 +39,22 @@ import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
-import { arcadePanel, balconyBand, balustrade, finMatrices, liftDoors, plateEdges, UNIT_BOX } from "./facadeGeometry";
+import {
+  arcadePanel,
+  arcadeSpans,
+  balconyBand,
+  balustrade,
+  finMatrices,
+  liftDoors,
+  outlineFinMatrices,
+  plateEdges,
+  plateFloor,
+  plateSolid,
+  shapedBalustrade,
+  shapedBand,
+  shapedEdges,
+  UNIT_BOX,
+} from "./facadeGeometry";
 import { concreteTexture, marbleTexture, plasterTexture, stoneTexture, woodTexture } from "./textures";
 
 /** Opacity of every non-selected floor while one floor is isolated. */
@@ -100,13 +121,20 @@ interface Props {
   walking: boolean;
   onSelect: (floor: FloorData) => void;
   onHover: (floor: FloorData | null) => void;
+  /** Ghost this slice of core so the continuous <CoreShaft> reads through it. */
+  coreGhost?: boolean;
 }
 
-export default function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover }: Props) {
+export default function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover, coreGhost = false }: Props) {
   const look = LOOKS[floor.zone];
   const bodyH = floor.height - SLAB_THICKNESS;
   const doorH = Math.min(bodyH * 0.8, 0.62);
-  const arcade = floor.zone === "podium" && facade.arches;
+  // Non-rect plan shapes use outline geometry; rect keeps the original boxes.
+  const shape = floor.shape;
+  const shaped = !!shape && shape.kind !== "rect";
+  // Curved plates (ellipse) have no straight runs for an arcade — they fall back to glazing + fins.
+  const spans = shaped && floor.zone === "podium" && facade.arches ? arcadeSpans(shape, floor.width, floor.depth, 0.3) : [];
+  const arcade = floor.zone === "podium" && facade.arches && (!shaped || spans.length > 0);
   const balconies = floor.zone === "residential" && facade.balconies;
   // Office fins follow the building's fin density; other zones use slim mullions.
   const fin =
@@ -154,9 +182,15 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
   }, [floor.zone, floor.width, floor.depth]);
   useEffect(() => () => stoneMat.dispose(), [stoneMat]);
 
-  const edges = plateEdges(floor.width - inset, floor.depth - inset, SLAB_THICKNESS, bodyH);
+  const edges = shaped
+    ? shapedEdges(shape, floor.width, floor.depth, -inset / 2, SLAB_THICKNESS, bodyH)
+    : plateEdges(floor.width - inset, floor.depth - inset, SLAB_THICKNESS, bodyH);
   const doors = liftDoors(coreSize, SLAB_THICKNESS, doorH);
-  const fins = fin ? finMatrices(floor.width, floor.depth, SLAB_THICKNESS, bodyH, fin.spacing, fin.thickness, fin.depth) : null;
+  const fins = fin
+    ? shaped
+      ? outlineFinMatrices(shape, floor.width, floor.depth, SLAB_THICKNESS, bodyH, fin.spacing, fin.thickness, fin.depth)
+      : finMatrices(floor.width, floor.depth, SLAB_THICKNESS, bodyH, fin.spacing, fin.thickness, fin.depth)
+    : null;
 
   // Upload fin transforms once per geometry change.
   useEffect(() => {
@@ -200,9 +234,10 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
     if (arcade) fadeSolid(stoneMat, dimmed ? DIMMED_OPACITY : selected || xray ? 0.25 : 1, k);
     fadeSolid(bandMat.current, dimmed ? DIMMED_OPACITY : xray ? 0.4 : 1, k);
     if (balusMat.current) balusMat.current.opacity = lerp(balusMat.current.opacity, dimmed ? 0.05 : 0.3, k);
-    fadeSolid(coreMat.current, fade, k);
+    const coreFade = coreGhost && !selected ? Math.min(fade, 0.18) : fade;
+    fadeSolid(coreMat.current, coreFade, k);
     if (coreMat.current) coreMat.current.emissiveIntensity = lerp(coreMat.current.emissiveIntensity, xray && !dimmed ? 0.45 : 0, k);
-    fadeSolid(doorMat.current, fade, k);
+    fadeSolid(doorMat.current, coreFade, k);
 
     // Ceiling hidden when looking down into an isolated floor (unless walking inside it).
     if (ceilMat.current && ceilMesh.current) {
@@ -246,14 +281,24 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
       {/* ── Twisted plate ── */}
       <group rotation={[0, floor.rotationY, 0]} onClick={handleClick} onPointerOver={handleOver} onPointerOut={handleOut}>
         {/* Slab — light concrete */}
-        <mesh ref={slabMesh} position={[0, SLAB_THICKNESS / 2, 0]} castShadow receiveShadow>
-          <boxGeometry args={[w + 0.1, SLAB_THICKNESS, d + 0.1]} />
+        <mesh
+          ref={slabMesh}
+          geometry={shaped ? plateSolid(shape, w, d, 0.05, SLAB_THICKNESS) : undefined}
+          position={[0, shaped ? 0 : SLAB_THICKNESS / 2, 0]}
+          castShadow
+          receiveShadow
+        >
+          {!shaped && <boxGeometry args={[w + 0.1, SLAB_THICKNESS, d + 0.1]} />}
           <meshStandardMaterial ref={slabMat} map={concreteTexture()} color="#e6e1d8" roughness={0.9} />
         </mesh>
 
         {/* Curtain wall (the main hit target) */}
-        <mesh position={[0, SLAB_THICKNESS + bodyH / 2, 0]} receiveShadow>
-          <boxGeometry args={[w - inset, bodyH, d - inset]} />
+        <mesh
+          geometry={shaped ? plateSolid(shape, w, d, -inset / 2, bodyH) : undefined}
+          position={[0, shaped ? SLAB_THICKNESS : SLAB_THICKNESS + bodyH / 2, 0]}
+          receiveShadow
+        >
+          {!shaped && <boxGeometry args={[w - inset, bodyH, d - inset]} />}
           <meshPhysicalMaterial
             ref={glassMat as RefObject<THREE.MeshPhysicalMaterial>}
             color={look.color}
@@ -272,7 +317,14 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         </mesh>
 
         {/* Stone arcade podium (4 panels with arched openings) */}
-        {arcade && (
+        {arcade && shaped && (
+          <group>
+            {spans.map((p, i) => (
+              <mesh key={i} geometry={arcadePanel(+p.length.toFixed(3), bodyH, 0.3)} material={stoneMat} position={[p.x, SLAB_THICKNESS, p.z]} rotation={[0, p.rot, 0]} castShadow receiveShadow />
+            ))}
+          </group>
+        )}
+        {arcade && !shaped && (
           <group>
             {[
               { rot: 0, pos: [0, SLAB_THICKNESS, d / 2 - 0.3] as const, width: w },
@@ -295,10 +347,10 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         {/* Curved balcony band + glass balustrade */}
         {balconies && (
           <>
-            <mesh geometry={balconyBand(w, d, 0.45, 0.07)} position={[0, SLAB_THICKNESS - 0.07, 0]} castShadow receiveShadow raycast={() => null}>
+            <mesh geometry={shaped ? shapedBand(shape, w, d, 0.45, 0.07) : balconyBand(w, d, 0.45, 0.07)} position={[0, SLAB_THICKNESS - 0.07, 0]} castShadow receiveShadow raycast={() => null}>
               <meshStandardMaterial ref={bandMat} map={concreteTexture()} color="#f4f0e9" roughness={0.7} />
             </mesh>
-            <mesh geometry={balustrade(w, d, 0.45, 0.28)} position={[0, SLAB_THICKNESS, 0]} raycast={() => null}>
+            <mesh geometry={shaped ? shapedBalustrade(shape, w, d, 0.45, 0.28) : balustrade(w, d, 0.45, 0.28)} position={[0, SLAB_THICKNESS, 0]} raycast={() => null}>
               <meshPhysicalMaterial ref={balusMat} color="#d7e3e5" roughness={0.1} transparent opacity={0.3} depthWrite={false} />
             </mesh>
           </>
@@ -310,8 +362,14 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         </lineSegments>
 
         {/* Light plaster ceiling, visible through the glass */}
-        <mesh ref={ceilMesh} rotation-x={Math.PI / 2} position={[0, floor.height - 0.004, 0]} raycast={() => null}>
-          <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />
+        <mesh
+          ref={ceilMesh}
+          geometry={shaped ? plateFloor(shape, w, d, -inset / 2 - 0.01) : undefined}
+          rotation-x={shaped ? 0 : Math.PI / 2}
+          position={[0, floor.height - 0.004, 0]}
+          raycast={() => null}
+        >
+          {!shaped && <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />}
           <meshStandardMaterial ref={ceilMat} map={plasterTexture()} roughness={0.95} side={THREE.DoubleSide} />
         </mesh>
 
@@ -323,8 +381,14 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         {/* Interior: floor finish, warm indirect light and furniture — only when isolated */}
         {selected && (
           <>
-            <mesh rotation-x={-Math.PI / 2} position={[0, SLAB_THICKNESS + 0.034, 0]} receiveShadow raycast={() => null}>
-              <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />
+            <mesh
+              geometry={shaped ? plateFloor(shape, w, d, -inset / 2 - 0.01) : undefined}
+              rotation-x={shaped ? 0 : -Math.PI / 2}
+              position={[0, SLAB_THICKNESS + 0.034, 0]}
+              receiveShadow
+              raycast={() => null}
+            >
+              {!shaped && <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />}
               <meshStandardMaterial map={finishMap} color={look.finish} roughness={floor.zone === "crown" ? 0.2 : 0.55} />
             </mesh>
             <pointLight position={[0, floor.height * 0.85, 0]} color="#ffd9a8" intensity={3} distance={Math.max(w, d)} decay={1.6} />

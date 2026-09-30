@@ -24,6 +24,7 @@ import FloorInspectorCard from "@/components/ui/FloorInspectorCard";
 import WalkHud from "@/components/ui/WalkHud";
 import ImportedModelHud from "@/components/ui/ImportedModelHud";
 import CityPicker from "@/components/ui/CityPicker";
+import StackingBar from "@/components/ui/StackingBar";
 import { PHOTO_ANGLES } from "@/lib/explorer";
 
 // The site map reads the 3D city plan, so it loads only when first opened.
@@ -60,6 +61,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         explosion={x.explosion}
         selectedIndex={x.selectedIndex}
         xray={x.xray}
+        section={x.sectionMode}
         onSelect={x.selectFloor}
         resetNonce={x.resetNonce}
         walking={x.walking}
@@ -109,6 +111,8 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             onExplosionChange={x.setExplosion}
             xray={x.xray}
             onXrayChange={x.setXray}
+            section={x.sectionMode}
+            onSectionChange={x.setSectionMode}
             onResetView={x.resetView}
             onFocusZone={x.focusZone}
             selectedZone={x.selectedFloor?.zone ?? null}
@@ -123,6 +127,14 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             mapOpen={x.mapOpen}
             onMapToggle={() => x.setMapOpen(!x.mapOpen)}
           />
+          {!x.mapOpen && (
+            <StackingBar
+              building={x.building}
+              selectedIndex={x.selectedIndex}
+              onSelect={x.selectFloor}
+              className="absolute bottom-36 right-3 top-16 z-10 hidden w-9 sm:right-4 sm:flex lg:bottom-[150px] lg:top-[200px]"
+            />
+          )}
           {x.mapOpen && (
             <SiteMap
               site={x.site}
@@ -157,6 +169,10 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             onClose={() => x.selectFloor(null)}
             onStep={x.stepFloor}
             onWalk={x.startWalk}
+            onViewpoint={(i) => {
+              x.startWalk();
+              x.goToView(i);
+            }}
           />
         </>
       )}

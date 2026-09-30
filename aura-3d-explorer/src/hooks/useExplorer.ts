@@ -60,6 +60,8 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   const [explosion, setExplosion] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [xray, setXray] = useState(false);
+  // Section cutaway: vertical clipping plane through the active building's core.
+  const [sectionMode, setSectionMode] = useState(false);
   const [resetNonce, setResetNonce] = useState(0);
   // First-person walk-through of the isolated floor
   const [walking, setWalking] = useState(false);
@@ -168,6 +170,7 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     setSelectedIndex(null);
     setExplosion(0);
     setXray(false);
+    setSectionMode(false);
     setResetNonce((n) => n + 1);
   }, []);
 
@@ -245,6 +248,8 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     focusZone,
     xray,
     setXray,
+    sectionMode,
+    setSectionMode,
     resetNonce,
     resetView,
     reveal,

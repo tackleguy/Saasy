@@ -25,6 +25,7 @@ import { projectSite } from "@/content/projects";
 import { siteFloorCount } from "@/lib/tower";
 import { useYieldCalculator } from "@/hooks/useYieldCalculator";
 import { useExplorer } from "@/hooks/useExplorer";
+import { useRegisterExplorer } from "@/components/assistant/AssistantBridge";
 import ExplorerViewport from "@/components/explorer/ExplorerViewport";
 import FinancialSidebar from "@/components/ui/FinancialSidebar";
 import FinancialChart from "@/components/ui/FinancialChart";
@@ -43,6 +44,7 @@ export default function StudioApp({ project }: { project: Project }) {
   const [cadOpen, setCadOpen] = useState(false);
   const yieldCalc = useYieldCalculator(siteBuildings, project.finance);
   const x = useExplorer(siteBuildings, { keyboard: true, keyboardPaused: cadOpen, city: project.backdrop });
+  useRegisterExplorer(x, { project, yieldCalc }); // lets the AURA assistant see + drive this explorer
 
   const building = x.building;
   const inputs = yieldCalc.inputsById[building.id];
