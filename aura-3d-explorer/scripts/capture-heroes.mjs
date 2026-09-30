@@ -7,7 +7,7 @@
  *   public/projects/<slug>/hero-3.jpg   interior — living room walk-through view
  *
  * Needs a running production build:  npm run build && npm start
- * Then:                               node scripts/capture-heroes.mjs [--base http://localhost:3000] [--only slug]
+ * Then:                               node scripts/capture-heroes.mjs [--base http://localhost:3000] [--only slug] [--shot hero-3.jpg]
  *
  * Uses the installed Google Chrome (headless, software GL is fine — it's
  * slow, not wrong) via playwright-core, and sharp to encode 1600×1000 JPGs.
@@ -25,6 +25,8 @@ const opt = (name, def) => {
 };
 const BASE = opt("base", "http://localhost:3123");
 const ONLY = opt("only", null);
+/** Re-shoot a single file for every project, e.g. --shot hero-3.jpg */
+const SHOT = opt("shot", null);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "projects");
 
 const SLUGS = ["meridian-tower", "seaform-hotel", "chess-towers", "infiniti", "refad-place", "broadway-bayonne", "lorenskog-quarter", "sports-world"];
@@ -42,6 +44,7 @@ page.on("pageerror", (e) => console.error("  page error:", e.message));
 for (const slug of SLUGS) {
   if (ONLY && slug !== ONLY) continue;
   for (const shot of SHOTS) {
+    if (SHOT && shot.file !== SHOT) continue;
     const url = `${BASE}/render/${slug}?${shot.query}`;
     await page.goto(url, { waitUntil: "load", timeout: 60_000 });
     // RenderView flags readiness ~6 s after mount; give the walk glide and post FX a little more.
