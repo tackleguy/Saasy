@@ -10,8 +10,8 @@
 /** The four architectural programmes stacked in every tower. */
 export type ZoneId = "podium" | "office" | "residential" | "crown";
 
-/** The three buildings on the development site. */
-export type BuildingId = "meridian" | "spire" | "lofts";
+/** Identifier of a building within a project site (e.g. "meridian", "tower-a"). */
+export type BuildingId = string;
 
 /** Programme metadata shared by every building (look, economics, copy). */
 export interface ZoneMeta {
@@ -184,4 +184,14 @@ export interface IngestionStage {
   from: number;
   /** Progress (0 – 100) at which this stage completes. */
   to: number;
+}
+
+/* ------------------------------------------------------------------ content */
+
+export type ProjectStatus = "Concept" | "Approved" | "Under Construction" | "Selling";
+
+export interface ProjectImage {
+  /** Path under /public, e.g. /projects/seaform-hotel/hero-1.jpg */
+  src: string;
+  alt: string;
 }

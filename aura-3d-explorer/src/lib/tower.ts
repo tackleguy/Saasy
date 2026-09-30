@@ -1,8 +1,11 @@
 /**
- * AURA — procedural site definition (three towers).
+ * AURA — procedural tower generator.
  * -----------------------------------------------------------------------------
- * Pure data + maths (no React, no Three.js). Change a building here and the
- * 3D scene, inspector and yield engine all follow.
+ * Pure data + maths (no React, no Three.js). A project describes each of its
+ * buildings with a compact `ProjectMassing` (zone floor counts, plate sizes,
+ * twist, facade articulation); `buildingFromMassing` turns that into a full
+ * `BuildingSpec`, and `buildSite` generates every floor plate. The 3D scene,
+ * inspector and yield engine all read from the result.
  *
  * Scale: plate sizes use the brief's dimensions in scene units. The storey
  * heights (0.85 – 1.8) only make sense as a scale model, so the scene is read
@@ -10,7 +13,7 @@
  * ~3.0 m (residential), 3.2 m (office), 5 m (penthouse) and 6.4 m (lobby).
  * Furniture is modelled at true size in metres and scaled by MODEL_SCALE.
  */
-import type { Building, BuildingId, BuildingSpec, FloorData, ZoneId, ZoneMeta } from "@/types";
+import type { Building, BuildingSpec, FacadeSpec, FloorData, ZoneId, ZoneMeta } from "@/types";
 
 /** Scene units per real-world metre (1 : 3.57 model). */
 export const MODEL_SCALE = 0.28;
@@ -65,60 +68,57 @@ export const ZONES: Record<ZoneId, ZoneMeta> = {
 /** Zones in stacking order, ground → sky. */
 export const ZONE_ORDER: ZoneId[] = ["podium", "office", "residential", "crown"];
 
-/**
- * The three buildings. Positions are chosen so that, from the default camera
- * angle, the site reads left → right as Lofts · Meridian · Spire.
- */
-export const BUILDING_SPECS: BuildingSpec[] = [
-  {
-    id: "meridian",
-    name: "The Meridian",
-    short: "Meridian",
-    tagline: "20-storey twisting mixed-use tower",
-    position: [0, 0],
-    twistDeg: 3.5,
-    coreSize: 2.4,
-    facade: { finSpacing: 1.0, balconies: true, arches: true },
-    zones: {
-      podium: { floors: [1, 1], width: 12, depth: 12, height: 1.8 },
-      office: { floors: [2, 7], width: 10, depth: 10, height: 0.9 },
-      residential: { floors: [8, 18], width: 8.5, depth: 8.5, height: 0.85 },
-      crown: { floors: [19, 20], width: 6.5, depth: 6.5, height: 1.4 },
-    },
-  },
-  {
-    id: "spire",
-    name: "Meridian Spire",
-    short: "Spire",
-    tagline: "30-storey counter-twisting landmark",
-    position: [17, -17],
-    twistDeg: -2.5,
-    coreSize: 2.1,
-    facade: { finSpacing: 0.75, balconies: false, arches: false },
-    zones: {
-      podium: { floors: [1, 1], width: 11, depth: 11, height: 1.8 },
-      office: { floors: [2, 11], width: 9, depth: 9, height: 0.9 },
-      residential: { floors: [12, 27], width: 7.5, depth: 7.5, height: 0.85 },
-      crown: { floors: [28, 30], width: 5.5, depth: 5.5, height: 1.4 },
-    },
-  },
-  {
-    id: "lofts",
-    name: "Meridian Lofts",
-    short: "Lofts",
-    tagline: "10-storey residential courtyard block",
-    position: [-17, 16],
-    twistDeg: 0,
-    coreSize: 2.6,
-    facade: { finSpacing: 1.3, balconies: true, arches: true },
-    zones: {
-      podium: { floors: [1, 1], width: 14, depth: 10, height: 1.8 },
-      office: { floors: [2, 3], width: 13, depth: 9, height: 0.9 },
-      residential: { floors: [4, 9], width: 12, depth: 8.5, height: 0.85 },
-      crown: { floors: [10, 10], width: 9, depth: 6.5, height: 1.4 },
-    },
-  },
-];
+
+/* ------------------------------------------------------------------ massing */
+
+/** Default floor-to-floor heights per zone (scene units). */
+export const DEFAULT_HEIGHTS: Record<ZoneId, number> = { podium: 1.8, office: 0.9, residential: 0.85, crown: 1.4 };
+
+/** Compact description of one building's massing, used by the project content. */
+export interface ProjectMassing {
+  id: string;
+  name: string;
+  short: string;
+  tagline: string;
+  /** Ground-plane position [x, z]. */
+  position: [number, number];
+  /** Number of floors in each zone, bottom → top (each ≥ 1). */
+  floors: Record<ZoneId, number>;
+  /** Plate size [width, depth] per zone, scene units. */
+  footprint: Record<ZoneId, [number, number]>;
+  heights?: Partial<Record<ZoneId, number>>;
+  /** Degrees of twist per floor from the first residential floor up. */
+  twistDeg?: number;
+  coreSize?: number;
+  facade?: Partial<FacadeSpec>;
+}
+
+const DEFAULT_FACADE: FacadeSpec = { finSpacing: 1.0, balconies: false, arches: false };
+
+/** Expand a compact massing into a full BuildingSpec (contiguous zone floor ranges). */
+export function buildingFromMassing(m: ProjectMassing): BuildingSpec {
+  let next = 1;
+  const zones = {} as BuildingSpec["zones"];
+  for (const z of ZONE_ORDER) {
+    const count = Math.max(1, m.floors[z]);
+    const [width, depth] = m.footprint[z];
+    zones[z] = { floors: [next, next + count - 1], width, depth, height: m.heights?.[z] ?? DEFAULT_HEIGHTS[z] };
+    next += count;
+  }
+  const minPlate = Math.min(...ZONE_ORDER.map((z) => Math.min(...m.footprint[z])));
+  return {
+    id: m.id,
+    name: m.name,
+    short: m.short,
+    tagline: m.tagline,
+    position: m.position,
+    twistDeg: m.twistDeg ?? 0,
+    // Core ≈ 36% of the smallest plate, capped — keeps corridors around it on slim crowns.
+    coreSize: m.coreSize ?? Math.min(2.6, +(minPlate * 0.36).toFixed(2)),
+    facade: { ...DEFAULT_FACADE, ...m.facade },
+    zones,
+  };
+}
 
 /** Zone that owns a given 1-based floor number in a building. */
 export function zoneForFloor(spec: BuildingSpec, floorNumber: number): ZoneId {
@@ -165,16 +165,14 @@ export function generateFloors(spec: BuildingSpec): FloorData[] {
   return floors;
 }
 
-/** Every building with its generated floors — deterministic, so shared. */
-export const SITE: Building[] = BUILDING_SPECS.map((spec) => ({ ...spec, floors: generateFloors(spec) }));
 
-export const BUILDING_IDS = SITE.map((b) => b.id);
-
-export function getBuilding(id: BuildingId): Building {
-  return SITE.find((b) => b.id === id)!;
+/** Generate every building of a site (specs → specs + floor plates). */
+export function buildSite(specs: BuildingSpec[]): Building[] {
+  return specs.map((spec) => ({ ...spec, floors: generateFloors(spec) }));
 }
 
-export const TOTAL_FLOORS = SITE.reduce((s, b) => s + b.floors.length, 0);
+/** Total floor count across a site. */
+export const siteFloorCount = (site: Building[]) => site.reduce((s, b) => s + b.floors.length, 0);
 
 /**
  * Exploded-view elevation:  Y_render = Y_base + floorIndex × explosion × 1.2

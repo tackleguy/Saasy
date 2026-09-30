@@ -8,11 +8,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Camera, Expand, Footprints, RotateCcw, ScanEye } from "lucide-react";
 import clsx from "clsx";
 import type { Building, BuildingId, ZoneId } from "@/types";
-import { EXPLODE_MAX, EXPLODE_MIN, SITE, ZONE_ORDER, ZONES } from "@/lib/tower";
+import { EXPLODE_MAX, EXPLODE_MIN, ZONE_ORDER, ZONES } from "@/lib/tower";
 import { RangeSlider } from "./primitives";
-import { PHOTO_ANGLES, type PhotoAngle } from "@/components/3d/BuildingScene";
+import { PHOTO_ANGLES, type PhotoAngle } from "@/lib/explorer";
 
 interface Props {
+  /** Every building on the project site (for the building tabs). */
+  site: Building[];
   building: Building;
   onBuildingChange: (id: BuildingId) => void;
   explosion: number;
@@ -34,6 +36,7 @@ interface Props {
 }
 
 export default function ViewportHud({
+  site,
   building,
   onBuildingChange,
   explosion,
@@ -54,7 +57,7 @@ export default function ViewportHud({
     <>
       {/* Building tabs — top centre */}
       <AnimatePresence>
-        {showBuildingTabs && (
+        {showBuildingTabs && site.length > 1 && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,7 +65,7 @@ export default function ViewportHud({
             className="absolute inset-x-0 top-3 z-10 mx-auto flex w-fit max-w-[calc(100%-1.5rem)] flex-col items-center gap-1.5 sm:top-4"
           >
             <div role="tablist" aria-label="Buildings" className="overlay flex gap-1 rounded-full p-1">
-              {SITE.map((b) => {
+              {site.map((b) => {
                 const active = b.id === building.id;
                 return (
                   <button

@@ -12,7 +12,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { BadgePercent, Handshake, Scale } from "lucide-react";
 import type { SiteMetrics, YieldMetrics } from "@/types";
-import { PLATFORM_FEE_RATE } from "@/hooks/useYieldCalculator";
+import { PLATFORM_FEE_RATE } from "@/lib/finance";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import { AnimatedValue, Panel, RangeSlider } from "./primitives";
 
@@ -116,7 +116,7 @@ export default function CommissionModelCard({ metrics: m, site, buildingName }: 
 
       {/* Site-wide fee */}
       <div className="mt-3 flex items-center justify-between rounded-[3px] border border-plaster px-4 py-2.5 text-xs">
-        <span className="text-ash">Site-wide 1% fee · all 3 towers</span>
+        <span className="text-ash">Site-wide 1% fee · all buildings</span>
         <span className="font-serif text-base tabular-nums text-ink">{fmtMoney(site.platformSuccessFee)}</span>
       </div>
     </Panel>

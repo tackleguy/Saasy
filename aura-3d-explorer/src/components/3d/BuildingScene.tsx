@@ -15,7 +15,8 @@ import * as THREE from "three";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import type { Building, BuildingId, FloorData } from "@/types";
-import { buildingHeight, floorCentre, SITE } from "@/lib/tower";
+import { buildingHeight, floorCentre } from "@/lib/tower";
+import type { PhotoAngle, Quality } from "@/lib/explorer";
 import { uwToXZ } from "@/lib/siteLayout";
 import { useCameraTween, type CameraGoal, type Vec3 } from "@/hooks/useCameraTween";
 import ProceduralBuilding from "./ProceduralBuilding";
@@ -30,15 +31,6 @@ export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
 /** Hero overview direction: across the water, from a slightly low angle. */
 const OVERVIEW_DIRECTION: Vec3 = [1, 0.22, 1];
 
-export type Quality = "high" | "low";
-export type PhotoAngle = "street" | "waterfront" | "aerial" | "podium";
-
-export const PHOTO_ANGLES: { id: PhotoAngle; label: string }[] = [
-  { id: "street", label: "Street" },
-  { id: "waterfront", label: "Waterfront" },
-  { id: "aerial", label: "Aerial" },
-  { id: "podium", label: "Podium" },
-];
 
 /** Screen-frame (u, w) of a building from its world position. */
 function buildingUW(b: Building): [number, number] {
@@ -68,7 +60,7 @@ function photoPose(angle: PhotoAngle, b: Building, explosion: number): { positio
 }
 
 interface Props {
-  buildings?: Building[];
+  buildings: Building[];
   activeBuildingId: BuildingId;
   explosion: number;
   selectedIndex: number | null;
@@ -166,7 +158,7 @@ function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Pro
 }
 
 export default function BuildingScene({
-  buildings = SITE,
+  buildings,
   activeBuildingId,
   explosion,
   selectedIndex,

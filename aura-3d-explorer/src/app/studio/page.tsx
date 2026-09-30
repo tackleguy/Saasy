@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import StudioApp from "@/components/studio/StudioApp";
+import { FLAGSHIP } from "@/content/projects";
 
 export const metadata: Metadata = {
   title: "Studio",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function StudioPage() {
-  return <StudioApp />;
+  return <StudioApp project={FLAGSHIP} />;
 }

@@ -11,12 +11,16 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import { Building2, Calculator, DollarSign, Hammer, Home, Landmark, Percent, RotateCcw, Ruler, TrendingUp } from "lucide-react";
 import type { Building, BuildingId, SiteMetrics, UnitMixStrategy, YieldInputs, YieldMetrics, ZoneId } from "@/types";
-import { INPUT_RANGES, STRATEGIES } from "@/hooks/useYieldCalculator";
-import { SITE, ZONES } from "@/lib/tower";
+import { INPUT_RANGES, STRATEGIES } from "@/lib/finance";
+import { ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum, fmtPct } from "@/lib/format";
 import { Panel, Metric, RangeSlider, SegmentedControl } from "./primitives";
 
 interface Props {
+  /** Every building on the project site. */
+  buildings: Building[];
+  /** Label for the site card, e.g. the project name. */
+  siteName: string;
   building: Building;
   inputs: YieldInputs;
   metrics: YieldMetrics;
@@ -35,59 +39,73 @@ const STRATEGY_OPTIONS = (Object.keys(STRATEGIES) as UnitMixStrategy[]).map((val
   label: STRATEGIES[value].label,
 }));
 
-export default function FinancialSidebar({ building, inputs, metrics: m, metricsById, site, onBuildingChange, setInput, onReset, onFocusZone }: Props) {
+export default function FinancialSidebar({
+  buildings,
+  siteName,
+  building,
+  inputs,
+  metrics: m,
+  metricsById,
+  site,
+  onBuildingChange,
+  setInput,
+  onReset,
+  onFocusZone,
+}: Props) {
   const R = INPUT_RANGES;
   const profitable = m.grossProfit >= 0;
 
   return (
     <>
       {/* ---------------------------------------------------- Site */}
-      <Panel index={0} kicker="The Meridian Quarter" icon={<Landmark size={11} />} title="Site Portfolio">
-        <ul className="space-y-1.5">
-          {SITE.map((b) => {
-            const bm = metricsById[b.id];
-            const active = b.id === building.id;
-            return (
-              <li key={b.id}>
-                <button
-                  onClick={() => onBuildingChange(b.id)}
-                  aria-pressed={active}
-                  className={clsx(
-                    "flex w-full items-center gap-3 rounded-[3px] border px-3 py-2.5 text-left transition",
-                    active ? "border-oak/40 bg-oak/[0.07]" : "border-plaster bg-stone/40 hover:border-plaster"
-                  )}
-                >
-                  <span className={clsx("h-2 w-2 shrink-0 rounded-full", active ? "bg-ink" : "bg-plaster")} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-ink">{b.name}</span>
-                    <span className="block truncate text-[11px] text-ash/80">
-                      {b.floors.length} floors · {fmtNum(bm.totalUnits)} units
+      {buildings.length > 1 && (
+        <Panel index={0} kicker={siteName} icon={<Landmark size={11} aria-hidden />} title="Site Portfolio">
+          <ul className="space-y-1.5">
+            {buildings.map((b) => {
+              const bm = metricsById[b.id];
+              const active = b.id === building.id;
+              return (
+                <li key={b.id}>
+                  <button
+                    onClick={() => onBuildingChange(b.id)}
+                    aria-pressed={active}
+                    className={clsx(
+                      "flex w-full items-center gap-3 rounded-[3px] border px-3 py-2.5 text-left transition",
+                      active ? "border-oak/40 bg-oak/[0.07]" : "border-plaster bg-stone/40 hover:border-plaster",
+                    )}
+                  >
+                    <span className={clsx("h-2 w-2 shrink-0 rounded-full", active ? "bg-ink" : "bg-plaster")} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm text-ink">{b.name}</span>
+                      <span className="block truncate text-[11px] text-ash/80">
+                        {b.floors.length} floors · {fmtNum(bm.totalUnits)} units
+                      </span>
                     </span>
-                  </span>
-                  <span className="text-right">
-                    <span className="block font-serif text-lg tabular-nums leading-tight text-ink">{fmtMoney(bm.grossProjectRevenue)}</span>
-                    <span className={clsx("block text-[11px] tabular-nums", bm.grossMarginPct >= 0 ? "text-positive" : "text-negative")}>
-                      {fmtPct(bm.grossMarginPct)} margin
+                    <span className="text-right">
+                      <span className="block font-serif text-lg tabular-nums leading-tight text-ink">{fmtMoney(bm.grossProjectRevenue)}</span>
+                      <span className={clsx("block text-[11px] tabular-nums", bm.grossMarginPct >= 0 ? "text-positive" : "text-negative")}>
+                        {fmtPct(bm.grossMarginPct)} margin
+                      </span>
                     </span>
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <div className="mt-3 flex items-end justify-between border-t border-plaster pt-3">
-          <div>
-            <p className="text-[10px] text-ash/80">Site total</p>
-            <p className="text-[11px] text-ash/80">
-              {site.totalFloors} floors · {fmtNum(site.totalSqFt)} sf · {fmtNum(site.totalUnits)} units
-            </p>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-3 flex items-end justify-between border-t border-plaster pt-3">
+            <div>
+              <p className="text-[10px] text-ash/80">Site total</p>
+              <p className="text-[11px] text-ash/80">
+                {site.totalFloors} floors · {fmtNum(site.totalSqFt)} sf · {fmtNum(site.totalUnits)} units
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="font-serif text-2xl tabular-nums leading-tight text-ink">{fmtMoney(site.grossProjectRevenue)}</p>
+              <p className="text-[11px] tabular-nums text-positive">{fmtMoney(site.grossProfit)} profit</p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="font-serif text-2xl tabular-nums leading-tight text-ink">{fmtMoney(site.grossProjectRevenue)}</p>
-            <p className="text-[11px] tabular-nums text-positive">{fmtMoney(site.grossProfit)} profit</p>
-          </div>
-        </div>
-      </Panel>
+        </Panel>
+      )}
 
       {/* ---------------------------------------------------- Assumptions */}
       <Panel

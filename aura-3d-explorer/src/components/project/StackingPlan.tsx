@@ -1,0 +1,218 @@
+"use client";
+/**
+ * StackingPlan — unit availability, floors × units, for the active building.
+ * -----------------------------------------------------------------------------
+ * Rows are floors (top first), cells are units (count from the yield engine,
+ * capped at 8 per row for legibility). Status is SAMPLE data: seeded from the
+ * project, building, floor and unit so it is stable between visits, and
+ * weighted by the project's sales status. Clicking a cell opens a unit sheet;
+ * clicking a floor label isolates that floor in the 3D explorer.
+ */
+import { useMemo, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import clsx from "clsx";
+import type { Building, FloorYield, ProjectStatus, YieldMetrics } from "@/types";
+import { ZONES } from "@/lib/tower";
+import { fmtMoney, fmtNum } from "@/lib/format";
+
+export type UnitStatus = "Available" | "Reserved" | "Sold";
+
+export interface UnitInfo {
+  code: string;
+  floorIndex: number;
+  floorNumber: number;
+  unitIndex: number;
+  zone: FloorYield["zone"];
+  sqFt: number;
+  price: number;
+  status: UnitStatus;
+  orientation: string;
+  view: string;
+}
+
+const MAX_PER_ROW = 8;
+
+/** Share of units sold / reserved by project status (sample data). */
+const MIX: Record<ProjectStatus, { sold: number; reserved: number }> = {
+  Concept: { sold: 0, reserved: 0.05 },
+  Approved: { sold: 0.12, reserved: 0.12 },
+  "Under Construction": { sold: 0.35, reserved: 0.15 },
+  Selling: { sold: 0.48, reserved: 0.14 },
+};
+
+/** Small deterministic hash → [0, 1). */
+function hash01(s: string) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return ((h >>> 0) % 10000) / 10000;
+}
+
+const ORIENTATIONS = ["North", "East", "South", "West"];
+
+export function buildUnits(slug: string, status: ProjectStatus, building: Building, metrics: YieldMetrics): UnitInfo[][] {
+  const mix = MIX[status];
+  return building.floors.map((f) => {
+    const fy = metrics.floors[f.index];
+    const count = Math.max(1, Math.min(MAX_PER_ROW, fy.units));
+    return Array.from({ length: count }, (_, u) => {
+      // Higher floors sell first.
+      const r = hash01(`${slug}:${building.id}:${f.index}:${u}`) * (1.15 - (f.index / building.floors.length) * 0.3);
+      const st: UnitStatus = r < mix.sold ? "Sold" : r < mix.sold + mix.reserved ? "Reserved" : "Available";
+      return {
+        code: `${building.short.slice(0, 3).toUpperCase()}-${String(f.number).padStart(2, "0")}${String(u + 1).padStart(2, "0")}`,
+        floorIndex: f.index,
+        floorNumber: f.number,
+        unitIndex: u,
+        zone: f.zone,
+        sqFt: fy.sqFt / count,
+        price: fy.revenue / count,
+        status: st,
+        orientation: ORIENTATIONS[u % 4],
+        view: f.index > building.floors.length * 0.55 ? "Skyline & water" : f.zone === "podium" ? "Street & plaza" : "City & park",
+      };
+    });
+  });
+}
+
+const CELL: Record<UnitStatus, string> = {
+  Available: "border-ink/40 bg-paper hover:bg-stone",
+  Reserved: "border-brass bg-brass/40 hover:bg-brass/60",
+  Sold: "border-ink bg-ink/80 hover:bg-ink",
+};
+
+interface Props {
+  slug: string;
+  status: ProjectStatus;
+  building: Building;
+  metrics: YieldMetrics;
+  /** Isolate a floor in the 3D explorer. */
+  onShowFloor: (floorIndex: number) => void;
+  /** Prefill the enquiry form with a unit. */
+  onEnquire: (unit: UnitInfo) => void;
+}
+
+export default function StackingPlan({ slug, status, building, metrics, onShowFloor, onEnquire }: Props) {
+  const rows = useMemo(() => buildUnits(slug, status, building, metrics), [slug, status, building, metrics]);
+  const [unit, setUnit] = useState<UnitInfo | null>(null);
+
+  const counts = useMemo(() => {
+    const c = { Available: 0, Reserved: 0, Sold: 0 };
+    rows.flat().forEach((u) => c[u.status]++);
+    return c;
+  }, [rows]);
+
+  return (
+    <div>
+      {/* Legend + totals */}
+      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+        {(Object.keys(counts) as UnitStatus[]).map((k) => (
+          <span key={k} className="flex items-center gap-2 text-xs text-ink">
+            <span className={clsx("h-3 w-3 border", CELL[k].split(" ").slice(0, 2).join(" "))} aria-hidden />
+            {k} <span className="tabular-nums text-ash">{counts[k]}</span>
+          </span>
+        ))}
+        <span className="caption ml-auto">Sample availability · {building.name}</span>
+      </div>
+
+      <div className="thin-scroll max-h-[560px] overflow-y-auto border-y border-plaster">
+        <table className="w-full border-collapse text-xs">
+          <caption className="sr-only">Unit availability by floor for {building.name}</caption>
+          <tbody>
+            {[...rows].reverse().map((row) => {
+              const f = building.floors[row[0].floorIndex];
+              return (
+                <tr key={f.index} className="border-b border-plaster/60 last:border-0">
+                  <th scope="row" className="w-24 py-1 pr-3 text-left font-normal">
+                    <button
+                      onClick={() => onShowFloor(f.index)}
+                      className="flex items-center gap-2 text-ash transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40"
+                      title={`Show floor ${f.number} in 3D`}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: ZONES[f.zone].accent }} aria-hidden />
+                      <span className="tabular-nums">F{f.number}</span>
+                    </button>
+                  </th>
+                  <td className="py-1">
+                    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${MAX_PER_ROW}, minmax(0, 1fr))` }}>
+                      {row.map((u) => (
+                        <button
+                          key={u.code}
+                          onClick={() => setUnit(u)}
+                          aria-label={`Unit ${u.code}, ${u.status}, ${fmtNum(u.sqFt)} square feet`}
+                          className={clsx("h-6 border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50", CELL[u.status])}
+                          style={{ gridColumn: `span ${Math.max(1, Math.floor(MAX_PER_ROW / row.length))}` }}
+                        />
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Unit sheet */}
+      <Dialog.Root open={!!unit} onOpenChange={(o) => !o && setUnit(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/25 backdrop-blur-[2px]" />
+          <Dialog.Content className="panel fixed left-1/2 top-1/2 z-50 w-[min(440px,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 p-6 focus:outline-none">
+            {unit && (
+              <>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="caption">
+                      {building.name} · {ZONES[unit.zone].label}
+                    </p>
+                    <Dialog.Title className="font-serif text-4xl leading-tight text-ink">Unit {unit.code}</Dialog.Title>
+                  </div>
+                  <Dialog.Close className="btn-ghost" aria-label="Close unit sheet">
+                    <X size={18} />
+                  </Dialog.Close>
+                </div>
+                <Dialog.Description className="caption mt-1">Sample unit sheet — figures derived from the current pro forma.</Dialog.Description>
+                <dl className="mt-4 grid grid-cols-2 border-t border-plaster text-sm">
+                  {[
+                    ["Status", unit.status],
+                    ["Floor", `F${unit.floorNumber}`],
+                    ["Area", `${fmtNum(unit.sqFt)} sf`],
+                    ["Guide price", fmtMoney(unit.price)],
+                    ["Orientation", unit.orientation],
+                    ["View", unit.view],
+                  ].map(([k, v]) => (
+                    <div key={k} className="border-b border-plaster py-2 odd:pr-3 even:pl-3">
+                      <dt className="caption">{k}</dt>
+                      <dd className="tabular-nums text-ink">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-5 flex gap-2">
+                  <button
+                    className="btn-secondary flex-1"
+                    onClick={() => {
+                      onShowFloor(unit.floorIndex);
+                      setUnit(null);
+                    }}
+                  >
+                    Show in 3D
+                  </button>
+                  <button
+                    className="btn-primary flex-1"
+                    disabled={unit.status === "Sold"}
+                    onClick={() => {
+                      onEnquire(unit);
+                      setUnit(null);
+                    }}
+                  >
+                    {unit.status === "Sold" ? "Sold" : "Enquire"}
+                  </button>
+                </div>
+              </>
+            )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
+}
