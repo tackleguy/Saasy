@@ -16,7 +16,7 @@
  * edits. Clicking any floor of another building makes that building active.
  * On small screens the panes stack: viewport on top, cards below.
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { BuildingId, FloorData, ViewMode, ZoneId } from "@/types";
 import { getBuilding, SITE, TOTAL_FLOORS } from "@/lib/tower";
@@ -29,6 +29,8 @@ import FinancialChart from "@/components/ui/FinancialChart";
 import CommissionModelCard from "@/components/ui/CommissionModelCard";
 import CadUploadModal from "@/components/ui/CadUploadModal";
 import WalkHud from "@/components/ui/WalkHud";
+import { SegmentedControl } from "@/components/ui/primitives";
+import type { PhotoAngle, Quality } from "@/components/3d/BuildingScene";
 
 // Three.js needs `window`, so the canvas is never server-rendered.
 const BuildingScene = dynamic(() => import("@/components/3d/BuildingScene"), {
@@ -57,6 +59,37 @@ export default function StudioApp() {
   const [walking, setWalking] = useState(false);
   const [viewIndex, setViewIndex] = useState(0);
   const [viewNonce, setViewNonce] = useState(0);
+  // Rendering quality: High = post-processing + reflections; drops to Low automatically on weak devices
+  const [quality, setQuality] = useState<Quality>("high");
+  const [autoLowered, setAutoLowered] = useState(false);
+  // Photo-angle camera presets and PNG capture
+  const [photoAngle, setPhotoAngle] = useState<PhotoAngle | null>(null);
+  const [photoNonce, setPhotoNonce] = useState(0);
+  const captureRef = useRef<(() => Promise<void>) | null>(null);
+  const [capturing, setCapturing] = useState(false);
+
+  const choosePhotoAngle = useCallback((a: PhotoAngle) => {
+    setSelectedIndex(null);
+    setPhotoAngle(a);
+    setPhotoNonce((n) => n + 1);
+  }, []);
+
+  const capture = useCallback(async () => {
+    if (!captureRef.current) return;
+    setCapturing(true);
+    try {
+      await captureRef.current();
+    } finally {
+      setCapturing(false);
+    }
+  }, []);
+
+  const handlePerformanceDecline = useCallback(() => {
+    setQuality((q) => {
+      if (q === "high") setAutoLowered(true);
+      return "low";
+    });
+  }, []);
 
   const building = getBuilding(activeBuildingId);
   const inputs = inputsById[activeBuildingId];
@@ -68,6 +101,7 @@ export default function StudioApp() {
 
   const handleViewMode = useCallback(
     (mode: ViewMode) => {
+      setPhotoAngle(null);
       if (mode === "massing") {
         setSelectedIndex(null);
         setExplosion(0);
@@ -110,11 +144,13 @@ export default function StudioApp() {
       if (!floor) return setSelectedIndex(null);
       if (floor.buildingId !== activeBuildingId) setActiveBuildingId(floor.buildingId);
       setSelectedIndex(floor.index);
+      setPhotoAngle(null);
     },
     [activeBuildingId]
   );
 
   const resetView = useCallback(() => {
+    setPhotoAngle(null);
     setSelectedIndex(null);
     setExplosion(0);
     setXray(false);
@@ -170,7 +206,24 @@ export default function StudioApp() {
         siteRevenue={site.grossProjectRevenue}
         siteMarginPct={site.grossMarginPct}
         onImportCad={() => setCadOpen(true)}
-      />
+      >
+        <div className="hidden w-[132px] lg:block" title={autoLowered ? "Switched to Low automatically to keep the frame rate smooth" : undefined}>
+          <SegmentedControl
+            ariaLabel="Rendering quality"
+            layoutId="quality"
+            size="sm"
+            value={quality}
+            options={[
+              { value: "low", label: "Low" },
+              { value: "high", label: "High" },
+            ]}
+            onChange={(q) => {
+              setQuality(q);
+              setAutoLowered(false);
+            }}
+          />
+        </div>
+      </StudioToolbar>
 
       <div className="flex flex-1 flex-col lg:min-h-0 lg:flex-row">
         {/* ------------------------------------------------ 3D viewport (68%) */}
@@ -185,6 +238,11 @@ export default function StudioApp() {
             walking={walking}
             viewIndex={viewIndex}
             viewNonce={viewNonce}
+            quality={quality}
+            onPerformanceDecline={handlePerformanceDecline}
+            photoAngle={photoAngle}
+            photoNonce={photoNonce}
+            captureRef={captureRef}
           />
           {walking && selectedFloor ? (
             <WalkHud building={building} floor={selectedFloor} viewIndex={viewIndex} onView={goToView} onExit={() => setWalking(false)} />
@@ -202,6 +260,10 @@ export default function StudioApp() {
                 selectedZone={selectedFloor?.zone ?? null}
                 showBuildingTabs={selectedIndex === null}
                 onWalk={selectedIndex !== null ? startWalk : undefined}
+                photoAngle={photoAngle}
+                onPhotoAngle={choosePhotoAngle}
+                onCapture={capture}
+                capturing={capturing}
               />
               <FloorInspectorCard
                 building={building}

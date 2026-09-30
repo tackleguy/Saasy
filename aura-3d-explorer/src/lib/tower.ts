@@ -78,6 +78,7 @@ export const BUILDING_SPECS: BuildingSpec[] = [
     position: [0, 0],
     twistDeg: 3.5,
     coreSize: 2.4,
+    facade: { finSpacing: 1.0, balconies: true, arches: true },
     zones: {
       podium: { floors: [1, 1], width: 12, depth: 12, height: 1.8 },
       office: { floors: [2, 7], width: 10, depth: 10, height: 0.9 },
@@ -93,6 +94,7 @@ export const BUILDING_SPECS: BuildingSpec[] = [
     position: [17, -17],
     twistDeg: -2.5,
     coreSize: 2.1,
+    facade: { finSpacing: 0.75, balconies: false, arches: false },
     zones: {
       podium: { floors: [1, 1], width: 11, depth: 11, height: 1.8 },
       office: { floors: [2, 11], width: 9, depth: 9, height: 0.9 },
@@ -108,6 +110,7 @@ export const BUILDING_SPECS: BuildingSpec[] = [
     position: [-17, 16],
     twistDeg: 0,
     coreSize: 2.6,
+    facade: { finSpacing: 1.3, balconies: true, arches: true },
     zones: {
       podium: { floors: [1, 1], width: 14, depth: 10, height: 1.8 },
       office: { floors: [2, 3], width: 13, depth: 9, height: 0.9 },

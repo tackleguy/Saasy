@@ -14,7 +14,33 @@ import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeom
 
 /* ------------------------------------------------------------------ geometry */
 
-export type GeoKey = "box" | "rbox" | "cyl" | "cone" | "sphere";
+export type GeoKey = "box" | "rbox" | "cyl" | "cone" | "sphere" | "arch";
+
+/** Arch wall size (metres) — built at true size, so its parts use scale 1. */
+const ARCH = { w: 3.2, h: 2.5, t: 0.15 };
+
+/**
+ * A plaster wall with a round-headed doorway, centred on the origin.
+ * The opening is a notch cut up from the bottom edge (one simple polygon).
+ */
+function archWallGeometry(): THREE.BufferGeometry {
+  const { w, h, t } = ARCH;
+  const r = 0.62;
+  const spring = 1.55;
+  const s = new THREE.Shape();
+  s.moveTo(-w / 2, 0);
+  s.lineTo(-r, 0);
+  s.lineTo(-r, spring);
+  s.absarc(0, spring, r, Math.PI, 0, true);
+  s.lineTo(r, 0);
+  s.lineTo(w / 2, 0);
+  s.lineTo(w / 2, h);
+  s.lineTo(-w / 2, h);
+  s.closePath();
+  const g = new THREE.ExtrudeGeometry(s, { depth: t, bevelEnabled: false, curveSegments: 16 });
+  g.translate(0, -h / 2, -t / 2);
+  return g;
+}
 
 /** Unit-sized shared geometries (scaled per instance). */
 let geos: Record<GeoKey, THREE.BufferGeometry> | null = null;
@@ -26,6 +52,7 @@ export function getGeometries() {
       cyl: new THREE.CylinderGeometry(0.5, 0.5, 1, 20),
       cone: new THREE.CylinderGeometry(0.28, 0.5, 1, 20, 1, true),
       sphere: new THREE.SphereGeometry(0.5, 18, 12),
+      arch: archWallGeometry(),
     };
   }
   return geos;
@@ -53,7 +80,8 @@ export type MatKey =
   | "rugLight"
   | "linen"
   | "piano"
-  | "lamp";
+  | "lamp"
+  | "plaster";
 
 /** PBR materials shared by every furniture instance. */
 let mats: Record<MatKey, THREE.Material> | null = null;
@@ -62,24 +90,25 @@ export function getMaterials() {
     const std = (color: string, roughness: number, metalness = 0, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
       new THREE.MeshStandardMaterial({ color, roughness, metalness, ...extra });
     mats = {
-      oak: std("#c29b72", 0.55),
-      walnut: std("#5a3b2a", 0.45),
-      lacquer: std("#ebe7df", 0.35),
-      fabricGrey: std("#7d8189", 0.95),
-      fabricCream: std("#d6cdbf", 0.95),
-      fabricAccent: std("#b58e4f", 0.85),
+      oak: std("#B08D63", 0.55),
+      walnut: std("#7b5b3f", 0.5),
+      lacquer: std("#ece6dc", 0.4),
+      fabricGrey: std("#d8d0c2", 0.97), // warm oatmeal
+      fabricCream: std("#F1EBE0", 0.98), // boucle
+      fabricAccent: std("#A9B39B", 0.9), // sage
       leather: std("#6e4a33", 0.55),
       metalDark: std("#26292e", 0.35, 0.8),
       brushed: std("#b9bec5", 0.3, 0.9),
       brass: std("#c9a24a", 0.28, 1),
       marble: std("#efebe5", 0.18),
       screen: std("#0a0c10", 0.2, 0.2, { emissive: new THREE.Color("#1d3b5c"), emissiveIntensity: 0.5 }),
-      leaf: std("#4f7a4b", 0.8),
+      leaf: std("#6f8a62", 0.8),
       stone: std("#cfc6b7", 0.75),
       water: new THREE.MeshPhysicalMaterial({ color: "#4fb3d6", roughness: 0.05, metalness: 0.1, transmission: 0, transparent: true, opacity: 0.85, clearcoat: 1 }),
-      rug: std("#433b35", 1),
-      rugLight: std("#a79a88", 1),
-      linen: std("#f3f0ea", 0.9),
+      rug: std("#c8bba5", 1),
+      rugLight: std("#e2d8c7", 1),
+      linen: std("#f6f2ea", 0.9),
+      plaster: std("#E7DFD2", 0.95),
       piano: std("#0d0e11", 0.12, 0.3, { envMapIntensity: 1.5 }),
       lamp: std("#fff1d6", 0.6, 0, { emissive: new THREE.Color("#ffcf8a"), emissiveIntensity: 1.2, side: THREE.DoubleSide }),
     };
@@ -368,6 +397,20 @@ function cafeSet(): Part[] {
   ];
 }
 
+/** Plaster partition with an arched doorway (true size — scale 1). */
+function archWall(): Part[] {
+  return [{ g: "arch", m: "plaster", p: [0, ARCH.h / 2, 0], s: [1, 1, 1] }];
+}
+
+/** Freestanding oval bathtub. */
+function tub(): Part[] {
+  return [
+    part("cyl", "lacquer", 0, 0, 0, 0.82, 0.58, 1.7),
+    part("cyl", "water", 0, 0.5, 0, 0.68, 0.03, 1.54),
+    part("cyl", "brass", 0.3, 0.58, -0.72, 0.04, 0.16, 0.04),
+  ];
+}
+
 function bench(): Part[] {
   return [part("box", "oak", 0, 0.4, 0, 2.0, 0.06, 0.5), part("box", "metalDark", -0.8, 0, 0, 0.06, 0.4, 0.45), part("box", "metalDark", 0.8, 0, 0, 0.06, 0.4, 0.45)];
 }
@@ -395,7 +438,9 @@ export type PieceId =
   | "cafe"
   | "bench"
   | "plant"
-  | "plantLarge";
+  | "plantLarge"
+  | "archWall"
+  | "tub";
 
 interface PieceDef {
   build: () => Part[];
@@ -421,4 +466,6 @@ export const PIECES: Record<PieceId, PieceDef> = {
   bench: { build: bench, w: 2.0, d: 0.5 },
   plant: { build: () => plant(), w: 0.7, d: 0.7 },
   plantLarge: { build: () => plant(1.6), w: 1.1, d: 1.1 },
+  archWall: { build: archWall, w: ARCH.w, d: ARCH.t },
+  tub: { build: tub, w: 0.9, d: 1.8 },
 };

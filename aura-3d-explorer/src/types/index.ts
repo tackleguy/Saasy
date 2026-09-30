@@ -42,6 +42,16 @@ export interface ZoneGeometry {
   height: number;
 }
 
+/** Facade articulation for a building. */
+export interface FacadeSpec {
+  /** Spacing of vertical bronze fins on office floors, scene units (0 = none). */
+  finSpacing: number;
+  /** Curved horizontal balcony bands on residential floors. */
+  balconies: boolean;
+  /** Stone-clad podium with an arcade of arched openings. */
+  arches: boolean;
+}
+
 /** Static definition of one building on the site. */
 export interface BuildingSpec {
   id: BuildingId;
@@ -55,6 +65,7 @@ export interface BuildingSpec {
   twistDeg: number;
   /** Side length of the square lift & stair core, scene units. */
   coreSize: number;
+  facade: FacadeSpec;
   zones: Record<ZoneId, ZoneGeometry>;
 }
 

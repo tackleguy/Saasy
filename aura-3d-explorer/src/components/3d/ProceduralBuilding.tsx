@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * Floor data comes from `lib/tower.ts` (pure data). This component positions
  * the tower, wires selection / hover / explosion state into each <FloorPlate>,
- * and adds the non-interactive extras: rooftop spire + plant screen, the gold
+ * and adds the non-interactive extras: rooftop spire + plant screen, the oak
  * ground ring marking the active building, and the hover label.
  */
 import { useRef } from "react";
@@ -49,17 +49,17 @@ function RoofCrown({ top, explosion, dimmed, tall }: { top: FloorData; explosion
     <group ref={group} position={[0, top.baseY + top.height, 0]}>
       <mesh position={[0, spireH / 2, 0]} castShadow raycast={() => null}>
         <cylinderGeometry args={[0.02, 0.14, spireH, 8]} />
-        <meshStandardMaterial ref={mat} color="#d4af37" metalness={1} roughness={0.25} emissive="#5a4510" emissiveIntensity={0.5} transparent />
+        <meshStandardMaterial ref={mat} color="#8B6B44" metalness={0.7} roughness={0.3} transparent />
       </mesh>
       <mesh position={[0, 0.12, 0]} rotation={[0, top.rotationY, 0]} raycast={() => null}>
         <boxGeometry args={[Math.min(top.width, top.depth) * 0.5, 0.24, Math.min(top.width, top.depth) * 0.5]} />
-        <meshStandardMaterial color="#1a1d24" metalness={0.6} roughness={0.4} />
+        <meshStandardMaterial color="#cfc8bc" roughness={0.85} />
       </mesh>
     </group>
   );
 }
 
-/** Soft gold ring on the ground marking the active building. */
+/** Soft oak ring on the ground marking the active building. */
 function ActiveRing({ radius, active }: { radius: number; active: boolean }) {
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   useFrame((_, dt) => {
@@ -68,7 +68,7 @@ function ActiveRing({ radius, active }: { radius: number; active: boolean }) {
   return (
     <mesh rotation-x={-Math.PI / 2} position-y={0.012} raycast={() => null}>
       <ringGeometry args={[radius, radius + 0.1, 96]} />
-      <meshBasicMaterial ref={mat} color="#d4af37" transparent opacity={0.08} />
+      <meshBasicMaterial ref={mat} color="#9C7A52" transparent opacity={0.08} />
     </mesh>
   );
 }
@@ -87,6 +87,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
           floor={floor}
           explosion={explosion}
           coreSize={building.coreSize}
+          facade={building.facade}
           selected={selectedIndex === floor.index}
           dimmed={selectedIndex !== null && selectedIndex !== floor.index}
           hovered={hovered?.buildingId === building.id && hovered.index === floor.index}

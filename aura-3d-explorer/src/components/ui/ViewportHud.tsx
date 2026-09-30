@@ -5,11 +5,12 @@
  * the zone legend for the active building.
  */
 import { AnimatePresence, motion } from "framer-motion";
-import { Expand, Footprints, RotateCcw, ScanEye } from "lucide-react";
+import { Camera, Expand, Footprints, RotateCcw, ScanEye } from "lucide-react";
 import clsx from "clsx";
 import type { Building, BuildingId, ZoneId } from "@/types";
 import { EXPLODE_MAX, EXPLODE_MIN, SITE, ZONE_ORDER, ZONES } from "@/lib/tower";
 import { RangeSlider } from "./primitives";
+import { PHOTO_ANGLES, type PhotoAngle } from "@/components/3d/BuildingScene";
 
 interface Props {
   building: Building;
@@ -25,6 +26,11 @@ interface Props {
   showBuildingTabs: boolean;
   /** Present when a floor is isolated: enter the walk-through. */
   onWalk?: () => void;
+  photoAngle: PhotoAngle | null;
+  onPhotoAngle: (a: PhotoAngle) => void;
+  /** Export the current view as a 2× PNG. */
+  onCapture: () => void;
+  capturing: boolean;
 }
 
 export default function ViewportHud({
@@ -39,6 +45,10 @@ export default function ViewportHud({
   selectedZone,
   showBuildingTabs,
   onWalk,
+  photoAngle,
+  onPhotoAngle,
+  onCapture,
+  capturing,
 }: Props) {
   return (
     <>
@@ -111,52 +121,71 @@ export default function ViewportHud({
         })}
       </motion.nav>
 
-      {/* Control dock — bottom centre */}
+      {/* Control dock — bottom centre (compact on phones) */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-        className="overlay absolute inset-x-0 bottom-3 z-10 mx-auto flex w-[min(600px,calc(100%-1.5rem))] items-center gap-3 rounded-[3px] px-4 py-3 sm:bottom-4"
+        transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="overlay absolute inset-x-0 bottom-3 z-10 mx-auto flex w-[min(640px,calc(100%-1.5rem))] flex-col gap-2.5 px-3 py-2.5 sm:bottom-4 sm:px-4 sm:py-3"
       >
-        <div className="min-w-0 flex-1">
-          <RangeSlider
-            compact
-            label={`Explosion · ${building.short}`}
-            icon={<Expand size={12} className="text-oak" />}
-            value={explosion}
-            min={EXPLODE_MIN}
-            max={EXPLODE_MAX}
-            step={0.05}
-            display={`${explosion.toFixed(2)}×`}
-            onChange={onExplosionChange}
-          />
-        </div>
-        {onWalk && (
-          <button
-            onClick={onWalk}
-            className="flex shrink-0 items-center gap-1.5 self-end rounded-[3px] bg-ink px-2.5 py-1.5 text-[11px] font-semibold text-paper transition hover:brightness-110"
-          >
-            <Footprints size={13} /> <span className="hidden sm:inline">Walk in</span>
-          </button>
-        )}
-        <button
-          onClick={() => onXrayChange(!xray)}
-          aria-pressed={xray}
-          title="X-ray: fade the facades to reveal the structural cores"
-          className={clsx(
-            "flex shrink-0 items-center gap-1.5 self-end rounded-[3px] border px-2.5 py-1.5 text-[11px] transition",
-            xray ? "border-oak/60 bg-oak/15 text-oak" : "border-plaster text-ash hover:border-oak/40 hover:text-ink"
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="min-w-0 flex-1">
+            <RangeSlider
+              compact
+              label={`Explosion · ${building.short}`}
+              icon={<Expand size={12} className="text-oak" aria-hidden />}
+              value={explosion}
+              min={EXPLODE_MIN}
+              max={EXPLODE_MAX}
+              step={0.05}
+              display={`${explosion.toFixed(2)}×`}
+              onChange={onExplosionChange}
+            />
+          </div>
+          {onWalk && (
+            <button onClick={onWalk} className="btn-primary shrink-0 self-end px-2.5 py-1.5 text-[11px]">
+              <Footprints size={13} aria-hidden /> <span className="hidden sm:inline">Walk in</span>
+            </button>
           )}
-        >
-          <ScanEye size={13} /> <span className="hidden sm:inline">Core</span>
-        </button>
-        <button
-          onClick={onResetView}
-          className="flex shrink-0 items-center gap-1.5 self-end rounded-[3px] border border-plaster px-2.5 py-1.5 text-[11px] text-ash transition hover:border-oak/40 hover:text-ink"
-          aria-label="Reset view"
-        >
-          <RotateCcw size={13} /> <span className="hidden sm:inline">Reset</span>
-        </button>
+          <button
+            onClick={() => onXrayChange(!xray)}
+            aria-pressed={xray}
+            aria-label="Core X-ray"
+            title="X-ray: fade the facades to reveal the structural cores"
+            className={clsx(
+              "flex shrink-0 items-center gap-1.5 self-end border px-2.5 py-1.5 text-[11px] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40",
+              xray ? "border-oak bg-oak/10 text-oak" : "border-plaster text-ash hover:border-ink/30 hover:text-ink"
+            )}
+          >
+            <ScanEye size={13} aria-hidden /> <span className="hidden sm:inline">Core</span>
+          </button>
+          <button onClick={onResetView} className="btn-secondary shrink-0 self-end px-2.5 py-1.5 text-[11px]" aria-label="Reset view">
+            <RotateCcw size={13} aria-hidden /> <span className="hidden sm:inline">Reset</span>
+          </button>
+        </div>
+
+        {/* Photo angles + capture */}
+        <div className="flex items-center gap-2 border-t border-plaster pt-2.5">
+          <span className="caption hidden shrink-0 sm:inline">Photo angle</span>
+          <div className="no-scrollbar flex min-w-0 flex-1 gap-1 overflow-x-auto" role="group" aria-label="Photo angles">
+            {PHOTO_ANGLES.map((a) => (
+              <button
+                key={a.id}
+                onClick={() => onPhotoAngle(a.id)}
+                aria-pressed={photoAngle === a.id}
+                className={clsx(
+                  "shrink-0 border px-2.5 py-1 text-[11px] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40",
+                  photoAngle === a.id ? "border-ink bg-ink text-paper" : "border-plaster text-ash hover:border-ink/30 hover:text-ink"
+                )}
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
+          <button onClick={onCapture} disabled={capturing} className="btn-secondary shrink-0 px-2.5 py-1 text-[11px]" aria-label="Capture render as PNG">
+            <Camera size={13} aria-hidden /> {capturing ? "Rendering…" : "Capture"}
+          </button>
+        </div>
       </motion.div>
     </>
   );

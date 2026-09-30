@@ -1,110 +1,74 @@
 "use client";
 /**
- * LightingEnvironment — studio lighting, shadows, skybox and ground.
+ * LightingEnvironment — late-afternoon daylight.
  * -----------------------------------------------------------------------------
- * Everything is procedural (no HDR or texture downloads):
- *   • Gradient sky dome   — a back-faced sphere with a tiny GLSL gradient.
- *   • Studio reflections  — drei <Environment> baked once from <Lightformer>s,
- *                           giving the basalt and glass something to reflect.
- *   • Key / rim / fill    — warm key light with soft shadows, cool rim light.
- *   • Ground              — dark plinth, survey grid and contact shadows.
+ *   • Sky        — drei <Sky> (physically based Preetham model) with the sun
+ *                  low in the south-west, giving a warm horizon and pale zenith.
+ *   • Reflections — a real HDR (Potsdamer Platz, Poly Haven, CC0) bundled in
+ *                  /public/hdri, so glass and water reflect a city — no CDN.
+ *   • Key light  — warm #FFE8C8 sun at ~28° elevation, 4096² soft shadows.
+ *                  bias + normalBias are tuned to remove acne on the thin
+ *                  slabs without peter-panning the podium.
+ *   • Fill       — cool hemisphere light standing in for skylight bounce.
+ *   • Haze       — light fog matching the horizon so distant blocks recede.
  */
-import { useMemo } from "react";
+import { Environment, Sky } from "@react-three/drei";
 import * as THREE from "three";
-import { ContactShadows, Environment, Lightformer } from "@react-three/drei";
 
-/** Scene background / fog colour — a deep dusk blue that melts into the sky horizon. */
-const BG = "#0e1320";
+/**
+ * Direction TO the sun: 28° above the horizon, behind the default camera's
+ * left shoulder (camera sits on the +X/+Z diagonal), so the faces the viewer
+ * sees are warmly lit and shadows fall back-right, like a golden-hour render.
+ */
+const ELEVATION = THREE.MathUtils.degToRad(28);
+const HEADING = new THREE.Vector2(0.35, 1.06).normalize(); // horizontal x/z
+export const SUN_DIRECTION = new THREE.Vector3(
+  Math.cos(ELEVATION) * HEADING.x,
+  Math.sin(ELEVATION),
+  Math.cos(ELEVATION) * HEADING.y
+);
 
-/** Large inverted sphere shaded with a vertical obsidian → blue-slate gradient + gold horizon haze. */
-function SkyDome() {
-  const material = useMemo(
-    () =>
-      new THREE.ShaderMaterial({
-        side: THREE.BackSide,
-        depthWrite: false,
-        fog: false,
-        uniforms: {
-          top: { value: new THREE.Color("#0c1630") },
-          bottom: { value: new THREE.Color(BG) },
-          haze: { value: new THREE.Color("#b0703c") },
-        },
-        vertexShader: /* glsl */ `
-          varying vec3 vWorld;
-          void main() {
-            vWorld = normalize((modelMatrix * vec4(position, 1.0)).xyz);
-            gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
-          }`,
-        fragmentShader: /* glsl */ `
-          uniform vec3 top; uniform vec3 bottom; uniform vec3 haze;
-          varying vec3 vWorld;
-          void main() {
-            float h = vWorld.y;
-            vec3 col = mix(bottom, top, smoothstep(-0.02, 0.55, h));
-            col += vec3(0.05, 0.08, 0.16) * smoothstep(0.0, 0.25, h) * (1.0 - smoothstep(0.25, 0.8, h)); // dusk blue band
-            col += haze * exp(-abs(h) * 11.0) * 0.5;   // warm sunset glow on the horizon
-            gl_FragColor = vec4(col, 1.0);
-          }`,
-      }),
-    []
-  );
-  return (
-    <mesh material={material} scale={500} raycast={() => null} renderOrder={-1}>
-      <sphereGeometry args={[1, 32, 16]} />
-    </mesh>
-  );
+const HAZE = "#dfe2e1";
+
+interface Props {
+  /** High quality: 4096 shadow map; low: 2048. */
+  quality: "high" | "low";
 }
 
-export default function LightingEnvironment() {
+export default function LightingEnvironment({ quality }: Props) {
+  const sunPos = SUN_DIRECTION.clone().multiplyScalar(140);
+  const mapSize = quality === "high" ? 4096 : 2048;
+
   return (
     <>
-      <color attach="background" args={[BG]} />
-      <fog attach="fog" args={[BG, 110, 430]} />
-      <SkyDome />
+      <color attach="background" args={[HAZE]} />
+      <fog attach="fog" args={[HAZE, 160, 520]} />
+      <Sky distance={4500} sunPosition={sunPos.toArray()} turbidity={5} rayleigh={1.4} mieCoefficient={0.004} mieDirectionalG={0.85} />
 
-      {/* Soft ambient fill */}
-      <hemisphereLight args={["#aebfdc", "#0e1320", 0.6]} />
+      {/* Image-based lighting + reflections from a bundled city HDR (not shown as background). */}
+      <Environment files="/hdri/potsdamer_platz_1k.hdr" environmentIntensity={0.55} />
 
-      {/* Warm key light with soft shadows */}
+      {/* Cool skylight fill */}
+      <hemisphereLight args={["#cfdcea", "#b8ab97", 0.45]} />
+
+      {/* Warm low sun */}
       <directionalLight
-        position={[40, 70, 26]}
-        intensity={2.2}
-        color="#fff1d6"
+        key={mapSize /* re-create the shadow map when quality changes */}
+        position={sunPos.toArray()}
+        intensity={2.6}
+        color="#FFE8C8"
         castShadow
-        shadow-mapSize={[4096, 4096]}
-        shadow-bias={-0.0004}
-        shadow-normalBias={0.02}
-        shadow-camera-left={-55}
-        shadow-camera-right={55}
-        shadow-camera-top={70}
-        shadow-camera-bottom={-45}
-        shadow-camera-near={1}
-        shadow-camera-far={240}
+        shadow-mapSize={[mapSize, mapSize]}
+        shadow-bias={-0.00025}
+        shadow-normalBias={0.035}
+        shadow-radius={4}
+        shadow-camera-left={-70}
+        shadow-camera-right={70}
+        shadow-camera-top={80}
+        shadow-camera-bottom={-60}
+        shadow-camera-near={10}
+        shadow-camera-far={320}
       />
-
-      {/* Cool rim light from behind */}
-      <directionalLight position={[-30, 22, -26]} intensity={0.8} color="#7f9cc4" />
-
-      {/* Studio reflections — baked once, zero per-frame cost */}
-      <Environment resolution={256} frames={1}>
-        <Lightformer form="rect" intensity={2.4} color="#ffffff" position={[0, 20, -30]} scale={[60, 14, 1]} />
-        <Lightformer form="rect" intensity={1.4} color="#d4af37" position={[36, 10, 0]} rotation-y={-Math.PI / 2} scale={[30, 6, 1]} />
-        <Lightformer form="rect" intensity={0.9} color="#7f9cc4" position={[-36, 14, 10]} rotation-y={Math.PI / 2} scale={[30, 10, 1]} />
-        <Lightformer form="ring" intensity={1.6} color="#f3e5ab" position={[0, 40, 0]} rotation-x={Math.PI / 2} scale={12} />
-      </Environment>
-
-      {/* Ground plinth, survey grid and soft contact shadow */}
-      <mesh rotation-x={-Math.PI / 2} position-y={-0.01} receiveShadow raycast={() => null}>
-        <circleGeometry args={[400, 64]} />
-        <meshStandardMaterial color="#0c0e14" roughness={0.95} metalness={0.1} />
-      </mesh>
-      {/* Paved site plinth tying the three towers together */}
-      <mesh rotation-x={-Math.PI / 2} rotation-z={-Math.PI / 4} position-y={0.004} receiveShadow raycast={() => null}>
-        <planeGeometry args={[34, 78]} />
-        <meshStandardMaterial color="#141821" roughness={0.8} metalness={0.2} />
-      </mesh>
-      <gridHelper args={[160, 80, "#232836", "#141821"]} position-y={0.001} />
-      <ContactShadows position={[0, 0.02, 0]} opacity={0.6} scale={100} blur={2.2} far={20} resolution={1024} />
     </>
   );
 }

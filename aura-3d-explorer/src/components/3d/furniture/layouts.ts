@@ -91,6 +91,7 @@ function residential(p: Planner, A: number, B: number) {
   // One apartment per quadrant around the core, mirrored.
   for (const [sx, sz] of QUADRANTS) {
     p.addMirrored(sx, sz, "bed", A - 2.0, B - 1.5, Math.PI); // headboard against the facade
+    p.addMirrored(sx, sz, "archWall", A - 2.1, B - 3.0); // arched doorway into the bedroom
     p.addMirrored(sx, sz, "wardrobe", A - 4.9, B - 0.65, Math.PI);
     p.addMirrored(sx, sz, "living", A - 2.2, B - 5.1, -Math.PI / 2); // sofa backs onto the window
     p.addMirrored(sx, sz, "kitchen", A - 8.3, B - 1.9, Math.PI);
@@ -108,6 +109,8 @@ function crown(p: Planner, A: number, B: number, variant: number) {
     p.add("dining6", A - 2.2, -(B - 2.5), Math.PI / 2);
     p.add("kitchen", 0, -(B - 1.8));
     p.add("bed", -(A - 2.0), -(B - 1.6));
+    p.add("archWall", -(A - 2.1), -(B - 3.4));
+    p.add("tub", -(A - 4.8), -(B - 1.5));
     p.add("pool", A - 2.4, 0.4);
   } else {
     // Sky lounge

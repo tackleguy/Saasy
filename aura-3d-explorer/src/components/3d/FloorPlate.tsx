@@ -3,127 +3,82 @@
  * FloorPlate — one individually addressable floor of a tower.
  * -----------------------------------------------------------------------------
  * Anatomy (in the floor's local space):
- *   • Core     — concrete lift & stair core with lift doors. Lives OUTSIDE the
- *                twisted group, so it stays vertical while plates rotate.
- *   • Slab     — thin brushed-aluminium plate that reads as the edge trim.
- *   • Body     — the floor volume in its zone material (basalt / glass).
- *   • Edges    — crisp outline + vertical curtain-wall mullions.
- *   • Ceiling  — warm lit ceiling that glows through the glass at dusk, and
- *                forms the ceiling when walking through the floor.
- *   • Extras   — warm light and glow in crown penthouses.
- *   • Interior — floor finish + real furniture, mounted only when isolated.
+ *   • Core     — light-concrete lift & stair core with lift doors. Lives
+ *                OUTSIDE the twisted group, so it stays vertical while the
+ *                plates rotate around it.
+ *   • Slab     — light concrete (#D9D4CB).
+ *   • Envelope — per zone:
+ *       podium       stone arcade of arched openings + recessed lobby glazing
+ *       office       transmissive curtain wall + deep bronze vertical fins
+ *       residential  curtain wall + slim mullions + curved balcony band with
+ *                    a glass balustrade
+ *       crown        ultra-clear glass + slim mullions + warm interior light
+ *   • Ceiling  — light plaster, seen through the glass (and when walking).
+ *   • Interior — floor finish, warm indirect light and real furniture,
+ *                mounted only when the floor is isolated.
  *
- * Every visual state (explode position, hover glow, selection, dimming to 0.15,
- * X-ray) is eased per frame with frame-rate-independent damping, so
- * transitions stay smooth at 60 FPS without React re-renders.
+ * Glass is a MeshPhysicalMaterial with transmission — three renders all
+ * opaque objects into a transmission buffer once per frame, then refracts it
+ * through every transmissive mesh. When a floor is dimmed, isolated or in
+ * X-ray, transmission is eased to 0 and plain opacity takes over so the glass
+ * can fade (transmissive surfaces can't be see-through-and-faded at once).
+ *
+ * All state changes (explode height, hover, dimming to 0.15, X-ray, walking)
+ * are eased per frame with frame-rate-independent damping, without React
+ * re-renders.
  */
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 import * as THREE from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
-import type { FloorData, ZoneId } from "@/types";
+import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
+import { arcadePanel, balconyBand, balustrade, finMatrices, liftDoors, plateEdges, UNIT_BOX } from "./facadeGeometry";
 
 /** Opacity of every non-selected floor while one floor is isolated. */
 export const DIMMED_OPACITY = 0.15;
-/** Facade opacity in X-ray (core) mode. */
-const XRAY_OPACITY = 0.08;
+/** Glass opacity in X-ray (core) mode. */
+const XRAY_OPACITY = 0.06;
 
-const GOLD = new THREE.Color("#d4af37");
-const CROWN_LIGHT = "#f59e0b";
+const HIGHLIGHT = new THREE.Color("#9C7A52"); // oak
+const BRONZE = "#8B6B44";
 
 /* ------------------------------------------------------------ zone materials */
 
-interface ZoneLook {
-  kind: "standard" | "physical";
+interface GlassLook {
   color: string;
-  metalness: number;
   roughness: number;
-  /** Resting opacity of the body (1 = opaque). */
-  opacity: number;
-  clearcoat?: number;
-  edgeColor: string;
-  /** Spacing of vertical mullions in scene units. */
-  mullionSpacing: number;
+  transmission: number;
+  /** Mullion / fin spacing, thickness and projection (scene units). */
+  fin: { spacing: number; thickness: number; depth: number } | null;
   /** Interior floor finish shown when the floor is isolated. */
-  finish: { color: string; roughness: number };
+  finish: string;
 }
 
-const LOOKS: Record<ZoneId, ZoneLook> = {
-  // Dark basalt marble podium; travertine lobby floor
-  podium: { kind: "standard", color: "#12151c", metalness: 0.9, roughness: 0.1, opacity: 1, edgeColor: "#6b6250", mullionSpacing: 1.5, finish: { color: "#d8cfc1", roughness: 0.25 } },
-  // Double-glazed curtain wall; polished concrete floor
-  office: { kind: "physical", color: "#38bdf8", metalness: 0.1, roughness: 0.1, opacity: 0.65, clearcoat: 1, edgeColor: "#7dd3fc", mullionSpacing: 1.25, finish: { color: "#9a9ea4", roughness: 0.45 } },
-  // Frosted architectural glass; oak floor
-  residential: { kind: "physical", color: "#a9b8ca", metalness: 0.15, roughness: 0.5, opacity: 0.45, edgeColor: "#d6dbe2", mullionSpacing: 1.0625, finish: { color: "#b58d66", roughness: 0.55 } },
-  // Ultra-clear penthouse glass; white marble floor
-  crown: { kind: "physical", color: "#e0f2fe", metalness: 0.05, roughness: 0.02, opacity: 0.28, clearcoat: 1, edgeColor: "#f3e5ab", mullionSpacing: 0.8125, finish: { color: "#ece7df", roughness: 0.15 } },
+const LOOKS: Record<ZoneId, GlassLook> = {
+  podium: { color: "#8fa4a7", roughness: 0.06, transmission: 0.85, fin: null, finish: "#e3dacb" },
+  office: { color: "#9fb6ba", roughness: 0.05, transmission: 0.9, fin: { spacing: 1.0, thickness: 0.06, depth: 0.3 }, finish: "#b8b4ad" },
+  residential: { color: "#a9bec1", roughness: 0.08, transmission: 0.9, fin: { spacing: 1.0625, thickness: 0.04, depth: 0.06 }, finish: "#B08D63" },
+  crown: { color: "#c6d6d8", roughness: 0.03, transmission: 0.95, fin: { spacing: 0.8125, thickness: 0.035, depth: 0.05 }, finish: "#ece6dc" },
 };
 
-/* ----------------------------------------------------------------- geometry */
+const lerp = THREE.MathUtils.lerp;
 
-const geoCache = new Map<string, THREE.BufferGeometry>();
-const cached = (key: string, make: () => THREE.BufferGeometry) => {
-  let g = geoCache.get(key);
-  if (!g) geoCache.set(key, (g = make()));
-  return g;
-};
-
-/** Vertical line segments around the perimeter of a w × d box of height h (base at y0). */
-function mullionGeometry(w: number, d: number, y0: number, h: number, spacing: number) {
-  return cached(`mull:${w}:${d}:${y0}:${h}:${spacing}`, () => {
-    const pts: number[] = [];
-    const x = w / 2 + 0.004;
-    const z = d / 2 + 0.004;
-    const push = (px: number, pz: number) => pts.push(px, y0, pz, px, y0 + h, pz);
-    for (let t = -w / 2 + spacing; t < w / 2 - 1e-3; t += spacing) {
-      push(t, z);
-      push(t, -z);
-    }
-    for (let t = -d / 2 + spacing; t < d / 2 - 1e-3; t += spacing) {
-      push(x, t);
-      push(-x, t);
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    return geo;
-  });
-}
-
-/** Outline of the floor body. */
-function edgeGeometry(w: number, d: number, bodyH: number) {
-  return cached(`edge:${w}:${d}:${bodyH}`, () => {
-    const box = new THREE.BoxGeometry(w, bodyH, d);
-    box.translate(0, SLAB_THICKNESS + bodyH / 2, 0);
-    const e = new THREE.EdgesGeometry(box);
-    box.dispose();
-    return e;
-  });
-}
-
-/** Three lift doors on each of two opposite core faces, merged into one geometry. */
-function liftDoorGeometry(core: number, doorH: number) {
-  return cached(`doors:${core}:${doorH}`, () => {
-    const w = core * 0.2;
-    const positions: number[] = [];
-    const indices: number[] = [];
-    const template = new THREE.BoxGeometry(w, doorH, 0.012);
-    const tp = template.getAttribute("position");
-    const ti = template.getIndex()!;
-    for (const sz of [-1, 1]) {
-      for (const x of [-core * 0.28, 0, core * 0.28]) {
-        const offset = positions.length / 3;
-        for (let i = 0; i < tp.count; i++) positions.push(tp.getX(i) + x, tp.getY(i) + SLAB_THICKNESS + doorH / 2, tp.getZ(i) + sz * (core / 2 + 0.006));
-        for (let i = 0; i < ti.count; i++) indices.push(ti.getX(i) + offset);
-      }
-    }
-    template.dispose();
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-    geo.setIndex(indices);
-    geo.computeVertexNormals();
-    return geo;
-  });
+/**
+ * Ease an opaque material's opacity. It is only flagged `transparent` while
+ * actually faded: transparent objects are excluded from the transmission
+ * buffer, so a permanently-transparent slab or core would vanish behind glass.
+ * Toggling `transparent` changes the shader program, hence `needsUpdate`.
+ */
+function fadeSolid(m: THREE.Material | null, target: number, k: number) {
+  if (!m) return;
+  m.opacity = lerp(m.opacity, target, k);
+  const faded = m.opacity < 0.995;
+  if (m.transparent !== faded) {
+    m.transparent = faded;
+    m.needsUpdate = true;
+  }
+  m.depthWrite = !faded;
 }
 
 /* ---------------------------------------------------------------- component */
@@ -133,11 +88,12 @@ interface Props {
   /** Explosion factor 0 – 2.5 (0 for buildings that aren't active). */
   explosion: number;
   coreSize: number;
+  facade: FacadeSpec;
   selected: boolean;
   /** True when ANOTHER floor is isolated. */
   dimmed: boolean;
   hovered: boolean;
-  /** X-ray mode: facades fade so the cores read through the whole site. */
+  /** X-ray mode: glass fades so the cores read through the whole site. */
   xray: boolean;
   /** First-person walk-through of this (selected) floor. */
   walking: boolean;
@@ -145,90 +101,101 @@ interface Props {
   onHover: (floor: FloorData | null) => void;
 }
 
-export default function FloorPlate({ floor, explosion, coreSize, selected, dimmed, hovered, xray, walking, onSelect, onHover }: Props) {
+export default function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover }: Props) {
   const look = LOOKS[floor.zone];
   const bodyH = floor.height - SLAB_THICKNESS;
   const doorH = Math.min(bodyH * 0.8, 0.62);
+  const arcade = floor.zone === "podium" && facade.arches;
+  const balconies = floor.zone === "residential" && facade.balconies;
+  // Office fins follow the building's fin density; other zones use slim mullions.
+  const fin =
+    floor.zone === "office" && look.fin
+      ? facade.finSpacing > 0
+        ? { ...look.fin, spacing: facade.finSpacing }
+        : null
+      : floor.zone === "podium" && !arcade
+        ? { spacing: 1.2, thickness: 0.06, depth: 0.2 }
+        : look.fin;
+  // The arcade glazing is recessed behind the stone.
+  const inset = arcade ? 0.7 : 0;
 
   const group = useRef<THREE.Group>(null);
-  const bodyMat = useRef<THREE.MeshStandardMaterial>(null);
+  const glassMat = useRef<THREE.MeshPhysicalMaterial>(null);
   const slabMat = useRef<THREE.MeshStandardMaterial>(null);
   const slabMesh = useRef<THREE.Mesh>(null);
   const edgeMat = useRef<THREE.LineBasicMaterial>(null);
-  const mullionMat = useRef<THREE.LineBasicMaterial>(null);
+  const finMat = useRef<THREE.MeshStandardMaterial>(null);
+  const finMesh = useRef<THREE.InstancedMesh>(null);
+  const bandMat = useRef<THREE.MeshStandardMaterial>(null);
+  const balusMat = useRef<THREE.MeshPhysicalMaterial>(null);
   const coreMat = useRef<THREE.MeshStandardMaterial>(null);
   const doorMat = useRef<THREE.MeshStandardMaterial>(null);
-  const glowMat = useRef<THREE.MeshStandardMaterial>(null);
-  const light = useRef<THREE.PointLight>(null);
   const ceilMat = useRef<THREE.MeshStandardMaterial>(null);
   const ceilMesh = useRef<THREE.Mesh>(null);
+  const crownLight = useRef<THREE.PointLight>(null);
+
+  // One stone material shared by the four arcade panels so they fade together.
+  const stoneMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#E6DFD3", roughness: 0.8 }), []);
+  useEffect(() => () => stoneMat.dispose(), [stoneMat]);
+
+  const edges = plateEdges(floor.width - inset, floor.depth - inset, SLAB_THICKNESS, bodyH);
+  const doors = liftDoors(coreSize, SLAB_THICKNESS, doorH);
+  const fins = fin ? finMatrices(floor.width, floor.depth, SLAB_THICKNESS, bodyH, fin.spacing, fin.thickness, fin.depth) : null;
+
+  // Upload fin transforms once per geometry change.
+  useEffect(() => {
+    const m = finMesh.current;
+    if (!m || !fins) return;
+    fins.forEach((mat, i) => m.setMatrixAt(i, mat));
+    m.instanceMatrix.needsUpdate = true;
+    m.computeBoundingSphere();
+  }, [fins]);
 
   // Seen from inside while walking, the glazing must render its back faces.
   useEffect(() => {
-    const m = bodyMat.current;
+    const m = glassMat.current;
     if (!m) return;
     m.side = walking ? THREE.DoubleSide : THREE.FrontSide;
     m.needsUpdate = true;
   }, [walking]);
 
-  const edgeIdle = useMemo(() => new THREE.Color(look.edgeColor), [look.edgeColor]);
-  const edges = edgeGeometry(floor.width, floor.depth, bodyH);
-  const mullions = mullionGeometry(floor.width, floor.depth, SLAB_THICKNESS, bodyH, look.mullionSpacing);
-  const doors = liftDoorGeometry(coreSize, doorH);
-
   /* Per-frame easing of position and material state. */
   useFrame((_, dt) => {
     const k = 1 - Math.pow(0.0008, dt); // frame-rate independent damping factor
-    const lerp = THREE.MathUtils.lerp;
-
     const g = group.current;
     if (g) g.position.y = lerp(g.position.y, explodedY(floor, explosion), k);
 
     const fade = dimmed ? DIMMED_OPACITY : 1;
 
-    const body = bodyMat.current;
-    if (body) {
-      let target = look.opacity;
-      if (dimmed) target = DIMMED_OPACITY * (look.opacity < 1 ? 0.6 : 1);
-      else if (walking) target = 0.1; // faint glazing seen from inside
-      else if (selected) target = 0.12; // open the facade to reveal the interior
-      else if (xray) target = XRAY_OPACITY;
-      body.opacity = lerp(body.opacity, target, k);
-      // An opaque body should write depth; a faded one must not, or it hides what's behind it.
-      body.depthWrite = look.opacity >= 1 && body.opacity > 0.95;
-      // Dark opaque basalt shows emissive far more strongly than glass, so scale it down.
-      const glow = (selected ? 0.1 : hovered ? 0.14 : 0) * (look.opacity < 1 ? 1 : 0.3);
-      body.emissiveIntensity = lerp(body.emissiveIntensity, glow, k);
+    // Glass: clear transmission at rest; plain fading opacity otherwise.
+    const glass = glassMat.current;
+    if (glass) {
+      const faded = dimmed || selected || walking || xray;
+      glass.transmission = lerp(glass.transmission, faded ? 0 : look.transmission, k);
+      const target = dimmed ? DIMMED_OPACITY * 0.6 : walking ? 0.08 : selected ? 0.1 : xray ? XRAY_OPACITY : 1;
+      glass.opacity = lerp(glass.opacity, target, k);
+      glass.emissiveIntensity = lerp(glass.emissiveIntensity, hovered && !selected ? 0.18 : 0, k);
     }
-    if (slabMat.current) {
-      slabMat.current.opacity = lerp(slabMat.current.opacity, fade, k);
-      slabMat.current.depthWrite = slabMat.current.opacity > 0.95;
-    }
-    // Dimmed slabs must not shade the isolated floor beneath them.
-    if (slabMesh.current) slabMesh.current.castShadow = !dimmed;
-    if (edgeMat.current) {
-      edgeMat.current.color.lerp(selected || hovered ? GOLD : edgeIdle, k);
-      edgeMat.current.opacity = lerp(edgeMat.current.opacity, dimmed ? DIMMED_OPACITY : xray ? 0.35 : 0.9, k);
-    }
-    const mullionTarget = walking ? 0.6 : dimmed || xray || selected ? 0.04 : 0.35; // window frames when inside
-    if (mullionMat.current) mullionMat.current.opacity = lerp(mullionMat.current.opacity, mullionTarget, k);
+
+    fadeSolid(slabMat.current, fade, k);
+    if (slabMesh.current) slabMesh.current.castShadow = !dimmed; // dimmed slabs must not shade the isolated floor
+    // Fins/mullions stay as window frames when walking, but open up when looking down into the floor.
+    fadeSolid(finMat.current, dimmed ? DIMMED_OPACITY : selected && !walking ? 0.2 : xray ? 0.35 : 1, k);
+    if (arcade) fadeSolid(stoneMat, dimmed ? DIMMED_OPACITY : selected || xray ? 0.25 : 1, k);
+    fadeSolid(bandMat.current, dimmed ? DIMMED_OPACITY : xray ? 0.4 : 1, k);
+    if (balusMat.current) balusMat.current.opacity = lerp(balusMat.current.opacity, dimmed ? 0.05 : 0.3, k);
+    fadeSolid(coreMat.current, fade, k);
+    if (coreMat.current) coreMat.current.emissiveIntensity = lerp(coreMat.current.emissiveIntensity, xray && !dimmed ? 0.45 : 0, k);
+    fadeSolid(doorMat.current, fade, k);
+
+    // Ceiling hidden when looking down into an isolated floor (unless walking inside it).
     if (ceilMat.current && ceilMesh.current) {
-      const target = selected ? (walking ? 1 : 0) : dimmed || xray ? 0.04 : 0.55;
-      ceilMat.current.opacity = lerp(ceilMat.current.opacity, target, k);
-      ceilMat.current.depthWrite = ceilMat.current.opacity > 0.95;
+      fadeSolid(ceilMat.current, selected && !walking ? 0 : dimmed || xray ? 0.05 : 1, k);
       ceilMesh.current.visible = ceilMat.current.opacity > 0.01;
-      // Softer, neutral ceiling when seen from inside
-      const glow = walking ? 0.08 : floor.zone === "office" ? 0.35 : 0.45;
-      ceilMat.current.emissiveIntensity = lerp(ceilMat.current.emissiveIntensity, glow, k);
     }
-    if (coreMat.current) {
-      coreMat.current.opacity = lerp(coreMat.current.opacity, dimmed ? DIMMED_OPACITY : 1, k);
-      coreMat.current.depthWrite = coreMat.current.opacity > 0.95;
-      coreMat.current.emissiveIntensity = lerp(coreMat.current.emissiveIntensity, xray && !dimmed ? 0.3 : 0, k);
-    }
-    if (doorMat.current) doorMat.current.opacity = lerp(doorMat.current.opacity, fade, k);
-    if (glowMat.current) glowMat.current.emissiveIntensity = lerp(glowMat.current.emissiveIntensity, dimmed || selected ? 0.03 : 0.35, k);
-    if (light.current) light.current.intensity = lerp(light.current.intensity, dimmed ? 0.4 : 5, k);
+
+    if (edgeMat.current) edgeMat.current.opacity = lerp(edgeMat.current.opacity, (selected && !walking) || hovered ? 0.9 : 0, k);
+    if (crownLight.current) crownLight.current.intensity = lerp(crownLight.current.intensity, dimmed ? 0.2 : 2.2, k);
   });
 
   /* Pointer handlers — stopPropagation so only the nearest floor reacts. */
@@ -246,102 +213,105 @@ export default function FloorPlate({ floor, explosion, coreSize, selected, dimme
     document.body.style.cursor = "";
   };
 
-  // Shared props for the body material (standard for basalt, physical for glass).
-  const bodyProps = {
-    color: look.color,
-    metalness: look.metalness,
-    roughness: look.roughness,
-    envMapIntensity: 1.2,
-    emissive: GOLD,
-    emissiveIntensity: 0,
-    transparent: true,
-    opacity: look.opacity,
-    depthWrite: look.opacity >= 1,
-  };
+  const w = floor.width;
+  const d = floor.depth;
 
   return (
     <group ref={group} position={[0, floor.baseY, 0]}>
-      {/* ── Core: vertical concrete lift & stair shaft (never twists) ── */}
+      {/* ── Core: vertical lift & stair shaft (never twists) ── */}
       <mesh position={[0, floor.height / 2, 0]} castShadow receiveShadow raycast={() => null}>
         <boxGeometry args={[coreSize, floor.height, coreSize]} />
-        <meshStandardMaterial ref={coreMat} color="#8e9196" roughness={0.92} emissive={GOLD} emissiveIntensity={0} transparent opacity={1} />
+        <meshStandardMaterial ref={coreMat} color="#cfc8bc" roughness={0.9} emissive={HIGHLIGHT} emissiveIntensity={0} />
       </mesh>
       <mesh geometry={doors} raycast={() => null}>
-        <meshStandardMaterial ref={doorMat} color="#c3c8cf" metalness={0.9} roughness={0.28} transparent opacity={1} />
+        <meshStandardMaterial ref={doorMat} color="#b9a78a" metalness={0.85} roughness={0.3} />
       </mesh>
 
       {/* ── Twisted plate ── */}
-      <group rotation={[0, floor.rotationY, 0]}>
-        {/* Structural slab / brushed-aluminium edge trim */}
+      <group rotation={[0, floor.rotationY, 0]} onClick={handleClick} onPointerOver={handleOver} onPointerOut={handleOut}>
+        {/* Slab — light concrete */}
         <mesh ref={slabMesh} position={[0, SLAB_THICKNESS / 2, 0]} castShadow receiveShadow>
-          <boxGeometry args={[floor.width + 0.12, SLAB_THICKNESS, floor.depth + 0.12]} />
-          <meshStandardMaterial ref={slabMat} color="#aeb4bd" metalness={0.85} roughness={0.35} transparent opacity={1} />
+          <boxGeometry args={[w + 0.1, SLAB_THICKNESS, d + 0.1]} />
+          <meshStandardMaterial ref={slabMat} color="#D9D4CB" roughness={0.9} />
         </mesh>
 
-        {/* Floor volume (the interactive hit target) */}
-        <mesh
-          position={[0, SLAB_THICKNESS + bodyH / 2, 0]}
-          castShadow={floor.zone === "podium" && !selected}
-          receiveShadow
-          onClick={handleClick}
-          onPointerOver={handleOver}
-          onPointerOut={handleOut}
-        >
-          <boxGeometry args={[floor.width, bodyH, floor.depth]} />
-          {look.kind === "physical" ? (
-            <meshPhysicalMaterial
-              ref={bodyMat as RefObject<THREE.MeshPhysicalMaterial>}
-              {...bodyProps}
-              clearcoat={look.clearcoat ?? 0}
-              clearcoatRoughness={0.1}
-            />
-          ) : (
-            <meshStandardMaterial ref={bodyMat} {...bodyProps} />
-          )}
-        </mesh>
-
-        {/* Outline + curtain-wall mullions */}
-        <lineSegments geometry={edges} raycast={() => null}>
-          <lineBasicMaterial ref={edgeMat} color={look.edgeColor} transparent opacity={0.9} depthWrite={false} />
-        </lineSegments>
-        <lineSegments geometry={mullions} raycast={() => null}>
-          <lineBasicMaterial ref={mullionMat} color={look.edgeColor} transparent opacity={0.35} depthWrite={false} />
-        </lineSegments>
-
-        {/* Warm lit ceiling */}
-        <mesh ref={ceilMesh} rotation-x={Math.PI / 2} position={[0, floor.height - 0.004, 0]} raycast={() => null}>
-          <planeGeometry args={[floor.width - 0.02, floor.depth - 0.02]} />
-          <meshStandardMaterial
-            ref={ceilMat}
-            color="#f2ede4"
-            roughness={0.9}
-            emissive={floor.zone === "office" ? "#dfe9ff" : "#ffd29a"}
-            emissiveIntensity={floor.zone === "office" ? 0.35 : 0.45}
-            side={THREE.DoubleSide}
+        {/* Curtain wall (the main hit target) */}
+        <mesh position={[0, SLAB_THICKNESS + bodyH / 2, 0]} receiveShadow>
+          <boxGeometry args={[w - inset, bodyH, d - inset]} />
+          <meshPhysicalMaterial
+            ref={glassMat as RefObject<THREE.MeshPhysicalMaterial>}
+            color={look.color}
+            transmission={look.transmission}
+            thickness={0.5}
+            ior={1.5}
+            roughness={look.roughness}
+            metalness={0}
+            envMapIntensity={1.2}
+            specularIntensity={1}
+            emissive={HIGHLIGHT}
+            emissiveIntensity={0}
             transparent
-            opacity={0.55}
             depthWrite={false}
           />
         </mesh>
 
-        {/* Crown: warm golden interior */}
-        {floor.zone === "crown" && (
+        {/* Stone arcade podium (4 panels with arched openings) */}
+        {arcade && (
+          <group>
+            {[
+              { rot: 0, pos: [0, SLAB_THICKNESS, d / 2 - 0.3] as const, width: w },
+              { rot: Math.PI, pos: [0, SLAB_THICKNESS, -d / 2 + 0.3] as const, width: w },
+              { rot: Math.PI / 2, pos: [w / 2 - 0.3, SLAB_THICKNESS, 0] as const, width: d },
+              { rot: -Math.PI / 2, pos: [-w / 2 + 0.3, SLAB_THICKNESS, 0] as const, width: d },
+            ].map((p, i) => (
+              <mesh key={i} geometry={arcadePanel(p.width, bodyH, 0.3)} material={stoneMat} position={p.pos} rotation={[0, p.rot, 0]} castShadow receiveShadow />
+            ))}
+          </group>
+        )}
+
+        {/* Bronze fins / mullions */}
+        {fins && (
+          <instancedMesh ref={finMesh} args={[UNIT_BOX, undefined, fins.length]} castShadow raycast={() => null}>
+            <meshStandardMaterial ref={finMat} color={BRONZE} metalness={0.6} roughness={0.35} />
+          </instancedMesh>
+        )}
+
+        {/* Curved balcony band + glass balustrade */}
+        {balconies && (
           <>
-            <mesh position={[0, SLAB_THICKNESS + 0.01, 0]} raycast={() => null}>
-              <boxGeometry args={[floor.width * 0.92, 0.02, floor.depth * 0.92]} />
-              <meshStandardMaterial ref={glowMat} color="#1a1408" emissive={CROWN_LIGHT} emissiveIntensity={0.35} roughness={0.6} transparent opacity={0.9} />
+            <mesh geometry={balconyBand(w, d, 0.45, 0.07)} position={[0, SLAB_THICKNESS - 0.07, 0]} castShadow receiveShadow raycast={() => null}>
+              <meshStandardMaterial ref={bandMat} color="#EEEAE3" roughness={0.7} />
             </mesh>
-            <pointLight ref={light} position={[0, floor.height * 0.6, 0]} color={CROWN_LIGHT} intensity={5} distance={9} decay={2} />
+            <mesh geometry={balustrade(w, d, 0.45, 0.28)} position={[0, SLAB_THICKNESS, 0]} raycast={() => null}>
+              <meshPhysicalMaterial ref={balusMat} color="#d7e3e5" roughness={0.1} transparent opacity={0.3} depthWrite={false} />
+            </mesh>
           </>
         )}
 
-        {/* Interior: floor finish + real furniture, only when isolated */}
+        {/* Hover / selection outline */}
+        <lineSegments geometry={edges} raycast={() => null}>
+          <lineBasicMaterial ref={edgeMat} color={HIGHLIGHT} transparent opacity={0} depthWrite={false} />
+        </lineSegments>
+
+        {/* Light plaster ceiling, visible through the glass */}
+        <mesh ref={ceilMesh} rotation-x={Math.PI / 2} position={[0, floor.height - 0.004, 0]} raycast={() => null}>
+          <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />
+          <meshStandardMaterial ref={ceilMat} color="#efe9df" roughness={0.95} side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* Crown: warm interior glow */}
+        {floor.zone === "crown" && (
+          <pointLight ref={crownLight} position={[0, floor.height * 0.6, 0]} color="#f59e0b" intensity={2.2} distance={8} decay={2} />
+        )}
+
+        {/* Interior: floor finish, warm indirect light and furniture — only when isolated */}
         {selected && (
           <>
             <mesh rotation-x={-Math.PI / 2} position={[0, SLAB_THICKNESS + 0.034, 0]} receiveShadow raycast={() => null}>
-              <planeGeometry args={[floor.width - 0.02, floor.depth - 0.02]} />
-              <meshStandardMaterial color={look.finish.color} roughness={look.finish.roughness} />
+              <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />
+              <meshStandardMaterial color={look.finish} roughness={floor.zone === "crown" ? 0.2 : 0.55} />
             </mesh>
+            <pointLight position={[0, floor.height * 0.85, 0]} color="#ffd9a8" intensity={3} distance={Math.max(w, d)} decay={1.6} />
             <FurnitureOverlay floor={floor} coreSize={coreSize} />
           </>
         )}

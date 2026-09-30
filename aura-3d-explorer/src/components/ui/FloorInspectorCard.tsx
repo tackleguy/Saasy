@@ -22,9 +22,9 @@ interface Props {
 }
 
 const MATERIALS = {
-  podium: "Basalt marble · metal 0.9 / rough 0.1",
-  office: "Double-glazed curtain wall · 65% opacity",
-  residential: "Frosted glass · brushed-aluminium trims",
+  podium: "Stone arcade · recessed lobby glazing",
+  office: "Curtain wall · bronze vertical fins",
+  residential: "Curtain wall · curved balcony bands",
   crown: "Ultra-clear glass · warm interior light",
 } as const;
 
