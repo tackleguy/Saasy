@@ -348,13 +348,13 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                                 <span
                                   className={clsx(
                                     "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-[9px]",
-                                    done ? "border-positive bg-positive/15 text-positive" : active ? "border-oak text-oak" : "border-plaster text-ash/80"
+                                    done ? "border-positive bg-positive/15 text-positive" : active ? "border-oak text-oak" : "border-plaster text-ash"
                                   )}
                                 >
                                   {done ? "✓" : i + 1}
                                 </span>
-                                <span className={done ? "text-ink/80" : active ? "text-ink" : "text-ash/80"}>{s.label}</span>
-                                <span className="ml-auto font-mono text-[10px] tabular-nums text-ash/80">
+                                <span className={done ? "text-ink/80" : active ? "text-ink" : "text-ash"}>{s.label}</span>
+                                <span className="ml-auto font-mono text-[10px] tabular-nums text-ash">
                                   {s.from}–{s.to}%
                                 </span>
                               </div>
@@ -371,7 +371,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
 
                       {/* Status terminal */}
                       <div className="overflow-hidden rounded-[3px] border border-plaster bg-ink">
-                        <div className="flex items-center gap-2 border-b border-plaster px-3 py-1.5 text-[10px] text-ash/80">
+                        <div className="flex items-center gap-2 border-b border-plaster px-3 py-1.5 text-[10px] text-ash">
                           <Terminal size={11} /> aura-ingest
                           {phase === "running" && <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-ink" />}
                         </div>
@@ -431,7 +431,7 @@ export default function CadUploadModal({ open, onOpenChange, inputs, building, o
                     </div>
                   )}
 
-                  <p className="mt-5 text-center text-[10px] text-ash/80">
+                  <p className="mt-5 text-center text-[10px] text-ash">
                     Files are read locally · geometry reconstruction is a simulated preview
                   </p>
                 </motion.div>

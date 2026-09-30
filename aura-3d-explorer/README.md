@@ -1,83 +1,115 @@
-# AURA 3D Explorer & Yield Engine
+# AURA
 
-An interactive real-estate development showcase: three procedurally generated towers
-in WebGL with walk-through interiors, a simulated CAD ingestion pipeline, and a live spatial yield engine with a
-1% performance-fee model.
+AURA is a platform real estate **developers** use to market, explore and underwrite
+projects: an archviz-style portfolio, live photoreal-adjacent 3D for every project
+(explode the stack, isolate floors, walk the interiors), stacking plans with unit
+sheets, and a developer-grade pro forma with IRR, residual land value and
+sensitivities. All projects, names and figures shipped here are **placeholders**.
 
 ## Run it
 
-1. Install **Node.js 20+** (LTS) from https://nodejs.org.
-2. In this folder run `npm install`, then `npm run dev`.
-3. Open http://localhost:3000.
+```bash
+npm install
+npm run dev          # http://localhost:3000
+npm run build && npm start
+```
 
-`npm run build && npm start` runs the production build. `STATIC_EXPORT=1 npm run build`
-also writes a static site to `/out` that can be hosted anywhere (Vercel, Netlify, S3…).
+Node 20+. `STATIC_EXPORT=1 npm run build` also writes a static site to `/out`.
 
-## What it does
+## Routes
 
-| Feature | Details |
+| Route | What it is |
 |---|---|
-| Procedural tower | 20 addressable floor plates: basalt podium (F1, 12×12×1.8 m), glass offices (F2–7, 10×10×0.9 m), frosted twisting residences (F8–18, 8.5×8.5×0.85 m, +3.5°/floor), clear-glass crown penthouses with warm interior light (F19–20, 6.5×6.5×1.4 m) |
-| Exploded view | Slider 0–2.5; `Y = Y_base + floorIndex × factor × 1.2` |
-| Floor isolation | Click a floor (or use ↑/↓, the legend, or the programme list). It highlights, other floors dim to 0.15 opacity, and GSAP flies the camera to `P_floor + [8, 4, 8]` looking at `P_floor`. Esc or clicking empty space releases it |
-| Furniture overlay | Wireframe furniture grows in on the isolated floor: office desk clusters + conference table, residential sofa/bed/kitchen island, plus podium and penthouse sets |
-| Yield engine | Revenue, construction cost, gross profit, margin, developer net (after 1% fee) and the 1% fee, updated live. The unit-mix strategy redistributes value across zones (and resizes residences) without changing the headline formulas |
-| Real furniture | Isolating a floor fills it with real-size furniture (desk clusters, conference suite, sofas, beds, kitchens with stools and pendants, dining sets, grand piano, plunge pool…) laid out around the core, on a finished floor (concrete, oak, marble, travertine) |
-| Structural cores | Every tower has a concrete lift & stair core with lift doors that stays vertical while the plates twist. **Core** (X-ray) fades the facades to show all three cores |
-| Three towers | The Meridian (20F), Meridian Spire (30F, counter-twist) and Meridian Lofts (10F). Click any floor or use the building tabs; each has its own pro forma, rolled up in the Site Portfolio card |
-| Walk-through | **Walk inside** on an isolated floor drops you in at 1.6 m eye height. Drag to look, W A S D / arrows (Shift to run) or the on-screen pad to walk, Esc to exit. Four curated example views per floor type (e.g. Living room, Kitchen & dining, Master bedroom, City view) glide the camera into place. A procedural dusk city surrounds the site for the window views |
-| CAD import | Drag-and-drop `.stl` / `.dxf` / `.dwg` → 4-stage animated pipeline with a status terminal. Stage 1 really reads the file in the browser (STL triangles & bounds, DXF entities & layers, DWG release); the later stages are simulated |
+| `/` | Full-bleed live 3D hero of the flagship (The Meridian Tower) with caption bar, portfolio grid, "For developers" strip |
+| `/projects` | Masonry portfolio (3 → 2 → 1 columns): image, name, client / architect, city, status |
+| `/projects/[slug]` | Render carousel, key facts, live 3D explorer + yield engine with the project's defaults, unit-availability stacking plan with unit sheets, "Request Pro Forma / Book Viewing" |
+| `/studio` | **AURA Studio**: explorer + full yield engine + CAD import, saved scenarios (localStorage) and Export Pro Forma (PDF, via print stylesheet) |
+| `/developers` | How it works, 1% success-fee pricing, placeholder testimonials (labelled), FAQ, demo request |
+
+## Replace the placeholder images
+
+Each project ships three generated placeholders (1600 × 1000). Drop real renders in
+with **the same file names** — no code changes:
+
+```
+public/projects/meridian-tower/hero-1.jpg     hero-2.jpg   hero-3.jpg
+public/projects/seaform-hotel/hero-1.jpg      hero-2.jpg   hero-3.jpg
+public/projects/chess-towers/hero-1.jpg       hero-2.jpg   hero-3.jpg
+public/projects/infiniti/hero-1.jpg           hero-2.jpg   hero-3.jpg
+public/projects/refad-place/hero-1.jpg        hero-2.jpg   hero-3.jpg
+public/projects/broadway-bayonne/hero-1.jpg   hero-2.jpg   hero-3.jpg
+public/projects/lorenskog-quarter/hero-1.jpg  hero-2.jpg   hero-3.jpg
+public/projects/sports-world/hero-1.jpg       hero-2.jpg   hero-3.jpg
+```
+
+`hero-1` is the exterior hero (also the OpenGraph image), `hero-2` a secondary
+exterior or amenity, `hero-3` an interior. 16:10, sRGB JPG, ideally < 400 KB.
+Update alt text in `src/content/projects.ts`. Regenerate placeholders with
+`node scripts/generate-placeholders.mjs`. See `public/projects/README.md`.
 
 ## Where things live
 
 ```
 src/
-├── app/                        Next.js App Router (layout, page orchestrator, global CSS)
-├── components/
-│   ├── 3d/
-│   │   ├── BuildingScene.tsx        Canvas, OrbitControls, camera rig
-│   │   ├── ProceduralBuilding.tsx   Stacks the floor plates, spire, hover label
-│   │   ├── FloorPlate.tsx           One floor: materials, hover/select/dim easing
-│   │   ├── FurnitureOverlay.tsx     Instanced real-size furniture for the isolated floor
-│   │   ├── furniture/kit.ts         Furniture pieces + materials (real metres)
-│   │   ├── furniture/layouts.ts     Collision-aware layout planner per zone
-│   │   ├── WalkControls.tsx         First-person walk-through controller
-│   │   ├── CityContext.tsx          Procedural dusk skyline
-│   │   └── LightingEnvironment.tsx  Lights, shadows, sky dome, ground
-│   └── ui/
-│       ├── HeaderNav.tsx            Brand, view toggles, status badges
-│       ├── ViewportHud.tsx          Building tabs, explosion slider, core X-ray, legend
-│       ├── WalkHud.tsx              Walk-through views, touch pad, exit
-│       ├── FinancialSidebar.tsx     Input sliders, strategy, KPI tiles
-│       ├── FloorInspectorCard.tsx   Selected-floor overlay
-│       ├── CommissionModelCard.tsx  1% fee simulator vs. traditional load
-│       ├── CadUploadModal.tsx       Drag-and-drop ingestion pipeline
-│       ├── FinancialChart.tsx       Recharts cost vs. revenue breakdown
-│       └── primitives.tsx           GlassCard, RangeSlider, SegmentedControl…
-├── hooks/
-│   ├── useYieldCalculator.ts   Financial state + pure `computeYield`
-│   └── useCameraTween.ts       GSAP camera/target interpolation
+├── app/                         routes (/, /projects, /projects/[slug], /studio, /developers)
+├── content/projects.ts          8 sample projects: copy, massing, renders, finance defaults
 ├── lib/
-│   ├── tower.ts                Buildings, zone specs, floor generator, explosion maths, MODEL_SCALE
-│   ├── viewpoints.ts           Curated walk-through views per floor type
-│   ├── walkInput.ts            Shared touch-pad movement input
-│   ├── cadParser.ts            In-browser STL/DXF/DWG inspection
-│   └── format.ts               Money / number formatting
-└── types/index.ts              Shared TypeScript interfaces
+│   ├── tower.ts                 ProjectMassing → BuildingSpec → floor plates (buildSite)
+│   ├── finance.ts               pure pro forma: cash flow, IRR, RLV, sensitivity
+│   ├── siteLayout.ts            street / water / context layout frame
+│   ├── viewpoints.ts            walk-through example views
+│   └── explorer.ts, format.ts, cadParser.ts, walkInput.ts
+├── hooks/
+│   ├── useExplorer.ts           all 3D view state (shared by every explorer)
+│   ├── useYieldCalculator.ts    per-building pro-forma state + site roll-up
+│   └── useCameraTween.ts        GSAP camera: focus / pose / overview + intro dolly
+├── components/
+│   ├── 3d/                      scene, floor plates, facades, furniture, context, post FX, walk
+│   ├── explorer/                ExplorerViewport (full / hero)
+│   ├── project/                 carousel, key facts, stacking plan, enquiry, workspace
+│   ├── portfolio/               project card, masonry grid, status pill
+│   ├── studio/                  studio app, toolbar, scenarios drawer, printable report
+│   ├── site/                    header, footer, providers
+│   └── ui/                      yield sidebar, charts, sensitivity, fee card, HUDs, CAD modal
+└── types/index.ts
 ```
 
-Common tweaks:
+Common edits:
 
-- **Buildings, floor dimensions, twist, core size**: `BUILDING_SPECS` in `src/lib/tower.ts`.
-- **Furniture pieces / layouts**: `src/components/3d/furniture/`.
-- **Walk-through example views**: `src/lib/viewpoints.ts`.
-- **Materials**: `LOOKS` in `src/components/3d/FloorPlate.tsx`.
-- **Camera focus offset**: `FOCUS_OFFSET` in `src/components/3d/BuildingScene.tsx`.
-- **Slider ranges, defaults, fee rate, strategies**: `src/hooks/useYieldCalculator.ts`.
+- **Projects / massing / defaults** — `src/content/projects.ts` (`massing` per building:
+  zone floor counts, plate sizes, twist, `facade.finSpacing`, `balconies`, `arches`).
+- **Finance model** — `src/lib/finance.ts` (method is documented at the top of the file).
+- **Theme** — CSS tokens in `src/app/globals.css` (`--paper`, `--stone`, `--plaster`,
+  `--ink`, `--ash`, `--oak`, `--sage`, `--brass`); dark variant via `<html data-theme="dark">`.
+- **Materials / lighting** — `src/components/3d/FloorPlate.tsx`, `LightingEnvironment.tsx`,
+  `SiteContext.tsx`, `PostEffects.tsx`.
+
+## The pro forma, briefly
+
+Area is attributed to floors by plate footprint; value = area × zone price, so
+GDV = Σ floor values. Hard, soft (% of hard) and contingency costs are spent on an
+S-curve over the build term, funded equity-first then by a loan at the chosen LTC,
+with interest capitalised monthly. Sales launch at 40% of the build at the chosen
+absorption; pre-sales close at completion. Receipts net of commission and the 1%
+AURA fee repay debt, then equity. Outputs: GDV, TDC, profit, profit on cost, margin
+on GDV, equity required, peak debt, equity IRR and multiple, residual land value at
+a target profit on cost, and a price ±10% × cost ±10% sensitivity grid.
+
+## Rendering notes
+
+- High quality: transmissive glass, planar-reflection water, N8AO, bloom, depth of
+  field on the isolated floor, vignette, ACES at exposure 1.05. Low quality drops
+  post-processing and reflections and renders at dpr 1; the Studio switches to Low
+  automatically if the frame rate stays low.
+- Photo angles (Street, Waterfront, Aerial, Podium) and a 2× PNG "Capture".
+- three.js r18x removed `PCFSoftShadowMap`; shadows use PCF with `shadow.radius`.
+- Reflections use `public/hdri/potsdamer_platz_1k.hdr` (Poly Haven, CC0) — bundled,
+  so nothing loads from a CDN at runtime. Fonts are bundled too.
 
 ## Tech
 
-Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · Three.js via
-@react-three/fiber + drei · GSAP · Framer Motion · Radix UI · Recharts · Lucide.
-Fonts (Instrument Serif + Inter) are bundled locally, so nothing is fetched from
-Google at runtime. All figures are illustrative.
+Next.js 15 (App Router) · React 19 · TypeScript (strict) · Tailwind CSS · three.js via
+@react-three/fiber, drei and @react-three/postprocessing (+ n8ao) · GSAP · Framer
+Motion · Radix UI · Recharts · Lucide.
+
+Illustrative figures only — not investment, valuation or financial advice.

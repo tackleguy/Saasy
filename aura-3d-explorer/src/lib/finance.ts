@@ -83,10 +83,19 @@ export const STRATEGIES: Record<UnitMixStrategy, StrategyProfile> = {
   },
 };
 
-/** Zone prices from a blended $/sf and a strategy (rounded to $10). */
+/** Typical share of GFA by zone, used to keep a preset's blended price honest. */
+const TYPICAL_AREA_MIX: Record<ZoneId, number> = { podium: 0.06, office: 0.25, residential: 0.59, crown: 0.1 };
+
+/**
+ * Zone prices from a blended $/sf and a strategy (rounded to $10). Weights are
+ * normalised against a typical area mix so the resulting blended price stays
+ * close to `blended` — a preset reshuffles value between zones, it doesn't
+ * inflate it.
+ */
 export function zonePrices(blended: number, strategy: UnitMixStrategy): Record<ZoneId, number> {
   const w = STRATEGIES[strategy].priceWeight;
-  return Object.fromEntries(ZONE_ORDER.map((z) => [z, Math.round((blended * w[z]) / 10) * 10])) as Record<ZoneId, number>;
+  const norm = ZONE_ORDER.reduce((s, z) => s + TYPICAL_AREA_MIX[z] * w[z], 0);
+  return Object.fromEntries(ZONE_ORDER.map((z) => [z, Math.round((blended * w[z]) / norm / 10) * 10])) as Record<ZoneId, number>;
 }
 
 /**

@@ -87,7 +87,7 @@ export default function ViewportHud({
                     )}
                     <span className="relative">
                       {b.short}
-                      <span className={clsx("ml-1.5 font-mono text-[10px]", active ? "text-paper/70" : "text-ash/80")}>{b.floors.length}F</span>
+                      <span className={clsx("ml-1.5 font-mono text-[10px]", active ? "text-paper/70" : "text-ash")}>{b.floors.length}F</span>
                     </span>
                   </button>
                 );
@@ -118,7 +118,7 @@ export default function ViewportHud({
             >
               <span className="h-2 w-2 rounded-full" style={{ background: ZONES[z].accent }} />
               {ZONES[z].short}
-              <span className="ml-auto pl-4 font-mono text-[10px] tabular-nums text-ash/80">{a === b ? `F${a}` : `F${a}–${b}`}</span>
+              <span className="ml-auto pl-4 font-mono text-[10px] tabular-nums text-ash">{a === b ? `F${a}` : `F${a}–${b}`}</span>
             </button>
           );
         })}

@@ -7,6 +7,8 @@ const nextConfig = {
   // `STATIC_EXPORT=1 npm run build` also emits a static site in /out (host anywhere).
   output: process.env.STATIC_EXPORT ? "export" : undefined,
   transpilePackages: ["three"],
+  // Serve portfolio renders as AVIF/WebP at the sizes each card needs.
+  images: { formats: ["image/avif", "image/webp"] },
   // Pin the workspace root to this folder (avoids picking up lockfiles in parent directories).
   outputFileTracingRoot: path.dirname(fileURLToPath(import.meta.url)),
 };

@@ -18,6 +18,7 @@ export default function ProjectsPage() {
         </div>
         <p className="caption">{PROJECTS.length} projects · sample portfolio</p>
       </header>
+      <h2 className="sr-only">All projects</h2>
       <ProjectGrid projects={PROJECTS} />
     </div>
   );

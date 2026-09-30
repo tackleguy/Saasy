@@ -54,7 +54,7 @@ export default function ProjectCard({ project, aspect = "aspect-[16/10]", priori
         </div>
         <p className="caption mt-1">
           {project.city}
-          {project.placeholder && <span className="ml-2 text-ash/70">· Sample project</span>}
+          {project.placeholder && <span className="ml-2 text-ash">· Sample project</span>}
         </p>
       </div>
     </Link>

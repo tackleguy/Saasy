@@ -31,7 +31,7 @@ const MATERIALS = {
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <>
-      <dt className="text-ash/80">{label}</dt>
+      <dt className="text-ash">{label}</dt>
       <dd className={`text-right tabular-nums ${accent ? "font-serif text-base text-ink" : "text-ink"}`}>{value}</dd>
     </>
   );
@@ -57,7 +57,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
               </p>
               <h4 className="font-serif text-[34px] leading-none text-ink">
                 Floor {floor.number}
-                <span className="ml-1.5 text-base text-ash/80">/ {floorCount}</span>
+                <span className="ml-1.5 text-base text-ash">/ {floorCount}</span>
               </h4>
             </div>
             <button onClick={onClose} className="rounded-full p-1 text-ash transition hover:bg-stone hover:text-ink" aria-label="Close floor inspector">
@@ -78,7 +78,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             <Row label="Floor revenue" value={fmtMoney(floorYield.revenue)} accent />
           </dl>
 
-          <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash/80">{MATERIALS[floor.zone]}</p>
+          <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash">{MATERIALS[floor.zone]}</p>
 
           <button
             onClick={onWalk}
