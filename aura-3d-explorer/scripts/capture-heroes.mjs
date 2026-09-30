@@ -50,7 +50,7 @@ for (const slug of SLUGS) {
     // RenderView flags readiness ~6 s after mount; give the walk glide and post FX a little more.
     await page.waitForSelector("html[data-render-ready]", { timeout: 120_000 });
     if (shot.query.startsWith("walk")) await page.waitForSelector("html[data-walking]", { timeout: 120_000 });
-    await page.waitForTimeout(shot.query.startsWith("walk") ? 8000 : 4000);
+    await page.waitForTimeout(shot.query.startsWith("walk") ? 16000 : 4000);
     // The main thread is busy with software GL, so a compositor screenshot can
     // stall; the canvas keeps its drawing buffer, so read the last frame directly.
     const dataUrl = await page.evaluate(() => document.querySelector("canvas")?.toDataURL("image/png") ?? "");
