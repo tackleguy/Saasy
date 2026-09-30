@@ -6,13 +6,15 @@
  * Bottom: controls hint, a hold-to-walk touch pad (for phones/tablets) and
  * the exit button. The pad writes to the shared `walkInput` object that the
  * in-canvas WalkControls reads every frame.
+ * Right: the lift panel, shown while you stand in the lift cab — pick a
+ * floor to ride there; while travelling it shows the floor passing by.
  */
 import { motion } from "framer-motion";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Camera, LogOut, Move3d } from "lucide-react";
+import { ArrowDown, ArrowDownUp, ArrowLeft, ArrowRight, ArrowUp, Camera, LogOut, Move3d } from "lucide-react";
 import clsx from "clsx";
 import type { Building, FloorData } from "@/types";
-import { ZONES } from "@/lib/tower";
-import { viewpointsFor } from "@/lib/viewpoints";
+import { crownFloorCount, ZONES } from "@/lib/tower";
+import { LIFT_VIEW, viewpointsFor } from "@/lib/viewpoints";
 import { walkInput } from "@/lib/walkInput";
 
 interface Props {
@@ -21,6 +23,58 @@ interface Props {
   viewIndex: number;
   onView: (index: number) => void;
   onExit: () => void;
+  /** Standing in the lift cab. */
+  inLift?: boolean;
+  /** Floor number passing by while riding (null when stopped). */
+  liftFloor?: number | null;
+  /** Ride the lift to floor index. */
+  onRide?: (index: number) => void;
+}
+
+/** Lift car operating panel: one button per floor, top floor first. */
+function LiftPanel({ building, floor, liftFloor, onRide }: { building: Building; floor: FloorData; liftFloor: number | null; onRide: (i: number) => void }) {
+  const riding = liftFloor !== null;
+  const floors = [...building.floors].reverse();
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 12 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 12 }}
+      className="overlay absolute right-3 top-24 z-10 w-[188px] rounded-[3px] p-3 sm:right-4"
+      role="group"
+      aria-label="Lift panel"
+    >
+      <div className="flex items-baseline justify-between">
+        <p className="caption flex items-center gap-1.5">
+          <ArrowDownUp size={12} className="text-oak" aria-hidden /> Lift
+        </p>
+        <p className="font-serif text-3xl leading-none tabular-nums text-ink" aria-live="polite">
+          {riding ? liftFloor : floor.number}
+        </p>
+      </div>
+      <p className="caption mt-1">{riding ? "Travelling…" : "Choose a floor"}</p>
+      <div className="thin-scroll mt-2 grid max-h-[46vh] grid-cols-4 gap-1 overflow-y-auto pr-0.5">
+        {floors.map((f) => {
+          const here = f.index === floor.index;
+          return (
+            <button
+              key={f.index}
+              disabled={riding || here}
+              onClick={() => onRide(f.index)}
+              title={`${ZONES[f.zone].label} · floor ${f.number}`}
+              className={clsx(
+                "relative flex h-8 items-center justify-center rounded-full border text-[11px] tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40",
+                here ? "border-oak bg-oak/15 text-oak" : "border-plaster text-ink hover:border-ink/40 disabled:opacity-40"
+              )}
+            >
+              {f.zone === "podium" ? "L" : f.number}
+              <span className="absolute bottom-1 h-1 w-1 rounded-full" style={{ background: ZONES[f.zone].accent }} aria-hidden />
+            </button>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
 }
 
 /** Hold-to-move pad button. */
@@ -46,8 +100,8 @@ function PadButton({ axis, value, label, children }: { axis: "forward" | "strafe
   );
 }
 
-export default function WalkHud({ building, floor, viewIndex, onView, onExit }: Props) {
-  const views = viewpointsFor(floor);
+export default function WalkHud({ building, floor, viewIndex, onView, onExit, inLift = false, liftFloor = null, onRide }: Props) {
+  const views = viewpointsFor(floor, crownFloorCount(building));
 
   return (
     <>
@@ -75,8 +129,20 @@ export default function WalkHud({ building, floor, viewIndex, onView, onExit }: 
               {v.label}
             </button>
           ))}
+          <button
+            onClick={() => onView(LIFT_VIEW)}
+            className={clsx(
+              "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs transition",
+              viewIndex === LIFT_VIEW ? "bg-ink font-medium text-paper" : "text-ash hover:text-ink"
+            )}
+          >
+            <ArrowDownUp size={12} />
+            Elevator
+          </button>
         </div>
       </motion.div>
+
+      {inLift && onRide && <LiftPanel building={building} floor={floor} liftFloor={liftFloor} onRide={onRide} />}
 
       {/* Controls */}
       <motion.div
@@ -103,7 +169,7 @@ export default function WalkHud({ building, floor, viewIndex, onView, onExit }: 
         </div>
 
         <p className="overlay hidden items-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] text-ash md:flex">
-          <Move3d size={12} className="text-oak" /> Drag to look · W A S D or arrows to walk · Shift to run · Esc to exit
+          <Move3d size={12} className="text-oak" /> Drag to look · W A S D or arrows to walk · walk into the lift to change floors · Esc to exit
         </p>
 
         <button

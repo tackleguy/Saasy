@@ -12,7 +12,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import type { Building, FloorData } from "@/types";
-import { explodedY, ZONES } from "@/lib/tower";
+import { crownFloorCount, explodedY, ZONES } from "@/lib/tower";
 import FloorPlate from "./FloorPlate";
 import CoreShaft from "./CoreShaft";
 import SectionCut from "./SectionCut";
@@ -101,6 +101,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
           onSelect={onSelect}
           onHover={onHover}
           coreGhost={active && (xray || section || explosion > 0.05)}
+          crownFloors={crownFloorCount(building)}
         />
       ))}
 

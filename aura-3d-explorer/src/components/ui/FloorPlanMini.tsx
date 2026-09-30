@@ -22,13 +22,15 @@ import { CORE_ACCENT } from "@/components/3d/CoreShaft";
 interface Props {
   floor: FloorData;
   coreSize: number;
+  /** Floors in the building's crown (the penthouse spans them all). */
+  crownFloors: number;
   /** Walk in from viewpoint `i` (lib/viewpoints). */
   onViewpoint?: (i: number) => void;
 }
 
 const M = 1 / MODEL_SCALE;
 
-export default function FloorPlanMini({ floor, coreSize, onViewpoint }: Props) {
+export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoint }: Props) {
   const plan = useMemo(() => {
     const A = (floor.width * M) / 2;
     const B = (floor.depth * M) / 2;
@@ -45,7 +47,7 @@ export default function FloorPlanMini({ floor, coreSize, onViewpoint }: Props) {
     const coreHalfM = h * (Math.abs(Math.cos(r)) + Math.abs(Math.sin(r)));
     let rooms: { x: number; z: number; w: number; d: number; rot: number; piece: string }[] = [];
     try {
-      rooms = layoutFloor(floor.zone, floor.width * M, floor.depth * M, coreHalfM, floor.zone === "crown" ? floor.zoneIndex : 0).map((p) => ({
+      rooms = layoutFloor(floor.zone, floor.width * M, floor.depth * M, h, -r, floor.zone === "crown" ? floor.zoneIndex : 0, crownFloors, floor.shape).map((p) => ({
         ...p,
         w: PIECES[p.piece].w,
         d: PIECES[p.piece].d,
@@ -53,13 +55,13 @@ export default function FloorPlanMini({ floor, coreSize, onViewpoint }: Props) {
     } catch {
       rooms = [];
     }
-    const views = viewpointsFor(floor);
+    const views = viewpointsFor(floor, crownFloors);
     // North = world −Z, seen from the plate frame.
     const north: [number, number] = [Math.sin(r), -Math.cos(r)];
     const pad = Math.max(A, B) * 0.28 + 2;
     const scale = A * 2 > 40 ? 10 : 5;
     return { A, B, outline, core, rooms, views, north, pad, scale, coreHalfM };
-  }, [floor, coreSize]);
+  }, [floor, coreSize, crownFloors]);
 
   const { A, B, outline, core, rooms, views, north, pad, scale, coreHalfM } = plan;
   const s = Math.max(A, B); // text / glyph scale

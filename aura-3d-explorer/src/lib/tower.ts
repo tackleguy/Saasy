@@ -64,18 +64,50 @@ export const ZONES: Record<ZoneId, ZoneMeta> = {
     accent: "#a5b4c8",
     avgUnitSqFt: 1_350,
     unitNoun: "residences",
-    description: "Four corner apartments per floor around the core, each with living, kitchen, dining and bedroom.",
+    description: "Four corner residences per floor around the core — each 2 bed / 2 bath with living, kitchen and dining.",
   },
   crown: {
     id: "crown",
-    label: "Crown & Sky Penthouses",
+    label: "Crown & Sky Penthouse",
     short: "Crown",
     accent: "#f59e0b",
     avgUnitSqFt: 5_800,
     unitNoun: "penthouse",
-    description: "Double-height ultra-clear glass suites with plunge pool, grand piano and warm golden interiors.",
+    description: "One penthouse across the whole crown — 4 bed / 4 bath, with plunge pool, grand piano and warm golden interiors.",
   },
 };
+
+/**
+ * Fixed unit mix for the residential programme:
+ *   • every residential floor holds four corner residences, each 2 bed / 2 bath
+ *   • the crown (all of its floors together) is a single 4 bed / 4 bath penthouse
+ * The yield engine, stacking plan, inspector and furniture layouts all read this.
+ */
+export const UNIT_MIX = {
+  residential: { perFloor: 4, beds: 2, baths: 2 },
+  penthouse: { beds: 4, baths: 4 },
+} as const;
+
+/**
+ * Penthouse bedrooms (each with an ensuite) on crown floor `zoneIndex` of
+ * `crownFloors`. A single-floor crown holds all four; otherwise the lowest
+ * crown floor is the living level with one guest suite and the rest are
+ * spread over the floors above.
+ */
+/** Number of floors in a building's crown (the penthouse spans them all). */
+export function crownFloorCount(spec: Pick<BuildingSpec, "zones">): number {
+  const [a, b] = spec.zones.crown.floors;
+  return b - a + 1;
+}
+
+export function penthouseBedsOnFloor(zoneIndex: number, crownFloors: number): number {
+  const total = UNIT_MIX.penthouse.beds;
+  if (crownFloors <= 1) return total;
+  if (zoneIndex === 0) return 1;
+  const upper = crownFloors - 1;
+  const rest = total - 1;
+  return Math.floor(rest / upper) + (zoneIndex - 1 < rest % upper ? 1 : 0);
+}
 
 /** Zones in stacking order, ground → sky. */
 export const ZONE_ORDER: ZoneId[] = ["podium", "office", "residential", "crown"];

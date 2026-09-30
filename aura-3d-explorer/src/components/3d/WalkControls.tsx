@@ -6,11 +6,17 @@
  *   • Move:   W A S D / arrow keys (Shift to run), or the on-screen pad,
  *             which writes to the shared `walkInput` object.
  *   • Views:  when `viewIndex` / `viewNonce` change, the camera glides to
- *             that curated viewpoint (see `lib/viewpoints.ts`).
+ *             that curated viewpoint (see `lib/viewpoints.ts`); LIFT_VIEW
+ *             stands you in the lift lobby facing the doors.
+ *   • Lift:   the main lift doors open as you approach; step into the cab
+ *             and pick a floor (WalkHud → `lift.ride`). The doors close, the
+ *             cab travels (you ride inside a moving cab), and on arrival the
+ *             explorer switches to the new floor and the doors open again.
  *
  * The walker stays at standing eye height (1.6 m), can't leave the plate
- * through the glass and can't walk through the lift core. Furniture is not
- * solid — visitors can walk through it to reach any viewpoint.
+ * through the glass and can't walk through the core — except into the lift
+ * cab through open doors. Furniture is not solid, so every viewpoint is
+ * reachable.
  *
  * Mounted only while walk mode is on; OrbitControls are disabled meanwhile.
  * On unmount the camera's FOV / near plane are restored and the regular
@@ -21,15 +27,31 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import type { Building, FloorData } from "@/types";
-import { explodedY, MODEL_SCALE } from "@/lib/tower";
-import { EYE_HEIGHT_M, viewpointsFor } from "@/lib/viewpoints";
+import { crownFloorCount, explodedY, MODEL_SCALE } from "@/lib/tower";
+import { EYE_HEIGHT_M, LIFT_VIEW, viewpointsFor } from "@/lib/viewpoints";
 import { walkInput, resetWalkInput } from "@/lib/walkInput";
+import { liftDims, liftState, resetLiftState } from "@/lib/lift";
 import { SLAB_THICKNESS } from "./FurnitureOverlay";
 
 /** Walking speed, metres per second (×2.2 with Shift). */
 const WALK_SPEED_M = 1.8;
 const LOOK_SENSITIVITY = 0.0035;
 const WALK_FOV = 64;
+const EYE = EYE_HEIGHT_M * MODEL_SCALE;
+
+/** Lift plumbing between the explorer state and the walker. */
+export interface LiftLink {
+  /** Latest ride request: target floor index + a nonce so repeats re-trigger. */
+  ride: { target: number; nonce: number };
+  /** Latest arrival (set by the explorer when a ride ends). */
+  arrival: { index: number; nonce: number };
+  /** The walker stepped into / out of the cab. */
+  onInside: (inside: boolean) => void;
+  /** Floor number passing by while riding (null when stopped). */
+  onFloor: (floorNumber: number | null) => void;
+  /** The ride reached `index`: switch the walked floor. */
+  onArrive: (index: number) => void;
+}
 
 interface Props {
   building: Building;
@@ -38,9 +60,10 @@ interface Props {
   viewIndex: number;
   /** Bump to re-fly to the same view. */
   viewNonce: number;
+  lift: LiftLink;
 }
 
-export default function WalkControls({ building, floor, explosion, viewIndex, viewNonce }: Props) {
+export default function WalkControls({ building, floor, explosion, viewIndex, viewNonce, lift }: Props) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const gl = useThree((s) => s.gl);
 
@@ -48,23 +71,50 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const pitch = useRef(0);
   const pos = useRef(new THREE.Vector2()); // world x / z
   const keys = useRef(new Set<string>());
-  const tween = useRef<gsap.core.Tween | null>(null);
+  const tween = useRef<gsap.core.Tween | gsap.core.Timeline | null>(null);
+  const inside = useRef(false);
+  const holdDoorsUntil = useRef(0);
+  const handledRide = useRef(lift.ride.nonce);
+  const handledArrival = useRef(lift.arrival.nonce);
+  const lastFloorShown = useRef<number | null>(null);
+  const cab = useRef<THREE.Group>(null);
+  /** True once the doors have shut and the cab is moving (the travelling cab is shown). */
+  const travelling = useRef(false);
+  // Keep the latest callbacks without re-running effects.
+  const liftRef = useRef(lift);
+  liftRef.current = lift;
 
   const [bx, bz] = building.position;
   const cos = Math.cos(floor.rotationY);
   const sin = Math.sin(floor.rotationY);
+  const L = useMemo(() => liftDims(building.coreSize, floor.height - SLAB_THICKNESS), [building.coreSize, floor.height]);
+  const cabCentreZ = (L.zBack + L.zFront) / 2;
 
   /** Plate-local (scene units) → world x/z. */
   const toWorld = useMemo(() => (lx: number, lz: number) => new THREE.Vector2(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos), [bx, bz, cos, sin]);
 
-  /** Keep a world x/z point inside the glass line and outside the core. */
+  /**
+   * Keep a world x/z point inside the glass line and outside the core —
+   * except inside the lift cab, which you can enter through open doors.
+   */
   const resolve = useMemo(
     () => (p: THREE.Vector2) => {
       let x = p.x - bx;
       let z = p.y - bz;
-      // Core (square to the world)
       const ch = building.coreSize / 2 + 0.12;
-      if (Math.abs(x) < ch && Math.abs(z) < ch) {
+      const m = 0.06;
+      const inCab = Math.abs(x) < L.cabW / 2 && z > L.zBack && z < L.zFront;
+      const inDoorway = Math.abs(x) < L.opening / 2 && z >= L.zFront && z < ch;
+      if (inCab || (inDoorway && liftState.open > 0.6)) {
+        if (z < L.zFront) {
+          x = THREE.MathUtils.clamp(x, -(L.cabW / 2 - m), L.cabW / 2 - m);
+          z = Math.max(z, L.zBack + m);
+        } else {
+          x = THREE.MathUtils.clamp(x, -(L.opening / 2 - m / 2), L.opening / 2 - m / 2);
+        }
+        if (liftState.open < 0.6) z = Math.min(z, L.zFront - m); // doors shut: stay in the cab
+      } else if (Math.abs(x) < ch && Math.abs(z) < ch) {
+        // Core (square to the world)
         const px = ch - Math.abs(x);
         const pz = ch - Math.abs(z);
         if (px < pz) x = Math.sign(x || 1) * ch;
@@ -79,10 +129,10 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       p.set(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos);
       return p;
     },
-    [bx, bz, cos, sin, building.coreSize, floor.width, floor.depth]
+    [bx, bz, cos, sin, building.coreSize, floor.width, floor.depth, L]
   );
 
-  const eyeY = explodedY(floor, explosion) + SLAB_THICKNESS + EYE_HEIGHT_M * MODEL_SCALE;
+  const eyeY = explodedY(floor, explosion) + SLAB_THICKNESS + EYE;
 
   /* Enter / leave: widen the lens and pull the near plane in for interiors. */
   useEffect(() => {
@@ -94,6 +144,9 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     return () => {
       tween.current?.kill();
       resetWalkInput();
+      resetLiftState();
+      liftRef.current.onInside(false);
+      liftRef.current.onFloor(null);
       camera.fov = prev.fov;
       camera.near = prev.near;
       camera.rotation.order = "XYZ";
@@ -109,13 +162,43 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     pitch.current = Math.asin(THREE.MathUtils.clamp(dir.y, -1, 1));
   }, [camera]);
 
-  /* Glide to the requested viewpoint. */
+  /* Glide to the requested viewpoint — or, after a lift ride, stand in the cab. */
   useEffect(() => {
-    const views = viewpointsFor(floor);
-    const v = views[Math.min(viewIndex, views.length - 1)];
-    const s = MODEL_SCALE;
-    const from = resolve(toWorld(v.from[0] * s, v.from[1] * s));
-    const look = toWorld(v.look[0] * s, v.look[1] * s);
+    // Arrived by lift on this floor: appear inside the cab, doors open shortly.
+    if (lift.arrival.index === floor.index && lift.arrival.nonce !== handledArrival.current) {
+      handledArrival.current = lift.arrival.nonce;
+      tween.current?.kill();
+      tween.current = null;
+      pos.current.set(bx, bz + cabCentreZ);
+      camera.position.set(pos.current.x, eyeY, pos.current.y);
+      // Turn to face the doors (+Z), ready to step out.
+      yaw.current = Math.PI;
+      pitch.current = -0.04;
+      camera.rotation.set(pitch.current, yaw.current, 0);
+      liftState.riding = false;
+      travelling.current = false;
+      liftState.open = 0;
+      liftState.targetOpen = 0;
+      holdDoorsUntil.current = performance.now() + 450;
+      lastFloorShown.current = null;
+      liftRef.current.onFloor(null);
+      return;
+    }
+    if (liftState.riding) return;
+
+    let from: THREE.Vector2;
+    let look: THREE.Vector2;
+    if (viewIndex === LIFT_VIEW) {
+      // Lift lobby: just outside the doors, facing them.
+      from = new THREE.Vector2(bx, bz + building.coreSize / 2 + 0.32);
+      look = new THREE.Vector2(bx, bz);
+    } else {
+      const views = viewpointsFor(floor, crownFloorCount(building));
+      const v = views[Math.min(Math.max(viewIndex, 0), views.length - 1)];
+      const s = MODEL_SCALE;
+      from = resolve(toWorld(v.from[0] * s, v.from[1] * s));
+      look = toWorld(v.look[0] * s, v.look[1] * s);
+    }
     const targetYaw = Math.atan2(-(look.x - from.x), -(look.y - from.y));
 
     const startPos = new THREE.Vector2(camera.position.x, camera.position.z);
@@ -141,9 +224,50 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       onComplete: () => void (tween.current = null),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewIndex, viewNonce, floor, building]);
+  }, [viewIndex, viewNonce, floor, building, lift.arrival.nonce]);
 
-  /* Drag to look. */
+  /* Ride the lift to another floor. */
+  useEffect(() => {
+    const { target, nonce } = lift.ride;
+    if (nonce === handledRide.current) return;
+    handledRide.current = nonce;
+    if (!inside.current || liftState.riding || target === floor.index || target < 0 || target >= building.floors.length) return;
+
+    const dest = building.floors[target];
+    const destEye = explodedY(dest, explosion) + SLAB_THICKNESS + EYE;
+    const floorsToGo = Math.abs(target - floor.index);
+    const travel = THREE.MathUtils.clamp(1.4 + floorsToGo * 0.06, 1.6, 7);
+    const y = { v: camera.position.y };
+
+    // Centre the rider in the cab, close the doors, travel, then hand over to the new floor.
+    tween.current?.kill();
+    liftState.riding = true;
+    liftState.targetOpen = 0;
+    pos.current.set(bx, bz + cabCentreZ);
+    const tl = gsap.timeline({ onComplete: () => liftRef.current.onArrive(target) });
+    tl.to(y, { v: y.v, duration: 0.9 }); // doors closing
+    tl.to(y, {
+      v: destEye,
+      duration: travel,
+      ease: "power2.inOut",
+      onStart: () => void (travelling.current = true),
+      onUpdate: () => {
+        camera.position.y = y.v;
+        // Floor passing by: the highest floor whose slab is below the cab floor.
+        const cabFloor = y.v - EYE - SLAB_THICKNESS + 1e-3;
+        let n = building.floors[0].number;
+        for (const f of building.floors) if (explodedY(f, explosion) <= cabFloor) n = f.number;
+        if (n !== lastFloorShown.current) {
+          lastFloorShown.current = n;
+          liftRef.current.onFloor(n);
+        }
+      },
+    });
+    tween.current = tl;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lift.ride.nonce]);
+
+  /* Drag to look (also while riding). */
   useEffect(() => {
     const el = gl.domElement;
     let dragging = false;
@@ -158,7 +282,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     };
     const move = (e: PointerEvent) => {
       if (!dragging) return;
-      if (tween.current) {
+      if (tween.current && !liftState.riding) {
         tween.current.kill();
         tween.current = null;
       }
@@ -209,9 +333,34 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     };
   }, []);
 
-  /* Per-frame movement. */
+  /* Per-frame: lift doors, moving cab, movement. */
   useFrame((_, dt) => {
+    // Where are we relative to the lift? (building-local; the core never twists)
+    const x = camera.position.x - bx;
+    const z = camera.position.z - bz;
+    const nowInside = Math.abs(x) < L.cabW / 2 && z > L.zBack && z < L.zFront + L.jamb * 0.5;
+    const near = Math.abs(x) < L.cabW && z >= L.zFront && z < building.coreSize / 2 + 1.6 * MODEL_SCALE;
+    if (nowInside !== inside.current) {
+      inside.current = nowInside;
+      liftRef.current.onInside(nowInside);
+    }
+    liftState.targetOpen = liftState.riding || performance.now() < holdDoorsUntil.current ? 0 : nowInside || near ? 1 : 0;
+
+    // The moving cab encloses the rider between floors.
+    const g = cab.current;
+    if (g) {
+      g.visible = liftState.riding && travelling.current;
+      if (g.visible) g.position.set(bx, camera.position.y - EYE + L.cabH / 2, bz + cabCentreZ);
+    }
+
+    if (liftState.riding) {
+      camera.position.x = pos.current.x;
+      camera.position.z = pos.current.y;
+      camera.rotation.set(pitch.current, yaw.current, 0);
+      return;
+    }
     if (tween.current) return; // gliding to a viewpoint
+
     const k = keys.current;
     let f = walkInput.forward + (k.has("w") || k.has("arrowup") ? 1 : 0) - (k.has("s") || k.has("arrowdown") ? 1 : 0);
     let r = walkInput.strafe + (k.has("d") || k.has("arrowright") ? 1 : 0) - (k.has("a") || k.has("arrowleft") ? 1 : 0);
@@ -233,5 +382,18 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     camera.rotation.set(pitch.current, yaw.current, 0);
   });
 
-  return null;
+  // Travelling cab: seen from inside (back faces), steel walls and a light panel.
+  return (
+    <group ref={cab} visible={false}>
+      <mesh raycast={() => null}>
+        <boxGeometry args={[L.cabW, L.cabH, L.cabD]} />
+        <meshStandardMaterial color="#c7ccd2" metalness={0.85} roughness={0.32} side={THREE.BackSide} />
+      </mesh>
+      <mesh position={[0, L.cabH / 2 - 0.004, 0]} rotation-x={Math.PI / 2} raycast={() => null}>
+        <planeGeometry args={[L.cabW * 0.7, L.cabD * 0.7]} />
+        <meshStandardMaterial color="#fff6e6" emissive="#fff1d6" emissiveIntensity={1.4} />
+      </mesh>
+      <pointLight position={[0, L.cabH / 2 - 0.05, 0]} color="#fff1d6" intensity={0.6} distance={1.2} decay={2} />
+    </group>
+  );
 }

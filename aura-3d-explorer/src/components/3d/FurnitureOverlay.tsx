@@ -35,17 +35,17 @@ interface Batch {
 const batchCache = new Map<string, Batch[]>();
 
 /** Expand a floor's layout into instanced batches (cached per plate shape). */
-function batchesFor(floor: FloorData, coreSize: number): Batch[] {
+function batchesFor(floor: FloorData, coreSize: number, crownFloors: number): Batch[] {
   // The core stays square to the world while the plate twists, so in the
-  // plate's local frame it is rotated: widen its keep-out to the rotated bounds.
-  const r = floor.rotationY;
-  const coreHalfM = ((coreSize / 2) * (Math.abs(Math.cos(r)) + Math.abs(Math.sin(r)))) / MODEL_SCALE;
-  const variant = floor.zone === "crown" ? floor.zoneIndex : 0;
-  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), variant, floor.shape?.kind, floor.shape?.amount].join(":");
+  // plate's local frame it is rotated by −rotationY (tested exactly by the planner).
+  const coreHalfM = coreSize / 2 / MODEL_SCALE;
+  const coreAngle = -floor.rotationY;
+  const zoneIndex = floor.zone === "crown" ? floor.zoneIndex : 0;
+  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), coreAngle.toFixed(3), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount].join(":");
   const hit = batchCache.get(key);
   if (hit) return hit;
 
-  const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, variant, floor.shape);
+  const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape);
   const parts: Part[] = placements.flatMap((pl) => place(PIECES[pl.piece].build(), pl.x, pl.z, pl.rot));
 
   const map = new Map<string, Batch>();
@@ -77,7 +77,7 @@ function BatchMesh({ batch }: { batch: Batch }) {
     mesh.computeBoundingSphere();
   }, [batch]);
 
-  const transparent = batch.mat === "water";
+  const transparent = batch.mat === "water" || batch.mat === "glass";
   return (
     <instancedMesh
       ref={ref}
@@ -92,10 +92,12 @@ function BatchMesh({ batch }: { batch: Batch }) {
 interface Props {
   floor: FloorData;
   coreSize: number;
+  /** Floors in the building's crown (the penthouse spans them all). */
+  crownFloors: number;
 }
 
-export default function FurnitureOverlay({ floor, coreSize }: Props) {
-  const batches = useMemo(() => batchesFor(floor, coreSize), [floor, coreSize]);
+export default function FurnitureOverlay({ floor, coreSize, crownFloors }: Props) {
+  const batches = useMemo(() => batchesFor(floor, coreSize, crownFloors), [floor, coreSize, crownFloors]);
   const group = useRef<THREE.Group>(null);
 
   // Grow up from the slab on mount.

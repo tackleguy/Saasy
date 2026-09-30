@@ -39,6 +39,7 @@ import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
+import LiftCore from "./LiftCore";
 import {
   arcadePanel,
   arcadeSpans,
@@ -123,9 +124,11 @@ interface Props {
   onHover: (floor: FloorData | null) => void;
   /** Ghost this slice of core so the continuous <CoreShaft> reads through it. */
   coreGhost?: boolean;
+  /** Floors in the building's crown (the penthouse spans them all). */
+  crownFloors?: number;
 }
 
-export default function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover, coreGhost = false }: Props) {
+export default function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover, coreGhost = false, crownFloors = 2 }: Props) {
   const look = LOOKS[floor.zone];
   const bodyH = floor.height - SLAB_THICKNESS;
   const doorH = Math.min(bodyH * 0.8, 0.62);
@@ -269,14 +272,20 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
 
   return (
     <group ref={group} position={[0, floor.baseY, 0]}>
-      {/* ── Core: vertical lift & stair shaft (never twists) ── */}
-      <mesh position={[0, floor.height / 2, 0]} castShadow receiveShadow raycast={() => null}>
-        <boxGeometry args={[coreSize, floor.height, coreSize]} />
-        <meshStandardMaterial ref={coreMat} map={concreteTexture()} color="#e2dcd1" roughness={0.9} emissive={HIGHLIGHT} emissiveIntensity={0} />
-      </mesh>
-      <mesh geometry={doors} raycast={() => null}>
-        <meshStandardMaterial ref={doorMat} color="#b9a78a" metalness={0.85} roughness={0.3} />
-      </mesh>
+      {/* ── Core: vertical lift & stair shaft (never twists). Walking a floor opens up its lift. ── */}
+      {walking ? (
+        <LiftCore coreSize={coreSize} floorHeight={floor.height} slab={SLAB_THICKNESS} />
+      ) : (
+        <>
+          <mesh position={[0, floor.height / 2, 0]} castShadow receiveShadow raycast={() => null}>
+            <boxGeometry args={[coreSize, floor.height, coreSize]} />
+            <meshStandardMaterial ref={coreMat} map={concreteTexture()} color="#e2dcd1" roughness={0.9} emissive={HIGHLIGHT} emissiveIntensity={0} />
+          </mesh>
+          <mesh geometry={doors} raycast={() => null}>
+            <meshStandardMaterial ref={doorMat} color="#b9a78a" metalness={0.85} roughness={0.3} />
+          </mesh>
+        </>
+      )}
 
       {/* ── Twisted plate ── */}
       <group rotation={[0, floor.rotationY, 0]} onClick={handleClick} onPointerOver={handleOver} onPointerOut={handleOut}>
@@ -392,7 +401,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
               <meshStandardMaterial map={finishMap} color={look.finish} roughness={floor.zone === "crown" ? 0.2 : 0.55} />
             </mesh>
             <pointLight position={[0, floor.height * 0.85, 0]} color="#ffd9a8" intensity={3} distance={Math.max(w, d)} decay={1.6} />
-            <FurnitureOverlay floor={floor} coreSize={coreSize} />
+            <FurnitureOverlay floor={floor} coreSize={coreSize} crownFloors={crownFloors} />
           </>
         )}
       </group>

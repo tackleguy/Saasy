@@ -13,7 +13,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import clsx from "clsx";
 import type { Building, FloorYield, ProjectStatus, YieldMetrics } from "@/types";
-import { ZONES } from "@/lib/tower";
+import { UNIT_MIX, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
 
 export type UnitStatus = "Available" | "Reserved" | "Sold";
@@ -29,6 +29,11 @@ export interface UnitInfo {
   status: UnitStatus;
   orientation: string;
   view: string;
+  /** Bedrooms / bathrooms for residences and the penthouse. */
+  beds?: number;
+  baths?: number;
+  /** Floor numbers the unit spans (the penthouse covers every crown floor). */
+  levels?: [number, number];
 }
 
 const MAX_PER_ROW = 8;
@@ -52,7 +57,34 @@ const ORIENTATIONS = ["North", "East", "South", "West"];
 
 export function buildUnits(slug: string, status: ProjectStatus, building: Building, metrics: YieldMetrics): UnitInfo[][] {
   const mix = MIX[status];
+  const prefix = building.short.slice(0, 3).toUpperCase();
+
+  // The whole crown is ONE penthouse: every crown row shows the same unit.
+  const crown = building.floors.filter((f) => f.zone === "crown");
+  const phStatus = (() => {
+    const r = hash01(`${slug}:${building.id}:penthouse`) * 0.85;
+    return r < mix.sold ? "Sold" : r < mix.sold + mix.reserved ? "Reserved" : "Available";
+  })() as UnitStatus;
+  const penthouse: UnitInfo | null = crown.length
+    ? {
+        code: `${prefix}-PH`,
+        floorIndex: crown[0].index,
+        floorNumber: crown[0].number,
+        unitIndex: 0,
+        zone: "crown",
+        sqFt: crown.reduce((s, f) => s + metrics.floors[f.index].sqFt, 0),
+        price: crown.reduce((s, f) => s + metrics.floors[f.index].revenue, 0),
+        status: phStatus,
+        orientation: "All four",
+        view: "360° skyline & water",
+        beds: UNIT_MIX.penthouse.beds,
+        baths: UNIT_MIX.penthouse.baths,
+        levels: [crown[0].number, crown[crown.length - 1].number],
+      }
+    : null;
+
   return building.floors.map((f) => {
+    if (f.zone === "crown" && penthouse) return [penthouse];
     const fy = metrics.floors[f.index];
     const count = Math.max(1, Math.min(MAX_PER_ROW, fy.units));
     return Array.from({ length: count }, (_, u) => {
@@ -60,7 +92,7 @@ export function buildUnits(slug: string, status: ProjectStatus, building: Buildi
       const r = hash01(`${slug}:${building.id}:${f.index}:${u}`) * (1.15 - (f.index / building.floors.length) * 0.3);
       const st: UnitStatus = r < mix.sold ? "Sold" : r < mix.sold + mix.reserved ? "Reserved" : "Available";
       return {
-        code: `${building.short.slice(0, 3).toUpperCase()}-${String(f.number).padStart(2, "0")}${String(u + 1).padStart(2, "0")}`,
+        code: `${prefix}-${String(f.number).padStart(2, "0")}${String(u + 1).padStart(2, "0")}`,
         floorIndex: f.index,
         floorNumber: f.number,
         unitIndex: u,
@@ -70,6 +102,7 @@ export function buildUnits(slug: string, status: ProjectStatus, building: Buildi
         status: st,
         orientation: ORIENTATIONS[u % 4],
         view: f.index > building.floors.length * 0.55 ? "Skyline & water" : f.zone === "podium" ? "Street & plaza" : "City & park",
+        ...(f.zone === "residential" ? { beds: UNIT_MIX.residential.beds, baths: UNIT_MIX.residential.baths } : {}),
       };
     });
   });
@@ -98,7 +131,8 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
 
   const counts = useMemo(() => {
     const c = { Available: 0, Reserved: 0, Sold: 0 };
-    rows.flat().forEach((u) => c[u.status]++);
+    // Count each unit once (the penthouse appears on every crown row).
+    new Map(rows.flat().map((u) => [u.code, u])).forEach((u) => c[u.status]++);
     return c;
   }, [rows]);
 
@@ -175,7 +209,8 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                 <dl className="mt-4 grid grid-cols-2 border-t border-plaster text-sm">
                   {[
                     ["Status", unit.status],
-                    ["Floor", `F${unit.floorNumber}`],
+                    ["Floor", unit.levels && unit.levels[0] !== unit.levels[1] ? `F${unit.levels[0]}–F${unit.levels[1]}` : `F${unit.floorNumber}`],
+                    ...(unit.beds ? [["Bedrooms / baths", `${unit.beds} bed / ${unit.baths} bath`]] : []),
                     ["Area", `${fmtNum(unit.sqFt)} sf`],
                     ["Guide price", fmtMoney(unit.price)],
                     ["Orientation", unit.orientation],

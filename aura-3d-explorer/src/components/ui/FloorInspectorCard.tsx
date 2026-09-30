@@ -8,7 +8,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronUp, Footprints, X } from "lucide-react";
 import type { Building, FloorData, FloorYield } from "@/types";
-import { toMetres, ZONES } from "@/lib/tower";
+import { crownFloorCount, penthouseBedsOnFloor, toMetres, UNIT_MIX, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
 import FloorPlanMini from "./FloorPlanMini";
 
@@ -22,6 +22,18 @@ interface Props {
   onWalk: () => void;
   /** Walk in from a specific viewpoint (plan minimap). */
   onViewpoint?: (i: number) => void;
+}
+
+/** "4 residences · 2 bed / 2 bath each", "Penthouse · 4 bed / 4 bath", … */
+function unitsLine(floor: FloorData, units: number, crownFloors: number) {
+  if (floor.zone === "residential") return `${units} residences · ${UNIT_MIX.residential.beds} bed / ${UNIT_MIX.residential.baths} bath each`;
+  if (floor.zone === "crown") {
+    const { beds, baths } = UNIT_MIX.penthouse;
+    const here = penthouseBedsOnFloor(floor.zoneIndex, crownFloors);
+    const level = crownFloors > 1 ? ` · level ${floor.zoneIndex + 1} of ${crownFloors}, ${here} bed${here === 1 ? "" : "s"} here` : "";
+    return `1 penthouse · ${beds} bed / ${baths} bath${level}`;
+  }
+  return `${units} ${ZONES[floor.zone].unitNoun}`;
 }
 
 /** Envelope description per zone, reflecting the building's facade options. */
@@ -82,7 +94,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             <Row label="Real plate" value={`${toMetres(floor.width).toFixed(0)} × ${toMetres(floor.depth).toFixed(0)} m · ${toMetres(floor.height).toFixed(1)} m f2f`} />
             <Row label="Twist (R_y)" value={`${((floor.rotationY * 180) / Math.PI).toFixed(1)}°`} />
             <Row label="Gross area" value={`${fmtNum(floorYield.sqFt)} sf`} />
-            <Row label="Units" value={`${floorYield.units} ${ZONES[floor.zone].unitNoun}`} />
+            <Row label="Units" value={unitsLine(floor, floorYield.units, crownFloorCount(building))} />
             <Row label="Build cost" value={fmtMoney(floorYield.cost)} />
             <Row label="Floor profit" value={fmtMoney(floorYield.profit)} />
             <Row label="Floor revenue" value={fmtMoney(floorYield.revenue)} accent />
@@ -90,7 +102,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
 
           <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash">{materialLine(floor.zone, building.facade)}</p>
 
-          <FloorPlanMini floor={floor} coreSize={building.coreSize} onViewpoint={onViewpoint} />
+          <FloorPlanMini floor={floor} coreSize={building.coreSize} crownFloors={crownFloorCount(building)} onViewpoint={onViewpoint} />
 
           <button
             onClick={onWalk}

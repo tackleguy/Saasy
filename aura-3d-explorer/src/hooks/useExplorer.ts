@@ -67,6 +67,11 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   const [walking, setWalking] = useState(false);
   const [viewIndex, setViewIndex] = useState(0);
   const [viewNonce, setViewNonce] = useState(0);
+  // Lift (walk-through): in the cab? floor passing by while riding, ride requests and arrivals.
+  const [inLift, setInLift] = useState(false);
+  const [liftFloor, setLiftFloor] = useState<number | null>(null);
+  const [liftRide, setLiftRide] = useState({ target: -1, nonce: 0 });
+  const [liftArrival, setLiftArrival] = useState({ index: -1, nonce: 0 });
   // Rendering quality: High = post-processing + reflections; drops to Low automatically on weak devices
   const [quality, setQualityState] = useState<Quality>("high");
   const [autoLowered, setAutoLowered] = useState(false);
@@ -143,10 +148,30 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   }, []);
   const stopWalk = useCallback(() => setWalking(false), []);
 
+  /** Ride the lift (only honoured while standing in the cab) to floor `index`. */
+  const rideTo = useCallback((index: number) => setLiftRide((r) => ({ target: index, nonce: r.nonce + 1 })), []);
+  /** A ride ended: walk the destination floor, starting inside its lift. */
+  const arriveByLift = useCallback((index: number) => {
+    setSelectedIndex(index);
+    setLiftArrival((a) => ({ index, nonce: a.nonce + 1 }));
+    setLiftFloor(null);
+  }, []);
+  /** Lift plumbing handed to the scene's walk controller. */
+  const lift = useMemo(
+    () => ({ ride: liftRide, arrival: liftArrival, onInside: setInLift, onFloor: setLiftFloor, onArrive: arriveByLift }),
+    [liftRide, liftArrival, arriveByLift]
+  );
+
   // Walking needs an isolated floor; leaving the floor ends the walk.
   useEffect(() => {
     if (selectedIndex === null) setWalking(false);
   }, [selectedIndex]);
+  useEffect(() => {
+    if (!walking) {
+      setInLift(false);
+      setLiftFloor(null);
+    }
+  }, [walking]);
 
   /** Switch the active building (keeps the explosion, clears the selection). */
   const selectBuilding = useCallback((id: BuildingId) => {
@@ -262,6 +287,10 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     walking,
     startWalk,
     stopWalk,
+    inLift,
+    liftFloor,
+    rideTo,
+    lift,
     viewIndex,
     viewNonce,
     goToView,

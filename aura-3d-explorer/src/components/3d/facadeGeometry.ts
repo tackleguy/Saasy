@@ -150,11 +150,13 @@ export function finMatrices(w: number, d: number, y0: number, h: number, spacing
 }
 
 /** Three lift doors on each of two opposite core faces, merged into one geometry. */
-export function liftDoors(core: number, y0: number, doorH: number): THREE.BufferGeometry {
-  return cached(`doors:${core}:${y0}:${doorH}`, () => {
+export function liftDoors(core: number, y0: number, doorH: number, skipMain = false): THREE.BufferGeometry {
+  return cached(`doors:${core}:${y0}:${doorH}:${skipMain}`, () => {
     const parts: THREE.BufferGeometry[] = [];
     for (const sz of [-1, 1]) {
       for (const x of [-core * 0.28, 0, core * 0.28]) {
+        // The walk-in lift (middle of +Z) is modelled separately by LiftCore.
+        if (skipMain && sz === 1 && x === 0) continue;
         const g = new THREE.BoxGeometry(core * 0.2, doorH, 0.012);
         g.translate(x, y0 + doorH / 2, sz * (core / 2 + 0.006));
         parts.push(g);

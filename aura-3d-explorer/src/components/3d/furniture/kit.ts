@@ -82,7 +82,9 @@ export type MatKey =
   | "linen"
   | "piano"
   | "lamp"
-  | "plaster";
+  | "plaster"
+  | "ceramic"
+  | "glass";
 
 /** PBR materials shared by every furniture instance. */
 let mats: Record<MatKey, THREE.Material> | null = null;
@@ -116,6 +118,8 @@ export function getMaterials() {
       rugLight: textured(fabricTexture("#e2d8c7"), 1, 2),
       linen: textured(fabricTexture("#f6f2ea"), 0.9, 4),
       plaster: textured(plasterTexture("#E7DFD2"), 0.95, 0.5),
+      ceramic: std("#f7f6f2", 0.12, 0, { envMapIntensity: 1.2 }),
+      glass: new THREE.MeshPhysicalMaterial({ color: "#dfeef0", roughness: 0.05, metalness: 0, transparent: true, opacity: 0.22, depthWrite: false }),
       piano: std("#0d0e11", 0.12, 0.3, { envMapIntensity: 1.5 }),
       lamp: std("#fff1d6", 0.6, 0, { emissive: new THREE.Color("#ffcf8a"), emissiveIntensity: 1.2, side: THREE.DoubleSide }),
     };
@@ -317,6 +321,58 @@ function bedSet(): Part[] {
   ];
 }
 
+/** Second bedroom: 1.5 m double bed, one nightstand with lamp, rug. */
+function bedDouble(): Part[] {
+  return [
+    part("box", "rugLight", 0.1, 0, 0.45, 2.2, 0.012, 1.6),
+    part("box", "oak", 0.1, 0, 0, 1.6, 0.28, 2.1),
+    part("rbox", "linen", 0.1, 0.28, 0.03, 1.5, 0.22, 1.98),
+    part("rbox", "fabricAccent", 0.1, 0.46, 0.34, 1.55, 0.07, 1.34),
+    part("rbox", "linen", -0.26, 0.48, -0.7, 0.56, 0.13, 0.36),
+    part("rbox", "linen", 0.46, 0.48, -0.7, 0.56, 0.13, 0.36),
+    part("rbox", "fabricCream", 0.1, 0, -1.08, 1.7, 0.95, 0.09),
+    part("box", "oak", -1.05, 0, -0.85, 0.45, 0.45, 0.4),
+    ...place(tableLamp(), -1.05, -0.85).map(liftBy(0.45)),
+  ];
+}
+
+/**
+ * Bathroom (2.6 × 2.3 m) with partition walls and a doorway on the +Z side:
+ * vanity with basin and mirror, WC, walk-in shower behind a glass screen,
+ * tiled floor. Walls stop at 2.4 m so the room reads from above.
+ */
+function bathroom(): Part[] {
+  const H = 2.4;
+  return [
+    // Walls: back, sides, and a front wall split by a 0.85 m doorway (x −0.65 … 0.2)
+    part("box", "plaster", 0, 0, -1.1, 2.6, H, 0.1),
+    part("box", "plaster", -1.25, 0, 0, 0.1, H, 2.3),
+    part("box", "plaster", 1.25, 0, 0, 0.1, H, 2.3),
+    part("box", "plaster", -0.975, 0, 1.1, 0.65, H, 0.1),
+    part("box", "plaster", 0.75, 0, 1.1, 1.1, H, 0.1),
+    part("box", "plaster", -0.225, 2.05, 1.1, 0.85, H - 2.05, 0.1), // lintel over the door
+    // Tiled floor
+    part("box", "stone", 0, 0, 0, 2.4, 0.012, 2.1),
+    // Vanity, basin, tap, mirror
+    part("box", "walnut", -0.65, 0.12, -0.8, 1.0, 0.68, 0.5),
+    part("box", "marble", -0.65, 0.8, -0.8, 1.05, 0.04, 0.55),
+    part("cyl", "ceramic", -0.65, 0.84, -0.78, 0.42, 0.1, 0.32),
+    part("cyl", "brushed", -0.65, 0.84, -0.99, 0.03, 0.22, 0.03),
+    part("box", "brushed", -0.65, 1.1, -1.04, 0.9, 0.75, 0.02),
+    // WC: tank, bowl, seat
+    part("box", "ceramic", 0.2, 0.38, -0.97, 0.42, 0.38, 0.18),
+    part("cyl", "ceramic", 0.2, 0, -0.68, 0.38, 0.4, 0.52),
+    part("rbox", "lacquer", 0.2, 0.4, -0.68, 0.4, 0.04, 0.5),
+    // Walk-in shower: tray, glass screen, rain head, towel rail
+    part("box", "ceramic", 0.75, 0, 0.35, 0.9, 0.05, 1.3),
+    part("box", "glass", 0.28, 0.05, 0.35, 0.02, 2.0, 1.3),
+    part("cyl", "brushed", 0.75, 2.05, 0.35, 0.28, 0.02, 0.28),
+    part("cyl", "brushed", 1.18, 0.1, 0.35, 0.02, 1.95, 0.02),
+    part("box", "brushed", -1.18, 1.1, 0.2, 0.03, 0.03, 0.6),
+    part("box", "linen", -1.16, 0.75, 0.2, 0.04, 0.36, 0.5),
+  ];
+}
+
 function wardrobe(): Part[] {
   return [part("box", "lacquer", 0, 0, 0, 2.0, 2.2, 0.6), part("box", "brass", -0.02, 0.9, 0.305, 0.02, 0.4, 0.02), part("box", "brass", 0.02, 0.9, 0.305, 0.02, 0.4, 0.02)];
 }
@@ -447,7 +503,9 @@ export type PieceId =
   | "plant"
   | "plantLarge"
   | "archWall"
-  | "tub";
+  | "tub"
+  | "bedDouble"
+  | "bathroom";
 
 interface PieceDef {
   build: () => Part[];
@@ -475,4 +533,6 @@ export const PIECES: Record<PieceId, PieceDef> = {
   plantLarge: { build: () => plant(1.6), w: 1.1, d: 1.1 },
   archWall: { build: archWall, w: ARCH.w, d: ARCH.t },
   tub: { build: tub, w: 0.9, d: 1.8 },
+  bedDouble: { build: bedDouble, w: 2.8, d: 2.4 },
+  bathroom: { build: bathroom, w: 2.6, d: 2.3 },
 };

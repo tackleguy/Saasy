@@ -44,7 +44,7 @@ import type {
   ZoneId,
   ZoneYield,
 } from "@/types";
-import { ZONE_ORDER, ZONES } from "@/lib/tower";
+import { UNIT_MIX, ZONE_ORDER, ZONES } from "@/lib/tower";
 
 /** The platform's success fee: 1% of sales. */
 export const PLATFORM_FEE_RATE = 0.01;
@@ -58,8 +58,6 @@ interface StrategyProfile {
   description: string;
   /** Relative price per sq ft of each zone (multiplied by the blended price). */
   priceWeight: Record<ZoneId, number>;
-  /** Multiplier on the residential average unit size. */
-  residentialUnitScale: number;
 }
 
 export const STRATEGIES: Record<UnitMixStrategy, StrategyProfile> = {
@@ -67,19 +65,16 @@ export const STRATEGIES: Record<UnitMixStrategy, StrategyProfile> = {
     label: "Balanced",
     description: "Even value across podium retail, offices and residences.",
     priceWeight: { podium: 0.85, office: 0.9, residential: 1.0, crown: 1.45 },
-    residentialUnitScale: 1,
   },
   luxury_heavy: {
     label: "Luxury Heavy",
-    description: "Larger residences and trophy penthouses carry the scheme.",
+    description: "Premium residences and a trophy penthouse carry the scheme.",
     priceWeight: { podium: 0.7, office: 0.75, residential: 1.08, crown: 2.1 },
-    residentialUnitScale: 1.45,
   },
   commercial_focus: {
     label: "Commercial Focus",
-    description: "Grade-A offices and retail lead, compact residences above.",
+    description: "Grade-A offices and retail lead the value; residences priced below.",
     priceWeight: { podium: 1.15, office: 1.1, residential: 0.9, crown: 1.2 },
-    residentialUnitScale: 0.8,
   },
 };
 
@@ -189,7 +184,6 @@ interface Adjust {
 export function computeYield(inputs: YieldInputs, floors: FloorData[], adjust: Adjust = {}): YieldMetrics {
   const priceAdj = adjust.price ?? 1;
   const costAdj = adjust.cost ?? 1;
-  const strategy = STRATEGIES[inputs.unitMixStrategy];
   const sqft = inputs.totalBuildableSqFt;
 
   // ---- Floor attribution (area by footprint, value by zone price)
@@ -197,12 +191,21 @@ export function computeYield(inputs: YieldInputs, floors: FloorData[], adjust: A
   const floorBase = floors.map((f) => {
     const share = f.footprintM2 / areaTotal;
     const floorSqFt = sqft * share;
-    const unitSize = ZONES[f.zone].avgUnitSqFt * (f.zone === "residential" ? strategy.residentialUnitScale : 1);
+    // Residences are a fixed 4 per floor; the whole crown is one penthouse
+    // (counted on its lowest floor); podium and office units follow area.
+    const units =
+      f.zone === "residential"
+        ? UNIT_MIX.residential.perFloor
+        : f.zone === "crown"
+          ? f.zoneIndex === 0
+            ? 1
+            : 0
+          : Math.max(1, Math.round(floorSqFt / ZONES[f.zone].avgUnitSqFt));
     return {
       f,
       share,
       sqFt: floorSqFt,
-      units: Math.max(1, Math.round(floorSqFt / unitSize)),
+      units,
       revenue: floorSqFt * inputs.pricePerSqFt[f.zone] * priceAdj,
     };
   });

@@ -26,7 +26,7 @@ import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
 import SiteContext, { type SiteEdits } from "./SiteContext";
 import PostEffects from "./PostEffects";
-import WalkControls from "./WalkControls";
+import WalkControls, { type LiftLink } from "./WalkControls";
 import ImportedModel from "./ImportedModel";
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
@@ -83,6 +83,8 @@ interface Props {
   walking: boolean;
   viewIndex: number;
   viewNonce: number;
+  /** Lift plumbing for the walk-through (useExplorer().lift). */
+  lift?: LiftLink;
   quality: Quality;
   /** Called when the frame rate stays low, so the parent can drop to Low. */
   onPerformanceDecline?: () => void;
@@ -200,6 +202,9 @@ function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Pro
   return null;
 }
 
+/** Default when a caller doesn't wire the lift (no rides, no-op callbacks). */
+const NO_LIFT: LiftLink = { ride: { target: -1, nonce: 0 }, arrival: { index: -1, nonce: 0 }, onInside: () => {}, onFloor: () => {}, onArrive: () => {} };
+
 export default function BuildingScene({
   buildings,
   activeBuildingId,
@@ -212,6 +217,7 @@ export default function BuildingScene({
   walking,
   viewIndex,
   viewNonce,
+  lift = NO_LIFT,
   quality,
   onPerformanceDecline,
   photoAngle,
@@ -292,7 +298,7 @@ export default function BuildingScene({
       })}
 
       {walking && selectedIndex !== null && (
-        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} />
+        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} />
       )}
       <OrbitControls enabled={!walking} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={320} maxPolarAngle={Math.PI - 0.08} />
       {!walking && <GroundClamp />}

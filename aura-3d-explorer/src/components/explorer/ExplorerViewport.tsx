@@ -67,6 +67,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         walking={x.walking}
         viewIndex={x.viewIndex}
         viewNonce={x.viewNonce}
+        lift={x.lift}
         quality={x.quality}
         onPerformanceDecline={x.lowerQualityAutomatically}
         photoAngle={x.photoAngle}
@@ -100,7 +101,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         </div>
         </>
       ) : x.walking && x.selectedFloor ? (
-        <WalkHud building={x.building} floor={x.selectedFloor} viewIndex={x.viewIndex} onView={x.goToView} onExit={x.stopWalk} />
+        <WalkHud building={x.building} floor={x.selectedFloor} viewIndex={x.viewIndex} onView={x.goToView} onExit={x.stopWalk} inLift={x.inLift} liftFloor={x.liftFloor} onRide={x.rideTo} />
       ) : (
         <>
           <ViewportHud

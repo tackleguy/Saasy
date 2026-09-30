@@ -157,7 +157,7 @@ export interface Building extends BuildingSpec {
 
 /* ------------------------------------------------------------ yield engine */
 
-/** Preset that sets relative zone prices and residential unit sizes. */
+/** Preset that sets relative zone prices (the unit mix itself is fixed — see UNIT_MIX). */
 export type UnitMixStrategy = "balanced" | "luxury_heavy" | "commercial_focus";
 
 /** Developer pro-forma assumptions for one building. */
