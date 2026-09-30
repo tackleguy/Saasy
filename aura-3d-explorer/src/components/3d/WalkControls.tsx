@@ -32,9 +32,13 @@ import { EYE_HEIGHT_M, LIFT_VIEW, viewpointsFor } from "@/lib/viewpoints";
 import { walkInput, resetWalkInput } from "@/lib/walkInput";
 import { liftDims, liftState, resetLiftState } from "@/lib/lift";
 import { SLAB_THICKNESS } from "./FurnitureOverlay";
+import { wallCollidersFor } from "./interior/plan";
+import { pushOutOfWalls } from "@/lib/roomPlan";
 
 /** Walking speed, metres per second (×2.2 with Shift). */
 const WALK_SPEED_M = 1.8;
+/** Walker radius against interior walls, metres. */
+const WALKER_RADIUS_M = 0.22;
 const LOOK_SENSITIVITY = 0.0035;
 const WALK_FOV = 64;
 const EYE = EYE_HEIGHT_M * MODEL_SCALE;
@@ -89,6 +93,8 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const sin = Math.sin(floor.rotationY);
   const L = useMemo(() => liftDims(building.coreSize, floor.height - SLAB_THICKNESS), [building.coreSize, floor.height]);
   const cabCentreZ = (L.zBack + L.zFront) / 2;
+  // Interior walls (door openings stay passable; the lift lobby has no colliders).
+  const walls = useMemo(() => wallCollidersFor(floor, building.coreSize, crownFloorCount(building)), [floor, building]);
 
   /** Plate-local (scene units) → world x/z. */
   const toWorld = useMemo(() => (lx: number, lz: number) => new THREE.Vector2(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos), [bx, bz, cos, sin]);
@@ -124,12 +130,15 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       const margin = 0.12;
       let lx = x * cos - z * sin;
       let lz = x * sin + z * cos;
+      const [wx, wz] = pushOutOfWalls(lx / MODEL_SCALE, lz / MODEL_SCALE, walls, WALKER_RADIUS_M);
+      lx = wx * MODEL_SCALE;
+      lz = wz * MODEL_SCALE;
       lx = THREE.MathUtils.clamp(lx, -floor.width / 2 + margin, floor.width / 2 - margin);
       lz = THREE.MathUtils.clamp(lz, -floor.depth / 2 + margin, floor.depth / 2 - margin);
       p.set(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos);
       return p;
     },
-    [bx, bz, cos, sin, building.coreSize, floor.width, floor.depth, L]
+    [bx, bz, cos, sin, building.coreSize, floor.width, floor.depth, L, walls]
   );
 
   const eyeY = explodedY(floor, explosion) + SLAB_THICKNESS + EYE;

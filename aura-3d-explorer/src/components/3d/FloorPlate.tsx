@@ -40,13 +40,13 @@ import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
 import LiftCore from "./LiftCore";
+import InteriorShell, { liftBankDoors } from "./interior";
 import {
   arcadePanel,
   arcadeSpans,
   balconyBand,
   balustrade,
   finMatrices,
-  liftDoors,
   outlineFinMatrices,
   plateEdges,
   plateFloor,
@@ -188,7 +188,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
   const edges = shaped
     ? shapedEdges(shape, floor.width, floor.depth, -inset / 2, SLAB_THICKNESS, bodyH)
     : plateEdges(floor.width - inset, floor.depth - inset, SLAB_THICKNESS, bodyH);
-  const doors = liftDoors(coreSize, SLAB_THICKNESS, doorH);
+  const doors = liftBankDoors(coreSize, SLAB_THICKNESS, doorH);
   const fins = fin
     ? shaped
       ? outlineFinMatrices(shape, floor.width, floor.depth, SLAB_THICKNESS, bodyH, fin.spacing, fin.thickness, fin.depth)
@@ -364,6 +364,9 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
             </mesh>
           </>
         )}
+
+        {/* Interior walls & doors (isolated) + balconies (always) */}
+        <InteriorShell floor={floor} coreSize={coreSize} facade={facade} crownFloors={crownFloors} isolated={selected} dimmed={dimmed} xray={xray} />
 
         {/* Hover / selection outline */}
         <lineSegments geometry={edges} raycast={() => null}>

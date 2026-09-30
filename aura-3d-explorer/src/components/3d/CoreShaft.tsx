@@ -20,6 +20,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { Building } from "@/types";
 import { buildingHeight, explodedY } from "@/lib/tower";
+import { bankCoreLayout } from "./interior/LiftBank";
 
 /** Distinct accent for everything "core" (shaft, lift cars, section poché edges). */
 export const CORE_ACCENT = "#c8553d";
@@ -40,25 +41,10 @@ interface Props {
   focused: boolean;
 }
 
-/** Plan layout of the core's contents, scene units, core-local (square to the world). */
-function coreLayout(c: number) {
-  const pad = c * 0.07;
-  const inner = c - pad * 2;
-  const lifts = c >= 2.2 ? 4 : c >= 1.5 ? 3 : 2;
-  const sw = inner / lifts;
-  const liftDepth = inner * 0.46;
-  const liftZ = -c / 2 + pad + liftDepth / 2;
-  const shafts = Array.from({ length: lifts }, (_, i) => ({ x: -c / 2 + pad + sw * (i + 0.5), z: liftZ, w: sw * 0.86, d: liftDepth }));
-  const stair = { x0: -c / 2 + pad, x1: -c / 2 + pad + inner * 0.64, z0: pad * 0.5, z1: c / 2 - pad };
-  const riserR = c * 0.04;
-  const risers = [0, 1, 2].map((i) => ({ x: c / 2 - pad - riserR * (1.4 + i * 2.6), z: c / 2 - pad - riserR * 1.6 }));
-  return { shafts, stair, risers, riserR };
-}
-
 export default function CoreShaft({ building, explosion, active, xray, section, focused }: Props) {
   const c = building.coreSize;
   const floors = building.floors;
-  const layout = useMemo(() => coreLayout(c), [c]);
+  const layout = useMemo(() => bankCoreLayout(c), [c]);
   const carH = Math.min(...floors.map((f) => f.height)) * 0.6;
 
   const root = useRef<THREE.Group>(null);
