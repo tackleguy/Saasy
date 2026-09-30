@@ -154,12 +154,15 @@ export default function SiteMap({ site, baseSite, activeBuildingId, city, cleari
     const step = e.shiftKey ? 5 : 1;
     const d: Record<string, [number, number]> = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
     if (d[e.key]) {
+      // Keep the keys to the map: the Studio's global ↑ / ↓ would otherwise also step through floors.
       e.preventDefault();
+      e.stopPropagation();
       if (b.id !== activeBuildingId) onSelectBuilding(b.id);
       const [u, w] = buildingUW(b);
       moveTo(b, u + d[e.key][0], w + d[e.key][1]);
     } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
+      e.stopPropagation();
       onSelectBuilding(b.id);
     }
   };

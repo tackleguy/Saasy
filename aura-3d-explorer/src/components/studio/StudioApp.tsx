@@ -60,7 +60,7 @@ export default function StudioApp({ project }: { project: Project }) {
         siteMarginPct={yieldCalc.site.marginOnGdvPct}
         onImportCad={() => setCadOpen(true)}
       >
-        <ScenarioDrawer projectSlug={project.slug} current={yieldCalc.inputsById} onLoad={yieldCalc.load} />
+        <ScenarioDrawer projectSlug={project.slug} current={yieldCalc.inputsById} onLoad={yieldCalc.load} explorer={x} />
         <button onClick={() => window.print()} className="btn-secondary py-2 text-xs" aria-label="Export pro forma as PDF">
           <FileDown size={14} aria-hidden />
           <span className="hidden sm:inline">Export PDF</span>
