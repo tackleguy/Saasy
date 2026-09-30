@@ -10,6 +10,7 @@ import { LAYOUT, SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
 import { asphaltTexture, concreteTexture, pavingTexture, roadTexture, stoneTexture } from "../textures";
 import { FLAT_UW, noRaycast, placeUW, uploadInstances } from "./shared";
 import { cityPlan } from "./cityPlan";
+import type { UWRect } from "@/lib/siteLayout";
 import type { CityPreset } from "@/lib/cityPresets";
 
 /** A flat textured rectangle spanning [w0, w1] along w and [u0, u1] along u. */
@@ -64,7 +65,7 @@ function Kerbs() {
   );
 }
 
-export default function Ground({ preset }: { preset: CityPreset }) {
+export default function Ground({ preset, pads = [] }: { preset: CityPreset; pads?: UWRect[] }) {
   const L = LAYOUT;
   const half = L.streetHalfLength;
   const paving = pavingTexture();
@@ -90,6 +91,11 @@ export default function Ground({ preset }: { preset: CityPreset }) {
       <Kerbs />
       <Slab u0={-half} u1={half} w0={L.sidewalkFar[0]} w1={L.sidewalkFar[1]} y={0.03} map={paving} tile={4} />
       <Slab u0={-half} u1={half} w0={L.promenade[0]} w1={L.promenade[1]} y={0.03} map={stone} tile={3} color={preset.promenade} roughness={0.8} />
+
+      {/* Paved pads under buildings moved off the plinth on the site map */}
+      {pads.map((p, i) => (
+        <Slab key={`pad${i}`} u0={p.u0} u1={p.u1} w0={p.w0} w1={p.w1} y={0.012} map={stone} tile={6} color="#e4ded3" roughness={0.75} />
+      ))}
 
       {/* Secondary street grid */}
       {cityPlan(preset).streets.map((s, i) => (

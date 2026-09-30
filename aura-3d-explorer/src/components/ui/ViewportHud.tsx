@@ -2,10 +2,11 @@
 /**
  * ViewportHud — floating controls over the WebGL canvas:
  * building tabs, city backdrop picker, explosion-factor slider, X-ray core
- * toggle, reset view, photo angles and the zone legend for the active building.
+ * toggle, site-map toggle, reset view, photo angles and the zone legend for
+ * the active building (hidden while the site map is open).
  */
 import { AnimatePresence, motion } from "framer-motion";
-import { Camera, Expand, Footprints, RotateCcw, ScanEye } from "lucide-react";
+import { Camera, Expand, Footprints, Map as MapIcon, RotateCcw, ScanEye } from "lucide-react";
 import clsx from "clsx";
 import type { Building, BuildingId, ZoneId } from "@/types";
 import { EXPLODE_MAX, EXPLODE_MIN, ZONE_ORDER, ZONES } from "@/lib/tower";
@@ -38,6 +39,9 @@ interface Props {
   /** City backdrop for the urban context. */
   city: CityId;
   onCityChange: (id: CityId) => void;
+  /** Site map (move buildings) — open state and toggle. */
+  mapOpen: boolean;
+  onMapToggle: () => void;
 }
 
 export default function ViewportHud({
@@ -59,11 +63,11 @@ export default function ViewportHud({
   capturing,
   city,
   onCityChange,
+  mapOpen,
+  onMapToggle,
 }: Props) {
   return (
     <>
-      {/* City backdrop — top left (the floor inspector takes this corner when a floor is isolated) */}
-      {showBuildingTabs && <CityPicker value={city} onChange={onCityChange} showBlurb className="absolute left-3 top-3 z-10 hidden sm:left-4 sm:top-4 sm:flex" />}
 
       {/* Building tabs — top centre */}
       <AnimatePresence>
@@ -109,7 +113,7 @@ export default function ViewportHud({
       </AnimatePresence>
 
       {/* Zone legend — top right */}
-      <motion.nav
+      {!mapOpen && <motion.nav
         initial={{ opacity: 0, x: 12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
@@ -132,7 +136,7 @@ export default function ViewportHud({
             </button>
           );
         })}
-      </motion.nav>
+      </motion.nav>}
 
       {/* Control dock — bottom centre (compact on phones) */}
       <motion.div
@@ -172,6 +176,18 @@ export default function ViewportHud({
           >
             <ScanEye size={13} aria-hidden /> <span className="hidden sm:inline">Core</span>
           </button>
+          <button
+            onClick={onMapToggle}
+            aria-pressed={mapOpen}
+            aria-label="Site map"
+            title="Site map: drag buildings to move them"
+            className={clsx(
+              "flex shrink-0 items-center gap-1.5 self-end border px-2.5 py-1.5 text-[11px] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40",
+              mapOpen ? "border-oak bg-oak/10 text-oak" : "border-plaster text-ash hover:border-ink/30 hover:text-ink"
+            )}
+          >
+            <MapIcon size={13} aria-hidden /> <span className="hidden sm:inline">Map</span>
+          </button>
           <button onClick={onResetView} className="btn-secondary shrink-0 self-end px-2.5 py-1.5 text-[11px]" aria-label="Reset view">
             <RotateCcw size={13} aria-hidden /> <span className="hidden sm:inline">Reset</span>
           </button>
@@ -179,7 +195,8 @@ export default function ViewportHud({
 
         {/* Photo angles + capture */}
         <div className="flex items-center gap-2 border-t border-plaster pt-2.5">
-          <CityPicker value={city} onChange={onCityChange} className="shrink-0 sm:hidden" />
+          {/* City backdrop lives in the dock so it never collides with the building tabs */}
+          <CityPicker value={city} onChange={onCityChange} className="shrink-0" />
           <span className="caption hidden shrink-0 sm:inline">Photo angle</span>
           <div className="no-scrollbar flex min-w-0 flex-1 gap-1 overflow-x-auto" role="group" aria-label="Photo angles">
             {PHOTO_ANGLES.map((a) => (

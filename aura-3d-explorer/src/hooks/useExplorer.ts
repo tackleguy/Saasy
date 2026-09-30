@@ -3,16 +3,18 @@
  * useExplorer — all interactive 3D state for one project site.
  * -----------------------------------------------------------------------------
  * Active building, explosion, isolated floor, X-ray, walk-through, photo
- * angles, rendering quality, capture and an imported CAD model (shown in
+ * angles, rendering quality, capture, the city backdrop, buildings moved on
+ * the site map (`moveBuilding`), and an imported CAD model (shown in
  * place of the procedural tower it was imported onto). Shared by the Studio, project pages
  * and the landing hero, so every explorer behaves identically; the result is
  * passed to <ExplorerViewport> and to any toolbar that needs it.
  */
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Building, BuildingId, FloorData, ViewMode, ZoneId } from "@/types";
 import type { PhotoAngle, Quality } from "@/lib/explorer";
 import type { Object3D } from "three";
 import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
+import { buildingClearing, PLINTH, type UWRect } from "@/lib/siteLayout";
 
 /** Explosion factor applied by the "Exploded" view preset. */
 const EXPLODED_PRESET = 1.5;
@@ -28,10 +30,33 @@ interface Options {
   city?: CityId;
 }
 
-export function useExplorer(site: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY }: Options = {}) {
+export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY }: Options = {}) {
   // City backdrop for the urban context (New York, Miami, …)
   const [city, setCity] = useState<CityId>(initialCity);
-  const [activeBuildingId, setActiveBuildingId] = useState<BuildingId>(site[0].id);
+  // Site plan edits: buildings moved on the map, as world [x, z] per building id.
+  const [moved, setMoved] = useState<Partial<Record<BuildingId, [number, number]>>>({});
+  const [mapOpen, setMapOpen] = useState(false);
+  /** True while a building is being dragged on the map (the camera holds still). */
+  const [dragging, setDragging] = useState(false);
+  /** The site as currently laid out (moved buildings carry their new position). */
+  const site = useMemo(() => baseSite.map((b) => (moved[b.id] ? { ...b, position: moved[b.id]! } : b)), [baseSite, moved]);
+  const moveBuilding = useCallback((id: BuildingId, position: [number, number]) => setMoved((m) => ({ ...m, [id]: position })), []);
+  const resetLayout = useCallback(() => setMoved({}), []);
+  const layoutEdited = Object.keys(moved).length > 0;
+  /** Context edits for moved buildings: neighbours to clear, and paving where they left the plinth. */
+  const siteEdits = useMemo(() => {
+    const clearings: UWRect[] = [];
+    const pads: UWRect[] = [];
+    for (const b of site) {
+      if (!moved[b.id]) continue;
+      clearings.push(buildingClearing(b, 2));
+      const r = buildingClearing(b, 3);
+      const onPlinth = r.u0 >= PLINTH.u0 && r.u1 <= PLINTH.u1 && r.w0 >= PLINTH.w0 && r.w1 <= PLINTH.w1;
+      if (!onPlinth) pads.push(r);
+    }
+    return { clearings, pads };
+  }, [site, moved]);
+  const [activeBuildingId, setActiveBuildingId] = useState<BuildingId>(baseSite[0].id);
   const [explosion, setExplosion] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [xray, setXray] = useState(false);
@@ -247,6 +272,15 @@ export function useExplorer(site: Building[], { keyboard = false, keyboardPaused
     capturing,
     city,
     setCity,
+    baseSite,
+    moveBuilding,
+    resetLayout,
+    siteEdits,
+    layoutEdited,
+    mapOpen,
+    setMapOpen,
+    dragging,
+    setDragging,
   };
 }
 

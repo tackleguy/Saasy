@@ -19,7 +19,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import { LAYOUT } from "@/lib/siteLayout";
 import type { CityPreset } from "@/lib/cityPresets";
 import { ALONG_MINUS_U, ALONG_U, noRaycast, rng } from "./shared";
-import { SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
+import { SITE_ROTATION_Y, pointInRect, uwToXZ, type UWRect } from "@/lib/siteLayout";
 
 interface Person {
   u: number;
@@ -151,7 +151,7 @@ function layout(preset: CityPreset): Person[] {
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 
-export default function People({ preset }: { preset: CityPreset }) {
+export default function People({ preset, clearings = [] }: { preset: CityPreset; clearings?: UWRect[] }) {
   const people = useMemo(() => layout(preset), [preset]);
   const refs = {
     torso: useRef<THREE.InstancedMesh>(null),
@@ -184,6 +184,10 @@ export default function People({ preset }: { preset: CityPreset }) {
     []
   );
   const first = useRef(true);
+  // People standing where a moved building now stands are hidden; re-upload when that changes.
+  const hidden = useMemo(() => people.map((p) => p.dir === 0 && clearings.some((c) => pointInRect(p.u, p.w, c))), [people, clearings]);
+  const uploadedHidden = useRef<boolean[] | null>(null);
+  const zero = useMemo(() => new THREE.Matrix4().makeScale(0, 0, 0), []);
 
   useFrame(({ clock }, dt) => {
     const { base, local, rot, out, q, pos, scl } = tmp;
@@ -197,12 +201,19 @@ export default function People({ preset }: { preset: CityPreset }) {
       mesh.setMatrixAt(i, out.multiplyMatrices(base, local));
     };
 
+    const refresh = uploadedHidden.current !== hidden;
+    uploadedHidden.current = hidden;
     people.forEach((p, i) => {
       if (p.dir !== 0) {
         p.u += p.dir * p.speed * step;
         if (p.u > HALF) p.u = -HALF;
         if (p.u < -HALF) p.u = HALF;
-      } else if (!first.current) return; // standing people are static
+      } else if (!first.current && !refresh) return; // standing people are static
+      if (hidden[i]) {
+        for (const m of [refs.torso, refs.head, refs.legL, refs.legR, refs.armL, refs.armR]) m.current?.setMatrixAt(i, zero);
+        (p.longHair ? refs.hairLong : refs.hairShort).current?.setMatrixAt(hairIndex[i], zero);
+        return;
+      }
       const walking = p.dir !== 0;
       // Stride: ~1.9 steps per second at walking pace.
       const cycle = t * 6 + p.phase;

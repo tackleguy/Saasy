@@ -55,6 +55,15 @@ export interface Landmark {
   color: string;
 }
 
+/** A downtown: centre (u, w), Gaussian radii along u / w, and peak height in storeys. */
+export interface SkylineCluster {
+  u: number;
+  w: number;
+  ru: number;
+  rw: number;
+  storeys: number;
+}
+
 export interface CityPreset {
   id: CityId;
   label: string;
@@ -90,10 +99,24 @@ export interface CityPreset {
     near: number;
     mid: number;
     far: number;
-    /** Extra storeys added to the far "downtown" rows. */
-    downtown: number;
-    /** Chance a downtown lot becomes a supertall. */
+    /** Chance a lot in a downtown core becomes a supertall. */
     supertall: number;
+  };
+
+  /**
+   * Skyline shape. Downtown clusters raise heights with a Gaussian falloff
+   * from their centre, so each city gets its own silhouette (Midtown and
+   * Downtown Manhattan, the Loop, Brickell's waterfront strip…). Tall
+   * towers then pick a form from the lottery below.
+   */
+  skyline: {
+    clusters: SkylineCluster[];
+    /** Share of tall towers that are round, sit on a full-lot podium, or are slender point towers. */
+    round: number;
+    podium: number;
+    slender: number;
+    /** Chance a 35+ storey tower carries a spire or mast. */
+    spires: number;
   };
 
   /** Low/mid-rise facade lottery (weights), and the glass share above 14 storeys. */
@@ -172,7 +195,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#c9b596",
     water: "#5f7f84",
     grid: { blockU: 24, blockW: 22, street: 7 },
-    heights: { near: 5, mid: 12, far: 22, downtown: 40, supertall: 0.08 },
+    heights: { near: 5, mid: 12, far: 22, supertall: 0.08 },
+    skyline: { clusters: [{ u: 0, w: -210, ru: 110, rw: 60, storeys: 40 }], round: 0.15, podium: 0.3, slender: 0.2, spires: 0.2 },
     facades: { glass: 0.15, brick: 0.3, plaster: 0.3, stone: 0.25 },
     tallGlass: 0.75,
     tints: DEFAULT_TINTS,
@@ -192,7 +216,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#bfb3a0",
     water: "#4f6a6e",
     grid: { blockU: 62, blockW: 17, street: 6 },
-    heights: { near: 7, mid: 22, far: 40, downtown: 55, supertall: 0.14 },
+    heights: { near: 7, mid: 22, far: 40, supertall: 0.14 },
+    skyline: { clusters: [{ u: 40, w: -215, ru: 90, rw: 55, storeys: 70 }, { u: -120, w: -160, ru: 60, rw: 45, storeys: 60 }], round: 0.08, podium: 0.45, slender: 0.3, spires: 0.35 },
     facades: { glass: 0.12, brick: 0.5, plaster: 0.05, stone: 0.33 },
     tallGlass: 0.55,
     tints: {
@@ -222,7 +247,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#e3d3b0",
     water: "#3f9a9c",
     grid: { blockU: 30, blockW: 24, street: 7 },
-    heights: { near: 6, mid: 20, far: 45, downtown: 30, supertall: 0.1 },
+    heights: { near: 6, mid: 20, far: 45, supertall: 0.1 },
+    skyline: { clusters: [{ u: 140, w: -60, ru: 45, rw: 70, storeys: 55 }, { u: -140, w: -50, ru: 40, rw: 60, storeys: 45 }, { u: 0, w: -230, ru: 120, rw: 40, storeys: 40 }], round: 0.15, podium: 0.6, slender: 0.45, spires: 0.1 },
     facades: { glass: 0.25, brick: 0, plaster: 0.65, stone: 0.1 },
     tallGlass: 0.8,
     tints: {
@@ -251,7 +277,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#dccaa4",
     water: "#4b8190",
     grid: { blockU: 34, blockW: 28, street: 9 },
-    heights: { near: 3, mid: 5, far: 16, downtown: 38, supertall: 0.07 },
+    heights: { near: 3, mid: 5, far: 16, supertall: 0.07 },
+    skyline: { clusters: [{ u: 20, w: -235, ru: 45, rw: 35, storeys: 55 }], round: 0.2, podium: 0.3, slender: 0.1, spires: 0.15 },
     facades: { glass: 0.12, brick: 0.05, plaster: 0.68, stone: 0.15 },
     tallGlass: 0.85,
     tints: {
@@ -280,7 +307,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#c6bca9",
     water: "#3f7488",
     grid: { blockU: 26, blockW: 26, street: 7 },
-    heights: { near: 8, mid: 20, far: 36, downtown: 45, supertall: 0.1 },
+    heights: { near: 8, mid: 20, far: 36, supertall: 0.1 },
+    skyline: { clusters: [{ u: 50, w: -220, ru: 100, rw: 55, storeys: 65 }, { u: -110, w: -150, ru: 50, rw: 40, storeys: 45 }], round: 0.15, podium: 0.35, slender: 0.25, spires: 0.3 },
     facades: { glass: 0.2, brick: 0.3, plaster: 0.05, stone: 0.45 },
     tallGlass: 0.6,
     tints: {
@@ -309,7 +337,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#c7bca8",
     water: "#4d6f7a",
     grid: { blockU: 22, blockW: 20, street: 6 },
-    heights: { near: 3, mid: 8, far: 24, downtown: 30, supertall: 0.06 },
+    heights: { near: 3, mid: 8, far: 24, supertall: 0.06 },
+    skyline: { clusters: [{ u: 10, w: -205, ru: 60, rw: 45, storeys: 48 }], round: 0.1, podium: 0.4, slender: 0.3, spires: 0.15 },
     facades: { glass: 0.15, brick: 0.1, plaster: 0.6, stone: 0.15 },
     tallGlass: 0.7,
     tints: {
@@ -338,7 +367,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#bdb6a8",
     water: "#4b6468",
     grid: { blockU: 24, blockW: 24, street: 7 },
-    heights: { near: 5, mid: 12, far: 30, downtown: 35, supertall: 0.06 },
+    heights: { near: 5, mid: 12, far: 30, supertall: 0.06 },
+    skyline: { clusters: [{ u: 30, w: -215, ru: 60, rw: 45, storeys: 52 }], round: 0.1, podium: 0.35, slender: 0.25, spires: 0.15 },
     facades: { glass: 0.25, brick: 0.3, plaster: 0.2, stone: 0.25 },
     tallGlass: 0.8,
     tints: {
@@ -367,7 +397,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#c1b39c",
     water: "#4d6b74",
     grid: { blockU: 20, blockW: 18, street: 6 },
-    heights: { near: 4, mid: 8, far: 24, downtown: 30, supertall: 0.05 },
+    heights: { near: 4, mid: 8, far: 24, supertall: 0.05 },
+    skyline: { clusters: [{ u: -30, w: -215, ru: 55, rw: 40, storeys: 42 }, { u: 120, w: -200, ru: 30, rw: 30, storeys: 30 }], round: 0.05, podium: 0.4, slender: 0.2, spires: 0.1 },
     facades: { glass: 0.12, brick: 0.62, plaster: 0.06, stone: 0.2 },
     tallGlass: 0.65,
     tints: {
@@ -395,7 +426,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#c6bca9",
     water: "#3f6f82",
     grid: { blockU: 26, blockW: 24, street: 7 },
-    heights: { near: 10, mid: 30, far: 40, downtown: 30, supertall: 0.08 },
+    heights: { near: 10, mid: 30, far: 40, supertall: 0.08 },
+    skyline: { clusters: [{ u: 0, w: -190, ru: 90, rw: 50, storeys: 60 }, { u: 150, w: -80, ru: 40, rw: 60, storeys: 45 }], round: 0.15, podium: 0.55, slender: 0.5, spires: 0.15 },
     facades: { glass: 0.55, brick: 0.2, plaster: 0.05, stone: 0.2 },
     tallGlass: 0.9,
     tints: {
@@ -424,7 +456,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#b9ad98",
     water: "#5b6a60",
     grid: { blockU: 20, blockW: 18, street: 5 },
-    heights: { near: 4, mid: 7, far: 14, downtown: 22, supertall: 0.04 },
+    heights: { near: 4, mid: 7, far: 14, supertall: 0.04 },
+    skyline: { clusters: [{ u: 40, w: -215, ru: 40, rw: 35, storeys: 45 }, { u: -160, w: -150, ru: 30, rw: 30, storeys: 45 }], round: 0.2, podium: 0.3, slender: 0.25, spires: 0.1 },
     facades: { glass: 0.12, brick: 0.45, plaster: 0.13, stone: 0.3 },
     tallGlass: 0.85,
     tints: {
@@ -459,7 +492,8 @@ export const CITY_PRESETS: CityPreset[] = [
     promenade: "#e0cfaa",
     water: "#3c8f98",
     grid: { blockU: 34, blockW: 30, street: 10 },
-    heights: { near: 6, mid: 25, far: 55, downtown: 45, supertall: 0.18 },
+    heights: { near: 6, mid: 25, far: 55, supertall: 0.18 },
+    skyline: { clusters: [{ u: 0, w: -150, ru: 170, rw: 22, storeys: 75 }, { u: -140, w: -240, ru: 45, rw: 40, storeys: 60 }], round: 0.25, podium: 0.4, slender: 0.45, spires: 0.5 },
     facades: { glass: 0.45, brick: 0, plaster: 0.25, stone: 0.3 },
     tallGlass: 0.9,
     tints: {

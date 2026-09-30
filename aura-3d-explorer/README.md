@@ -97,6 +97,13 @@ Common edits:
   clothing palettes and generic landmark silhouettes. Viewers switch city from the picker
   in the explorer; each project's default is `backdrop` in `src/content/projects.ts`, and
   `/render/<slug>?city=<id>` renders any project in any city.
+- **Skylines** — each preset's `skyline` block in `src/lib/cityPresets.ts`: downtown
+  clusters (centre, radii, peak storeys) shape the silhouette, plus the share of round,
+  podium and slender towers and of spires. Distance haze is exponential, from `sky.fogFar`.
+- **Site map** — the Map button in the explorer opens `src/components/explorer/SiteMap.tsx`:
+  drag a building (or use the arrow keys) to move it; neighbours, trees and people under it
+  are cleared and it gets a paved pad off the plot. Layout state lives in `useExplorer`
+  (`site` is the moved site, `baseSite` the original; helpers in `src/lib/siteLayout.ts`).
 - **City context** — `src/components/3d/context/cityPlan.ts` (block grid, heights,
   facade kinds, driven by the preset) and the components beside it (`vehicles.ts` for car,
   taxi and bus models, `People.tsx` for walking figures, `Landmarks.tsx` for skyline

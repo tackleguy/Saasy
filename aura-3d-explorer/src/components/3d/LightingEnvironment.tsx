@@ -11,7 +11,8 @@
  *                  bias + normalBias are tuned to remove acne on the thin
  *                  slabs without peter-panning the podium.
  *   • Fill       — cool hemisphere light standing in for skylight bounce.
- *   • Haze       — light fog matching the horizon so distant blocks recede.
+ *   • Haze       — exponential fog matching the horizon so distant blocks
+ *                  recede gradually while the skyline stays legible.
  */
 import { Environment, Sky } from "@react-three/drei";
 import * as THREE from "three";
@@ -44,7 +45,9 @@ export default function LightingEnvironment({ quality, preset }: Props) {
   return (
     <>
       <color attach="background" args={[sky.haze]} />
-      <fog attach="fog" args={[sky.haze, sky.fogNear, sky.fogFar]} />
+      {/* Exponential haze: clear up close, then a gradual aerial perspective, so distant
+          skylines still read as silhouettes (density from the preset's fog distance). */}
+      <fogExp2 attach="fog" args={[sky.haze, 0.85 / sky.fogFar]} />
       <Sky distance={4500} sunPosition={sunPos.toArray()} turbidity={sky.turbidity} rayleigh={sky.rayleigh} mieCoefficient={0.004} mieDirectionalG={0.85} />
 
       {/* Image-based lighting + reflections from a bundled city HDR (not shown as background). */}

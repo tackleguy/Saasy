@@ -8,7 +8,7 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { LAYOUT } from "@/lib/siteLayout";
+import { LAYOUT, pointInRect, type UWRect } from "@/lib/siteLayout";
 import type { CityPreset } from "@/lib/cityPresets";
 import { barkTexture, leafTexture } from "../textures";
 import { noRaycast, placeUW, rng, uploadInstances } from "./shared";
@@ -138,8 +138,10 @@ function Palms({ trees }: { trees: Tree[] }) {
   );
 }
 
-export default function Trees({ preset }: { preset: CityPreset }) {
-  const all = useMemo(() => layout(preset), [preset]);
+export default function Trees({ preset, clearings = [] }: { preset: CityPreset; clearings?: UWRect[] }) {
+  const planted = useMemo(() => layout(preset), [preset]);
+  // Trees under a building moved on the site map are removed.
+  const all = useMemo(() => planted.filter((t) => !clearings.some((c) => pointInRect(t.u, t.w, c))), [planted, clearings]);
   const trees = useMemo(() => all.filter((t) => t.species !== PALM), [all]);
   const palms = useMemo(() => all.filter((t) => t.species === PALM), [all]);
   const geos = useMemo(() => [0, 1, 2].map(canopyGeometry), []);

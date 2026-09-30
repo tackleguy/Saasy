@@ -24,7 +24,7 @@ import { getCityPreset, type CityId } from "@/lib/cityPresets";
 import { useCameraTween, type CameraGoal, type Vec3 } from "@/hooks/useCameraTween";
 import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
-import SiteContext from "./SiteContext";
+import SiteContext, { type SiteEdits } from "./SiteContext";
 import PostEffects from "./PostEffects";
 import WalkControls from "./WalkControls";
 import ImportedModel from "./ImportedModel";
@@ -92,6 +92,10 @@ interface Props {
   intro?: boolean;
   /** City backdrop (lib/cityPresets). */
   city?: CityId;
+  /** Context edits for buildings moved on the site map. */
+  siteEdits?: SiteEdits;
+  /** Freeze the camera goal (a building is being dragged on the site map). */
+  cameraHold?: boolean;
   /** Imported CAD model (lib/importNormalize) shown in place of its building's procedural tower. */
   importedModel?: THREE.Object3D | null;
 }
@@ -108,6 +112,7 @@ function CameraRig({
   photoNonce,
   intro,
   heightOverride,
+  hold = false,
 }: {
   building: Building;
   /** Height of the tallest building on the site (un-exploded). */
@@ -121,6 +126,8 @@ function CameraRig({
   intro: boolean;
   /** Frame this height instead of the procedural tower's (imported model). */
   heightOverride?: number;
+  /** Keep the current goal (a building is being dragged on the site map); ease to the new one on release. */
+  hold?: boolean;
 }) {
   const h = heightOverride ?? buildingHeight(building, explosion);
   let goal: CameraGoal;
@@ -137,6 +144,9 @@ function CameraRig({
       resetDirection: OVERVIEW_DIRECTION,
     };
   }
+  const held = useRef<CameraGoal | null>(null);
+  if (hold && held.current) goal = held.current;
+  else held.current = goal;
   // Opening shot: eye height (1.6 m) at the water's edge, then dolly out.
   const [ix, iz] = uwToXZ(0, 33.5);
   useCameraTween(goal, {
@@ -206,6 +216,8 @@ export default function BuildingScene({
   captureRef,
   intro = true,
   city = "generic",
+  siteEdits,
+  cameraHold = false,
   importedModel = null,
 }: Props) {
   const [hovered, setHovered] = useState<FloorData | null>(null);
@@ -254,7 +266,7 @@ export default function BuildingScene({
       <PerformanceMonitor onDecline={handleDecline} />
 
       <LightingEnvironment quality={quality} preset={preset} />
-      <SiteContext quality={quality} preset={preset} />
+      <SiteContext quality={quality} preset={preset} edits={siteEdits} />
       {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} />}
       {buildings.map((b) => {
         const active = b.id === activeBuildingId;
@@ -291,6 +303,7 @@ export default function BuildingScene({
         photoNonce={photoNonce}
         intro={intro}
         heightOverride={importedModel && importedOn === building.id ? (importedModel.userData.heightUnits as number | undefined) : undefined}
+        hold={cameraHold}
       />
       {captureRef && <CaptureBridge captureRef={captureRef} />}
       {high && <PostEffects focus={focus} />}

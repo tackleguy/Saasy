@@ -3,8 +3,8 @@
  * -----------------------------------------------------------------------------
  * A small value-noise / fBm kernel drives every surface: concrete, asphalt,
  * stone, plaster, wood grain, fabric weave, marble veins, bark, leaves, a
- * water normal map, roof gravel and four kinds of neighbour facade (glass,
- * brick, plaster, stone) with window grids. Results are cached, so each
+ * water normal map, roof gravel and five kinds of neighbour facade (glass,
+ * brick, plaster, stone, curtain-wall tower) with window grids. Results are cached, so each
  * texture is built once per page.
  *
  * Sizes are kept small (256–512 px) because the maps are tiled with
@@ -293,18 +293,18 @@ export const waterNormalTexture = () =>
 
 /* ---------------------------------------------------------------- facades */
 
-export type FacadeKind = "glass" | "brick" | "plaster" | "stone";
+export type FacadeKind = "glass" | "brick" | "plaster" | "stone" | "tower";
 
 /**
  * Neighbour facade tile: ONE storey high × ONE bay wide (the shader repeats it
  * per metre of the building, so windows keep a real size on any block).
  */
 export const facadeTexture = (kind: FacadeKind) =>
-  cached(`facade:${kind}`, () => {
+  kind === "tower" ? towerFacadeTexture() : cached(`facade:${kind}`, () => {
     const size = 128;
     const { c, ctx } = canvas(size, size);
     const n = makeNoise(41);
-    const wall: Record<FacadeKind, [string, string]> = {
+    const wall: Record<Exclude<FacadeKind, "tower">, [string, string]> = {
       glass: ["#b9c3c6", "#9aa7ab"],
       brick: ["#b98a72", "#9c6f58"],
       plaster: ["#e6e0d6", "#d2cbbf"],
@@ -357,12 +357,47 @@ export const facadeTexture = (kind: FacadeKind) =>
   });
 
 /**
+ * Curtain-wall tile for office / high-rise towers: one storey × one bay of
+ * floor-to-ceiling vision glass (sky reflection gradient), a slim mullion
+ * down the middle, and an opaque spandrel band hiding the slab edge.
+ */
+const towerFacadeTexture = () =>
+  cached("facade:tower", () => {
+    const size = 128;
+    const { c, ctx } = canvas(size, size);
+    // Vision glass: brighter at the top of each pane (sky), darker below.
+    const g = ctx.createLinearGradient(0, 0, 0, size);
+    g.addColorStop(0, "#a9bcc6");
+    g.addColorStop(0.55, "#7f95a1");
+    g.addColorStop(0.8, "#6c808c");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+    // Faint diagonal sheen so large faces are not flat.
+    const sheen = ctx.createLinearGradient(0, 0, size, size);
+    sheen.addColorStop(0, "rgba(255,255,255,0.12)");
+    sheen.addColorStop(0.5, "rgba(255,255,255,0)");
+    sheen.addColorStop(1, "rgba(255,255,255,0.06)");
+    ctx.fillStyle = sheen;
+    ctx.fillRect(0, 0, size, size);
+    // Spandrel (slab edge) band
+    ctx.fillStyle = "#56646c";
+    ctx.fillRect(0, size - 22, size, 22);
+    ctx.fillStyle = "rgba(255,255,255,0.18)";
+    ctx.fillRect(0, size - 22, size, 2);
+    // Mullions: frame edge and a centre mullion
+    ctx.fillStyle = "#3f4a50";
+    ctx.fillRect(0, 0, 3, size);
+    ctx.fillRect(size / 2 - 1, 0, 2, size - 22);
+    return finish(c);
+  });
+
+/**
  * Patches a MeshStandardMaterial so an instanced box's texture repeats per
  * world unit instead of stretching with the instance's scale: the UVs are
  * multiplied by the instance scale of the two axes that span each face.
  * `perUnit` = tiles per scene unit (e.g. 1 storey ≈ 0.9 units → ~1.1).
  */
-export function tilePerUnit(material: THREE.MeshStandardMaterial, perUnit: number) {
+export function tilePerUnit(material: THREE.MeshStandardMaterial, perUnit: number, shape: "box" | "cylinder" = "box") {
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uPerUnit = { value: perUnit };
     shader.vertexShader = shader.vertexShader
@@ -373,12 +408,14 @@ export function tilePerUnit(material: THREE.MeshStandardMaterial, perUnit: numbe
         #ifdef USE_INSTANCING
           vec3 isc = vec3(length(instanceMatrix[0].xyz), length(instanceMatrix[1].xyz), length(instanceMatrix[2].xyz));
           vec3 an = abs(normal);
-          vec2 face = an.z > 0.5 ? isc.xy : (an.x > 0.5 ? isc.zy : isc.xz);
+          ${shape === "cylinder"
+            ? "vec2 face = an.y > 0.5 ? isc.xz : vec2(3.14159 * isc.x, isc.y); // side UVs wrap the circumference"
+            : "vec2 face = an.z > 0.5 ? isc.xy : (an.x > 0.5 ? isc.zy : isc.xz);"}
           #ifdef USE_MAP
             vMapUv = uv * face * uPerUnit;
           #endif
         #endif`
       );
   };
-  material.customProgramCacheKey = () => `tile:${perUnit}`;
+  material.customProgramCacheKey = () => `tile:${perUnit}:${shape}`;
 }

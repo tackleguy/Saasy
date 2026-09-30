@@ -30,18 +30,28 @@ import Traffic from "./context/Traffic";
 import People from "./context/People";
 import StreetFurniture from "./context/StreetFurniture";
 import type { CityPreset } from "@/lib/cityPresets";
+import type { UWRect } from "@/lib/siteLayout";
 
-export default function SiteContext({ quality, preset }: { quality: "high" | "low"; preset: CityPreset }) {
+export interface SiteEdits {
+  /** Areas where moved buildings stand: neighbouring blocks, trees and people inside are removed. */
+  clearings: UWRect[];
+  /** Paved pads under buildings moved off the plinth. */
+  pads: UWRect[];
+}
+
+const NO_EDITS: SiteEdits = { clearings: [], pads: [] };
+
+export default function SiteContext({ quality, preset, edits = NO_EDITS }: { quality: "high" | "low"; preset: CityPreset; edits?: SiteEdits }) {
   // Keyed by city so instanced meshes are rebuilt with the new counts.
   return (
     <group key={preset.id}>
-      <Ground preset={preset} />
-      <City preset={preset} />
+      <Ground preset={preset} pads={edits.pads} />
+      <City preset={preset} clearings={edits.clearings} />
       <Landmarks preset={preset} />
       <Water quality={quality} color={preset.water} />
-      <Trees preset={preset} />
+      <Trees preset={preset} clearings={edits.clearings} />
       <Traffic preset={preset} />
-      <People preset={preset} />
+      <People preset={preset} clearings={edits.clearings} />
       <StreetFurniture />
     </group>
   );

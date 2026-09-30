@@ -8,9 +8,13 @@
  *     landmark footprint is skipped, so the foreground stays open.
  *   • Block and street size come from the preset (long Manhattan blocks,
  *     small London blocks, wide Dubai superblocks…).
- *   • Each cell holds one or two buildings with a small setback. Heights grow
- *     with distance; the preset sets how tall the near / mid / downtown rows
- *     get, and how often a downtown lot becomes a supertall.
+ *   • Each cell holds one to three lots. Heights grow with distance, and the
+ *     preset's downtown clusters lift lots near their centre with a Gaussian
+ *     falloff, so each city gets its own skyline silhouette; cluster cores
+ *     sometimes hold a supertall.
+ *   • Tall lots pick a form: full-lot podium with a set-back tower, slender
+ *     point tower, round tower, wedding-cake setbacks, or a plain slab. Towers
+ *     over 30 storeys get a narrower crown, and some over 35 carry a spire.
  *   • Facade kind follows the preset's material lottery, with a per-building
  *     tint from the preset palette (NYC brick, Miami pastel stucco…).
  *   • Tall buildings may step back in tiers (wedding-cake zoning), and low /
@@ -32,6 +36,16 @@ export interface CityBuilding {
   kind: FacadeKind;
   /** Per-building tint (multiplied into the facade). */
   tint: string;
+  /** Box or round (cylindrical) tower. */
+  shape: "box" | "round";
+}
+
+export interface Spire {
+  u: number;
+  w: number;
+  y: number;
+  h: number;
+  r: number;
 }
 
 export interface Street {
@@ -62,6 +76,7 @@ export interface CityPlan {
   roof: RoofItem[];
   streets: Street[];
   tanks: WaterTank[];
+  spires: Spire[];
 }
 
 /** Site rectangle (with a margin): no blocks here. */
@@ -75,8 +90,11 @@ function pick<T>(r: () => number, list: T[]): T {
   return list[Math.floor(r() * list.length) % list.length];
 }
 
-function lottery(r: () => number, weights: Record<FacadeKind, number>): FacadeKind {
-  const entries = Object.entries(weights) as [FacadeKind, number][];
+/** Street-level materials (the curtain-wall "tower" facade is only for high-rise). */
+type LotKind = Exclude<FacadeKind, "tower">;
+
+function lottery(r: () => number, weights: Record<LotKind, number>): LotKind {
+  const entries = Object.entries(weights) as [LotKind, number][];
   const total = entries.reduce((s, [, v]) => s + v, 0) || 1;
   let x = r() * total;
   for (const [k, v] of entries) {
@@ -98,17 +116,13 @@ function build(preset: CityPreset): CityPlan {
   for (let left = U_MIN; left < U_MAX; left += pitchU) cols.push(left);
 
   // Landmarks (except bridges, which stand on the water) clear their lot.
-  const clear = preset.landmarks
-    .filter((l) => l.kind !== "bridge")
-    .map((l) => {
-      const half = Math.max(14, l.h * 0.12);
-      return { u0: l.u - half, u1: l.u + half, w0: l.w - half, w1: l.w + half };
-    });
+  const clear = landmarkRects(preset);
   const overlaps = (a: Street, b: Street) => a.u1 > b.u0 && a.u0 < b.u1 && a.w1 > b.w0 && a.w0 < b.w1;
 
   const buildings: CityBuilding[] = [];
   const roof: RoofItem[] = [];
   const tanks: WaterTank[] = [];
+  const spires: Spire[] = [];
 
   for (const top of rowTops) {
     for (const left of cols) {
@@ -128,47 +142,79 @@ function build(preset: CityPreset): CityPlan {
         const sw = lot.w1 - lot.w0 - setback * 2;
         const cu = (lot.u0 + lot.u1) / 2;
         const cw = (lot.w0 + lot.w1) / 2;
-        // Height by distance from the site centre; a taller downtown far behind.
+        // Base height by distance from the site, then raised by the city's downtown clusters.
         const dist = Math.hypot(cu / 1.4, cw + 10);
-        const downtown = cw < -120 ? 1 : 0;
-        let storeys = 2 + Math.round(Math.pow(r(), 1.6) * (dist < 80 ? H.near : dist < 150 ? H.mid : H.far + downtown * H.downtown));
-        if (downtown && r() < H.supertall) storeys += 25 + Math.round(r() * 20);
+        let storeys = 2 + Math.round(Math.pow(r(), 1.6) * (dist < 80 ? H.near : dist < 150 ? H.mid : H.far));
+        let peak = 0;
+        let core = 0;
+        for (const c of preset.skyline.clusters) {
+          const g = Math.exp(-(((cu - c.u) / c.ru) ** 2) - ((cw - c.w) / c.rw) ** 2);
+          if (g * c.storeys > peak) peak = g * c.storeys;
+          core = Math.max(core, g);
+        }
+        // Clusters shape the silhouette but a share of lots stays low, so the skyline is not a solid wall.
+        if (peak > 4 && r() < 0.35 + core * 0.6) storeys = Math.max(storeys, Math.round(peak * (0.45 + 0.6 * r())));
+        if (core > 0.55 && r() < H.supertall) storeys += 25 + Math.round(r() * 25);
         const h = storeys * STOREY + 0.4;
         const tall = storeys > 14;
-        const kind: FacadeKind = tall ? (r() < preset.tallGlass ? "glass" : "stone") : lottery(r, preset.facades);
-        const tint = pick(r, preset.tints[kind]);
+        const kind: FacadeKind = tall ? (r() < preset.tallGlass ? (storeys > 25 ? "tower" : "glass") : "stone") : lottery(r, preset.facades);
+        const tint = pick(r, preset.tints[kind === "tower" ? "glass" : kind]);
+        const push = (piece: Omit<CityBuilding, "kind" | "tint" | "shape"> & Partial<Pick<CityBuilding, "kind" | "tint" | "shape">>) =>
+          buildings.push({ kind, tint, shape: "box", ...piece });
 
-        // Tiers: tall masonry (and some glass) towers step back like NYC zoning.
-        let tierTop = h;
-        let tier = { su, sw, y: 0, h };
-        if (tall && r() < preset.setbacks) {
+        // Tower form. `tier` tracks the topmost piece (for roof plant and crowns).
+        let tier = { u: cu, w: cw, su, sw, y: 0, h, shape: "box" as CityBuilding["shape"] };
+        const S = preset.skyline;
+        const x = r();
+        const form = storeys <= 18 ? "box" : x < S.round ? "round" : x < S.round + S.podium ? "podium" : x < S.round + S.podium + S.slender ? "slender" : "box";
+
+        if (form === "round") {
+          const d = Math.min(su, sw) * 0.92;
+          tier = { ...tier, su: d, sw: d, shape: "round" };
+        } else if (form === "slender") {
+          tier = { ...tier, su: Math.max(5, su * 0.58), sw: Math.max(5, sw * 0.58) };
+        } else if (form === "podium") {
+          // Full-lot podium in a street-wall material, tower set back on top of it.
+          const p = (3 + Math.floor(r() * 4)) * STOREY;
+          const podiumKind = lottery(r, { ...preset.facades, glass: preset.facades.glass * 0.5 });
+          push({ u: cu, w: cw, y: 0, su, sw, h: p, kind: podiumKind, tint: pick(r, preset.tints[podiumKind]) });
+          roof.push({ u: cu + su * 0.35, w: cw + sw * 0.3, y: p, su: 1.6, sw: 1.4, h: 0.5 });
+          tier = { ...tier, w: cw - sw * 0.1, su: su * 0.62, sw: sw * 0.6, y: p, h: h - p };
+        } else if (tall && r() < preset.setbacks) {
+          // Wedding-cake setbacks (NYC zoning): base, then 1–2 narrower tiers.
           const base = Math.min(h * (0.3 + r() * 0.2), 16 * STOREY);
-          buildings.push({ u: cu, w: cw, y: 0, su, sw, h: base, kind, tint });
+          push({ u: cu, w: cw, y: 0, su, sw, h: base });
           roof.push({ u: cu + su * 0.3, w: cw, y: base, su: 1.6, sw: 1.4, h: 0.5 });
           let y = base;
-          let s = 0.78;
+          let sc = 0.78;
           const steps = 1 + Math.floor(r() * 2);
           for (let k = 0; k < steps; k++) {
-            const last = k === steps - 1;
-            const th = last ? h - y : (h - y) * (0.45 + r() * 0.2);
-            tier = { su: su * s, sw: sw * s, y, h: th };
-            buildings.push({ u: cu, w: cw, y, su: tier.su, sw: tier.sw, h: th, kind, tint });
+            const th = k === steps - 1 ? h - y : (h - y) * (0.45 + r() * 0.2);
+            tier = { ...tier, su: su * sc, sw: sw * sc, y, h: th };
+            if (k < steps - 1) push({ u: cu, w: cw, y, su: tier.su, sw: tier.sw, h: th });
             y += th;
-            s *= 0.78;
+            sc *= 0.78;
           }
-          tierTop = y;
-        } else {
-          buildings.push({ u: cu, w: cw, y: 0, su, sw, h, kind, tint });
         }
+
+        // Crown: towers above 30 storeys finish with a narrower top of 2–4 storeys.
+        if (storeys > 30 && form !== "box") {
+          const ch = (2 + Math.floor(r() * 3)) * STOREY;
+          push({ u: tier.u, w: tier.w, y: tier.y, su: tier.su, sw: tier.sw, h: tier.h - ch, shape: tier.shape });
+          tier = { ...tier, y: tier.y + tier.h - ch, h: ch, su: tier.su * 0.84, sw: tier.sw * 0.84 };
+        }
+        push({ u: tier.u, w: tier.w, y: tier.y, su: tier.su, sw: tier.sw, h: tier.h, shape: tier.shape });
+        const tierTop = tier.y + tier.h;
+        if (storeys > 35 && r() < S.spires) spires.push({ u: tier.u, w: tier.w, y: tierTop, h: 3 + r() * 5 + storeys * 0.08, r: 0.18 + r() * 0.2 });
 
         // Rooftop plant: 1–3 boxes plus an occasional stair bulkhead.
         const n = 1 + Math.floor(r() * 3);
         for (let i = 0; i < n; i++) {
           const bu = Math.min(0.8 + r() * 2.2, tier.su * 0.4);
           const bw = Math.min(0.8 + r() * 1.8, tier.sw * 0.4);
-          roof.push({ u: cu + (r() - 0.5) * (tier.su - bu - 1), w: cw + (r() - 0.5) * (tier.sw - bw - 1), y: tierTop, su: bu, sw: bw, h: 0.3 + r() * 0.6 });
+          roof.push({ u: tier.u + (r() - 0.5) * (tier.su - bu - 1) * (tier.shape === "round" ? 0.6 : 1), w: tier.w + (r() - 0.5) * (tier.sw - bw - 1) * (tier.shape === "round" ? 0.6 : 1), y: tierTop, su: bu, sw: bw, h: 0.3 + r() * 0.6 });
         }
-        if (r() < 0.5) roof.push({ u: cu + (r() - 0.5) * (tier.su * 0.5), w: cw + (r() - 0.5) * (tier.sw * 0.5), y: tierTop, su: Math.min(2.2, tier.su * 0.4), sw: Math.min(2.0, tier.sw * 0.4), h: 1.0 });
+        if (r() < 0.5) roof.push({ u: tier.u + (r() - 0.5) * (tier.su * 0.4), w: tier.w + (r() - 0.5) * (tier.sw * 0.4), y: tierTop, su: Math.min(2.2, tier.su * 0.4), sw: Math.min(2.0, tier.sw * 0.4), h: 1.0 });
         // Timber water tanks on 5–20 storey roofs.
         if (preset.waterTowers && storeys >= 5 && storeys <= 20 && r() < 0.6) {
           tanks.push({ u: cu + (r() - 0.5) * su * 0.5, w: cw + (r() - 0.5) * sw * 0.5, y: tierTop, r: 0.55 + r() * 0.25 });
@@ -195,7 +241,17 @@ function build(preset: CityPreset): CityPlan {
     streets.push({ u0, u1: left, w0: wMin, w1: crossesSite ? SITE.w0 : 17 });
   }
 
-  return { buildings, roof, streets, tanks };
+  return { buildings, roof, streets, tanks, spires };
+}
+
+/** Lots cleared for landmark towers (bridges stand on the water and clear nothing). */
+export function landmarkRects(preset: CityPreset): Street[] {
+  return preset.landmarks
+    .filter((l) => l.kind !== "bridge")
+    .map((l) => {
+      const half = Math.max(14, l.h * 0.12);
+      return { u0: l.u - half, u1: l.u + half, w0: l.w - half, w1: l.w + half };
+    });
 }
 
 const cache = new Map<string, CityPlan>();

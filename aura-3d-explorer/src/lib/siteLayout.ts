@@ -35,3 +35,48 @@ export const LAYOUT = {
   /** Half-length of the street / promenade along u. */
   streetHalfLength: 180,
 };
+
+/* ----------------------------------------------------------- site editing */
+
+/** Convert world (x, z) to screen-frame (u, w). */
+export function xzToUW(x: number, z: number): [number, number] {
+  return [(x - z) * ROOT2, (x + z) * ROOT2];
+}
+
+/** Axis-aligned rectangle in the (u, w) frame. */
+export interface UWRect {
+  u0: number;
+  u1: number;
+  w0: number;
+  w1: number;
+}
+
+export const rectsOverlap = (a: UWRect, b: UWRect) => a.u1 > b.u0 && a.u0 < b.u1 && a.w1 > b.w0 && a.w0 < b.w1;
+export const pointInRect = (u: number, w: number, r: UWRect) => u > r.u0 && u < r.u1 && w > r.w0 && w < r.w1;
+
+/** The project's paved plinth (the original plot). */
+export const PLINTH: UWRect = { u0: -52, u1: 52, w0: -LAYOUT.plinthBackDepth, w1: LAYOUT.plinthHalfDepth };
+
+/** Where a tower may stand: behind the near sidewalk, inside the modelled city. */
+export const BUILDABLE: UWRect = { u0: -185, u1: 190, w0: -285, w1: LAYOUT.sidewalkNear[0] - 0.2 };
+
+/** Plan-view extent of a building's plates (they may twist, so a radius). */
+interface Footprinted {
+  position: [number, number];
+  zones: Record<string, { width: number; depth: number }>;
+}
+
+/** Radius that contains every plate of the building at any twist, scene units. */
+export function buildingRadius(b: Footprinted): number {
+  return Math.max(...Object.values(b.zones).map((z) => Math.hypot(z.width, z.depth) / 2));
+}
+
+/** A building's centre in the (u, w) frame. */
+export const buildingUW = (b: Footprinted) => xzToUW(b.position[0], b.position[1]);
+
+/** Square (u, w) area a building occupies, plus a margin — neighbours inside it are cleared. */
+export function buildingClearing(b: Footprinted, margin = 1.5): UWRect {
+  const [u, w] = buildingUW(b);
+  const r = buildingRadius(b) + margin;
+  return { u0: u - r, u1: u + r, w0: w - r, w1: w + r };
+}

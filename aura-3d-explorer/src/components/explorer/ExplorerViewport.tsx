@@ -26,6 +26,9 @@ import ImportedModelHud from "@/components/ui/ImportedModelHud";
 import CityPicker from "@/components/ui/CityPicker";
 import { PHOTO_ANGLES } from "@/lib/explorer";
 
+// The site map reads the 3D city plan, so it loads only when first opened.
+const SiteMap = dynamic(() => import("./SiteMap"), { ssr: false });
+
 const BuildingScene = dynamic(() => import("@/components/3d/BuildingScene"), {
   ssr: false,
   loading: () => (
@@ -69,6 +72,8 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         captureRef={x.captureRef}
         intro={intro}
         city={x.city}
+        siteEdits={x.siteEdits}
+        cameraHold={x.dragging}
         importedModel={x.showImported ? x.importedModel : null}
       />
 
@@ -115,7 +120,26 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             capturing={x.capturing}
             city={x.city}
             onCityChange={x.setCity}
+            mapOpen={x.mapOpen}
+            onMapToggle={() => x.setMapOpen(!x.mapOpen)}
           />
+          {x.mapOpen && (
+            <SiteMap
+              site={x.site}
+              baseSite={x.baseSite}
+              activeBuildingId={x.activeBuildingId}
+              city={x.city}
+              clearings={x.siteEdits.clearings}
+              pads={x.siteEdits.pads}
+              layoutEdited={x.layoutEdited}
+              onSelectBuilding={x.selectBuilding}
+              onMove={x.moveBuilding}
+              onDragChange={x.setDragging}
+              onReset={x.resetLayout}
+              onClose={() => x.setMapOpen(false)}
+              className="absolute right-3 top-3 z-20 w-[min(360px,calc(100%-1.5rem))] sm:right-4 sm:top-4"
+            />
+          )}
           {x.importedModel && x.selectedIndex === null && (
             <ImportedModelHud
               key={x.importedModel.uuid}
