@@ -34,6 +34,7 @@ import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
 import { arcadePanel, balconyBand, balustrade, finMatrices, liftDoors, plateEdges, UNIT_BOX } from "./facadeGeometry";
+import { concreteTexture, marbleTexture, plasterTexture, stoneTexture, woodTexture } from "./textures";
 
 /** Opacity of every non-selected floor while one floor is isolated. */
 export const DIMMED_OPACITY = 0.15;
@@ -56,10 +57,10 @@ interface GlassLook {
 }
 
 const LOOKS: Record<ZoneId, GlassLook> = {
-  podium: { color: "#8fa4a7", roughness: 0.06, transmission: 0.85, fin: null, finish: "#e3dacb" },
-  office: { color: "#9fb6ba", roughness: 0.05, transmission: 0.9, fin: { spacing: 1.0, thickness: 0.06, depth: 0.3 }, finish: "#b8b4ad" },
-  residential: { color: "#a9bec1", roughness: 0.08, transmission: 0.9, fin: { spacing: 1.0625, thickness: 0.04, depth: 0.06 }, finish: "#B08D63" },
-  crown: { color: "#c6d6d8", roughness: 0.03, transmission: 0.95, fin: { spacing: 0.8125, thickness: 0.035, depth: 0.05 }, finish: "#ece6dc" },
+  podium: { color: "#8fa4a7", roughness: 0.06, transmission: 0.85, fin: null, finish: "#f0e9de" },
+  office: { color: "#9fb6ba", roughness: 0.05, transmission: 0.9, fin: { spacing: 1.0, thickness: 0.06, depth: 0.3 }, finish: "#cfcac2" },
+  residential: { color: "#a9bec1", roughness: 0.08, transmission: 0.9, fin: { spacing: 1.0625, thickness: 0.04, depth: 0.06 }, finish: "#ffffff" },
+  crown: { color: "#c6d6d8", roughness: 0.03, transmission: 0.95, fin: { spacing: 0.8125, thickness: 0.035, depth: 0.05 }, finish: "#ffffff" },
 };
 
 const lerp = THREE.MathUtils.lerp;
@@ -135,7 +136,22 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
   const crownLight = useRef<THREE.PointLight>(null);
 
   // One stone material shared by the four arcade panels so they fade together.
-  const stoneMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#E6DFD3", roughness: 0.8 }), []);
+  const stoneMat = useMemo(() => {
+    // ExtrudeGeometry UVs are in scene units, so one stone tile ≈ 2 units.
+    const map = stoneTexture().clone();
+    map.repeat.set(0.5, 0.5);
+    map.needsUpdate = true;
+    return new THREE.MeshStandardMaterial({ color: "#f2ece2", map, roughness: 0.8 });
+  }, []);
+  // Interior floor finish per zone: travertine, polished concrete, oak, marble.
+  const finishMap = useMemo(() => {
+    const src = floor.zone === "podium" ? stoneTexture() : floor.zone === "office" ? concreteTexture() : floor.zone === "residential" ? woodTexture("#c9a57a", "#8b6a48") : marbleTexture();
+    const t = src.clone();
+    const reps = floor.zone === "residential" ? 5 : 3;
+    t.repeat.set(Math.max(1, Math.round(floor.width * reps * 0.35)), Math.max(1, Math.round(floor.depth * reps * 0.35)));
+    t.needsUpdate = true;
+    return t;
+  }, [floor.zone, floor.width, floor.depth]);
   useEffect(() => () => stoneMat.dispose(), [stoneMat]);
 
   const edges = plateEdges(floor.width - inset, floor.depth - inset, SLAB_THICKNESS, bodyH);
@@ -221,7 +237,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
       {/* ── Core: vertical lift & stair shaft (never twists) ── */}
       <mesh position={[0, floor.height / 2, 0]} castShadow receiveShadow raycast={() => null}>
         <boxGeometry args={[coreSize, floor.height, coreSize]} />
-        <meshStandardMaterial ref={coreMat} color="#cfc8bc" roughness={0.9} emissive={HIGHLIGHT} emissiveIntensity={0} />
+        <meshStandardMaterial ref={coreMat} map={concreteTexture()} color="#e2dcd1" roughness={0.9} emissive={HIGHLIGHT} emissiveIntensity={0} />
       </mesh>
       <mesh geometry={doors} raycast={() => null}>
         <meshStandardMaterial ref={doorMat} color="#b9a78a" metalness={0.85} roughness={0.3} />
@@ -232,7 +248,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         {/* Slab — light concrete */}
         <mesh ref={slabMesh} position={[0, SLAB_THICKNESS / 2, 0]} castShadow receiveShadow>
           <boxGeometry args={[w + 0.1, SLAB_THICKNESS, d + 0.1]} />
-          <meshStandardMaterial ref={slabMat} color="#D9D4CB" roughness={0.9} />
+          <meshStandardMaterial ref={slabMat} map={concreteTexture()} color="#e6e1d8" roughness={0.9} />
         </mesh>
 
         {/* Curtain wall (the main hit target) */}
@@ -272,7 +288,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         {/* Bronze fins / mullions */}
         {fins && (
           <instancedMesh ref={finMesh} args={[UNIT_BOX, undefined, fins.length]} castShadow raycast={() => null}>
-            <meshStandardMaterial ref={finMat} color={BRONZE} metalness={0.6} roughness={0.35} />
+            <meshStandardMaterial ref={finMat} color={BRONZE} metalness={0.6} roughness={0.35} roughnessMap={concreteTexture()} />
           </instancedMesh>
         )}
 
@@ -280,7 +296,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         {balconies && (
           <>
             <mesh geometry={balconyBand(w, d, 0.45, 0.07)} position={[0, SLAB_THICKNESS - 0.07, 0]} castShadow receiveShadow raycast={() => null}>
-              <meshStandardMaterial ref={bandMat} color="#EEEAE3" roughness={0.7} />
+              <meshStandardMaterial ref={bandMat} map={concreteTexture()} color="#f4f0e9" roughness={0.7} />
             </mesh>
             <mesh geometry={balustrade(w, d, 0.45, 0.28)} position={[0, SLAB_THICKNESS, 0]} raycast={() => null}>
               <meshPhysicalMaterial ref={balusMat} color="#d7e3e5" roughness={0.1} transparent opacity={0.3} depthWrite={false} />
@@ -296,7 +312,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         {/* Light plaster ceiling, visible through the glass */}
         <mesh ref={ceilMesh} rotation-x={Math.PI / 2} position={[0, floor.height - 0.004, 0]} raycast={() => null}>
           <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />
-          <meshStandardMaterial ref={ceilMat} color="#efe9df" roughness={0.95} side={THREE.DoubleSide} />
+          <meshStandardMaterial ref={ceilMat} map={plasterTexture()} roughness={0.95} side={THREE.DoubleSide} />
         </mesh>
 
         {/* Crown: warm interior glow */}
@@ -309,7 +325,7 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
           <>
             <mesh rotation-x={-Math.PI / 2} position={[0, SLAB_THICKNESS + 0.034, 0]} receiveShadow raycast={() => null}>
               <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />
-              <meshStandardMaterial color={look.finish} roughness={floor.zone === "crown" ? 0.2 : 0.55} />
+              <meshStandardMaterial map={finishMap} color={look.finish} roughness={floor.zone === "crown" ? 0.2 : 0.55} />
             </mesh>
             <pointLight position={[0, floor.height * 0.85, 0]} color="#ffd9a8" intensity={3} distance={Math.max(w, d)} decay={1.6} />
             <FurnitureOverlay floor={floor} coreSize={coreSize} />

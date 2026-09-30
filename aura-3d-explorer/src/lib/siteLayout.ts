@@ -25,6 +25,8 @@ export const SITE_ROTATION_Y = Math.PI / 4;
 /** Distances along +w (scene units ≈ 3.57 m each). */
 export const LAYOUT = {
   plinthHalfDepth: 17,
+  /** The plinth extends further back to carry the supertall. */
+  plinthBackDepth: 40,
   sidewalkNear: [17, 19] as const,
   road: [19, 27] as const,
   sidewalkFar: [27, 29] as const,

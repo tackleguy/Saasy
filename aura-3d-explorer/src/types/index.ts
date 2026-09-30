@@ -63,6 +63,11 @@ export interface BuildingSpec {
   position: [x: number, z: number];
   /** Degrees of twist added per floor from the first residential floor up (0 = none). */
   twistDeg: number;
+  /**
+   * Plate scale at the top of the residential zone relative to its bottom
+   * (1 = straight shaft, 0.6 = supertall taper). Crown floors keep their own size.
+   */
+  taper: number;
   /** Side length of the square lift & stair core, scene units. */
   coreSize: number;
   facade: FacadeSpec;

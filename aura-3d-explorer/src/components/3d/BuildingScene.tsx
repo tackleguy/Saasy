@@ -38,8 +38,8 @@ function buildingUW(b: Building): [number, number] {
   return [(x - z) * Math.SQRT1_2, (x + z) * Math.SQRT1_2];
 }
 
-/** Camera pose for a photo-angle preset, relative to the active building. */
-function photoPose(angle: PhotoAngle, b: Building, explosion: number): { position: Vec3; target: Vec3 } {
+/** Camera pose for a photo-angle preset, relative to the active building; `siteH` = tallest building on site. */
+function photoPose(angle: PhotoAngle, b: Building, explosion: number, siteH: number): { position: Vec3; target: Vec3 } {
   const [bu, bw] = buildingUW(b);
   const h = buildingHeight(b, explosion);
   const at = (u: number, w: number, y: number): Vec3 => {
@@ -56,6 +56,10 @@ function photoPose(angle: PhotoAngle, b: Building, explosion: number): { positio
       return { position: at(bu - 48, bw + 58, 66), target: target(h * 0.22) };
     case "podium": // close to the arcade
       return { position: at(bu + 5, bw + 13.5, 0.55), target: target(1.1) };
+    case "skyline": // far out on the water, the whole skyline (tallest tower included) in frame
+      return { position: at(bu * 0.5 + 40, 120 + siteH * 1.6, 2.5), target: [0, siteH * 0.4, 0] };
+    case "drone": // high oblique over the city
+      return { position: at(-120, 110 + siteH * 0.6, 60 + siteH * 1.1), target: [0, siteH * 0.25, 0] };
   }
 }
 
@@ -87,6 +91,7 @@ interface Props {
 /** Translates app state into a camera goal and hands it to the GSAP tween hook. */
 function CameraRig({
   building,
+  siteH,
   explosion,
   selectedIndex,
   resetNonce,
@@ -96,6 +101,8 @@ function CameraRig({
   intro,
 }: {
   building: Building;
+  /** Height of the tallest building on the site (un-exploded). */
+  siteH: number;
   explosion: number;
   selectedIndex: number | null;
   resetNonce: number;
@@ -109,13 +116,13 @@ function CameraRig({
   if (selectedIndex !== null) {
     goal = { kind: "focus", target: floorCentre(building, building.floors[selectedIndex], explosion), offset: FOCUS_OFFSET };
   } else if (photoAngle) {
-    goal = { kind: "pose", ...photoPose(photoAngle, building, explosion) };
+    goal = { kind: "pose", ...photoPose(photoAngle, building, explosion, siteH) };
   } else {
     // Hero view: across the water, far enough back to keep the neighbours in frame.
     goal = {
       kind: "overview",
       target: [building.position[0] * 0.6, h * 0.42, building.position[1] * 0.6],
-      distance: Math.max(h * 1.5 + 40, 96),
+      distance: Math.max(h * 1.25 + 40, 96),
       resetDirection: OVERVIEW_DIRECTION,
     };
   }
@@ -242,6 +249,7 @@ export default function BuildingScene({
       <OrbitControls enabled={!walking} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={320} maxPolarAngle={Math.PI / 2.02} />
       <CameraRig
         building={building}
+        siteH={Math.max(...buildings.map((b) => buildingHeight(b, 0)))}
         explosion={explosion}
         selectedIndex={selectedIndex}
         resetNonce={resetNonce}

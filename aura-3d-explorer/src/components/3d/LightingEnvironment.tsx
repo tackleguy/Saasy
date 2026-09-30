@@ -36,7 +36,7 @@ interface Props {
 }
 
 export default function LightingEnvironment({ quality }: Props) {
-  const sunPos = SUN_DIRECTION.clone().multiplyScalar(140);
+  const sunPos = SUN_DIRECTION.clone().multiplyScalar(200);
   const mapSize = quality === "high" ? 4096 : 2048;
 
   return (
@@ -62,12 +62,12 @@ export default function LightingEnvironment({ quality }: Props) {
         shadow-bias={-0.00025}
         shadow-normalBias={0.035}
         shadow-radius={4}
-        shadow-camera-left={-70}
-        shadow-camera-right={70}
-        shadow-camera-top={80}
-        shadow-camera-bottom={-60}
+        shadow-camera-left={-90}
+        shadow-camera-right={90}
+        shadow-camera-top={150}
+        shadow-camera-bottom={-70}
         shadow-camera-near={10}
-        shadow-camera-far={320}
+        shadow-camera-far={420}
       />
     </>
   );

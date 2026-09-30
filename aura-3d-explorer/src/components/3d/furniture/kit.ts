@@ -11,6 +11,7 @@
  */
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { fabricTexture, marbleTexture, plasterTexture, tilePerUnit, woodTexture } from "../textures";
 
 /* ------------------------------------------------------------------ geometry */
 
@@ -89,26 +90,32 @@ export function getMaterials() {
   if (!mats) {
     const std = (color: string, roughness: number, metalness = 0, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
       new THREE.MeshStandardMaterial({ color, roughness, metalness, ...extra });
+    // Textured materials tile per real metre (parts are instanced and scaled in metres).
+    const textured = (map: THREE.Texture, roughness: number, perMetre: number, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) => {
+      const m = new THREE.MeshStandardMaterial({ map, roughness, ...extra });
+      tilePerUnit(m, perMetre);
+      return m;
+    };
     mats = {
-      oak: std("#B08D63", 0.55),
-      walnut: std("#7b5b3f", 0.5),
+      oak: textured(woodTexture("#c9a57a", "#8b6a48"), 0.55, 0.8),
+      walnut: textured(woodTexture("#8a6748", "#4a3324", 31), 0.5, 0.8),
       lacquer: std("#ece6dc", 0.4),
-      fabricGrey: std("#d8d0c2", 0.97), // warm oatmeal
-      fabricCream: std("#F1EBE0", 0.98), // boucle
-      fabricAccent: std("#A9B39B", 0.9), // sage
+      fabricGrey: textured(fabricTexture("#d8d0c2"), 0.97, 3), // warm oatmeal
+      fabricCream: textured(fabricTexture("#F1EBE0"), 0.98, 3), // boucle
+      fabricAccent: textured(fabricTexture("#A9B39B"), 0.9, 3), // sage
       leather: std("#6e4a33", 0.55),
       metalDark: std("#26292e", 0.35, 0.8),
       brushed: std("#b9bec5", 0.3, 0.9),
       brass: std("#c9a24a", 0.28, 1),
-      marble: std("#efebe5", 0.18),
+      marble: textured(marbleTexture(), 0.18, 0.6),
       screen: std("#0a0c10", 0.2, 0.2, { emissive: new THREE.Color("#1d3b5c"), emissiveIntensity: 0.5 }),
       leaf: std("#6f8a62", 0.8),
       stone: std("#cfc6b7", 0.75),
       water: new THREE.MeshPhysicalMaterial({ color: "#4fb3d6", roughness: 0.05, metalness: 0.1, transmission: 0, transparent: true, opacity: 0.85, clearcoat: 1 }),
-      rug: std("#c8bba5", 1),
-      rugLight: std("#e2d8c7", 1),
-      linen: std("#f6f2ea", 0.9),
-      plaster: std("#E7DFD2", 0.95),
+      rug: textured(fabricTexture("#c8bba5"), 1, 2),
+      rugLight: textured(fabricTexture("#e2d8c7"), 1, 2),
+      linen: textured(fabricTexture("#f6f2ea"), 0.9, 4),
+      plaster: textured(plasterTexture("#E7DFD2"), 0.95, 0.5),
       piano: std("#0d0e11", 0.12, 0.3, { envMapIntensity: 1.5 }),
       lamp: std("#fff1d6", 0.6, 0, { emissive: new THREE.Color("#ffcf8a"), emissiveIntensity: 1.2, side: THREE.DoubleSide }),
     };

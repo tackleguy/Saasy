@@ -4,11 +4,13 @@
  * bundle out of its dynamic chunk.
  */
 export type Quality = "high" | "low";
-export type PhotoAngle = "street" | "waterfront" | "aerial" | "podium";
+export type PhotoAngle = "street" | "waterfront" | "aerial" | "podium" | "skyline" | "drone";
 
 export const PHOTO_ANGLES: { id: PhotoAngle; label: string }[] = [
   { id: "street", label: "Street" },
   { id: "waterfront", label: "Waterfront" },
   { id: "aerial", label: "Aerial" },
   { id: "podium", label: "Podium" },
+  { id: "skyline", label: "Skyline" },
+  { id: "drone", label: "Drone" },
 ];

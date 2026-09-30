@@ -133,8 +133,8 @@ export const DEFAULT_INPUTS: YieldInputs = proforma(120_000, 1_450, 650);
 
 /** Slider ranges for the numeric inputs. */
 export const INPUT_RANGES = {
-  totalBuildableSqFt: { min: 50_000, max: 300_000, step: 1_000 },
-  landCost: { min: 0, max: 120_000_000, step: 250_000 },
+  totalBuildableSqFt: { min: 50_000, max: 1_500_000, step: 5_000 },
+  landCost: { min: 0, max: 400_000_000, step: 500_000 },
   hardCostPerSqFt: { min: 400, max: 1_200, step: 10 },
   softCostPct: { min: 5, max: 35, step: 0.5 },
   contingencyPct: { min: 0, max: 15, step: 0.5 },

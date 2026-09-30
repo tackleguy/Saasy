@@ -7,6 +7,7 @@
  *
  *   variant="full" — every control (Studio, project pages)
  *   variant="hero" — landing-page hero: photo-angle chips only, no inspector
+ *   variant="bare" — no overlays at all (offline renders)
  *
  * The scene is dynamically imported with SSR off (Three.js needs `window`)
  * and so it never blocks first paint.
@@ -34,7 +35,7 @@ interface Props {
   explorer: ExplorerState;
   /** Per-building yield, for the floor inspector's figures. */
   metricsById?: Record<BuildingId, YieldMetrics>;
-  variant?: "full" | "hero";
+  variant?: "full" | "hero" | "bare";
   className?: string;
   /** Play the eye-level dolly-out opening shot. */
   intro?: boolean;
@@ -64,7 +65,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         intro={intro}
       />
 
-      {variant === "hero" ? (
+      {variant === "bare" ? null : variant === "hero" ? (
         // Minimal chrome for the landing hero: just the photo-angle presets.
         <div className="absolute bottom-3 left-3 z-10 flex gap-1 sm:bottom-4 sm:left-4" role="group" aria-label="Photo angles">
           {PHOTO_ANGLES.map((a) => (

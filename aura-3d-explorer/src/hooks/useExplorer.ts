@@ -19,9 +19,11 @@ interface Options {
   keyboard?: boolean;
   /** Suspend keyboard shortcuts (e.g. while a modal is open). */
   keyboardPaused?: boolean;
+  /** Never drop to Low automatically (offline renders). */
+  lockQuality?: boolean;
 }
 
-export function useExplorer(site: Building[], { keyboard = false, keyboardPaused = false }: Options = {}) {
+export function useExplorer(site: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false }: Options = {}) {
   const [activeBuildingId, setActiveBuildingId] = useState<BuildingId>(site[0].id);
   const [explosion, setExplosion] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -70,11 +72,12 @@ export function useExplorer(site: Building[], { keyboard = false, keyboardPaused
     setAutoLowered(false);
   }, []);
   const lowerQualityAutomatically = useCallback(() => {
+    if (lockQuality) return;
     setQualityState((q) => {
       if (q === "high") setAutoLowered(true);
       return "low";
     });
-  }, []);
+  }, [lockQuality]);
 
   const choosePhotoAngle = useCallback((a: PhotoAngle) => {
     setSelectedIndex(null);

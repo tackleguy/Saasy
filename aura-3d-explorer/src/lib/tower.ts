@@ -89,6 +89,8 @@ export interface ProjectMassing {
   heights?: Partial<Record<ZoneId, number>>;
   /** Degrees of twist per floor from the first residential floor up. */
   twistDeg?: number;
+  /** Residential plates shrink to this fraction at the top of the zone (1 = none). */
+  taper?: number;
   coreSize?: number;
   facade?: Partial<FacadeSpec>;
 }
@@ -113,6 +115,7 @@ export function buildingFromMassing(m: ProjectMassing): BuildingSpec {
     tagline: m.tagline,
     position: m.position,
     twistDeg: m.twistDeg ?? 0,
+    taper: m.taper ?? 1,
     // Core ≈ 36% of the smallest plate, capped — keeps corridors around it on slim crowns.
     coreSize: m.coreSize ?? Math.min(2.6, +(minPlate * 0.36).toFixed(2)),
     facade: { ...DEFAULT_FACADE, ...m.facade },
@@ -146,6 +149,12 @@ export function generateFloors(spec: BuildingSpec): FloorData[] {
     const geo = spec.zones[zone];
     const twisting = zone === "residential" || zone === "crown";
     const twistIndex = twisting ? number - twistStart : 0;
+    // Taper: residential plates scale linearly from 1 (bottom) to `taper` (top).
+    const resCount = geo.floors[1] - geo.floors[0];
+    const t = zone === "residential" && resCount > 0 ? (number - geo.floors[0]) / resCount : 0;
+    const scale = zone === "residential" ? 1 + (spec.taper - 1) * t : 1;
+    const width = +(geo.width * scale).toFixed(3);
+    const depth = +(geo.depth * scale).toFixed(3);
 
     floors.push({
       buildingId: spec.id,
@@ -153,12 +162,12 @@ export function generateFloors(spec: BuildingSpec): FloorData[] {
       number,
       zone,
       zoneIndex: number - geo.floors[0],
-      width: geo.width,
-      depth: geo.depth,
+      width,
+      depth,
       height: geo.height,
       baseY: y,
       rotationY: (twistIndex * spec.twistDeg * Math.PI) / 180,
-      footprintM2: geo.width * geo.depth,
+      footprintM2: width * depth,
     });
     y += geo.height;
   }
