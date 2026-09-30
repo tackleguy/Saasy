@@ -101,6 +101,33 @@ export interface FacadeSpec {
   arches: boolean;
 }
 
+/**
+ * Shared residents' / tenants' amenity programmes. An amenity floor keeps its
+ * zone (massing, facade family) but is not sold: see lib/amenities.
+ */
+export type AmenityKind =
+  | "sky-lobby"
+  | "gym"
+  | "pool"
+  | "spa"
+  | "lounge"
+  | "cinema"
+  | "coworking"
+  | "kids"
+  | "sky-garden"
+  | "observation"
+  | "dining"
+  | "golf-sim";
+
+/** One amenity floor of a building. */
+export interface AmenitySpec {
+  /** 1-based storey number. */
+  floor: number;
+  kind: AmenityKind;
+  /** Display name, e.g. "Infinity Pool" (defaults to the kind's label). */
+  name?: string;
+}
+
 /** Static definition of one building on the site. */
 export interface BuildingSpec {
   id: BuildingId;
@@ -123,6 +150,8 @@ export interface BuildingSpec {
   profile: MassingProfile;
   facade: FacadeSpec;
   zones: Record<ZoneId, ZoneGeometry>;
+  /** Shared amenity floors (not sold). */
+  amenities?: AmenitySpec[];
 }
 
 /** One individually addressable floor plate. */
@@ -148,6 +177,10 @@ export interface FloorData {
   rotationY: number;
   /** Plate footprint area, scene units² — the true outline area (≤ width × depth). */
   footprintM2: number;
+  /** Shared amenity programme on this floor (not sold; keeps its zone). */
+  amenity?: AmenityKind;
+  /** Display name of the amenity floor. */
+  amenityName?: string;
 }
 
 /** A building spec with its generated floors. */
@@ -206,9 +239,11 @@ export interface FloorYield {
   sqFt: number;
   units: number;
   revenue: number;
-  /** Share of total development cost, by area. */
+  /** Share of total development cost, by area (amenity floors carry their fit-out premium). */
   cost: number;
   profit: number;
+  /** Set on shared amenity floors (0 units, 0 revenue). */
+  amenity?: AmenityKind;
 }
 
 /** Yield rolled up to a programme zone. */

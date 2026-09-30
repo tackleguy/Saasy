@@ -15,6 +15,7 @@ import { liftBank } from "@/lib/lift";
 import { balconyPlan, roomPlan, type BalconySpec, type Collider, type RoomPlan } from "@/lib/roomPlan";
 import { layoutFloor } from "../furniture/layouts";
 import { PIECES } from "../furniture/kit";
+import { GLASS_ROOM_PIECES } from "../furniture/amenities";
 import { SLAB_THICKNESS } from "../FurnitureOverlay";
 
 /** Depth of the lift lobby kept clear in front of the bank, metres. */
@@ -27,16 +28,18 @@ export function interiorPlanFor(floor: FloorData, coreSize: number, crownFloors:
   const coreHalfM = coreSize / 2 / MODEL_SCALE;
   const coreAngle = -floor.rotationY;
   const zoneIndex = floor.zone === "crown" ? floor.zoneIndex : 0;
-  const key = [floor.zone, floor.width, floor.depth, floor.height, coreSize, coreAngle.toFixed(4), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount].join(":");
+  const key = [floor.zone, floor.width, floor.depth, floor.height, coreSize, coreAngle.toFixed(4), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? ""].join(":");
   const hit = planCache.get(key);
   if (hit) return hit;
 
   const widthM = floor.width / MODEL_SCALE;
   const depthM = floor.depth / MODEL_SCALE;
-  const placements = layoutFloor(floor.zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape);
+  const placements = layoutFloor(floor.zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity);
   const bank = liftBank(coreSize, floor.height - SLAB_THICKNESS);
   const plan = roomPlan({
-    zone: floor.zone,
+    // Amenity floors are open plan: no apartment demising, glass lobby screens.
+    zone: floor.amenity ? "podium" : floor.zone,
+    glassRooms: floor.amenity ? GLASS_ROOM_PIECES[floor.amenity] : undefined,
     widthM,
     depthM,
     shape: floor.shape,
@@ -65,11 +68,12 @@ const balconyCache = new Map<string, BalconySpec[]>();
 
 /** Balconies of a floor (cached per zone, plate size and shape). */
 export function balconiesFor(floor: FloorData, facade: Pick<FacadeSpec, "balconies">): BalconySpec[] {
-  const band = floor.zone === "residential" && facade.balconies;
-  const key = [floor.zone, floor.width, floor.depth, floor.shape?.kind, floor.shape?.amount, band].join(":");
+  const band = floor.zone === "residential" && facade.balconies && !floor.amenity;
+  const key = [floor.zone, floor.width, floor.depth, floor.shape?.kind, floor.shape?.amount, band, floor.amenity ?? ""].join(":");
   const hit = balconyCache.get(key);
   if (hit) return hit;
-  const specs = balconyPlan(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, floor.shape, band);
+  // Amenity floors read as a recessed sky-terrace band instead (see FloorPlate).
+  const specs = balconyPlan(floor.amenity ? "podium" : floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, floor.shape, band);
   balconyCache.set(key, specs);
   return specs;
 }

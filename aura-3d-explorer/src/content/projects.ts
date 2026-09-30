@@ -129,13 +129,29 @@ export const PROJECTS: Project[] = [
         coreSize: 3.4,
         shape: "chamfer",
         facade: { finSpacing: 0.55, balconies: false, arches: true },
+        // Shared amenity floors (not sold). Offices are F2–25, residences
+        // F26–96, the penthouse crown F97–100 — so residents transfer at the
+        // F26 / F50 sky lobbies, and amenities cluster around them.
+        amenities: [
+          { floor: 2, kind: "lounge", name: "Arrival Lounge" },
+          { floor: 26, kind: "sky-lobby", name: "Residents' Sky Lobby" },
+          { floor: 27, kind: "gym", name: "Fitness Club" },
+          { floor: 28, kind: "spa", name: "Spa & Wellness" },
+          { floor: 50, kind: "coworking", name: "Sky Lobby 50 · Work Club" },
+          { floor: 51, kind: "cinema", name: "Screening Room" },
+          { floor: 75, kind: "pool", name: "Infinity Pool" },
+          { floor: 76, kind: "sky-garden", name: "Sky Garden" },
+          { floor: 77, kind: "dining", name: "Chef's Table" },
+          { floor: 96, kind: "observation", name: "Observation Lounge" },
+        ],
       },
     ],
     finance: {
       meridian: proforma(120_000, 1_450, 650, "balanced"),
       spire: proforma(185_000, 1_650, 720, "luxury_heavy"),
       lofts: proforma(68_000, 1_150, 560, "balanced"),
-      pinnacle: proforma(1_200_000, 1_850, 780, "luxury_heavy", { termMonths: 54, absorptionUnitsPerMonth: 14, softCostPct: 20 }),
+      // Blended $/sf lifted 1,850 → 2,000 for the amenity programme (10 unsold amenity floors).
+      pinnacle: proforma(1_200_000, 2_000, 780, "luxury_heavy", { termMonths: 54, absorptionUnitsPerMonth: 14, softCostPct: 20 }),
     },
   },
   {

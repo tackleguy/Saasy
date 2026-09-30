@@ -158,6 +158,12 @@ export interface RoomPlanInput {
   lobby: { halfWidthM: number; depthM: number };
   /** Clear floor-to-ceiling height, metres. */
   clearHeightM: number;
+  /**
+   * Amenity floors (open plan — pass zone "podium"): glass rooms to enclose.
+   * Each entry lists piece ids; a single id gets one room per piece (spa
+   * treatment rooms), several ids share one room (cinema screen + rows).
+   */
+  glassRooms?: string[][];
 }
 
 /* ---------------------------------------------------------------- constants */
@@ -767,6 +773,13 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
       if (placeDoor(pcs, target, centre, opts.door ?? "door", ctx)) return;
     }
   };
+
+  /* ---- amenity glass rooms (spa treatment rooms / sauna, cinema) ---- */
+  for (const [gi, ids] of (inp.glassRooms ?? []).entries()) {
+    const members = pieces.filter((p) => ids.includes(p.piece));
+    const groups = ids.length === 1 ? members.map((m) => [m]) : members.length ? [members] : [];
+    groups.forEach((g, i) => room(`amenity${gi}-${i}`, g, [0, 0], { kind: "glass", door: "slider", grow: 0.3 }));
+  }
 
   if (inp.zone === "residential") {
     for (const [sx, sz] of QUADRANTS) {

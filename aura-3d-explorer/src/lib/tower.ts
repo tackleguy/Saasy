@@ -25,7 +25,7 @@
  * step in at setbacks (wedding-cake) and bulge (belly) over its shaft. All
  * modifiers only ever shrink plates, so zone width / depth stay the maxima.
  */
-import type { Building, BuildingSpec, FacadeSpec, FloorData, MassingProfile, PlanShape, PlanShapeKind, ZoneId, ZoneMeta } from "@/types";
+import type { AmenitySpec, Building, BuildingSpec, FacadeSpec, FloorData, MassingProfile, PlanShape, PlanShapeKind, ZoneId, ZoneMeta } from "@/types";
 
 /** Scene units per real-world metre (1 : 3.57 model). */
 export const MODEL_SCALE = 0.28;
@@ -368,6 +368,8 @@ export interface ProjectMassing {
   zoneShapes?: Partial<Record<ZoneId, ShapeInput>>;
   coreSize?: number;
   facade?: Partial<FacadeSpec>;
+  /** Shared amenity floors (1-based storeys; not sold — see lib/amenities). */
+  amenities?: AmenitySpec[];
 }
 
 const DEFAULT_FACADE: FacadeSpec = { finSpacing: 1.0, balconies: false, arches: false };
@@ -396,6 +398,7 @@ export function buildingFromMassing(m: ProjectMassing): BuildingSpec {
     profile: { setbacks: m.setbacks ?? [], taperCurve: m.taperCurve ?? "linear", bulge: m.bulge ?? 0 },
     facade: { ...DEFAULT_FACADE, ...m.facade },
     zones,
+    ...(m.amenities?.length ? { amenities: m.amenities } : {}),
   };
 }
 
@@ -471,12 +474,19 @@ export function generateFloors(spec: BuildingSpec): FloorData[] {
       baseY: y,
       rotationY: (twistIndex * spec.twistDeg * Math.PI) / 180,
       footprintM2: shape.kind === "rect" ? width * depth : +polygonArea(planOutline(shape, width, depth)).toFixed(3),
+      ...amenityFields(spec, number),
     });
     y += geo.height;
   }
   return floors;
 }
 
+
+/** `amenity` / `amenityName` for a floor (empty when it is an ordinary floor). */
+function amenityFields(spec: BuildingSpec, number: number): Pick<FloorData, "amenity" | "amenityName"> {
+  const a = spec.amenities?.find((x) => x.floor === number);
+  return a ? { amenity: a.kind, ...(a.name ? { amenityName: a.name } : {}) } : {};
+}
 
 /** Taper easing curves, t ∈ [0, 1]. */
 function ease(t: number, curve: MassingProfile["taperCurve"]): number {

@@ -23,6 +23,8 @@
 import type { PlanShape, ZoneId } from "@/types";
 import { penthouseBedsOnFloor, planOutline, pointInPolygon, type PlanPoint } from "@/lib/tower";
 import { PIECES, type PieceId } from "./kit";
+import { amenityLayout } from "./amenities";
+import type { AmenityKind } from "@/types";
 
 export interface Placement {
   piece: PieceId;
@@ -84,7 +86,8 @@ class Planner {
     const hd = (w * s + d * c) / 2;
     const r: Rect = { x0: x - hw, x1: x + hw, z0: z - hd, z1: z + hd };
 
-    const inside = r.x0 >= -this.halfW + WALL_MARGIN && r.x1 <= this.halfW - WALL_MARGIN && r.z0 >= -this.halfD + WALL_MARGIN && r.z1 <= this.halfD - WALL_MARGIN;
+    const e = 1e-6; // spots are written as "A − x" so they land exactly on the margin
+    const inside = r.x0 >= -this.halfW + WALL_MARGIN - e && r.x1 <= this.halfW - WALL_MARGIN + e && r.z0 >= -this.halfD + WALL_MARGIN - e && r.z1 <= this.halfD - WALL_MARGIN + e;
     if (!inside || this.hitsCore(r) || this.rects.some((o) => overlaps(r, o))) return false;
     if (this.outline && !rectInPolygon(r, this.outline, WALL_MARGIN)) return false;
 
@@ -248,12 +251,18 @@ export function layoutFloor(
   coreAngle = 0,
   zoneIndex = 0,
   crownFloors = 2,
-  shape?: PlanShape
+  shape?: PlanShape,
+  /** Shared amenity programme (see ./amenities) — replaces the zone recipe. */
+  amenity?: AmenityKind
 ): Placement[] {
   const A = widthM / 2;
   const B = depthM / 2;
   const outline = shape && shape.kind !== "rect" ? planOutline(shape, widthM, depthM) : null;
   const p = new Planner(A, B, coreHalfM, coreAngle, outline);
+  if (amenity) {
+    amenityLayout(p, amenity, A, B);
+    return p.placements;
+  }
   if (zone === "office") office(p, A, B);
   else if (zone === "residential") residential(p, A, B);
   else if (zone === "crown") crown(p, A, B, zoneIndex, crownFloors);

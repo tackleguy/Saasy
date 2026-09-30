@@ -2,6 +2,8 @@
  * finance — AURA's developer pro forma (pure functions, no React).
  * -----------------------------------------------------------------------------
  * Area & value
+ *   Shared amenity floors (lib/amenities) are not sold — 0 units, 0 value —
+ *   but carry their area share of cost plus a fit-out premium on hard cost.
  *   Buildable area is attributed to floors by plate footprint. Each floor's
  *   value = its area × the sale price of its zone, so GDV = Σ floor values.
  *
@@ -45,6 +47,7 @@ import type {
   ZoneYield,
 } from "@/types";
 import { UNIT_MIX, ZONE_ORDER, ZONES } from "@/lib/tower";
+import { FIT_OUT_PREMIUM } from "@/lib/amenities";
 
 /** The platform's success fee: 1% of sales. */
 export const PLATFORM_FEE_RATE = 0.01;
@@ -193,8 +196,10 @@ export function computeYield(inputs: YieldInputs, floors: FloorData[], adjust: A
     const floorSqFt = sqft * share;
     // Residences are a fixed 4 per floor; the whole crown is one penthouse
     // (counted on its lowest floor); podium and office units follow area.
-    const units =
-      f.zone === "residential"
+    // Shared amenity floors are not sold: no units, no revenue (cost only).
+    const units = f.amenity
+      ? 0
+      : f.zone === "residential"
         ? UNIT_MIX.residential.perFloor
         : f.zone === "crown"
           ? f.zoneIndex === 0
@@ -206,15 +211,20 @@ export function computeYield(inputs: YieldInputs, floors: FloorData[], adjust: A
       share,
       sqFt: floorSqFt,
       units,
-      revenue: floorSqFt * inputs.pricePerSqFt[f.zone] * priceAdj,
+      revenue: f.amenity ? 0 : floorSqFt * inputs.pricePerSqFt[f.zone] * priceAdj,
     };
   });
+  // Amenity fit-out premium: amenity floors cost (1 + FIT_OUT_PREMIUM)× their
+  // area share of hard cost. `costWeight` re-normalises so Σ floor cost = TDC.
+  const amenityShare = floorBase.reduce((s, x) => s + (x.f.amenity ? x.share : 0), 0);
+  const costNorm = 1 + FIT_OUT_PREMIUM * amenityShare;
+  const costWeight = (x: (typeof floorBase)[number]) => (x.share * (x.f.amenity ? 1 + FIT_OUT_PREMIUM : 1)) / costNorm;
   const gdv = floorBase.reduce((s, x) => s + x.revenue, 0);
   const totalUnits = floorBase.reduce((s, x) => s + x.units, 0);
 
   // ---- Costs
   const landCost = inputs.landCost;
-  const hardCost = sqft * inputs.hardCostPerSqFt * costAdj;
+  const hardCost = sqft * inputs.hardCostPerSqFt * costAdj * costNorm;
   const softCost = hardCost * (inputs.softCostPct / 100);
   const contingency = (hardCost + softCost) * (inputs.contingencyPct / 100);
   const devCost = hardCost + softCost + contingency;
@@ -228,7 +238,7 @@ export function computeYield(inputs: YieldInputs, floors: FloorData[], adjust: A
   const salesMonths = Math.ceil(totalUnits / Math.max(0.1, inputs.absorptionUnitsPerMonth));
   const lastSale = launch + salesMonths;
   const horizon = Math.max(T, lastSale) + 1;
-  const pricePerUnit = gdv / totalUnits;
+  const pricePerUnit = gdv / Math.max(1, totalUnits);
 
   const spend = new Array(horizon + 1).fill(0);
   spend[0] = landCost;
@@ -287,8 +297,8 @@ export function computeYield(inputs: YieldInputs, floors: FloorData[], adjust: A
 
   // ---- Floor & zone roll-ups
   const floorYields: FloorYield[] = floorBase.map((x) => {
-    const cost = totalDevelopmentCost * x.share;
-    return { index: x.f.index, zone: x.f.zone, sqFt: x.sqFt, units: x.units, revenue: x.revenue, cost, profit: x.revenue - cost };
+    const cost = totalDevelopmentCost * costWeight(x);
+    return { index: x.f.index, zone: x.f.zone, sqFt: x.sqFt, units: x.units, revenue: x.revenue, cost, profit: x.revenue - cost, ...(x.f.amenity ? { amenity: x.f.amenity } : {}) };
   });
   const zones: ZoneYield[] = ZONE_ORDER.map((zone) => {
     const inZone = floorYields.filter((f) => f.zone === zone);

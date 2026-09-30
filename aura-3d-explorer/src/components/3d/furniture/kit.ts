@@ -12,6 +12,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { fabricTexture, marbleTexture, plasterTexture, tilePerUnit, woodTexture } from "../textures";
+import { AMENITY_PIECES, type AmenityPieceId } from "./amenities";
 
 /* ------------------------------------------------------------------ geometry */
 
@@ -84,7 +85,12 @@ export type MatKey =
   | "lamp"
   | "plaster"
   | "ceramic"
-  | "glass";
+  | "glass"
+  // amenity fit-outs (./amenities)
+  | "rubber"
+  | "turf"
+  | "screenBright"
+  | "play";
 
 /** PBR materials shared by every furniture instance. */
 let mats: Record<MatKey, THREE.Material> | null = null;
@@ -122,6 +128,10 @@ export function getMaterials() {
       glass: new THREE.MeshPhysicalMaterial({ color: "#dfeef0", roughness: 0.05, metalness: 0, transparent: true, opacity: 0.22, depthWrite: false }),
       piano: std("#0d0e11", 0.12, 0.3, { envMapIntensity: 1.5 }),
       lamp: std("#fff1d6", 0.6, 0, { emissive: new THREE.Color("#ffcf8a"), emissiveIntensity: 1.2, side: THREE.DoubleSide }),
+      rubber: std("#2b2d30", 0.95),
+      turf: textured(fabricTexture("#6f9a58"), 1, 4),
+      screenBright: std("#dfe8f0", 0.4, 0, { emissive: new THREE.Color("#9cc4e8"), emissiveIntensity: 0.9 }),
+      play: std("#e08a6a", 0.7),
     };
   }
   return mats;
@@ -505,7 +515,8 @@ export type PieceId =
   | "archWall"
   | "tub"
   | "bedDouble"
-  | "bathroom";
+  | "bathroom"
+  | AmenityPieceId;
 
 interface PieceDef {
   build: () => Part[];
@@ -535,4 +546,5 @@ export const PIECES: Record<PieceId, PieceDef> = {
   tub: { build: tub, w: 0.9, d: 1.8 },
   bedDouble: { build: bedDouble, w: 2.8, d: 2.4 },
   bathroom: { build: bathroom, w: 2.6, d: 2.3 },
+  ...AMENITY_PIECES,
 };

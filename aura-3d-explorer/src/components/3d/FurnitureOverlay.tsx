@@ -41,11 +41,11 @@ function batchesFor(floor: FloorData, coreSize: number, crownFloors: number): Ba
   const coreHalfM = coreSize / 2 / MODEL_SCALE;
   const coreAngle = -floor.rotationY;
   const zoneIndex = floor.zone === "crown" ? floor.zoneIndex : 0;
-  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), coreAngle.toFixed(3), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount].join(":");
+  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), coreAngle.toFixed(3), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? ""].join(":");
   const hit = batchCache.get(key);
   if (hit) return hit;
 
-  const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape);
+  const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity);
   const parts: Part[] = placements.flatMap((pl) => place(PIECES[pl.piece].build(), pl.x, pl.z, pl.rot));
 
   const map = new Map<string, Batch>();
