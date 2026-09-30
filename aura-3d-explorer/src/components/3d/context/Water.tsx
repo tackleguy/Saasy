@@ -15,12 +15,12 @@ import { LAYOUT, SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
 import { waterNormalTexture } from "../textures";
 import { ALONG_U, noRaycast, placeUW, rng, uploadInstances } from "./shared";
 
-function Surface({ quality }: { quality: "high" | "low" }) {
+function Surface({ quality, color }: { quality: "high" | "low"; color: string }) {
   const depth = 460;
   const [x, z] = uwToXZ(0, LAYOUT.waterStart + depth / 2);
   const normal = useMemo(() => {
     const t = waterNormalTexture().clone();
-    t.repeat.set(90, 110);
+    t.repeat.set(210, 110); // ~5 units per ripple tile across the 1100 × 460 plane
     t.needsUpdate = true;
     return t;
   }, []);
@@ -32,7 +32,8 @@ function Surface({ quality }: { quality: "high" | "low" }) {
 
   return (
     <mesh position={[x, 0.008, z]} rotation={[-Math.PI / 2, 0, SITE_ROTATION_Y]} raycast={noRaycast}>
-      <planeGeometry args={[LAYOUT.streetHalfLength * 2.6, depth]} />
+      {/* Wide enough (u ±550) that bridges at the ends of the street stand on water. */}
+      <planeGeometry args={[1100, depth]} />
       {quality === "high" ? (
         <MeshReflectorMaterial
           resolution={768}
@@ -44,7 +45,7 @@ function Surface({ quality }: { quality: "high" | "low" }) {
           depthScale={0.5}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.2}
-          color="#5f7f84"
+          color={color}
           metalness={0.2}
           normalMap={normal}
           normalScale={new THREE.Vector2(0.22, 0.22)}
@@ -52,7 +53,7 @@ function Surface({ quality }: { quality: "high" | "low" }) {
           distortionMap={normal}
         />
       ) : (
-        <meshStandardMaterial color="#6a888c" roughness={0.12} metalness={0.3} envMapIntensity={1.2} normalMap={normal} normalScale={new THREE.Vector2(0.3, 0.3)} />
+        <meshStandardMaterial color={color} roughness={0.12} metalness={0.3} envMapIntensity={1.2} normalMap={normal} normalScale={new THREE.Vector2(0.3, 0.3)} />
       )}
     </mesh>
   );
@@ -102,10 +103,10 @@ function Boats() {
   );
 }
 
-export default function Water({ quality }: { quality: "high" | "low" }) {
+export default function Water({ quality, color }: { quality: "high" | "low"; color: string }) {
   return (
     <group>
-      <Surface quality={quality} />
+      <Surface quality={quality} color={color} />
       <Boats />
     </group>
   );

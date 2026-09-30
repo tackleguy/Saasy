@@ -3,13 +3,16 @@
  * useExplorer — all interactive 3D state for one project site.
  * -----------------------------------------------------------------------------
  * Active building, explosion, isolated floor, X-ray, walk-through, photo
- * angles, rendering quality and capture. Shared by the Studio, project pages
+ * angles, rendering quality, capture and an imported CAD model (shown in
+ * place of the procedural tower it was imported onto). Shared by the Studio, project pages
  * and the landing hero, so every explorer behaves identically; the result is
  * passed to <ExplorerViewport> and to any toolbar that needs it.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Building, BuildingId, FloorData, ViewMode, ZoneId } from "@/types";
 import type { PhotoAngle, Quality } from "@/lib/explorer";
+import type { Object3D } from "three";
+import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
 
 /** Explosion factor applied by the "Exploded" view preset. */
 const EXPLODED_PRESET = 1.5;
@@ -21,9 +24,13 @@ interface Options {
   keyboardPaused?: boolean;
   /** Never drop to Low automatically (offline renders). */
   lockQuality?: boolean;
+  /** Initial city backdrop (usually the project's own city). */
+  city?: CityId;
 }
 
-export function useExplorer(site: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false }: Options = {}) {
+export function useExplorer(site: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY }: Options = {}) {
+  // City backdrop for the urban context (New York, Miami, …)
+  const [city, setCity] = useState<CityId>(initialCity);
   const [activeBuildingId, setActiveBuildingId] = useState<BuildingId>(site[0].id);
   const [explosion, setExplosion] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -41,6 +48,9 @@ export function useExplorer(site: Building[], { keyboard = false, keyboardPaused
   const [photoNonce, setPhotoNonce] = useState(0);
   const captureRef = useRef<(() => Promise<void>) | null>(null);
   const [capturing, setCapturing] = useState(false);
+  // Imported CAD model (normalised Object3D from lib/importNormalize) + visibility
+  const [importedModel, setImportedModelState] = useState<Object3D | null>(null);
+  const [showImported, setShowImported] = useState(true);
 
   const building = site.find((b) => b.id === activeBuildingId) ?? site[0];
   const selectedFloor: FloorData | null = selectedIndex !== null ? building.floors[selectedIndex] ?? null : null;
@@ -136,6 +146,28 @@ export function useExplorer(site: Building[], { keyboard = false, keyboardPaused
     setResetNonce((n) => n + 1);
   }, []);
 
+  /**
+   * Show an imported model on the active building's plot (replacing the
+   * procedural tower), or clear it with null. The previous model is disposed.
+   */
+  const setImportedModel = useCallback(
+    (obj: Object3D | null) => {
+      if (obj) obj.userData.buildingId = activeBuildingId;
+      setImportedModelState((prev) => {
+        if (prev && prev !== obj) {
+          prev.traverse((o) => {
+            const m = o as Object3D & { geometry?: { dispose(): void }; material?: { dispose(): void } | { dispose(): void }[] };
+            m.geometry?.dispose();
+            for (const mat of Array.isArray(m.material) ? m.material : m.material ? [m.material] : []) mat.dispose();
+          });
+        }
+        return obj;
+      });
+      setShowImported(true);
+    },
+    [activeBuildingId]
+  );
+
   /** Reveal the model with an exploded fly-around (after a CAD ingest). */
   const reveal = useCallback(() => {
     setPhotoAngle(null);
@@ -191,6 +223,10 @@ export function useExplorer(site: Building[], { keyboard = false, keyboardPaused
     resetNonce,
     resetView,
     reveal,
+    importedModel,
+    setImportedModel,
+    showImported,
+    setShowImported,
     viewMode,
     setViewMode,
     walking,
@@ -209,6 +245,8 @@ export function useExplorer(site: Building[], { keyboard = false, keyboardPaused
     captureRef,
     capture,
     capturing,
+    city,
+    setCity,
   };
 }
 

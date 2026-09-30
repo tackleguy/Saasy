@@ -12,6 +12,7 @@ import { projectSite } from "@/content/projects";
 import { useExplorer } from "@/hooks/useExplorer";
 import type { PhotoAngle } from "@/lib/explorer";
 import ExplorerViewport from "./ExplorerViewport";
+import { isCityId, type CityId } from "@/lib/cityPresets";
 
 export interface RenderParams {
   angle: PhotoAngle;
@@ -19,6 +20,8 @@ export interface RenderParams {
   walk: boolean;
   floor?: number;
   view: number;
+  /** City backdrop override (defaults to the project's own). */
+  city?: CityId;
 }
 
 /** Parse the query string (client only). */
@@ -30,13 +33,14 @@ function readParams(): RenderParams {
     walk: q.get("walk") === "1",
     floor: q.get("floor") ? Number(q.get("floor")) : undefined,
     view: q.get("view") ? Number(q.get("view")) : 0,
+    city: isCityId(q.get("city")) ? (q.get("city") as CityId) : undefined,
   };
 }
 
 export default function RenderView({ project }: { project: Project }) {
   const [params] = useState<RenderParams>(() => (typeof window === "undefined" ? { angle: "waterfront", walk: false, view: 0 } : readParams()));
   const site = projectSite(project);
-  const x = useExplorer(site, { lockQuality: true });
+  const x = useExplorer(site, { lockQuality: true, city: params.city ?? project.backdrop });
   const building = site.find((b) => b.id === params.building) ?? site[0];
 
   useEffect(() => {

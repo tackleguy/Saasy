@@ -90,8 +90,17 @@ Common edits:
 - **Projects / massing / defaults** — `src/content/projects.ts` (`massing` per building:
   zone floor counts, plate sizes, twist, `taper` for supertalls, `facade.finSpacing`,
   `balconies`, `arches`). The flagship site includes the 100-storey Meridian Pinnacle.
+- **City backdrops** — `src/lib/cityPresets.ts`: Neutral, New York, Miami, Los Angeles,
+  Chicago, San Francisco, Seattle, Boston, Toronto, London and Dubai. Each preset sets light
+  and haze, water colour, block grid, heights, facade materials and tints, setbacks, NYC
+  water tanks, palms, vehicle mix (yellow cabs, red double-deckers, left-hand traffic),
+  clothing palettes and generic landmark silhouettes. Viewers switch city from the picker
+  in the explorer; each project's default is `backdrop` in `src/content/projects.ts`, and
+  `/render/<slug>?city=<id>` renders any project in any city.
 - **City context** — `src/components/3d/context/cityPlan.ts` (block grid, heights,
-  facade kinds) and the components beside it; textures in `src/components/3d/textures.ts`.
+  facade kinds, driven by the preset) and the components beside it (`vehicles.ts` for car,
+  taxi and bus models, `People.tsx` for walking figures, `Landmarks.tsx` for skyline
+  silhouettes and bridges); textures in `src/components/3d/textures.ts`.
 - **Finance model** — `src/lib/finance.ts` (method is documented at the top of the file).
 - **Theme** — CSS tokens in `src/app/globals.css` (`--paper`, `--stone`, `--plaster`,
   `--ink`, `--ash`, `--oak`, `--sage`, `--brass`); dark variant via `<html data-theme="dark">`.

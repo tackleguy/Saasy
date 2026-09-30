@@ -8,22 +8,26 @@
  * outside the canvas needs it — so the sidebar never re-renders on mouse move.
  *
  * Only the active building explodes; the others stay stacked as context.
+ * An `importedModel` (normalised CAD import) replaces the procedural tower on
+ * the plot it was imported onto, and the hero camera frames its real height.
  * Loaded with `next/dynamic({ ssr: false })` because Three.js needs `window`.
  */
 import { useCallback, useEffect, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import type { Building, BuildingId, FloorData } from "@/types";
 import { buildingHeight, floorCentre } from "@/lib/tower";
 import type { PhotoAngle, Quality } from "@/lib/explorer";
 import { uwToXZ } from "@/lib/siteLayout";
+import { getCityPreset, type CityId } from "@/lib/cityPresets";
 import { useCameraTween, type CameraGoal, type Vec3 } from "@/hooks/useCameraTween";
 import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
 import SiteContext from "./SiteContext";
 import PostEffects from "./PostEffects";
 import WalkControls from "./WalkControls";
+import ImportedModel from "./ImportedModel";
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
 export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
@@ -48,9 +52,9 @@ function photoPose(angle: PhotoAngle, b: Building, explosion: number, siteH: num
   };
   const target = (y: number): Vec3 => [b.position[0], y, b.position[1]];
   switch (angle) {
-    case "street": // pedestrian on the near sidewalk, looking up
-      return { position: at(bu - 15, 17.8, 0.5), target: target(h * 0.55) };
-    case "waterfront": // from a boat on the water
+    case "street": // pedestrian across the road on the far sidewalk, looking up at the podium and tower
+      return { position: at(bu - 26, 28.5, 0.5), target: target(h * 0.5) };
+    case "waterfront": // from a boat on the water (a supertall behind may crop — that's the photo)
       return { position: at(bu + 8, 72, 1.1), target: target(h * 0.42) };
     case "aerial":
       return { position: at(bu - 48, bw + 58, 66), target: target(h * 0.22) };
@@ -86,6 +90,10 @@ interface Props {
   captureRef?: MutableRefObject<(() => Promise<void>) | null>;
   /** Play the eye-level dolly-out opening shot. */
   intro?: boolean;
+  /** City backdrop (lib/cityPresets). */
+  city?: CityId;
+  /** Imported CAD model (lib/importNormalize) shown in place of its building's procedural tower. */
+  importedModel?: THREE.Object3D | null;
 }
 
 /** Translates app state into a camera goal and hands it to the GSAP tween hook. */
@@ -99,6 +107,7 @@ function CameraRig({
   photoAngle,
   photoNonce,
   intro,
+  heightOverride,
 }: {
   building: Building;
   /** Height of the tallest building on the site (un-exploded). */
@@ -110,8 +119,10 @@ function CameraRig({
   photoAngle: PhotoAngle | null;
   photoNonce: number;
   intro: boolean;
+  /** Frame this height instead of the procedural tower's (imported model). */
+  heightOverride?: number;
 }) {
-  const h = buildingHeight(building, explosion);
+  const h = heightOverride ?? buildingHeight(building, explosion);
   let goal: CameraGoal;
   if (selectedIndex !== null) {
     goal = { kind: "focus", target: floorCentre(building, building.floors[selectedIndex], explosion), offset: FOCUS_OFFSET };
@@ -132,6 +143,19 @@ function CameraRig({
     nonce: resetNonce + photoNonce * 1000,
     enabled: !walking,
     intro: intro ? { position: [ix, 0.45, iz], target: [building.position[0], h * 0.55, building.position[1]], duration: 3.6 } : undefined,
+  });
+  return null;
+}
+
+/**
+ * Keeps the orbit camera above the ground. OrbitControls' polar-angle clamp
+ * would instead lift any camera placed below its target (every eye-level
+ * photo angle), so the polar limit is left open and the height is clamped.
+ */
+function GroundClamp() {
+  const camera = useThree((s) => s.camera);
+  useFrame(() => {
+    if (camera.position.y < 0.35) camera.position.y = 0.35;
   });
   return null;
 }
@@ -181,6 +205,8 @@ export default function BuildingScene({
   photoNonce,
   captureRef,
   intro = true,
+  city = "generic",
+  importedModel = null,
 }: Props) {
   const [hovered, setHovered] = useState<FloorData | null>(null);
   // Ignore frame-rate dips during the first seconds (shader compile, HDR decode).
@@ -191,6 +217,10 @@ export default function BuildingScene({
   }, [onPerformanceDecline]);
   const building = buildings.find((b) => b.id === activeBuildingId) ?? buildings[0];
   const high = quality === "high";
+  const preset = getCityPreset(city);
+  // The imported model stands on the plot it was imported onto (tagged by useExplorer).
+  const importedOn: BuildingId | null = importedModel ? (importedModel.userData.buildingId as BuildingId | undefined) ?? activeBuildingId : null;
+  const importedBuilding = importedOn ? buildings.find((b) => b.id === importedOn) ?? null : null;
 
   // Clicking the selected floor again releases it.
   const handleSelect = useCallback(
@@ -223,10 +253,12 @@ export default function BuildingScene({
       {/* Auto-detect weak devices: sustained low FPS asks the parent to drop to Low */}
       <PerformanceMonitor onDecline={handleDecline} />
 
-      <LightingEnvironment quality={quality} />
-      <SiteContext quality={quality} />
+      <LightingEnvironment quality={quality} preset={preset} />
+      <SiteContext quality={quality} preset={preset} />
+      {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} />}
       {buildings.map((b) => {
         const active = b.id === activeBuildingId;
+        if (importedBuilding && b.id === importedBuilding.id) return null;
         return (
           <ProceduralBuilding
             key={b.id}
@@ -246,7 +278,8 @@ export default function BuildingScene({
       {walking && selectedIndex !== null && (
         <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} />
       )}
-      <OrbitControls enabled={!walking} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={320} maxPolarAngle={Math.PI / 2.02} />
+      <OrbitControls enabled={!walking} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={320} maxPolarAngle={Math.PI - 0.08} />
+      {!walking && <GroundClamp />}
       <CameraRig
         building={building}
         siteH={Math.max(...buildings.map((b) => buildingHeight(b, 0)))}
@@ -257,6 +290,7 @@ export default function BuildingScene({
         photoAngle={photoAngle}
         photoNonce={photoNonce}
         intro={intro}
+        heightOverride={importedModel && importedOn === building.id ? (importedModel.userData.heightUnits as number | undefined) : undefined}
       />
       {captureRef && <CaptureBridge captureRef={captureRef} />}
       {high && <PostEffects focus={focus} />}

@@ -1,8 +1,8 @@
 "use client";
 /**
  * ViewportHud — floating controls over the WebGL canvas:
- * building tabs, explosion-factor slider, X-ray core toggle, reset view and
- * the zone legend for the active building.
+ * building tabs, city backdrop picker, explosion-factor slider, X-ray core
+ * toggle, reset view, photo angles and the zone legend for the active building.
  */
 import { AnimatePresence, motion } from "framer-motion";
 import { Camera, Expand, Footprints, RotateCcw, ScanEye } from "lucide-react";
@@ -11,6 +11,8 @@ import type { Building, BuildingId, ZoneId } from "@/types";
 import { EXPLODE_MAX, EXPLODE_MIN, ZONE_ORDER, ZONES } from "@/lib/tower";
 import { RangeSlider } from "./primitives";
 import { PHOTO_ANGLES, type PhotoAngle } from "@/lib/explorer";
+import type { CityId } from "@/lib/cityPresets";
+import CityPicker from "./CityPicker";
 
 interface Props {
   /** Every building on the project site (for the building tabs). */
@@ -33,6 +35,9 @@ interface Props {
   /** Export the current view as a 2× PNG. */
   onCapture: () => void;
   capturing: boolean;
+  /** City backdrop for the urban context. */
+  city: CityId;
+  onCityChange: (id: CityId) => void;
 }
 
 export default function ViewportHud({
@@ -52,9 +57,14 @@ export default function ViewportHud({
   onPhotoAngle,
   onCapture,
   capturing,
+  city,
+  onCityChange,
 }: Props) {
   return (
     <>
+      {/* City backdrop — top left (the floor inspector takes this corner when a floor is isolated) */}
+      {showBuildingTabs && <CityPicker value={city} onChange={onCityChange} showBlurb className="absolute left-3 top-3 z-10 hidden sm:left-4 sm:top-4 sm:flex" />}
+
       {/* Building tabs — top centre */}
       <AnimatePresence>
         {showBuildingTabs && site.length > 1 && (
@@ -169,6 +179,7 @@ export default function ViewportHud({
 
         {/* Photo angles + capture */}
         <div className="flex items-center gap-2 border-t border-plaster pt-2.5">
+          <CityPicker value={city} onChange={onCityChange} className="shrink-0 sm:hidden" />
           <span className="caption hidden shrink-0 sm:inline">Photo angle</span>
           <div className="no-scrollbar flex min-w-0 flex-1 gap-1 overflow-x-auto" role="group" aria-label="Photo angles">
             {PHOTO_ANGLES.map((a) => (

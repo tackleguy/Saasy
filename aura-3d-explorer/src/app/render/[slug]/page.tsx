@@ -9,6 +9,7 @@ import RenderView from "@/components/explorer/RenderView";
  *   angle    photo angle (waterfront | street | aerial | podium | skyline | drone)
  *   building building id on the site (defaults to the first)
  *   walk=1   stand inside `floor` at walk-through view `view`
+ *   city     city backdrop id (new-york | miami | los-angeles | …), defaults to the project's
  */
 export function generateStaticParams() {
   return PROJECTS.map((p) => ({ slug: p.slug }));

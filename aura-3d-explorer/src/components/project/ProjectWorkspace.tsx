@@ -35,7 +35,7 @@ function SectionHeading({ id, title, caption }: { id: string; title: string; cap
 export default function ProjectWorkspace({ project }: { project: Project }) {
   const site = projectSite(project);
   const yieldCalc = useYieldCalculator(site, project.finance);
-  const x = useExplorer(site);
+  const x = useExplorer(site, { city: project.backdrop });
   const [enquiryUnit, setEnquiryUnit] = useState<string | null>(null);
 
   const building = x.building;

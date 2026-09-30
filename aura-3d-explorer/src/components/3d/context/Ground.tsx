@@ -9,7 +9,8 @@ import * as THREE from "three";
 import { LAYOUT, SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
 import { asphaltTexture, concreteTexture, pavingTexture, roadTexture, stoneTexture } from "../textures";
 import { FLAT_UW, noRaycast, placeUW, uploadInstances } from "./shared";
-import { CITY_STREETS } from "./cityPlan";
+import { cityPlan } from "./cityPlan";
+import type { CityPreset } from "@/lib/cityPresets";
 
 /** A flat textured rectangle spanning [w0, w1] along w and [u0, u1] along u. */
 function Slab({ u0, u1, w0, w1, y, map, tile, color = "#ffffff", roughness = 0.9 }: { u0: number; u1: number; w0: number; w1: number; y: number; map: THREE.Texture; tile: number; color?: string; roughness?: number }) {
@@ -63,7 +64,7 @@ function Kerbs() {
   );
 }
 
-export default function Ground() {
+export default function Ground({ preset }: { preset: CityPreset }) {
   const L = LAYOUT;
   const half = L.streetHalfLength;
   const paving = pavingTexture();
@@ -76,7 +77,7 @@ export default function Ground() {
       {/* Far ground */}
       <mesh rotation-x={-Math.PI / 2} position-y={-0.02} receiveShadow raycast={noRaycast}>
         <circleGeometry args={[700, 48]} />
-        <meshStandardMaterial color="#CFC8BB" roughness={1} />
+        <meshStandardMaterial color={preset.ground} roughness={1} />
       </mesh>
 
       {/* Paved plinth under the towers (extends back to carry the supertall) */}
@@ -88,10 +89,10 @@ export default function Ground() {
       <Crossings />
       <Kerbs />
       <Slab u0={-half} u1={half} w0={L.sidewalkFar[0]} w1={L.sidewalkFar[1]} y={0.03} map={paving} tile={4} />
-      <Slab u0={-half} u1={half} w0={L.promenade[0]} w1={L.promenade[1]} y={0.03} map={stone} tile={3} color="#c9b596" roughness={0.8} />
+      <Slab u0={-half} u1={half} w0={L.promenade[0]} w1={L.promenade[1]} y={0.03} map={stone} tile={3} color={preset.promenade} roughness={0.8} />
 
       {/* Secondary street grid */}
-      {CITY_STREETS.map((s, i) => (
+      {cityPlan(preset).streets.map((s, i) => (
         <Slab key={i} u0={s.u0} u1={s.u1} w0={s.w0} w1={s.w1} y={0.005} map={asphalt} tile={6} roughness={0.95} />
       ))}
     </group>

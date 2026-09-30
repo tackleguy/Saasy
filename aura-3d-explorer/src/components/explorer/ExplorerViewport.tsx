@@ -9,6 +9,9 @@
  *   variant="hero" — landing-page hero: photo-angle chips only, no inspector
  *   variant="bare" — no overlays at all (offline renders)
  *
+ * A CAD import (explorer.importedModel) replaces its building's procedural
+ * tower; the ImportedModelHud chip switches back or discards it.
+ *
  * The scene is dynamically imported with SSR off (Three.js needs `window`)
  * and so it never blocks first paint.
  */
@@ -19,6 +22,8 @@ import type { ExplorerState } from "@/hooks/useExplorer";
 import ViewportHud from "@/components/ui/ViewportHud";
 import FloorInspectorCard from "@/components/ui/FloorInspectorCard";
 import WalkHud from "@/components/ui/WalkHud";
+import ImportedModelHud from "@/components/ui/ImportedModelHud";
+import CityPicker from "@/components/ui/CityPicker";
 import { PHOTO_ANGLES } from "@/lib/explorer";
 
 const BuildingScene = dynamic(() => import("@/components/3d/BuildingScene"), {
@@ -63,10 +68,14 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         photoNonce={x.photoNonce}
         captureRef={x.captureRef}
         intro={intro}
+        city={x.city}
+        importedModel={x.showImported ? x.importedModel : null}
       />
 
       {variant === "bare" ? null : variant === "hero" ? (
-        // Minimal chrome for the landing hero: just the photo-angle presets.
+        // Minimal chrome for the landing hero: the city backdrop and photo-angle presets.
+        <>
+        <CityPicker value={x.city} onChange={x.setCity} showBlurb className="absolute left-3 top-3 z-10 sm:left-4 sm:top-4" />
         <div className="absolute bottom-3 left-3 z-10 flex gap-1 sm:bottom-4 sm:left-4" role="group" aria-label="Photo angles">
           {PHOTO_ANGLES.map((a) => (
             <button
@@ -82,6 +91,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             </button>
           ))}
         </div>
+        </>
       ) : x.walking && x.selectedFloor ? (
         <WalkHud building={x.building} floor={x.selectedFloor} viewIndex={x.viewIndex} onView={x.goToView} onExit={x.stopWalk} />
       ) : (
@@ -103,7 +113,19 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             onPhotoAngle={x.choosePhotoAngle}
             onCapture={x.capture}
             capturing={x.capturing}
+            city={x.city}
+            onCityChange={x.setCity}
           />
+          {x.importedModel && x.selectedIndex === null && (
+            <ImportedModelHud
+              key={x.importedModel.uuid}
+              model={x.importedModel}
+              shown={x.showImported}
+              onShownChange={x.setShowImported}
+              onClear={() => x.setImportedModel(null)}
+              className="absolute left-3 top-14 z-10 sm:left-4 sm:top-[7rem]"
+            />
+          )}
           <FloorInspectorCard
             building={x.building}
             floor={x.selectedFloor}

@@ -1,6 +1,7 @@
 "use client";
 /**
- * LightingEnvironment — late-afternoon daylight.
+ * LightingEnvironment — daylight, tuned per city preset (sun height and
+ * colour, haze, fog distance, skylight). Defaults describe the neutral preset.
  * -----------------------------------------------------------------------------
  *   • Sky        — drei <Sky> (physically based Preetham model) with the sun
  *                  low in the south-west, giving a warm horizon and pale zenith.
@@ -14,49 +15,50 @@
  */
 import { Environment, Sky } from "@react-three/drei";
 import * as THREE from "three";
+import type { CityPreset } from "@/lib/cityPresets";
+
+/** Horizontal heading of the sun: behind the default camera's left shoulder. */
+const HEADING = new THREE.Vector2(0.35, 1.06).normalize(); // horizontal x/z
 
 /**
- * Direction TO the sun: 28° above the horizon, behind the default camera's
- * left shoulder (camera sits on the +X/+Z diagonal), so the faces the viewer
- * sees are warmly lit and shadows fall back-right, like a golden-hour render.
+ * Direction TO the sun at a given elevation. The camera sits on the +X/+Z
+ * diagonal, so the faces the viewer sees are lit and shadows fall back-right,
+ * like an archviz render. Each city preset sets its own elevation.
  */
-const ELEVATION = THREE.MathUtils.degToRad(28);
-const HEADING = new THREE.Vector2(0.35, 1.06).normalize(); // horizontal x/z
-export const SUN_DIRECTION = new THREE.Vector3(
-  Math.cos(ELEVATION) * HEADING.x,
-  Math.sin(ELEVATION),
-  Math.cos(ELEVATION) * HEADING.y
-);
-
-const HAZE = "#dfe2e1";
+export function sunDirection(elevationDeg: number) {
+  const e = THREE.MathUtils.degToRad(elevationDeg);
+  return new THREE.Vector3(Math.cos(e) * HEADING.x, Math.sin(e), Math.cos(e) * HEADING.y);
+}
 
 interface Props {
   /** High quality: 4096 shadow map; low: 2048. */
   quality: "high" | "low";
+  preset: CityPreset;
 }
 
-export default function LightingEnvironment({ quality }: Props) {
-  const sunPos = SUN_DIRECTION.clone().multiplyScalar(200);
+export default function LightingEnvironment({ quality, preset }: Props) {
+  const sky = preset.sky;
+  const sunPos = sunDirection(sky.elevation).multiplyScalar(200);
   const mapSize = quality === "high" ? 4096 : 2048;
 
   return (
     <>
-      <color attach="background" args={[HAZE]} />
-      <fog attach="fog" args={[HAZE, 160, 520]} />
-      <Sky distance={4500} sunPosition={sunPos.toArray()} turbidity={5} rayleigh={1.4} mieCoefficient={0.004} mieDirectionalG={0.85} />
+      <color attach="background" args={[sky.haze]} />
+      <fog attach="fog" args={[sky.haze, sky.fogNear, sky.fogFar]} />
+      <Sky distance={4500} sunPosition={sunPos.toArray()} turbidity={sky.turbidity} rayleigh={sky.rayleigh} mieCoefficient={0.004} mieDirectionalG={0.85} />
 
       {/* Image-based lighting + reflections from a bundled city HDR (not shown as background). */}
-      <Environment files="/hdri/potsdamer_platz_1k.hdr" environmentIntensity={0.55} />
+      <Environment files="/hdri/potsdamer_platz_1k.hdr" environmentIntensity={sky.envIntensity} />
 
-      {/* Cool skylight fill */}
-      <hemisphereLight args={["#cfdcea", "#b8ab97", 0.45]} />
+      {/* Skylight fill */}
+      <hemisphereLight args={[sky.hemiSky, sky.hemiGround, 0.45]} />
 
-      {/* Warm low sun */}
+      {/* Sun */}
       <directionalLight
         key={mapSize /* re-create the shadow map when quality changes */}
         position={sunPos.toArray()}
-        intensity={2.6}
-        color="#FFE8C8"
+        intensity={sky.sunIntensity}
+        color={sky.sunColor}
         castShadow
         shadow-mapSize={[mapSize, mapSize]}
         shadow-bias={-0.00025}

@@ -14,6 +14,7 @@
 import type { Building, BuildingId, ProjectImage, ProjectStatus, YieldInputs, ZoneId } from "@/types";
 import { buildingFromMassing, buildSite, type ProjectMassing } from "@/lib/tower";
 import { proforma } from "@/lib/finance";
+import type { CityId } from "@/lib/cityPresets";
 
 export interface Project {
   slug: string;
@@ -23,6 +24,8 @@ export interface Project {
   client: string;
   architect: string;
   city: string;
+  /** City backdrop the 3D context is styled as by default (lib/cityPresets). */
+  backdrop: CityId;
   status: ProjectStatus;
   completion: string;
   summary: string;
@@ -55,6 +58,7 @@ export const PROJECTS: Project[] = [
     client: "AURA Development",
     architect: "AURA Studio",
     city: "Jersey City, NJ",
+    backdrop: "new-york",
     status: "Selling",
     completion: "Q4 2028",
     summary:
@@ -129,6 +133,7 @@ export const PROJECTS: Project[] = [
     client: "Coastline Hospitality (placeholder)",
     architect: "Studio Littoral (placeholder)",
     city: "Miami Beach, FL",
+    backdrop: "miami",
     status: "Approved",
     completion: "Q2 2029",
     summary: "Waterfront hospitality with sweeping curved balcony bands; every key has a sea view and a private terrace.",
@@ -158,6 +163,7 @@ export const PROJECTS: Project[] = [
     client: "Northgate Capital (placeholder)",
     architect: "Fluted Office Architects (placeholder)",
     city: "Chicago, IL",
+    backdrop: "chicago",
     status: "Under Construction",
     completion: "Q1 2028",
     summary: "Twin fluted office towers on a shared podium — tight bronze fins give the facades a pleated, chess-piece silhouette.",
@@ -188,6 +194,7 @@ export const PROJECTS: Project[] = [
     client: "Harbourline Estates (placeholder)",
     architect: "Facet Partners (placeholder)",
     city: "Dubai, UAE",
+    backdrop: "dubai",
     status: "Selling",
     completion: "Q3 2029",
     summary: "Three faceted residential towers rising straight out of the water, their gently turning plates catching the evening sun.",
@@ -220,6 +227,7 @@ export const PROJECTS: Project[] = [
     client: "Refad Holdings (placeholder)",
     architect: "Timberline Studio (placeholder)",
     city: "Toronto, ON",
+    backdrop: "toronto",
     status: "Concept",
     completion: "Q4 2030",
     summary: "A low, wide workplace wrapped in a rhythm of warm timber fins, stepping back to planted roof terraces.",
@@ -249,6 +257,7 @@ export const PROJECTS: Project[] = [
     client: "Hudson Main Street LLC (placeholder)",
     architect: "Arcade & Co. (placeholder)",
     city: "Bayonne, NJ",
+    backdrop: "new-york",
     status: "Approved",
     completion: "Q2 2028",
     summary: "Main-street mixed use: a brick-and-stone arcaded podium of shops beneath two storeys of offices and loft apartments.",
@@ -278,6 +287,7 @@ export const PROJECTS: Project[] = [
     client: "Nordvik Bolig (placeholder)",
     architect: "Fjord Arkitekter (placeholder)",
     city: "Lørenskog, Norway",
+    backdrop: "generic",
     status: "Under Construction",
     completion: "Q3 2027",
     summary: "Two timber residential blocks around a planted courtyard, with deep balconies and a shared roof garden.",
@@ -308,6 +318,7 @@ export const PROJECTS: Project[] = [
     client: "Arena District Partners (placeholder)",
     architect: "Perforate Studio (placeholder)",
     city: "Madrid, Spain",
+    backdrop: "generic",
     status: "Concept",
     completion: "Q1 2031",
     summary: "A slender tower wrapped in a dense, perforated screen of fins over a sports-and-leisure podium.",

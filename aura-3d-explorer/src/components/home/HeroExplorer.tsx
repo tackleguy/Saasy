@@ -10,7 +10,7 @@ import { useExplorer } from "@/hooks/useExplorer";
 import ExplorerViewport from "@/components/explorer/ExplorerViewport";
 
 export default function HeroExplorer({ project }: { project: Project }) {
-  const x = useExplorer(projectSite(project));
+  const x = useExplorer(projectSite(project), { city: project.backdrop });
   return (
     <section aria-label={`${project.name} — live 3D`}>
       <ExplorerViewport explorer={x} variant="hero" className="h-[60vh] min-h-[380px] w-full sm:h-[78vh]" />
