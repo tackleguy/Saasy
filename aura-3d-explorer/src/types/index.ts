@@ -128,6 +128,63 @@ export interface AmenitySpec {
   name?: string;
 }
 
+/**
+ * One vertical core, as authored. Omitted size falls back to the building
+ * `coreSize` (or a smaller default for a second core).
+ */
+export interface CoreInput {
+  id?: string;
+  /** Plan centre [x, z], building-local scene units. Default the tower centre. */
+  offset?: [number, number];
+  /** Base side length, scene units. */
+  size?: number;
+  /**
+   * Side length above the transfer, as a fraction of `size` (1 = prismatic).
+   * The lobby face stays put; the sides and the back step in.
+   */
+  taper?: number;
+  /**
+   * Fraction of the floor count (0–1) where outer lifts end and the core
+   * steps in. The middle cars continue above it. Default 0.58 when tapering.
+   */
+  transfer?: number;
+  /** The core you can walk into. Default: the one nearest the tower centre. */
+  primary?: boolean;
+}
+
+/** A resolved core shaft (see `resolveCores`). */
+export interface CoreSpec {
+  id: string;
+  /** Base plan centre [x, z], building-local scene units. */
+  offset: [number, number];
+  /** Side length below the transfer, scene units. */
+  size: number;
+  /** Upper side / base side. 1 = the shaft does not step. */
+  taper: number;
+  /**
+   * 1-based floor where local lifts end and the core steps in.
+   * `lastFloor + 1` when the core does not taper.
+   */
+  transferFloor: number;
+  /** Walkable core — its centre car is the one you ride. */
+  primary: boolean;
+}
+
+/**
+ * One core as it exists on a single floor. Above the transfer the centre
+ * shifts so the lobby face stays aligned with the shaft below.
+ */
+export interface FloorCore {
+  id: string;
+  offset: [number, number];
+  size: number;
+  /** Full bank, or only the express cars in the middle of it. */
+  service: "full" | "express";
+  primary: boolean;
+  /** Base side, so express doors stay on the lower bank's centre lines. */
+  baseSize: number;
+}
+
 /** Static definition of one building on the site. */
 export interface BuildingSpec {
   id: BuildingId;
@@ -144,8 +201,13 @@ export interface BuildingSpec {
    * (1 = straight shaft, 0.6 = supertall taper). Crown floors keep their own size.
    */
   taper: number;
-  /** Side length of the square lift & stair core, scene units. */
+  /**
+   * Base side of the primary (walkable) core, scene units. Per-floor size,
+   * taper and any extra cores live on `cores` / `FloorData.cores`.
+   */
   coreSize: number;
+  /** Lift & stair cores. The primary is walkable; the rest are extra banks. */
+  cores: CoreSpec[];
   /** Setbacks, taper easing and bulge. */
   profile: MassingProfile;
   facade: FacadeSpec;
@@ -181,6 +243,8 @@ export interface FloorData {
   amenity?: AmenityKind;
   /** Display name of the amenity floor. */
   amenityName?: string;
+  /** Cores present on this floor (a core omitted here has ended below). */
+  cores: FloorCore[];
 }
 
 /** A building spec with its generated floors. */

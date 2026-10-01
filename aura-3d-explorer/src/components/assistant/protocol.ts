@@ -13,6 +13,10 @@
  *   [[action:city id=miami]]            city backdrop
  *   [[action:reset]]                    back to the default view
  *   [[action:tour]]                     navigate to /tour (cinematic reel)
+ *   [[action:furnish scheme=living-out]]  room plan on an apartment floor
+ *   [[action:furnish set=lounge]]         furniture set
+ *   [[action:furnish vary=true]]          a different plan on every apartment floor
+ *   [[action:furnish reset=true]]         original plans
  *
  * Parsing is stream-safe: complete commands are extracted, an unfinished
  * trailing `[[…` is hidden until it closes, and commands are stripped from the
@@ -28,7 +32,8 @@ export type AssistantAction =
   | { type: "walk" }
   | { type: "city"; id: string }
   | { type: "reset" }
-  | { type: "tour" };
+  | { type: "tour" }
+  | { type: "furnish"; scheme?: string; set?: string; floor?: number; building?: string; vary?: boolean; reset?: boolean };
 
 /** Matches one complete command. Tolerates spaces, quotes and `action :` variants. */
 const ACTION_RE = /\[\[\s*action\s*:\s*([a-z_-]+)([^\]]*)\]\]/gi;
@@ -69,6 +74,29 @@ export function toAction(verb: string, rawArgs: string): AssistantAction | null 
       return { type: "reset" };
     case "tour":
       return { type: "tour" };
+    case "furnish":
+    case "layout":
+    case "rooms":
+    case "furniture": {
+      const yes = (v: string | undefined) => /^(true|yes|1|floors|all)$/i.test(v ?? "");
+      const n = parseInt(a.floor ?? a.n ?? a.level ?? "", 10);
+      const scheme = v === "furniture" ? undefined : a.scheme ?? a.plan ?? a.layout ?? (v === "furnish" ? undefined : a.id);
+      const set = a.set ?? a.furniture ?? (v === "furniture" ? a.id : undefined);
+      const vary = yes(a.vary);
+      const reset = /^(true|yes|1)$/i.test(a.reset ?? "");
+      if (!scheme && !set && !vary && !reset && !Number.isFinite(n)) {
+        return v === "furniture" ? { type: "furnish", set: "next" } : { type: "furnish", scheme: "next" };
+      }
+      return {
+        type: "furnish",
+        scheme,
+        set,
+        floor: Number.isFinite(n) ? n : undefined,
+        building: a.building?.toLowerCase(),
+        vary,
+        reset,
+      };
+    }
     default:
       return null;
   }

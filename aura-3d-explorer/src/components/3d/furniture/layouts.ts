@@ -24,7 +24,7 @@
  * along the quadrant's facade instead of fixed corner spots; the other
  * recipes still work on the bounding box and are furnished where there is floor.
  */
-import type { PlanShape, ZoneId } from "@/types";
+import type { FloorData, PlanShape, ZoneId } from "@/types";
 import { penthouseBedsOnFloor, planOutline, pointInPolygon, type PlanPoint } from "@/lib/tower";
 import { PIECES, type PieceId } from "./kit";
 import { amenityLayout } from "./amenities";
@@ -119,18 +119,26 @@ class Planner {
     return !this.rects.some((o) => overlaps(r, o));
   }
 
-  /** Axis-aligned rect vs the rotated core square (separating-axis test). */
+  /** Primary core centre in the plate frame (metres). */
+  coreAt: [number, number] = [0, 0];
+  /** Extra cores; `h` already includes clearance. Same rotation as the primary. */
+  moreCores: { x: number; z: number; h: number }[] = [];
+
+  /** Axis-aligned rect vs any rotated core square (separating-axis test). */
   private hitsCore(r: Rect): boolean {
-    const h = this.coreKeep;
+    if (this.hitsSquare(r, this.coreAt[0], this.coreAt[1], this.coreKeep)) return true;
+    return this.moreCores.some((k) => this.hitsSquare(r, k.x, k.z, k.h));
+  }
+
+  private hitsSquare(r: Rect, ox: number, oz: number, h: number): boolean {
     const c = Math.abs(this.coreCos);
     const s = Math.abs(this.coreSin);
-    const cx = (r.x0 + r.x1) / 2;
-    const cz = (r.z0 + r.z1) / 2;
+    const cx = (r.x0 + r.x1) / 2 - ox;
+    const cz = (r.z0 + r.z1) / 2 - oz;
     const hw = (r.x1 - r.x0) / 2;
     const hd = (r.z1 - r.z0) / 2;
-    const ext = h * (c + s); // the square's projection on the plate axes
+    const ext = h * (c + s);
     if (Math.abs(cx) >= hw + ext || Math.abs(cz) >= hd + ext) return false;
-    // The square's own axes
     const pu = cx * this.coreCos + cz * this.coreSin;
     const pv = -cx * this.coreSin + cz * this.coreCos;
     if (Math.abs(pu) >= h + hw * c + hd * s) return false;
@@ -373,14 +381,17 @@ export function layoutFloor(
   /** Shared amenity programme (see ./amenities) — replaces the zone recipe. */
   amenity?: AmenityKind,
   /** Room plan and furniture. The default is the original apartment recipe. */
-  fit: FloorFit = DEFAULT_FIT
+  fit: FloorFit = DEFAULT_FIT,
+  /** Every core on the floor, plate-frame metres. Omit for one core at the origin. */
+  placed?: PlacedCore[]
 ): Placement[] {
   // Shaped residential floors search for their rooms (a few ms – tens of ms), and several views
   // (furniture, room plan, mini plan, viewpoints) ask for the same floor: memoise the result.
-  const key = [zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape?.kind, shape?.amount, amenity ?? "", fit.scheme, fit.furniture].join(":");
+  const coreKey = placed?.map((c) => `${c.x.toFixed(2)},${c.z.toFixed(2)},${c.half.toFixed(2)},${c.primary ? 1 : 0}`).join("|") ?? "";
+  const key = [zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape?.kind, shape?.amount, amenity ?? "", fit.scheme, fit.furniture, coreKey].join(":");
   const hit = layoutCache.get(key);
   if (hit) return hit.slice();
-  const out = planFloor(zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape, amenity, fit);
+  const out = planFloor(zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape, amenity, fit, placed);
   if (layoutCache.size >= 512) layoutCache.clear();
   layoutCache.set(key, out);
   return out.slice();

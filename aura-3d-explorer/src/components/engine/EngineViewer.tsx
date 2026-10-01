@@ -72,7 +72,7 @@ function shapeOf(poly: Poly) {
   return new THREE.ShapeGeometry(s);
 }
 
-function Floor({ poly, type, selected, onClick }: { poly: Poly; type: FlooringType; selected: boolean; onClick: () => void }) {
+function Floor({ poly, type, selected, onClick, pickable = true }: { poly: Poly; type: FlooringType; selected: boolean; onClick?: () => void; pickable?: boolean }) {
   const geo = useMemo(() => shapeOf(poly), [poly]);
   const mat = useMemo(() => {
     const base = floorMaterial(type);
@@ -89,10 +89,15 @@ function Floor({ poly, type, selected, onClick }: { poly: Poly; type: FlooringTy
       rotation-x={-Math.PI / 2}
       position-y={0.001}
       receiveShadow
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
+      raycast={pickable ? undefined : () => null}
+      onClick={
+        pickable
+          ? (e) => {
+              e.stopPropagation();
+              onClick?.();
+            }
+          : undefined
+      }
     />
   );
 }
@@ -231,6 +236,23 @@ function Furniture({ scene }: { scene: AuraScene }) {
       {batches.map((b) => (
         <BatchMesh key={`${b.key}:${b.matrices.length}`} batch={b} />
       ))}
+    </group>
+  );
+}
+
+/**
+ * Rooms, walls and furniture of an AuraScene, in plan metres.
+ * Used by the engine page and, with `cutaway` off, by a project floor
+ * that was designed from an imported plan.
+ */
+export function AuraSceneContents({ scene, openings, cutaway }: { scene: AuraScene; openings: Props["openings"]; cutaway: boolean }) {
+  return (
+    <group>
+      {scene.rooms.map((r) => (
+        <Floor key={r.id} poly={r.polygon} type={r.flooring.type} selected={false} pickable={false} />
+      ))}
+      <Walls scene={scene} openings={openings} cutaway={cutaway} />
+      <Furniture scene={scene} />
     </group>
   );
 }

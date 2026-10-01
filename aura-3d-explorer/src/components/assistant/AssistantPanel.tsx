@@ -36,6 +36,9 @@ interface Message {
 const SUGGESTIONS = [
   "What's the yield on this tower?",
   "Show me the view from level 40",
+  "Put the living room on the glass",
+  "Give each floor a different layout",
+  "Swap this apartment to lounge furniture",
   "Explode the stack",
   "Compare the buildings on site",
   "Take me on a tour",

@@ -8,7 +8,8 @@ import type { AssistantRegistration } from "./AssistantBridge";
 import { PHOTO_ANGLES, type PhotoAngle } from "@/lib/explorer";
 import { CITY_PRESETS, type CityId } from "@/lib/cityPresets";
 import { EXPLODE_MAX, EXPLODE_MIN } from "@/lib/tower";
-import type { Building } from "@/types";
+import type { Building, FloorData } from "@/types";
+import { APARTMENT_SCHEMES, DEFAULT_FIT, FURNITURE_COPY, FURNITURE_SETS, nextFurniture, nextScheme, resolveFurniture, resolveScheme, SCHEME_COPY } from "@/lib/apartmentFit";
 
 export interface ActionResult {
   label: string;
@@ -96,5 +97,53 @@ export function runAction(a: AssistantAction, reg: AssistantRegistration, userTe
     case "reset":
       x.resetView?.();
       return { label: "View reset", ok: true };
+    case "furnish":
+      return furnish(a, x, userText);
   }
+}
+
+function apartmentFloor(b: Building, preferred: FloorData | null | undefined): FloorData | undefined {
+  const ok = (f: FloorData) => (f.zone === "residential" || f.zone === "crown") && !f.amenity;
+  if (preferred && preferred.buildingId === b.id && ok(preferred)) return preferred;
+  return b.floors.find(ok);
+}
+
+function furnish(a: Extract<AssistantAction, { type: "furnish" }>, x: NonNullable<AssistantRegistration["explorer"]>, userText: string): ActionResult {
+  const site = x.site ?? [];
+  const b = resolveBuilding(site, x.building, a.floor ?? 1, a.building, userText);
+  if (!b?.floors?.length) return { label: "No floors to furnish", ok: false };
+  const name = b.short ?? b.name;
+  if (a.reset) {
+    x.resetFloorFits?.(b.id);
+    return { label: `Restored the original apartment plans · ${name}`, ok: true };
+  }
+  if (a.vary) {
+    x.varyFloorFits?.(b.id);
+    const first = apartmentFloor(b, null);
+    if (first) x.selectFloor?.(first);
+    return { label: `Each apartment floor has its own room plan · ${name}`, ok: true };
+  }
+  const explicit = a.floor != null ? b.floors[Math.min(Math.max(1, Math.round(a.floor)), b.floors.length) - 1] : undefined;
+  const floor = apartmentFloor(b, explicit ?? (x.selectedFloor?.buildingId === b.id ? x.selectedFloor : null));
+  if (!floor) return { label: `${name} has no apartment floors to rearrange`, ok: false };
+  if (explicit && explicit !== floor) {
+    return { label: `Level ${explicit.number} is not an apartment — room plans apply to residences and the penthouse`, ok: false };
+  }
+  const cur = x.floorFitOf?.(b.id, floor.index) ?? DEFAULT_FIT;
+  let scheme = cur.scheme;
+  let furniture = cur.furniture;
+  if (a.scheme) {
+    const next = resolveScheme(a.scheme);
+    if (!next) return { label: `Unknown room plan “${a.scheme}”. Try ${APARTMENT_SCHEMES.join(", ")}`, ok: false };
+    scheme = next === "next" ? nextScheme(cur.scheme) : next;
+  }
+  if (a.set) {
+    const next = resolveFurniture(a.set);
+    if (!next) return { label: `Unknown furniture “${a.set}”. Try ${FURNITURE_SETS.join(", ")}`, ok: false };
+    furniture = next === "next" ? nextFurniture(cur.furniture) : next;
+  }
+  if (!a.scheme && !a.set) scheme = nextScheme(cur.scheme);
+  x.selectFloor?.(floor);
+  x.setFloorFit?.(b.id, floor.index, { scheme, furniture });
+  return { label: `Floor ${floor.number} · ${SCHEME_COPY[scheme].label} · ${FURNITURE_COPY[furniture].label}`, ok: true };
 }

@@ -11,6 +11,7 @@ import { computeSite, computeYield, DEFAULT_INPUTS } from "@/lib/finance";
 import { PHOTO_ANGLES } from "@/lib/explorer";
 import { CITY_PRESETS } from "@/lib/cityPresets";
 import { amenityFloors, amenityName } from "@/lib/amenities";
+import { APARTMENT_SCHEMES, FURNITURE_COPY, FURNITURE_SETS, SCHEME_COPY } from "@/lib/apartmentFit";
 import type { BuildingId, SiteMetrics, YieldMetrics } from "@/types";
 
 const $m = (n: number) => `$${(n / 1e6).toFixed(1)}M`;
@@ -81,13 +82,21 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
       selectedFloor: x.selectedFloor
         ? { number: x.selectedFloor.number, zone: x.selectedFloor.zone, ...(x.selectedFloor.amenity ? { amenity: amenityName(x.selectedFloor) } : {}) }
         : null,
+      ...(x.selectedFloor && (x.selectedFloor.zone === "residential" || x.selectedFloor.zone === "crown") && !x.selectedFloor.amenity && x.selectedFit
+        ? { floorFit: { scheme: x.selectedFit.scheme, furniture: x.selectedFit.furniture } }
+        : {}),
       explosion: Number((x.explosion ?? 0).toFixed(2)),
       xray: x.xray,
       walking: x.walking,
       photoAngle: x.photoAngle ?? null,
       city: x.city,
     };
-    ctx.options = { photoAngles: PHOTO_ANGLES.map((a) => a.id), cities: CITY_PRESETS.map((c) => c.id) };
+    ctx.options = {
+      photoAngles: PHOTO_ANGLES.map((a) => a.id),
+      cities: CITY_PRESETS.map((c) => c.id),
+      apartmentSchemes: APARTMENT_SCHEMES.map((id) => ({ id, label: SCHEME_COPY[id].label, blurb: SCHEME_COPY[id].blurb })),
+      furnitureSets: FURNITURE_SETS.map((id) => ({ id, label: FURNITURE_COPY[id].label, blurb: FURNITURE_COPY[id].blurb })),
+    };
   } else {
     ctx.explorer = null;
   }
