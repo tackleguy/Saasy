@@ -14,6 +14,7 @@ import { MODEL_SCALE } from "@/lib/tower";
 import { LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
 import { balconyPlan, roomPlan, type BalconySpec, type Collider, type RoomPlan } from "@/lib/roomPlan";
 import { layoutFloor } from "../furniture/layouts";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { PIECES } from "../furniture/kit";
 import { GLASS_ROOM_PIECES } from "../furniture/amenities";
 import { SLAB_THICKNESS } from "../FurnitureOverlay";
@@ -23,17 +24,17 @@ export { LOBBY_DEPTH_M };
 const planCache = new Map<string, RoomPlan>();
 
 /** Interior wall / door plan of a floor (cached). */
-export function interiorPlanFor(floor: FloorData, coreSize: number, crownFloors: number): RoomPlan {
+export function interiorPlanFor(floor: FloorData, coreSize: number, crownFloors: number, fit: FloorFit = DEFAULT_FIT): RoomPlan {
   const coreHalfM = coreSize / 2 / MODEL_SCALE;
   const coreAngle = -floor.rotationY;
   const zoneIndex = floor.zone === "crown" ? floor.zoneIndex : 0;
-  const key = [floor.zone, floor.width, floor.depth, floor.height, coreSize, coreAngle.toFixed(4), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? ""].join(":");
+  const key = [floor.zone, floor.width, floor.depth, floor.height, coreSize, coreAngle.toFixed(4), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? "", fit.scheme, fit.furniture].join(":");
   const hit = planCache.get(key);
   if (hit) return hit;
 
   const widthM = floor.width / MODEL_SCALE;
   const depthM = floor.depth / MODEL_SCALE;
-  const placements = layoutFloor(floor.zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity);
+  const placements = layoutFloor(floor.zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity, fit);
   const plan = roomPlan({
     // Amenity floors are open plan: no apartment demising, glass lobby screens.
     zone: floor.amenity ? "podium" : floor.zone,
@@ -58,8 +59,8 @@ export function interiorPlanFor(floor: FloorData, coreSize: number, crownFloors:
  * METRES (openings removed; kit bathroom and arch walls included). Use with
  * `pushOutOfWalls` from lib/roomPlan.
  */
-export function wallCollidersFor(floor: FloorData, coreSize: number, crownFloors: number): Collider[] {
-  return interiorPlanFor(floor, coreSize, crownFloors).colliders;
+export function wallCollidersFor(floor: FloorData, coreSize: number, crownFloors: number, fit: FloorFit = DEFAULT_FIT): Collider[] {
+  return interiorPlanFor(floor, coreSize, crownFloors, fit).colliders;
 }
 
 const balconyCache = new Map<string, BalconySpec[]>();

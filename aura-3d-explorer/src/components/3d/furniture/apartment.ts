@@ -22,6 +22,7 @@
  */
 import type { PieceId } from "./kit";
 import type { Placement } from "./layouts";
+import { DEFAULT_FIT, type FloorFit, type FurnitureSet } from "@/lib/apartmentFit";
 
 interface Rect {
   x0: number;
@@ -124,7 +125,123 @@ function quadrantTools(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B
   return { world, last, put, ext, slide };
 }
 
-export function apartment(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B: number, sizes: Record<string, { w: number; d: number }>) {
+type Spot = [number, number, number];
+
+/** Living / kitchen / dining. Lounge drops the table; formal tries six seats and a piano. */
+function social(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, set: FurnitureSet, main: Spot, side: Spot, kitchen: Spot, extra: Spot | null) {
+  const nudge = (s: Spot, du: number, dv: number): Spot => [Math.max(2.2, s[0] + du), Math.max(2.2, s[1] + dv), s[2]];
+  const mainSpots: Spot[] = set === "lounge" ? [main, nudge(main, -1.4, -1.8), side, nudge(side, -1.6, -1.4)] : [main, nudge(main, -1.4, -1.8), nudge(main, -2.6, 0)];
+  const kitchenSpots: Spot[] = [kitchen, nudge(kitchen, -1.2, 0), nudge(kitchen, 0, -1.6)];
+  if (set === "lounge") p.addFirst(sx, sz, "kitchen", kitchenSpots);
+  p.addFirst(sx, sz, set === "lounge" ? "lounge" : "living", mainSpots);
+  if (set !== "lounge") p.addFirst(sx, sz, "kitchen", kitchenSpots);
+  if (set === "lounge") {
+    if (extra) p.addFirst(sx, sz, "plantLarge", [extra, nudge(extra, -1, 0)]);
+    return;
+  }
+  const sideSpots: Spot[] = [side, nudge(side, -1.4, -1.2), nudge(side, 0, 1.4)];
+  if (set === "formal") {
+    if (!p.addFirst(sx, sz, "dining6", sideSpots)) p.addFirst(sx, sz, "dining4", sideSpots);
+    if (extra) p.addFirst(sx, sz, "piano", [extra, nudge(extra, -1.6, 0)]);
+    return;
+  }
+  p.addFirst(sx, sz, "dining4", sideSpots);
+}
+
+/**
+ * A rearranged apartment: bedrooms and the living room swap sides, then the
+ * usual corridor service rooms fill whatever is left.
+ */
+function apartmentVariant(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B: number, sizes: Record<string, { w: number; d: number }>, fit: FloorFit) {
+  const { scheme, furniture } = fit;
+  if (scheme === "living-out") {
+    p.addFirst(sx, sz, "bed", [
+      [A - 7.8, B - 6.6, PI],
+      [8.8, B - 6.2, PI],
+      [A - 7.2, 8.4, -PI / 2],
+    ]);
+    p.addFirst(sx, sz, "bathroom", [
+      [A - 8.0, B - 3.6, PI],
+      [8.6, B - 3.2, PI],
+      [A - 4.4, 8.2, -PI / 2],
+    ]);
+    p.addFirst(sx, sz, "bedDouble", [
+      [9.2, 2.4, -PI / 2],
+      [A - 10.2, 2.6, -PI / 2],
+      [9.4, 5.0, PI],
+    ]);
+    p.addFirst(sx, sz, "bathroom", [
+      [9.0, 5.4, -PI / 2],
+      [A - 10.0, 5.4, -PI / 2],
+      [12.2, 2.2, PI],
+    ]);
+    p.addMirrored(sx, sz, "archWall", A - 5.4, B - 4.2);
+    social(p, sx, sz, furniture, [A - 2.6, B - 2.6, -PI / 2], [A - 2.6, B - 6.8, PI / 2], [A - 7.6, B - 2.2, PI], [A - 6.4, B - 6.4, 0.6]);
+  } else if (scheme === "gallery") {
+    p.addFirst(sx, sz, "bed", [
+      [A - 2.0, 2.2, -PI / 2],
+      [A - 2.0, 4.4, -PI / 2],
+    ]);
+    p.addFirst(sx, sz, "bathroom", [
+      [A - 2.0, 5.4, -PI / 2],
+      [A - 5.2, 2.2, PI],
+    ]);
+    p.addFirst(sx, sz, "bedDouble", [
+      [9.4, 2.2, -PI / 2],
+      [A - 8.6, 2.4, -PI / 2],
+    ]);
+    p.addFirst(sx, sz, "bathroom", [
+      [9.2, 5.4, -PI / 2],
+      [A - 8.4, 5.2, -PI / 2],
+    ]);
+    p.addMirrored(sx, sz, "archWall", A - 2.2, 4.8);
+    social(p, sx, sz, furniture, [A - 2.6, B - 2.6, -PI / 2], [A - 2.6, B - 6.8, PI / 2], [A - 7.6, B - 2.2, PI], [A - 6.6, B - 6.2, 0.4]);
+  } else if (scheme === "studio") {
+    p.addFirst(sx, sz, "bed", [
+      [A - 2.0, B - 1.5, PI],
+      [A - 1.5, B - 2.0, -PI / 2],
+    ]);
+    p.addFirst(sx, sz, "bathroom", [
+      [A - 5.1, B - 1.45, PI],
+      [A - 1.45, B - 5.1, -PI / 2],
+      [A - 5.1, B - 3.9, PI],
+    ]);
+    p.addMirrored(sx, sz, "archWall", A - 2.1, B - 3.35);
+    social(p, sx, sz, furniture, [A - 2.2, B - 5.5, -PI / 2], [A - 8.3, B - 5.0, PI / 2], [A - 8.3, B - 1.9, PI], [A - 1.6, 2.6, -0.4]);
+    if (furniture === "standard") p.addMirrored(sx, sz, "plantLarge", A - 1.5, 2.2);
+  } else {
+    // Corner rooms, different furniture.
+    p.addFirst(sx, sz, "bed", [
+      [A - 2.0, B - 1.5, PI],
+      [A - 1.5, B - 2.0, -PI / 2],
+    ]);
+    p.addFirst(sx, sz, "bathroom", [
+      [A - 5.1, B - 1.45, PI],
+      [A - 1.45, B - 5.1, -PI / 2],
+      [A - 5.1, B - 3.9, PI],
+    ]);
+    p.addFirst(sx, sz, "bedDouble", [
+      [A - 1.5, 1.6, -PI / 2],
+      [A - 1.5, 4.4, -PI / 2],
+      [1.7, B - 1.5, PI],
+    ]);
+    p.addFirst(sx, sz, "bathroom", [
+      [A - 4.6, 1.55, -PI / 2],
+      [A - 4.6, 4.2, -PI / 2],
+      [4.4, B - 1.45, PI],
+    ]);
+    p.addMirrored(sx, sz, "archWall", A - 2.1, B - 3.35);
+    social(p, sx, sz, furniture, [A - 2.2, B - 5.5, -PI / 2], [A - 8.3, B - 5.0, PI / 2], [A - 8.3, B - 1.9, PI], [A - 6.8, B - 5.0, 0.4]);
+  }
+  const kitchen = [...p.placements].reverse().find((pl) => pl.piece === "kitchen" && Math.sign(pl.x || 1) === sx && Math.sign(pl.z || 1) === sz) ?? null;
+  serviceRooms(p, sx, sz, A, B, sizes, kitchen, true);
+}
+
+export function apartment(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B: number, sizes: Record<string, { w: number; d: number }>, fit: FloorFit = DEFAULT_FIT) {
+  if (fit.scheme !== "corner" || fit.furniture !== "standard") {
+    apartmentVariant(p, sx, sz, A, B, sizes, fit);
+    return;
+  }
   const { last, put, ext } = quadrantTools(p, sx, sz, A, B, sizes);
 
   /* 1 · master bedroom + ensuite (top corner), walk-in wardrobe beside the ensuite */

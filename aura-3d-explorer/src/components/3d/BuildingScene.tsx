@@ -21,6 +21,7 @@ import { buildingHeight, explodedY, floorCentre } from "@/lib/tower";
 import type { PhotoAngle, Quality } from "@/lib/explorer";
 import { uwToXZ } from "@/lib/siteLayout";
 import { getCityPreset, type CityId } from "@/lib/cityPresets";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { useCameraTween, type CameraGoal, type Vec3 } from "@/hooks/useCameraTween";
 import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
@@ -108,6 +109,8 @@ interface Props {
   importedModel?: THREE.Object3D | null;
   /** Studio Architect mode: drawing views, measure, levels, sun study, zoning, clay (see ArchitectLayer). */
   architect?: ArchitectSceneState;
+  /** Room plan and furniture of the isolated floor. */
+  fit?: FloorFit;
 }
 
 /** Translates app state into a camera goal and hands it to the GSAP tween hook. */
@@ -304,6 +307,7 @@ export default function BuildingScene({
   cameraHold = false,
   importedModel = null,
   architect,
+  fit = DEFAULT_FIT,
 }: Props) {
   const [hovered, setHovered] = useState<FloorData | null>(null);
   // Ignore frame-rate dips during the first seconds (shader compile, HDR decode).
@@ -378,6 +382,7 @@ export default function BuildingScene({
             walking={walking && active}
             onSelect={handleSelect}
             onHover={setHovered}
+            fit={active ? fit : DEFAULT_FIT}
           />
         );
       })}
@@ -388,7 +393,7 @@ export default function BuildingScene({
         explosion={explosion}
       />
       {walking && selectedIndex !== null && (
-        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} />
+        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} fit={fit} />
       )}
       <OrbitControls enabled={!walking} enableRotate={!drawingView} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={drawingView ? 5000 : 320} maxPolarAngle={Math.PI - 0.08} />
       {!walking && <GroundClamp />}

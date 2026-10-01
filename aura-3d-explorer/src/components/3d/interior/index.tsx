@@ -17,6 +17,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { FacadeSpec, FloorData } from "@/types";
 import { MODEL_SCALE } from "@/lib/tower";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import type { RoomPlan } from "@/lib/roomPlan";
 import { SLAB_THICKNESS } from "../FurnitureOverlay";
 import Walls, { runMatrix } from "./Walls";
@@ -63,8 +64,8 @@ function FloorPatches({ plan }: { plan: RoomPlan }) {
 }
 
 /** Walls + doors + floor patches, growing up from the slab. */
-function Rooms({ floor, coreSize, crownFloors }: { floor: FloorData; coreSize: number; crownFloors: number }) {
-  const plan = useMemo(() => interiorPlanFor(floor, coreSize, crownFloors), [floor, coreSize, crownFloors]);
+function Rooms({ floor, coreSize, crownFloors, fit }: { floor: FloorData; coreSize: number; crownFloors: number; fit: FloorFit }) {
+  const plan = useMemo(() => interiorPlanFor(floor, coreSize, crownFloors, fit), [floor, coreSize, crownFloors, fit]);
   const group = useRef<THREE.Group>(null);
   useFrame((_, dt) => {
     const g = group.current;
@@ -93,9 +94,10 @@ interface Props {
   dimmed?: boolean;
   xray?: boolean;
   hideBalconies?: boolean;
+  fit?: FloorFit;
 }
 
-export default function InteriorShell({ floor, coreSize, facade, crownFloors, isolated, dimmed = false, xray = false, hideBalconies = false }: Props) {
+export default function InteriorShell({ floor, coreSize, facade, crownFloors, isolated, dimmed = false, xray = false, hideBalconies = false, fit = DEFAULT_FIT }: Props) {
   const specs = useMemo(() => (hideBalconies ? [] : balconiesFor(floor, facade)), [floor, facade, hideBalconies]);
   const band = floor.zone === "residential" && facade.balconies;
   const geoKey = [floor.zone, floor.width, floor.depth, floor.shape?.kind, floor.shape?.amount, band].join(":");
@@ -106,7 +108,7 @@ export default function InteriorShell({ floor, coreSize, facade, crownFloors, is
           <Balconies specs={specs} geoKey={geoKey} dimmed={dimmed} xray={xray} />
         </group>
       )}
-      {isolated && <Rooms floor={floor} coreSize={coreSize} crownFloors={crownFloors} />}
+      {isolated && <Rooms floor={floor} coreSize={coreSize} crownFloors={crownFloors} fit={fit} />}
     </group>
   );
 }

@@ -41,6 +41,7 @@ import { liftDims, liftState, resetLiftState } from "@/lib/lift";
 import { coreColliders, coreServiceOpen, separateFromBoxes } from "@/lib/coreLayout";
 import { SLAB_THICKNESS } from "./FurnitureOverlay";
 import { wallCollidersFor } from "./interior/plan";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { containInOutline, separateFromWalls } from "@/lib/roomPlan";
 
 /** Walking speed, metres per second (×2.2 with Shift). */
@@ -104,9 +105,10 @@ interface Props {
   /** Bump to re-fly to the same view. */
   viewNonce: number;
   lift: LiftLink;
+  fit?: FloorFit;
 }
 
-export default function WalkControls({ building, floor, explosion, viewIndex, viewNonce, lift }: Props) {
+export default function WalkControls({ building, floor, explosion, viewIndex, viewNonce, lift, fit = DEFAULT_FIT }: Props) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const gl = useThree((s) => s.gl);
 
@@ -138,7 +140,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const L = useMemo(() => liftDims(building.coreSize, floor.height - SLAB_THICKNESS), [building.coreSize, floor.height]);
   const cabCentreZ = (L.zBack + L.zFront) / 2;
   // Interior walls (door openings stay passable; the lift lobby has no colliders).
-  const walls = useMemo(() => wallCollidersFor(floor, building.coreSize, crownFloorCount(building)), [floor, building]);
+  const walls = useMemo(() => wallCollidersFor(floor, building.coreSize, crownFloorCount(building), fit), [floor, building, fit]);
   // Core solids (building-local scene units) — the lift doorway is added while the doors are shut.
   const coreSolids = useMemo(() => {
     const solids = coreColliders(building.coreSize, floor.height, SLAB_THICKNESS, coreServiceOpen(floor.zone));
@@ -152,40 +154,87 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   /**
    * Keep a world x/z point inside the glass line and outside the core —
    * except inside the lift cab, which you can enter through open doors.
+   * `normals` receives the unit world-space directions of the surfaces the
+   * point is left resting on (outward), so the walker can shed only the
+   * velocity into them.
    */
   const resolve = useMemo(
-    () => (p: THREE.Vector2) => {
-      let x = p.x - bx;
-      let z = p.y - bz;
+    () => (p: THREE.Vector2, normals: Contact[] = []) => {
       const ch = building.coreSize / 2 + 0.12;
       const m = 0.06;
-      const inCab = Math.abs(x) < L.cabW / 2 && z > L.zBack && z < L.zFront;
-      const inDoorway = Math.abs(x) < L.opening / 2 && z >= L.zFront && z < ch;
-      if (inCab || (inDoorway && liftState.open > 0.6)) {
-        if (z < L.zFront) {
-          x = THREE.MathUtils.clamp(x, -(L.cabW / 2 - m), L.cabW / 2 - m);
-          z = Math.max(z, L.zBack + m);
-        } else {
-          x = THREE.MathUtils.clamp(x, -(L.opening / 2 - m / 2), L.opening / 2 - m / 2);
-        }
-        if (liftState.open < 0.6) z = Math.min(z, L.zFront - m); // doors shut: stay in the cab
-      } else if (Math.abs(x) < ch + 0.1 && Math.abs(z) < ch + 0.1) {
-        // Core (square to the world): solid blocks, shafts and chutes; the passage and service rooms stay open.
-        [x, z] = pushOutOfBoxes(x, z, liftState.open > 0.6 ? coreSolids.open : coreSolids.shut, WALKER_RADIUS_M * MODEL_SCALE);
-      }
-      // Glass line (in the twisted plate frame)
       const margin = 0.12;
-      let lx = x * cos - z * sin;
-      let lz = x * sin + z * cos;
-      const [wx, wz] = pushOutOfWalls(lx / MODEL_SCALE, lz / MODEL_SCALE, walls, WALKER_RADIUS_M);
-      lx = wx * MODEL_SCALE;
-      lz = wz * MODEL_SCALE;
-      lx = THREE.MathUtils.clamp(lx, -floor.width / 2 + margin, floor.width / 2 - margin);
-      lz = THREE.MathUtils.clamp(lz, -floor.depth / 2 + margin, floor.depth / 2 - margin);
-      p.set(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos);
+      const scratch: Contact[] = [];
+      const plateN = (nx: number, nz: number): Contact => ({ x: nx * cos + nz * sin, z: -nx * sin + nz * cos });
+      const outline = planOutline(floor.shape, floor.width, floor.depth);
+
+      normals.length = 0;
+      for (let pass = 0; pass < 3; pass++) {
+        scratch.length = 0;
+        let x = p.x - bx;
+        let z = p.y - bz;
+        const inCab = Math.abs(x) < L.cabW / 2 && z > L.zBack && z < L.zFront;
+        const inDoorway = Math.abs(x) < L.opening / 2 && z >= L.zFront && z < ch;
+        if (inCab || (inDoorway && liftState.open > 0.6)) {
+          if (z < L.zFront) {
+            const minX = -(L.cabW / 2 - m);
+            const maxX = L.cabW / 2 - m;
+            if (x < minX) {
+              x = minX;
+              scratch.push({ x: 1, z: 0 });
+            } else if (x > maxX) {
+              x = maxX;
+              scratch.push({ x: -1, z: 0 });
+            }
+            const minZ = L.zBack + m;
+            if (z < minZ) {
+              z = minZ;
+              scratch.push({ x: 0, z: 1 });
+            }
+          } else {
+            const minX = -(L.opening / 2 - m / 2);
+            const maxX = L.opening / 2 - m / 2;
+            if (x < minX) {
+              x = minX;
+              scratch.push({ x: 1, z: 0 });
+            } else if (x > maxX) {
+              x = maxX;
+              scratch.push({ x: -1, z: 0 });
+            }
+          }
+          if (liftState.open < 0.6 && z > L.zFront - m) {
+            z = L.zFront - m;
+            scratch.push({ x: 0, z: -1 });
+          }
+        } else if (Math.abs(x) < ch + 0.1 && Math.abs(z) < ch + 0.1) {
+          // Core blocks, shafts and chutes. The passage and service rooms stay open;
+          // the lift doorway is solid only while the doors are shut.
+          const boxes = separateFromBoxes(x, z, liftState.open > 0.6 ? coreSolids.open : coreSolids.shut, WALKER_RADIUS_M * MODEL_SCALE);
+          x = boxes.p[0];
+          z = boxes.p[1];
+          for (const [nx, nz] of boxes.normals) scratch.push({ x: nx, z: nz });
+        }
+
+        let lx = x * cos - z * sin;
+        let lz = x * sin + z * cos;
+        const sep = separateFromWalls(lx / MODEL_SCALE, lz / MODEL_SCALE, walls, WALKER_RADIUS_M);
+        lx = sep.p[0] * MODEL_SCALE;
+        lz = sep.p[1] * MODEL_SCALE;
+        for (const [nx, nz] of sep.normals) scratch.push(plateN(nx, nz));
+
+        const glass = containInOutline(lx, lz, outline, margin);
+        lx = glass.p[0];
+        lz = glass.p[1];
+        for (const [nx, nz] of glass.normals) scratch.push(plateN(nx, nz));
+
+        p.set(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos);
+        if (scratch.length) {
+          normals.length = 0;
+          for (const n of scratch) normals.push(n);
+        }
+      }
       return p;
     },
-    [bx, bz, cos, sin, building.coreSize, floor.width, floor.depth, L, walls, coreSolids]
+    [bx, bz, cos, sin, building.coreSize, floor.shape, floor.width, floor.depth, L, walls, coreSolids]
   );
 
   const eyeY = explodedY(floor, explosion) + SLAB_THICKNESS + EYE;
@@ -249,7 +298,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       from = new THREE.Vector2(bx, bz + building.coreSize / 2 + 0.32);
       look = new THREE.Vector2(bx, bz);
     } else {
-      const views = viewpointsFor(floor, crownFloorCount(building), building.coreSize);
+      const views = viewpointsFor(floor, crownFloorCount(building), building.coreSize, fit);
       const v = views[Math.min(Math.max(viewIndex, 0), views.length - 1)];
       const s = MODEL_SCALE;
       from = resolve(toWorld(v.from[0] * s, v.from[1] * s));
@@ -390,7 +439,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   }, []);
 
   /* Per-frame: lift doors, moving cab, movement. */
-  useFrame((_, dt) => {
+  useFrame((_, rawDt) => {
     // Where are we relative to the lift? (building-local; the core never twists)
     const x = camera.position.x - bx;
     const z = camera.position.z - bz;
@@ -410,12 +459,15 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     }
 
     if (liftState.riding) {
+      vel.current.set(0, 0);
+      bobPhase.current = 0;
+      gait.current = 0;
+      eyeSmooth.current = camera.position.y;
       camera.position.x = pos.current.x;
       camera.position.z = pos.current.y;
       camera.rotation.set(pitch.current, yaw.current, 0);
       return;
     }
-    if (tween.current) return; // gliding to a viewpoint
 
     const k = keys.current;
     let f = walkInput.forward + (k.has("w") || k.has("arrowup") ? 1 : 0) - (k.has("s") || k.has("arrowdown") ? 1 : 0);
@@ -423,18 +475,66 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     f = THREE.MathUtils.clamp(f, -1, 1);
     r = THREE.MathUtils.clamp(r, -1, 1);
 
+    if (tween.current) {
+      vel.current.set(0, 0);
+      bobPhase.current = 0;
+      gait.current = 0;
+      eyeSmooth.current = camera.position.y;
+      if (!(f || r)) return; // gliding to a viewpoint
+      tween.current.kill();
+      tween.current = null;
+      pos.current.set(camera.position.x, camera.position.z);
+    }
+
+    const dt = Math.min(rawDt, 0.05);
+    const walk = WALK_SPEED_M * MODEL_SCALE;
+    const speedTarget = walk * (k.has("shift") ? RUN_MUL : 1);
+    let wishX = 0;
+    let wishZ = 0;
     if (f || r) {
       const len = Math.hypot(f, r);
-      const speed = WALK_SPEED_M * MODEL_SCALE * (k.has("shift") ? 2.2 : 1) * Math.min(dt, 0.05);
       const sy = Math.sin(yaw.current);
       const cy = Math.cos(yaw.current);
       // forward = (−sin yaw, −cos yaw); right = (cos yaw, −sin yaw)
-      pos.current.x += ((-sy * f + cy * r) / len) * speed;
-      pos.current.y += ((-cy * f - sy * r) / len) * speed;
-      resolve(pos.current);
+      wishX = ((-sy * f + cy * r) / len) * speedTarget;
+      wishZ = ((-cy * f - sy * r) / len) * speedTarget;
     }
 
-    camera.position.set(pos.current.x, THREE.MathUtils.lerp(camera.position.y, eyeY, 0.2), pos.current.y);
+    const lambda = f || r ? MOVE_RESPONSE : STOP_RESPONSE;
+    let vx = approach(vel.current.x, wishX, lambda, dt);
+    let vz = approach(vel.current.y, wishZ, lambda, dt);
+    if (!f && !r && Math.hypot(vx, vz) < 0.015 * MODEL_SCALE) {
+      vx = 0;
+      vz = 0;
+    }
+
+    const dist = Math.hypot(vx, vz) * dt;
+    const steps = dist > 1e-8 ? Math.min(4, Math.max(1, Math.ceil(dist / (STEP_M * MODEL_SCALE)))) : 0;
+    if (steps) {
+      const h = dt / steps;
+      const hit = contacts.current;
+      for (let i = 0; i < steps; i++) {
+        pos.current.x += vx * h;
+        pos.current.y += vz * h;
+        resolve(pos.current, hit);
+        const clipped = clipPlanar(vx, vz, hit);
+        vx = clipped.x;
+        vz = clipped.z;
+      }
+    }
+    vel.current.set(vx, vz);
+
+    const speed = Math.hypot(vx, vz);
+    gait.current = approach(gait.current, Math.min(1, speed / walk), 8, dt);
+    if (speed >= 0.02 * MODEL_SCALE) bobPhase.current += (speed / (STRIDE_M * MODEL_SCALE)) * dt * Math.PI * 2;
+    const bob = (1 - Math.cos(bobPhase.current)) * 0.5 * BOB_M * MODEL_SCALE * gait.current;
+    const sway = Math.sin(bobPhase.current * 0.5) * SWAY_M * MODEL_SCALE * gait.current;
+    const sy = Math.sin(yaw.current);
+    const cy = Math.cos(yaw.current);
+
+    eyeSmooth.current = approach(eyeSmooth.current ?? eyeY, eyeY, 12, dt);
+
+    camera.position.set(pos.current.x + cy * sway, eyeSmooth.current + bob, pos.current.y - sy * sway);
     camera.rotation.set(pitch.current, yaw.current, 0);
   });
 

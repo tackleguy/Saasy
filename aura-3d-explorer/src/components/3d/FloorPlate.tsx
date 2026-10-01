@@ -45,6 +45,7 @@ import * as THREE from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
 import LiftCore from "./LiftCore";
 import { coreServiceOpen } from "@/lib/coreLayout";
@@ -163,9 +164,11 @@ interface Props {
   coreGhost?: boolean;
   /** Floors in the building's crown (the penthouse spans them all). */
   crownFloors?: number;
+  /** Room plan and furniture, used when this floor is isolated. */
+  fit?: FloorFit;
 }
 
-function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover, coreGhost = false, crownFloors = 2 }: Props) {
+function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover, coreGhost = false, crownFloors = 2, fit = DEFAULT_FIT }: Props) {
   const look = LOOKS[floor.zone];
   const bodyH = floor.height - SLAB_THICKNESS;
   const doorH = Math.min(bodyH * 0.8, 0.62);
@@ -446,7 +449,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         )}
 
         {/* Interior walls & doors (isolated) + balconies (always) */}
-        <InteriorShell floor={floor} coreSize={coreSize} facade={facade} crownFloors={crownFloors} isolated={selected} dimmed={dimmed} xray={xray} />
+        <InteriorShell floor={floor} coreSize={coreSize} facade={facade} crownFloors={crownFloors} isolated={selected} dimmed={dimmed} xray={xray} fit={fit} />
 
         {/* Hover / selection outline */}
         <lineSegments ref={edgeMesh} geometry={edges} raycast={() => null} layers={DETAIL} visible={false}>
@@ -489,7 +492,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
               {!shaped && <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />}
               <meshStandardMaterial map={finish.map} bumpMap={finish.bump} bumpScale={floor.zone === "residential" ? 0.03 : 0.02} color={look.finish} roughness={floor.zone === "crown" ? 0.16 : floor.zone === "office" ? 0.42 : 0.48} />
             </mesh>
-            <FurnitureOverlay floor={floor} coreSize={coreSize} crownFloors={crownFloors} />
+            <FurnitureOverlay floor={floor} coreSize={coreSize} crownFloors={crownFloors} fit={fit} />
           </>
         )}
       </group>

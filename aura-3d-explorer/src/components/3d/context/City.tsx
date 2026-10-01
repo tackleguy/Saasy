@@ -9,7 +9,7 @@
  * Models: public/models/city (see LICENSE.txt). One scene unit ≈ 3.57 m;
  * each mesh is scaled onto its lot without leaving the block.
  */
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
@@ -115,15 +115,6 @@ function CityModels({ preset, clearings }: { preset: CityPreset; clearings: UWRe
       return { name, role, geo, mat, size };
     });
   }, [gltfs, tint]);
-
-  useEffect(() => {
-    return () => {
-      for (const p of prepared) {
-        p.geo.dispose();
-        p.mat.dispose();
-      }
-    };
-  }, [prepared]);
 
   const groups = useMemo(() => {
     const pools: Record<Role, Prepared[]> = {

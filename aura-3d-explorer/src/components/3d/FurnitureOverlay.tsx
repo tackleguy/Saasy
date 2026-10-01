@@ -20,6 +20,7 @@ import type { FloorData } from "@/types";
 import { MODEL_SCALE } from "@/lib/tower";
 import { getGeometries, getMaterials, PIECES, type GeoKey, type MatKey, type Part } from "./furniture/kit";
 import { layoutFloor } from "./furniture/layouts";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { place } from "./furniture/kit";
 
 /** Thickness of the structural slab under each floor (shared with FloorPlate). */
@@ -35,17 +36,17 @@ interface Batch {
 const batchCache = new Map<string, Batch[]>();
 
 /** Expand a floor's layout into instanced batches (cached per plate shape). */
-function batchesFor(floor: FloorData, coreSize: number, crownFloors: number): Batch[] {
+function batchesFor(floor: FloorData, coreSize: number, crownFloors: number, fit: FloorFit): Batch[] {
   // The core stays square to the world while the plate twists, so in the
   // plate's local frame it is rotated by −rotationY (tested exactly by the planner).
   const coreHalfM = coreSize / 2 / MODEL_SCALE;
   const coreAngle = -floor.rotationY;
   const zoneIndex = floor.zone === "crown" ? floor.zoneIndex : 0;
-  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), coreAngle.toFixed(3), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? ""].join(":");
+  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), coreAngle.toFixed(3), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? "", fit.scheme, fit.furniture].join(":");
   const hit = batchCache.get(key);
   if (hit) return hit;
 
-  const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity);
+  const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity, fit);
   const parts: Part[] = placements.flatMap((pl) => place(PIECES[pl.piece].build(), pl.x, pl.z, pl.rot));
 
   const map = new Map<string, Batch>();
@@ -94,10 +95,11 @@ interface Props {
   coreSize: number;
   /** Floors in the building's crown (the penthouse spans them all). */
   crownFloors: number;
+  fit?: FloorFit;
 }
 
-export default function FurnitureOverlay({ floor, coreSize, crownFloors }: Props) {
-  const batches = useMemo(() => batchesFor(floor, coreSize, crownFloors), [floor, coreSize, crownFloors]);
+export default function FurnitureOverlay({ floor, coreSize, crownFloors, fit = DEFAULT_FIT }: Props) {
+  const batches = useMemo(() => batchesFor(floor, coreSize, crownFloors, fit), [floor, coreSize, crownFloors, fit]);
   const group = useRef<THREE.Group>(null);
 
   // Grow up from the slab on mount.
@@ -111,7 +113,7 @@ export default function FurnitureOverlay({ floor, coreSize, crownFloors }: Props
   return (
     <group ref={group} position={[0, SLAB_THICKNESS + 0.036, 0]} scale={[MODEL_SCALE, 0.001, MODEL_SCALE]}>
       {batches.map((b) => (
-        <BatchMesh key={b.key} batch={b} />
+        <BatchMesh key={`${b.key}:${b.matrices.length}`} batch={b} />
       ))}
     </group>
   );

@@ -13,6 +13,7 @@ import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import type { Building, FloorData } from "@/types";
 import { crownFloorCount, explodedY, ZONES } from "@/lib/tower";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import FloorPlate from "./FloorPlate";
 import CoreShaft from "./CoreShaft";
 import SectionCut from "./SectionCut";
@@ -35,6 +36,8 @@ interface Props {
   onHover: (floor: FloorData | null) => void;
   /** Section cutaway through this (active) building. */
   section?: boolean;
+  /** Room plan of the isolated floor. */
+  fit?: FloorFit;
 }
 
 /** Gold spire + rooftop plant screen that ride on top of the last floor. */
@@ -80,7 +83,7 @@ function ActiveRing({ radius, active }: { radius: number; active: boolean }) {
   );
 }
 
-export default function ProceduralBuilding({ building, explosion, active, selectedIndex, hovered, xray, walking, onSelect, onHover, section = false }: Props) {
+export default function ProceduralBuilding({ building, explosion, active, selectedIndex, hovered, xray, walking, onSelect, onHover, section = false, fit = DEFAULT_FIT }: Props) {
   const floors = building.floors;
   const top = floors[floors.length - 1];
   const podium = floors[0];
@@ -109,6 +112,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
           onHover={onHover}
           coreGhost={active && (xray || section || explosion > 0.05)}
           crownFloors={crownFloorCount(building)}
+          fit={selectedIndex === floor.index ? fit : DEFAULT_FIT}
         />
       ))}
 

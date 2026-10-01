@@ -33,6 +33,7 @@ import { apartmentShaped } from "./apartmentShaped";
 import { MODEL_SCALE } from "@/lib/tower";
 import { galleryWidthM, LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
 import type { AmenityKind } from "@/types";
+import { DEFAULT_FIT, type ApartmentScheme, type FloorFit, type FurnitureSet } from "@/lib/apartmentFit";
 
 export interface Placement {
   piece: PieceId;
@@ -277,12 +278,18 @@ function suite(p: Planner, sx: 1 | -1, sz: 1 | -1, A: number, B: number) {
   ]);
 }
 
-function residential(p: Planner, A: number, B: number) {
+function residential(p: Planner, A: number, B: number, fit: FloorFit) {
   // Four corner residences, mirrored. Each is 2 bed / 2 bath plus foyer, WC,
   // laundry, coat closet and — where they fit — walk-in wardrobe, study, pantry.
   const sizes = Object.fromEntries(Object.entries(PIECES).map(([k, v]) => [k, { w: v.w, d: v.d }]));
-  // Shaped plates search each room's spot inside the outline (./apartmentShaped); rect plates keep the fixed recipe.
-  for (const [sx, sz] of QUADRANTS) (p.outline ? apartmentShaped : apartment)(p, sx, sz, A, B, sizes);
+  // Shaped plates search each room's spot inside the outline (./apartmentShaped) when the
+  // floor still uses the original plan. A custom room plan uses the explicit recipe,
+  // and the planner drops anything that falls outside the outline.
+  const custom = fit.scheme !== "corner" || fit.furniture !== "standard";
+  for (const [sx, sz] of QUADRANTS) {
+    if (p.outline && !custom) apartmentShaped(p, sx, sz, A, B, sizes);
+    else apartment(p, sx, sz, A, B, sizes, fit);
+  }
 }
 
 /**
@@ -292,19 +299,20 @@ function residential(p: Planner, A: number, B: number) {
  * a guest suite, pool and piano) and the bedrooms are spread over the floors
  * above (see penthouseBedsOnFloor).
  */
-function crown(p: Planner, A: number, B: number, zoneIndex: number, crownFloors: number) {
+function crown(p: Planner, A: number, B: number, zoneIndex: number, crownFloors: number, furniture: FurnitureSet) {
   const beds = penthouseBedsOnFloor(zoneIndex, crownFloors);
+  const dine: PieceId = furniture === "lounge" ? "lounge" : "dining6";
   if (crownFloors <= 1) {
     for (const [sx, sz] of QUADRANTS) suite(p, sx, sz, A, B);
     p.add("living", 0, B - 2.3, Math.PI);
     p.add("kitchen", 0, -(B - 1.8));
-    p.add("dining6", -(A - 2.6), 0, Math.PI / 2);
-    p.add("piano", A - 2.2, 0, -Math.PI / 2);
+    p.add(dine, -(A - 2.6), 0, Math.PI / 2);
+    if (furniture !== "lounge") p.add("piano", A - 2.2, 0, -Math.PI / 2);
   } else if (zoneIndex === 0) {
     // Living level + guest suite
     p.add("living", -(A - 2.3), B - 2.3, Math.PI);
-    p.add("piano", A - 2.0, B - 2.0, -2.4);
-    p.add("dining6", A - 2.2, -(B - 2.5), Math.PI / 2);
+    if (furniture !== "lounge") p.add("piano", A - 2.0, B - 2.0, -2.4);
+    p.add(dine, A - 2.2, -(B - 2.5), Math.PI / 2);
     p.add("kitchen", 0, -(B - 1.8));
     const order: [1 | -1, 1 | -1][] = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
     order.slice(0, beds).forEach(([sx, sz]) => suite(p, sx, sz, A, B));
@@ -313,9 +321,9 @@ function crown(p: Planner, A: number, B: number, zoneIndex: number, crownFloors:
   } else {
     // Bedroom level(s)
     QUADRANTS.slice(0, beds).forEach(([sx, sz]) => suite(p, sx, sz, A, B));
-    p.add("lounge", 0, B - 2.2);
+    p.add(furniture === "formal" ? "living" : "lounge", 0, B - 2.2);
     p.add("lounge", 0, -(B - 2.2));
-    p.add("piano", A - 2.0, -(B - 2.0), -0.8);
+    if (furniture !== "lounge") p.add("piano", A - 2.0, -(B - 2.0), -0.8);
   }
   for (const [sx, sz] of QUADRANTS) p.add("plantLarge", sx * (A - 0.8), sz * (B - 0.8));
 }
@@ -363,14 +371,16 @@ export function layoutFloor(
   crownFloors = 2,
   shape?: PlanShape,
   /** Shared amenity programme (see ./amenities) — replaces the zone recipe. */
-  amenity?: AmenityKind
+  amenity?: AmenityKind,
+  /** Room plan and furniture. The default is the original apartment recipe. */
+  fit: FloorFit = DEFAULT_FIT
 ): Placement[] {
   // Shaped residential floors search for their rooms (a few ms – tens of ms), and several views
   // (furniture, room plan, mini plan, viewpoints) ask for the same floor: memoise the result.
-  const key = [zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape?.kind, shape?.amount, amenity ?? ""].join(":");
+  const key = [zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape?.kind, shape?.amount, amenity ?? "", fit.scheme, fit.furniture].join(":");
   const hit = layoutCache.get(key);
   if (hit) return hit.slice();
-  const out = planFloor(zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape, amenity);
+  const out = planFloor(zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape, amenity, fit);
   if (layoutCache.size >= 512) layoutCache.clear();
   layoutCache.set(key, out);
   return out.slice();
@@ -378,7 +388,19 @@ export function layoutFloor(
 
 const layoutCache = new Map<string, Placement[]>();
 
-function planFloor(zone: ZoneId, widthM: number, depthM: number, coreHalfM: number, coreAngle: number, zoneIndex: number, crownFloors: number, shape?: PlanShape, amenity?: AmenityKind): Placement[] {
+function mirrorCrown(ps: Placement[], scheme: ApartmentScheme): Placement[] {
+  if (scheme === "corner") return ps;
+  const mx = scheme === "living-out" || scheme === "studio" ? -1 : 1;
+  const mz = scheme === "gallery" || scheme === "studio" ? -1 : 1;
+  return ps.map((p) => ({
+    ...p,
+    x: p.x * mx,
+    z: p.z * mz,
+    rot: Math.atan2(mz * Math.sin(p.rot), mx * Math.cos(p.rot)),
+  }));
+}
+
+function planFloor(zone: ZoneId, widthM: number, depthM: number, coreHalfM: number, coreAngle: number, zoneIndex: number, crownFloors: number, shape?: PlanShape, amenity?: AmenityKind, fit: FloorFit = DEFAULT_FIT): Placement[] {
   const A = widthM / 2;
   const B = depthM / 2;
   const outline = shape && shape.kind !== "rect" ? planOutline(shape, widthM, depthM) : null;
@@ -391,8 +413,8 @@ function planFloor(zone: ZoneId, widthM: number, depthM: number, coreHalfM: numb
     return p.placements;
   }
   if (zone === "office") office(p, A, B);
-  else if (zone === "residential") residential(p, A, B);
-  else if (zone === "crown") crown(p, A, B, zoneIndex, crownFloors);
+  else if (zone === "residential") residential(p, A, B, fit);
+  else if (zone === "crown") crown(p, A, B, zoneIndex, crownFloors, fit.furniture);
   else podium(p, A, B);
-  return p.placements;
+  return zone === "crown" ? mirrorCrown(p.placements, fit.scheme) : p.placements;
 }
