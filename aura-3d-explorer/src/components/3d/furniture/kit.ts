@@ -548,3 +548,6 @@ export const PIECES: Record<PieceId, PieceDef> = {
   bathroom: { build: bathroom, w: 2.6, d: 2.3 },
   ...AMENITY_PIECES,
 };
+
+/** Single items and helpers, for other planners (e.g. the Aura Engine catalog). */
+export const KIT = { part, sofa, coffeeTable, floorLamp, plant, tableLamp, pendant, desk, monitor, taskChair, diningChair, barStool, diningSet, wardrobe, tub, bench, liftBy };
