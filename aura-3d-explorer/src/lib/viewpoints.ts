@@ -18,7 +18,7 @@
  * shared (WalkControls, WalkHud, FloorPlanMini).
  */
 import type { AmenityKind, FloorData } from "@/types";
-import { MODEL_SCALE } from "./tower";
+import { MODEL_SCALE, planOutline, pointInPolygon } from "./tower";
 import { coreLayout, coreServiceOpen } from "./coreLayout";
 import { layoutFloor, type Placement } from "@/components/3d/furniture/layouts";
 
@@ -113,22 +113,34 @@ function residentialViews(floor: FloorData, crownFloors: number, coreSize: numbe
   const out: Viewpoint[] = [];
   const v = (id: string, label: string, from: [number, number], look: [number, number]) => out.push({ id, label, from, look });
 
+  // Shaped plates place rooms by search (furniture/apartmentShaped), in any of four orientations,
+  // so their views are taken in each piece's own frame; rect plates keep the recipe's fixed offsets.
+  const shaped = !!floor.shape && floor.shape.kind !== "rect";
+  const outline = shaped ? planOutline(floor.shape, A * 2, B * 2) : null;
+  /** Shaped plates: a standing spot in the piece's frame, mirrored / centred if it would fall outside the glass. */
+  const stand = (p: Placement, lx: number, lz: number): [number, number] => {
+    for (const [x, z] of [[lx, lz], [-lx, lz], [0, lz], [0, lz * 0.6]]) {
+      const pt = at(p, x, z);
+      if (!outline || pointInPolygon(outline, pt[0], pt[1])) return pt;
+    }
+    return at(p, 0, lz * 0.6);
+  };
   const foyer = find("foyer", "foyerM");
   if (foyer) v("foyer", "Entrance foyer", at(foyer, 0, -0.55), at(foyer, 0.2, 4));
   const living = find("living");
-  if (living) v("living", "Living room", off(living, -2.4, -3.3), off(living, 1.2, 1.1));
+  if (living) v("living", "Living room", shaped ? stand(living, -1.6, 2.6) : off(living, -2.4, -3.3), shaped ? at(living, 0.8, -1.0) : off(living, 1.2, 1.1));
   const kitchen = find("kitchen");
-  if (kitchen) v("kitchen", "Kitchen & dining", off(kitchen, 2.9, -3.7), off(kitchen, -0.5, 0.5));
+  if (kitchen) v("kitchen", "Kitchen & dining", shaped ? stand(kitchen, -1.5, 3.2) : off(kitchen, 2.9, -3.7), shaped ? at(kitchen, 0.5, -0.5) : off(kitchen, -0.5, 0.5));
   const bed = find("bed");
   const arch = find("archWall");
-  if (bed) v("bedroom", "Master bedroom", arch ? off(arch, 0, -1.2) : off(bed, 0, -2.6), off(bed, 0, 0.6));
+  if (bed) v("bedroom", "Master bedroom", arch ? off(arch, 0, -1.2) : shaped ? stand(bed, 0, 2.6) : off(bed, 0, -2.6), shaped ? at(bed, 0, -0.6) : off(bed, 0, 0.6));
   const wir = find("wir");
   if (wir) v("wir", "Walk-in wardrobe", at(wir, 0, 1.15), at(wir, 0, -0.6));
   const baths = q.filter((p) => p.piece === "bathroom");
   const ens = bed ? [...baths].sort((a, b) => Math.hypot(a.x - bed.x, a.z - bed.z) - Math.hypot(b.x - bed.x, b.z - bed.z))[0] : undefined;
   if (ens) v("bath", "Ensuite", at(ens, -0.225, 1.55), at(ens, -0.2, -0.6));
   const bed2 = find("bedDouble");
-  if (bed2) v("bedroom2", "Second bedroom", off(bed2, -2.9, 2.7), off(bed2, 0.5, 0));
+  if (bed2) v("bedroom2", "Second bedroom", shaped ? stand(bed2, 1.0, 2.6) : off(bed2, -2.9, 2.7), shaped ? at(bed2, 0, -0.5) : off(bed2, 0.5, 0));
   const bath2 = baths.find((b) => b !== ens);
   if (bath2) v("bath2", "Second bathroom", at(bath2, -0.225, 1.55), at(bath2, -0.2, -0.6));
   const study = find("study", "studyM");
@@ -137,7 +149,8 @@ function residentialViews(floor: FloorData, crownFloors: number, coreSize: numbe
   if (wc) v("wc", "Guest WC", at(wc, 0, 1.35), at(wc, 0, -0.6));
   const laundry = find("laundry");
   if (laundry) v("laundry", "Laundry", at(laundry, 0, 1.4), at(laundry, 0, 0));
-  v("view", "City view", [A - 1.2, B - 11.2], [A + 30, B - 6]);
+  if (shaped && living) v("view", "City view", at(living, 0, 2.2), at(living, 0, -40)); // over the sofa, out of the window
+  else v("view", "City view", [A - 1.2, B - 11.2], [A + 30, B - 6]);
   resCache.set(key, out);
   return out;
 }

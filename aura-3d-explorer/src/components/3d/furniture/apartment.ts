@@ -33,11 +33,24 @@ interface Rect {
 /** The bits of the furniture planner this recipe uses. */
 export interface ApartmentPlanner {
   readonly placements: Placement[];
+  /** Plan outline of a non-rect plate (null on rect plates). */
+  readonly outline: [number, number][] | null;
+  /** Edge half-planes (n · p ≤ c) of a convex outline, else null. */
+  readonly halfPlanes: [number, number, number][] | null;
+  /** Core + gallery keep-out: half-size and its axis (cos, sin) in the plate frame. */
+  readonly coreKeep: number;
+  readonly coreCos: number;
+  readonly coreSin: number;
+  readonly footprints: readonly Rect[];
+  mark(): [number, number, number];
+  reset(m: [number, number, number]): void;
   add(piece: PieceId, x: number, z: number, rot?: number): boolean;
+  fits(piece: PieceId, x: number, z: number, rot?: number): Rect | null;
+  free(r: Rect): boolean;
   addMirrored(sx: 1 | -1, sz: 1 | -1, piece: PieceId, u: number, v: number, rot?: number): boolean;
   addFirst(sx: 1 | -1, sz: 1 | -1, piece: PieceId, spots: [u: number, v: number, rot: number][]): boolean;
-  blocked(r: Rect, grow?: number): boolean;
-  keepOuts: { c: [number, number]; ux: [number, number]; hx: number; hz: number; grows?: boolean }[];
+  blocked(r: Rect, grow?: number, ignoreClear?: boolean): boolean;
+  keepOuts: { c: [number, number]; ux: [number, number]; hx: number; hz: number; grows?: boolean; clear?: boolean }[];
 }
 
 type Dir = [number, number];
@@ -60,7 +73,8 @@ function qRect(p: Placement, w: number, d: number, sx: number, sz: number) {
   return { u0: u - hw, u1: u + hw, v0: v - hd, v1: v + hd };
 }
 
-export function apartment(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B: number, sizes: Record<string, { w: number; d: number }>) {
+/** Quadrant-local placing helpers shared by the rect recipe and the service rooms. */
+function quadrantTools(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B: number, sizes: Record<string, { w: number; d: number }>) {
   const world = (u0: number, u1: number, v0: number, v1: number): Rect => {
     const xs = [sx * u0, sx * u1].sort((a, b) => a - b);
     const zs = [sz * v0, sz * v1].sort((a, b) => a - b);
@@ -107,6 +121,12 @@ export function apartment(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number
     return null;
   };
 
+  return { world, last, put, ext, slide };
+}
+
+export function apartment(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B: number, sizes: Record<string, { w: number; d: number }>) {
+  const { last, put, ext } = quadrantTools(p, sx, sz, A, B, sizes);
+
   /* 1 · master bedroom + ensuite (top corner), walk-in wardrobe beside the ensuite */
   p.addFirst(sx, sz, "bed", [
     [A - 2.0, B - 1.5, PI],
@@ -152,6 +172,17 @@ export function apartment(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number
   p.addMirrored(sx, sz, "plant", ku + 1.5, B - 5.0);
 
   /* 4 · service rooms on the corridor side */
+  serviceRooms(p, sx, sz, A, B, sizes, kitchen, true);
+}
+
+/**
+ * Service rooms on the corridor side of quadrant (sx, sz): foyer, WC, coat
+ * closet, laundry, study — and, with `pantryBesideKitchen`, a pantry beside a
+ * kitchen backed onto the +v facade (the rect recipe; the shaped recipe
+ * places its own pantry).
+ */
+export function serviceRooms(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number, B: number, sizes: Record<string, { w: number; d: number }>, kitchen: Placement | null, pantryBesideKitchen: boolean) {
+  const { put, ext, slide } = quadrantTools(p, sx, sz, A, B, sizes);
   // Keep the floor in front of every bathroom door clear (kit doorway: local x −0.65…0.2 on its +Z wall).
   for (const b of p.placements) {
     if (b.piece !== "bathroom" || Math.sign(b.x || 1) !== sx || Math.sign(b.z || 1) !== sz) continue;
@@ -171,7 +202,7 @@ export function apartment(p: ApartmentPlanner, sx: 1 | -1, sz: 1 | -1, A: number
   // Study along the other demising wall (big plates only — it's skipped when it doesn't fit).
   slide("study", "studyM", "v", 0.15, 0, U, V, 1.2);
   // Pantry beside the kitchen, on its demising-wall side.
-  if (kitchen) {
+  if (kitchen && pantryBesideKitchen) {
     const k = qRect(kitchen, sizes.kitchen.w, sizes.kitchen.d, sx, sz);
     const [eu, ev] = ext("pantry", neg(V));
     if (k.u0 - 0.1 - eu > 0.15) put("pantry", null, k.u0 - 0.1 - eu, k.u0 - 0.1, k.v1 - ev, k.v1, neg(V), U);

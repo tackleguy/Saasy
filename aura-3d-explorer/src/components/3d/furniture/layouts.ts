@@ -18,16 +18,18 @@
  * Bedrooms and bathrooms are placed first (with fallback spots) so they win
  * the space on small or tapered plates.
  *
- * Non-rect plan shapes: the recipes still work on the bounding box, but the
- * planner also rejects any piece whose footprint (plus the wall margin) is
- * not fully inside the plan outline, so ellipses, triangles, L's and crosses
- * are furnished only where there is floor.
+ * Non-rect plan shapes: the planner rejects any piece whose footprint (plus
+ * the wall margin) is not fully inside the plan outline. Residential floors
+ * on shaped plates use ./apartmentShaped, which searches each room's spot
+ * along the quadrant's facade instead of fixed corner spots; the other
+ * recipes still work on the bounding box and are furnished where there is floor.
  */
 import type { PlanShape, ZoneId } from "@/types";
 import { penthouseBedsOnFloor, planOutline, pointInPolygon, type PlanPoint } from "@/lib/tower";
 import { PIECES, type PieceId } from "./kit";
 import { amenityLayout } from "./amenities";
 import { apartment } from "./apartment";
+import { apartmentShaped } from "./apartmentShaped";
 import { MODEL_SCALE } from "@/lib/tower";
 import { galleryWidthM, LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
 import type { AmenityKind } from "@/types";
@@ -52,26 +54,68 @@ class Planner {
   readonly placements: Placement[] = [];
   private rects: Rect[] = [];
   /** Keep-out half-size around the core (core + gallery), and its angle in the plate frame. */
-  private coreKeep: number;
-  private coreCos: number;
-  private coreSin: number;
+  readonly coreKeep: number;
+  readonly coreCos: number;
+  readonly coreSin: number;
 
-  constructor(private halfW: number, private halfD: number, coreHalf: number, coreAngle: number, private outline: PlanPoint[] | null = null, gallery = 1.2) {
+  /** Footprints (axis-aligned bounds) of the pieces placed so far. */
+  get footprints(): readonly Rect[] {
+    return this.rects;
+  }
+
+  constructor(
+    private halfW: number,
+    private halfD: number,
+    coreHalf: number,
+    coreAngle: number,
+    readonly outline: PlanPoint[] | null = null,
+    gallery = 1.2,
+    /** Test convex outlines by their edge half-planes (exact, fast) — used by the searching residential recipe. */
+    fastOutline = false
+  ) {
     this.coreKeep = coreHalf + gallery;
     // The world-square core rotated by `coreAngle` in the plate frame: its +X
     // axis is (cos a, −sin a) in plate (x, z) — the same frame lib/roomPlan
     // and the walk-through use (building +X = (cos r, sin r) with r = −a).
     this.coreCos = Math.cos(coreAngle);
     this.coreSin = -Math.sin(coreAngle);
+    this.halfPlanes = outline && fastOutline ? convexHalfPlanes(outline) : null;
+  }
+
+  /** Outward edge half-planes (n · p ≤ c) when the outline is convex — an exact, fast rect-inside test. */
+  readonly halfPlanes: [nx: number, nz: number, c: number][] | null;
+
+  /** Snapshot of everything placed so far, for `reset` (trial layouts). */
+  mark(): [number, number, number] {
+    return [this.placements.length, this.rects.length, this.keepOuts.length];
+  }
+
+  /** Undo everything placed since `mark`. */
+  reset([n, r, k]: [number, number, number]) {
+    this.placements.length = n;
+    this.rects.length = r;
+    this.keepOuts.length = k;
   }
 
   /** Extra keep-out zones (e.g. the lift lobby bump of the corridor ring): oriented rects. */
-  keepOuts: { c: PlanPoint; ux: PlanPoint; hx: number; hz: number; /** false: `grow` doesn't apply (clearance zones). */ grows?: boolean }[] = [];
+  keepOuts: {
+    c: PlanPoint;
+    ux: PlanPoint;
+    hx: number;
+    hz: number;
+    /** false: `grow` doesn't apply (clearance zones). */ grows?: boolean;
+    /** Walking space in front of a piece: other pieces keep off it, but clearances may overlap. */ clear?: boolean;
+  }[] = [];
 
   /** Does an axis-aligned rect (grown by `grow`) hit the core corridor or a keep-out? */
-  blocked(r: Rect, grow = 0): boolean {
+  blocked(r: Rect, grow = 0, ignoreClear = false): boolean {
     const g = { x0: r.x0 - grow, x1: r.x1 + grow, z0: r.z0 - grow, z1: r.z1 + grow };
-    return this.hitsCore(g) || this.keepOuts.some((k) => rectHitsORect(k.grows === false ? r : g, k));
+    return this.hitsCore(g) || this.keepOuts.some((k) => !(ignoreClear && k.clear) && rectHitsORect(k.grows === false ? r : g, k));
+  }
+
+  /** Is the rect clear of every piece placed so far? */
+  free(r: Rect): boolean {
+    return !this.rects.some((o) => overlaps(r, o));
   }
 
   /** Axis-aligned rect vs the rotated core square (separating-axis test). */
@@ -93,8 +137,8 @@ class Planner {
     return true;
   }
 
-  /** Try to place a piece; returns false (and places nothing) if it doesn't fit. */
-  add(piece: PieceId, x: number, z: number, rot = 0): boolean {
+  /** Would the piece fit here (plate, core, keep-outs, other pieces, plan outline)? Returns its footprint, or null. */
+  fits(piece: PieceId, x: number, z: number, rot = 0): Rect | null {
     const { w, d } = PIECES[piece];
     // Axis-aligned bounds of the rotated footprint
     const c = Math.abs(Math.cos(rot));
@@ -105,9 +149,19 @@ class Planner {
 
     const e = 1e-6; // spots are written as "A − x" so they land exactly on the margin
     const inside = r.x0 >= -this.halfW + WALL_MARGIN - e && r.x1 <= this.halfW - WALL_MARGIN + e && r.z0 >= -this.halfD + WALL_MARGIN - e && r.z1 <= this.halfD - WALL_MARGIN + e;
-    if (!inside || this.blocked(r) || this.rects.some((o) => overlaps(r, o))) return false;
-    if (this.outline && !rectInPolygon(r, this.outline, WALL_MARGIN)) return false;
+    if (!inside || this.rects.some((o) => overlaps(r, o)) || this.blocked(r)) return null;
+    if (this.halfPlanes) {
+      const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2;
+      const hw = (r.x1 - r.x0) / 2 + WALL_MARGIN, hd = (r.z1 - r.z0) / 2 + WALL_MARGIN;
+      for (const [nx, nz, c] of this.halfPlanes) if (nx * cx + nz * cz + Math.abs(nx) * hw + Math.abs(nz) * hd > c) return null;
+    } else if (this.outline && !rectInPolygon(r, this.outline, WALL_MARGIN)) return null;
+    return r;
+  }
 
+  /** Try to place a piece; returns false (and places nothing) if it doesn't fit. */
+  add(piece: PieceId, x: number, z: number, rot = 0): boolean {
+    const r = this.fits(piece, x, z, rot);
+    if (!r) return false;
     this.rects.push(r);
     this.placements.push({ piece, x, z, rot });
     return true;
@@ -127,6 +181,33 @@ class Planner {
   addFirst(sx: 1 | -1, sz: 1 | -1, piece: PieceId, spots: [u: number, v: number, rot: number][]) {
     return spots.some(([u, v, rot]) => this.addMirrored(sx, sz, piece, u, v, rot));
   }
+}
+
+/** Outward unit normals and offsets of a convex polygon's edges (n · p ≤ c inside), or null if it isn't convex. */
+function convexHalfPlanes(poly: PlanPoint[]): [number, number, number][] | null {
+  const n = poly.length;
+  let sign = 0;
+  for (let i = 0; i < n; i++) {
+    const [ax, az] = poly[i];
+    const [bx, bz] = poly[(i + 1) % n];
+    const [cx, cz] = poly[(i + 2) % n];
+    const cross = (bx - ax) * (cz - bz) - (bz - az) * (cx - bx);
+    if (Math.abs(cross) < 1e-9) continue;
+    if (sign && Math.sign(cross) !== sign) return null;
+    sign = Math.sign(cross);
+  }
+  const out: [number, number, number][] = [];
+  for (let i = 0; i < n; i++) {
+    const [ax, az] = poly[i];
+    const [bx, bz] = poly[(i + 1) % n];
+    const L = Math.hypot(bx - ax, bz - az);
+    if (L < 1e-9) continue;
+    // Right normal (dz, −dx) points out of a CCW (sign > 0) polygon.
+    const nx = (sign > 0 ? bz - az : az - bz) / L;
+    const nz = (sign > 0 ? ax - bx : bx - ax) / L;
+    out.push([nx, nz, nx * ax + nz * az]);
+  }
+  return out;
 }
 
 /**
@@ -200,7 +281,8 @@ function residential(p: Planner, A: number, B: number) {
   // Four corner residences, mirrored. Each is 2 bed / 2 bath plus foyer, WC,
   // laundry, coat closet and — where they fit — walk-in wardrobe, study, pantry.
   const sizes = Object.fromEntries(Object.entries(PIECES).map(([k, v]) => [k, { w: v.w, d: v.d }]));
-  for (const [sx, sz] of QUADRANTS) apartment(p, sx, sz, A, B, sizes);
+  // Shaped plates search each room's spot inside the outline (./apartmentShaped); rect plates keep the fixed recipe.
+  for (const [sx, sz] of QUADRANTS) (p.outline ? apartmentShaped : apartment)(p, sx, sz, A, B, sizes);
 }
 
 /**
@@ -283,12 +365,26 @@ export function layoutFloor(
   /** Shared amenity programme (see ./amenities) — replaces the zone recipe. */
   amenity?: AmenityKind
 ): Placement[] {
+  // Shaped residential floors search for their rooms (a few ms – tens of ms), and several views
+  // (furniture, room plan, mini plan, viewpoints) ask for the same floor: memoise the result.
+  const key = [zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape?.kind, shape?.amount, amenity ?? ""].join(":");
+  const hit = layoutCache.get(key);
+  if (hit) return hit.slice();
+  const out = planFloor(zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape, amenity);
+  if (layoutCache.size >= 512) layoutCache.clear();
+  layoutCache.set(key, out);
+  return out.slice();
+}
+
+const layoutCache = new Map<string, Placement[]>();
+
+function planFloor(zone: ZoneId, widthM: number, depthM: number, coreHalfM: number, coreAngle: number, zoneIndex: number, crownFloors: number, shape?: PlanShape, amenity?: AmenityKind): Placement[] {
   const A = widthM / 2;
   const B = depthM / 2;
   const outline = shape && shape.kind !== "rect" ? planOutline(shape, widthM, depthM) : null;
   // The gallery round the core widens on roomy plates (lib/coreLayout) — the room plan draws its ring there.
   const gallery = galleryWidthM(zone, A, B, coreHalfM);
-  const p = new Planner(A, B, coreHalfM, coreAngle, outline, gallery);
+  const p = new Planner(A, B, coreHalfM, coreAngle, outline, gallery, zone === "residential" && !amenity);
   if (zone !== "crown") p.keepOuts.push(lobbyKeepOut(coreHalfM, coreAngle, gallery));
   if (amenity) {
     amenityLayout(p, amenity, A, B);
