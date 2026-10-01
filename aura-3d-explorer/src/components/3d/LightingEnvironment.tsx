@@ -15,10 +15,10 @@
  *                  recede gradually while the skyline stays legible.
  */
 import { useEffect } from "react";
-import { useThree } from "@react-three/fiber";
 import { Environment, Sky } from "@react-three/drei";
 import * as THREE from "three";
 import type { CityPreset } from "@/lib/cityPresets";
+import { invalidateShadows } from "./staticShadows";
 
 /** Horizontal heading of the sun: behind the default camera's left shoulder. */
 const HEADING = new THREE.Vector2(0.35, 1.06).normalize(); // horizontal x/z
@@ -71,11 +71,10 @@ export default function LightingEnvironment({ quality, preset, sun = null, noFog
   // A sun study can put the sun anywhere, so the shadow frustum widens to cover the site from every side.
   const wide = !!sun;
 
-  // Shadow maps may be static (updated on demand): ask for a fresh one whenever the sun moves.
-  const gl = useThree((st) => st.gl);
+  // Shadow maps are static (drawn on demand, see ./staticShadows): redraw whenever the sun or its frustum changes.
   useEffect(() => {
-    gl.shadowMap.needsUpdate = true;
-  }, [gl, sunPos.x, sunPos.y, sunPos.z]);
+    invalidateShadows();
+  }, [sunPos.x, sunPos.y, sunPos.z, wide]);
 
   return (
     <>

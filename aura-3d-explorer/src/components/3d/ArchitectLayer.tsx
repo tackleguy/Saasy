@@ -25,6 +25,8 @@ import type { Building } from "@/types";
 import { buildingHeight, explodedY, MODEL_SCALE, ZONE_ORDER, ZONES } from "@/lib/tower";
 import { buildingRadius, buildingUW, PLINTH, uwToXZ, SITE_ROTATION_Y } from "@/lib/siteLayout";
 import type { ArchitectSceneState, Vec3 } from "@/lib/architecture";
+import { DETAIL_LAYER, RAYCAST_LAYER } from "./layers";
+import { invalidateShadows } from "./staticShadows";
 
 const noRaycast = () => null;
 const INK = "#1c1b19";
@@ -103,7 +105,6 @@ function DrawingCamera({ state, buildings }: { state: ArchitectSceneState; build
   const cam = useRef<THREE.OrthographicCamera>(null);
   const controls = useThree((s) => s.controls) as unknown as { target: THREE.Vector3; update: () => void } | null;
   const size = useThree((s) => s.size);
-  const gl = useThree((s) => s.gl);
 
   useEffect(() => {
     const c = cam.current;
@@ -166,7 +167,7 @@ function DrawingCamera({ state, buildings }: { state: ArchitectSceneState; build
       controls.target.set(...target);
       controls.update();
     }
-    gl.shadowMap.needsUpdate = true;
+    invalidateShadows();
     // Re-frame on view changes and explicit requests, not on every resize.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.view, state.viewNonce, controls]);
@@ -188,7 +189,13 @@ function MeasureTool({ state }: { state: ArchitectSceneState }) {
   };
   const [hover, setHover] = useState<Vec3 | null>(null);
   const shift = useRef(false);
-  const ray = useMemo(() => new THREE.Raycaster(), []);
+  // Same layers as pointer picking: batched buildings keep their pickable glass on RAYCAST_LAYER (see mergedStatics).
+  const ray = useMemo(() => {
+    const r = new THREE.Raycaster();
+    r.layers.enable(RAYCAST_LAYER);
+    r.layers.enable(DETAIL_LAYER);
+    return r;
+  }, []);
   const ndc = useMemo(() => new THREE.Vector2(), []);
   const moveEvent = useRef<PointerEvent | null>(null);
 
@@ -379,7 +386,6 @@ const CLAY = new THREE.Color("#eeebe5");
 
 function ClayModel({ enabled }: { enabled: boolean }) {
   const scene = useThree((s) => s.scene);
-  const gl = useThree((s) => s.gl);
   useEffect(() => {
     if (!enabled) return;
     const clones = new Map<THREE.Material, THREE.Material>();
@@ -399,7 +405,7 @@ function ClayModel({ enabled }: { enabled: boolean }) {
         mesh.userData.clayOriginal = mesh.material;
         mesh.material = Array.isArray(mesh.material) ? mesh.material.map(clayOf) : clayOf(mesh.material);
       });
-      gl.shadowMap.needsUpdate = true;
+      invalidateShadows();
     };
     apply();
     // Meshes that mount later (furniture, a new city) are swapped on the next pass.
@@ -414,9 +420,9 @@ function ClayModel({ enabled }: { enabled: boolean }) {
         }
       });
       clones.forEach((c) => c.dispose());
-      gl.shadowMap.needsUpdate = true;
+      invalidateShadows();
     };
-  }, [enabled, scene, gl]);
+  }, [enabled, scene]);
   return null;
 }
 
