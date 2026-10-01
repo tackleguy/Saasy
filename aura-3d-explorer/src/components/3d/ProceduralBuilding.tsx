@@ -18,6 +18,7 @@ import CoreShaft from "./CoreShaft";
 import SectionCut from "./SectionCut";
 import FloorAnnotations from "./FloorAnnotations";
 import { useMergedStatics } from "./mergedStatics";
+import { brushedMetalTexture, concreteBump, concreteTexture } from "./textures";
 
 interface Props {
   building: Building;
@@ -55,11 +56,11 @@ function RoofCrown({ top, explosion, dimmed, tall }: { top: FloorData; explosion
     <group ref={group} position={[0, top.baseY + top.height, 0]}>
       <mesh position={[0, spireH / 2, 0]} castShadow raycast={() => null}>
         <cylinderGeometry args={[0.02, 0.14, spireH, 8]} />
-        <meshStandardMaterial ref={mat} color="#8B6B44" metalness={0.7} roughness={0.3} transparent />
+        <meshStandardMaterial ref={mat} map={brushedMetalTexture("#8B6B44")} metalness={0.72} roughness={0.3} envMapIntensity={0.9} transparent />
       </mesh>
       <mesh position={[0, 0.12, 0]} rotation={[0, top.rotationY, 0]} raycast={() => null}>
         <boxGeometry args={[Math.min(top.width, top.depth) * 0.5, 0.24, Math.min(top.width, top.depth) * 0.5]} />
-        <meshStandardMaterial color="#cfc8bc" roughness={0.85} />
+        <meshStandardMaterial map={concreteTexture()} bumpMap={concreteBump()} bumpScale={0.03} color="#e8e2d6" roughness={0.82} />
       </mesh>
     </group>
   );

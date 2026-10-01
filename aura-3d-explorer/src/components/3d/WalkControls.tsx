@@ -13,13 +13,17 @@
  *             cab travels (you ride inside a moving cab), and on arrival the
  *             explorer switches to the new floor and the doors open again.
  *
- * The walker stays at standing eye height (1.6 m), can't leave the plate
- * through the glass and can't walk through the core's walls, shafts, stair or
- * chute enclosures (lib/coreLayout `coreColliders`). On residential / office
- * floors the service passage behind the lift bank is open at both ends, and
- * the refuse room and riser closet are entered through their door openings.
- * The lift cab is entered through its doors only while they are open.
- * Furniture is not solid, so every viewpoint is reachable.
+ * The walker has weight: speed eases toward the stick and coasts to a stop,
+ * and a surface sheds only the into-surface part of that velocity so you
+ * slide along walls, core blocks and the glass. Eye height stays at 1.6 m,
+ * with a light step. The body can't leave the plate through the glass
+ * (the real outline, not the bounding box) and can't walk through the
+ * core's walls, shafts, stair or chute enclosures (lib/coreLayout
+ * `coreColliders`). On residential / office floors the service passage
+ * behind the lift bank is open at both ends, and the refuse room and riser
+ * closet are entered through their door openings. The lift cab is entered
+ * through its doors only while they are open. Furniture is not solid, so
+ * every viewpoint is reachable.
  *
  * Mounted only while walk mode is on; OrbitControls are disabled meanwhile.
  * On unmount the camera's FOV / near plane are restored and the regular
@@ -30,22 +34,53 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import type { Building, FloorData } from "@/types";
-import { crownFloorCount, explodedY, MODEL_SCALE } from "@/lib/tower";
+import { crownFloorCount, explodedY, MODEL_SCALE, planOutline } from "@/lib/tower";
 import { EYE_HEIGHT_M, LIFT_VIEW, viewpointsFor } from "@/lib/viewpoints";
 import { walkInput, resetWalkInput } from "@/lib/walkInput";
 import { liftDims, liftState, resetLiftState } from "@/lib/lift";
-import { coreColliders, coreServiceOpen, pushOutOfBoxes } from "@/lib/coreLayout";
+import { coreColliders, coreServiceOpen, separateFromBoxes } from "@/lib/coreLayout";
 import { SLAB_THICKNESS } from "./FurnitureOverlay";
 import { wallCollidersFor } from "./interior/plan";
-import { pushOutOfWalls } from "@/lib/roomPlan";
+import { containInOutline, separateFromWalls } from "@/lib/roomPlan";
 
 /** Walking speed, metres per second (×2.2 with Shift). */
 const WALK_SPEED_M = 1.8;
+const RUN_MUL = 2.2;
 /** Walker radius against interior walls, metres. */
 const WALKER_RADIUS_M = 0.22;
 const LOOK_SENSITIVITY = 0.0035;
 const WALK_FOV = 64;
 const EYE = EYE_HEIGHT_M * MODEL_SCALE;
+/** How fast velocity catches the input, and how fast it dies when you let go (1/seconds). */
+const MOVE_RESPONSE = 14;
+const STOP_RESPONSE = 20;
+/** Longest collision step, metres — a sprint must not skip a door jamb. */
+const STEP_M = 0.08;
+/** Stride and camera bob, metres. Small on purpose: this is a walk-through. */
+const STRIDE_M = 0.74;
+const BOB_M = 0.035;
+const SWAY_M = 0.016;
+
+type Contact = { x: number; z: number };
+
+/** Exponential chase, frame-rate independent. Component-wise this is a vector chase. */
+function approach(current: number, target: number, lambda: number, dt: number) {
+  return current + (target - current) * (1 - Math.exp(-lambda * dt));
+}
+
+/** Drop the part of a planar velocity that points into any contact. Two passes settle corners. */
+function clipPlanar(vx: number, vz: number, normals: Contact[]) {
+  for (let pass = 0; pass < 2; pass++) {
+    for (const n of normals) {
+      const into = vx * n.x + vz * n.z;
+      if (into < 0) {
+        vx -= into * n.x;
+        vz -= into * n.z;
+      }
+    }
+  }
+  return { x: vx, z: vz };
+}
 
 /** Lift plumbing between the explorer state and the walker. */
 export interface LiftLink {
@@ -78,6 +113,11 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const yaw = useRef(0);
   const pitch = useRef(0);
   const pos = useRef(new THREE.Vector2()); // world x / z
+  const vel = useRef(new THREE.Vector2()); // world x / z, scene units per second
+  const bobPhase = useRef(0);
+  const gait = useRef(0);
+  const eyeSmooth = useRef<number | null>(null);
+  const contacts = useRef<Contact[]>([]);
   const keys = useRef(new Set<string>());
   const tween = useRef<gsap.core.Tween | gsap.core.Timeline | null>(null);
   const inside = useRef(false);

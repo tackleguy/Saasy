@@ -1,6 +1,8 @@
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
+const root = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -9,7 +11,9 @@ const nextConfig = {
   transpilePackages: ["three"],
   // Serve portfolio renders as AVIF/WebP at the sizes each card needs.
   images: { formats: ["image/avif", "image/webp"] },
-  // Pin the workspace root to this folder (avoids picking up lockfiles in parent directories).
-  outputFileTracingRoot: path.dirname(fileURLToPath(import.meta.url)),
+  // A package-lock.json in the home directory would otherwise become the
+  // workspace root, so file tracing and Turbopack both stay in this app.
+  outputFileTracingRoot: root,
+  turbopack: { root },
 };
 export default nextConfig;

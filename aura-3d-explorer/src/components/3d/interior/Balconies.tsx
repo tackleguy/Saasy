@@ -32,7 +32,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { BalconySpec, Pt } from "@/lib/roomPlan";
-import { pavingTexture } from "../textures";
+import { pavingBump, pavingTexture } from "../textures";
 import { DETAIL } from "../layers";
 import { mergeTag } from "../mergedStatics";
 
@@ -264,11 +264,14 @@ export default function Balconies({ specs, geoKey, dimmed = false, xray = false 
   const geo = useMemo(() => balconyGeometry(geoKey, specs), [geoKey, specs]);
   const mats = useMemo(() => {
     const map = pavingTexture().clone();
-    map.wrapS = map.wrapT = THREE.RepeatWrapping;
+    const bump = pavingBump().clone();
+    map.wrapS = map.wrapT = bump.wrapS = bump.wrapT = THREE.RepeatWrapping;
     map.repeat.set(0.6, 0.6); // ExtrudeGeometry UVs are in metres here
+    bump.repeat.set(0.6, 0.6);
     map.needsUpdate = true;
+    bump.needsUpdate = true;
     return {
-      paving: new THREE.MeshStandardMaterial({ map, color: "#b9b6b1", roughness: 0.85 }),
+      paving: new THREE.MeshStandardMaterial({ map, bumpMap: bump, bumpScale: 0.04, color: "#d4d0c8", roughness: 0.82 }),
       glass: new THREE.MeshPhysicalMaterial({ color: "#d7e3e5", roughness: 0.08, transparent: true, opacity: 0.32, depthWrite: false }),
       solid: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.25 }),
     };
@@ -276,6 +279,7 @@ export default function Balconies({ specs, geoKey, dimmed = false, xray = false 
   useEffect(
     () => () => {
       mats.paving.map?.dispose();
+      mats.paving.bumpMap?.dispose();
       Object.values(mats).forEach((m) => m.dispose());
     },
     [mats]

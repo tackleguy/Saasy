@@ -54,7 +54,8 @@
  *
  * `wallColliders` / `pushOutOfWalls` give the walk-through a solid version of
  * the plan (wall runs minus their openings, plus the kit bathroom walls and
- * arch walls).
+ * arch walls). `separateFromWalls` is the same push, plus the contact normals
+ * the walker uses to slide along a wall instead of sticking to it.
  *
  * Balconies (`balconyPlan`) are planned here too: a strip of facade per
  * apartment (per penthouse terrace on the crown) walked along the outline,
@@ -1007,13 +1008,19 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
 /** Solid wall runs (openings removed) for collision. */
 export const wallColliders = (plan: RoomPlan): Collider[] => plan.colliders;
 
+/** Extra clearance so a resolved point rests just outside the surface, not on it. */
+const COLLIDE_SKIN_M = 0.002;
+
 /**
  * Push a point (plate-local metres) out of every wall capsule it overlaps,
- * keeping `radius` of clearance. Two passes settle corners.
+ * keeping `radius` of clearance. Several passes settle corners.
+ * `normals` are unit vectors pointing out of the walls the point came to rest on.
  */
-export function pushOutOfWalls(x: number, z: number, colliders: Collider[], radius: number): Pt {
+export function separateFromWalls(x: number, z: number, colliders: Collider[], radius: number): { p: Pt; normals: Pt[] } {
   let px = x, pz = z;
-  for (let pass = 0; pass < 2; pass++) {
+  let normals: Pt[] = [];
+  for (let pass = 0; pass < 4; pass++) {
+    const hit: Pt[] = [];
     for (const c of colliders) {
       const dx = c.b[0] - c.a[0], dz = c.b[1] - c.a[1];
       const l2 = dx * dx + dz * dz || 1;
@@ -1021,7 +1028,7 @@ export function pushOutOfWalls(x: number, z: number, colliders: Collider[], radi
       const qx = c.a[0] + dx * t, qz = c.a[1] + dz * t;
       let ox = px - qx, oz = pz - qz;
       const dist = Math.hypot(ox, oz);
-      const min = c.r + radius;
+      const min = c.r + radius + COLLIDE_SKIN_M;
       if (dist >= min) continue;
       if (dist < 1e-6) {
         // Exactly on the wall line: step out along its normal.
@@ -1034,9 +1041,80 @@ export function pushOutOfWalls(x: number, z: number, colliders: Collider[], radi
       }
       px = qx + ox * min;
       pz = qz + oz * min;
+      hit.push([ox, oz]);
     }
+    if (hit.length) normals = hit;
+    else break;
   }
-  return [px, pz];
+  return { p: [px, pz], normals };
+}
+
+/** Push a point (plate-local metres) out of every wall capsule it overlaps. */
+export function pushOutOfWalls(x: number, z: number, colliders: Collider[], radius: number): Pt {
+  return separateFromWalls(x, z, colliders, radius).p;
+}
+
+/**
+ * Keep a point `margin` inside a CCW polygon (the polygon's own units).
+ * Contact normals point back into the polygon, the way the point was pushed,
+ * so a walker slides along the glass instead of leaving through it.
+ */
+export function containInOutline(x: number, z: number, poly: Pt[], margin: number): { p: Pt; normals: Pt[] } {
+  let px = x, pz = z;
+  const normals: Pt[] = [];
+  const n = poly.length;
+  if (n < 3) return { p: [px, pz], normals };
+
+  for (let pass = 0; pass < 4; pass++) {
+    let bestD = Infinity;
+    let qi = 0, qt = 0, qx = 0, qz = 0;
+    for (let i = 0; i < n; i++) {
+      const a = poly[i], b = poly[(i + 1) % n];
+      const ex = b[0] - a[0], ez = b[1] - a[1];
+      const l2 = ex * ex + ez * ez || 1;
+      const t = Math.max(0, Math.min(1, ((px - a[0]) * ex + (pz - a[1]) * ez) / l2));
+      const cx = a[0] + ex * t, cz = a[1] + ez * t;
+      const d = Math.hypot(px - cx, pz - cz);
+      if (d < bestD) {
+        bestD = d;
+        qi = i;
+        qt = t;
+        qx = cx;
+        qz = cz;
+      }
+    }
+
+    let tx = px, tz = pz;
+    let moved = false;
+    if (qt > 1e-4 && qt < 1 - 1e-4) {
+      const [onx, onz] = edgeNormal(poly[qi][0], poly[qi][1], poly[(qi + 1) % n][0], poly[(qi + 1) % n][1]);
+      const signed = (px - qx) * onx + (pz - qz) * onz;
+      if (signed + margin > 1e-6) {
+        tx = qx - onx * margin;
+        tz = qz - onz * margin;
+        moved = true;
+      }
+    } else {
+      const dist = Math.max(bestD, 1e-8);
+      const ux = (px - qx) / dist, uz = (pz - qz) / dist;
+      if (!pointInPolygon(poly, px, pz)) {
+        tx = qx - ux * margin;
+        tz = qz - uz * margin;
+        moved = true;
+      } else if (bestD < margin - 1e-6) {
+        tx = qx + ux * margin;
+        tz = qz + uz * margin;
+        moved = true;
+      }
+    }
+    if (!moved) break;
+    const dx = tx - px, dz = tz - pz;
+    const l = Math.hypot(dx, dz) || 1;
+    normals.push([dx / l, dz / l]);
+    px = tx;
+    pz = tz;
+  }
+  return { p: [px, pz], normals };
 }
 
 /* ---------------------------------------------------------------- balconies */

@@ -6,7 +6,7 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 import { LAYOUT } from "@/lib/siteLayout";
-import { woodTexture } from "../textures";
+import { brushedMetalTexture, woodBump, woodTexture } from "../textures";
 import { ALONG_U, noRaycast, placeUW, uploadInstances } from "./shared";
 
 export default function StreetFurniture() {
@@ -39,19 +39,19 @@ export default function StreetFurniture() {
     <group>
       <instancedMesh ref={(m) => uploadInstances(m, poles)} args={[undefined, undefined, poles.length]} castShadow raycast={noRaycast}>
         <cylinderGeometry args={[0.5, 0.6, 1, 8]} />
-        <meshStandardMaterial color="#3d3f43" metalness={0.6} roughness={0.5} />
+        <meshStandardMaterial map={brushedMetalTexture("#4a4e54")} metalness={0.72} roughness={0.38} envMapIntensity={0.8} />
       </instancedMesh>
       <instancedMesh ref={(m) => uploadInstances(m, heads)} args={[undefined, undefined, heads.length]} raycast={noRaycast}>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#e8e1d0" emissive="#f5e6c8" emissiveIntensity={0.25} roughness={0.6} />
+        <meshStandardMaterial color="#f3ecdc" emissive="#f5e6c8" emissiveIntensity={0.35} roughness={0.45} />
       </instancedMesh>
       <instancedMesh ref={(m) => uploadInstances(m, seats)} args={[undefined, undefined, seats.length]} castShadow raycast={noRaycast}>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial map={woodTexture("#b08d63", "#7b5b3f")} roughness={0.7} />
+        <meshStandardMaterial map={woodTexture("#c4a06a", "#7a5538", 29)} bumpMap={woodBump("#c4a06a", "#7a5538", 29)} bumpScale={0.04} roughness={0.62} />
       </instancedMesh>
       <instancedMesh ref={(m) => uploadInstances(m, legs)} args={[undefined, undefined, legs.length]} raycast={noRaycast}>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#3d3f43" metalness={0.6} roughness={0.5} />
+        <meshStandardMaterial map={brushedMetalTexture("#4a4e54")} metalness={0.72} roughness={0.38} />
       </instancedMesh>
     </group>
   );

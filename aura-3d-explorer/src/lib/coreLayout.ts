@@ -227,36 +227,50 @@ export function coreColliders(core: number, floorH: number, slab: number, open: 
   return out;
 }
 
-/** Push a point out of a set of boxes, keeping `r` clearance (3 passes settle corners). */
-export function pushOutOfBoxes(x: number, z: number, boxes: Box[], r: number): [number, number] {
+/**
+ * Push a point out of a set of boxes, keeping `r` clearance.
+ * Normals point out of the boxes the point came to rest on.
+ */
+export function separateFromBoxes(x: number, z: number, boxes: Box[], r: number): { p: [number, number]; normals: [number, number][] } {
+  let px = x, pz = z;
+  let normals: [number, number][] = [];
   for (let pass = 0; pass < 3; pass++) {
-    let moved = false;
+    const hit: [number, number][] = [];
     for (const k of boxes) {
-      if (x < k.x0 - r || x > k.x1 + r || z < k.z0 - r || z > k.z1 + r) continue;
-      const cx = Math.min(Math.max(x, k.x0), k.x1);
-      const cz = Math.min(Math.max(z, k.z0), k.z1);
-      const dx = x - cx;
-      const dz = z - cz;
+      if (px < k.x0 - r || px > k.x1 + r || pz < k.z0 - r || pz > k.z1 + r) continue;
+      const cx = Math.min(Math.max(px, k.x0), k.x1);
+      const cz = Math.min(Math.max(pz, k.z0), k.z1);
+      const dx = px - cx;
+      const dz = pz - cz;
       const d2 = dx * dx + dz * dz;
       if (d2 >= r * r) continue;
-      moved = true;
+      let nx: number, nz: number;
       if (d2 > 1e-12) {
         const d = Math.sqrt(d2);
-        x = cx + (dx / d) * r;
-        z = cz + (dz / d) * r;
+        nx = dx / d;
+        nz = dz / d;
+        px = cx + nx * r;
+        pz = cz + nz * r;
       } else {
         // Centre inside the box: leave by the nearest side.
-        const pen = [x - k.x0, k.x1 - x, z - k.z0, k.z1 - z];
+        const pen = [px - k.x0, k.x1 - px, pz - k.z0, k.z1 - pz];
         const i = pen.indexOf(Math.min(...pen));
-        if (i === 0) x = k.x0 - r;
-        else if (i === 1) x = k.x1 + r;
-        else if (i === 2) z = k.z0 - r;
-        else z = k.z1 + r;
+        if (i === 0) { px = k.x0 - r; nx = -1; nz = 0; }
+        else if (i === 1) { px = k.x1 + r; nx = 1; nz = 0; }
+        else if (i === 2) { pz = k.z0 - r; nx = 0; nz = -1; }
+        else { pz = k.z1 + r; nx = 0; nz = 1; }
       }
+      hit.push([nx, nz]);
     }
-    if (!moved) break;
+    if (hit.length) normals = hit;
+    else break;
   }
-  return [x, z];
+  return { p: [px, pz], normals };
+}
+
+/** Push a point out of a set of boxes, keeping `r` clearance (3 passes settle corners). */
+export function pushOutOfBoxes(x: number, z: number, boxes: Box[], r: number): [number, number] {
+  return separateFromBoxes(x, z, boxes, r).p;
 }
 
 /** Lift lobby half width (metres) in front of the bank — shared by the room plan and the furniture planner. */

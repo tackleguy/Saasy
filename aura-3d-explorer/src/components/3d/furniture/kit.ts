@@ -11,7 +11,27 @@
  */
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-import { fabricTexture, marbleTexture, plasterTexture, tilePerUnit, woodTexture } from "../textures";
+import {
+  brushedMetalBump,
+  brushedMetalTexture,
+  ceramicTexture,
+  fabricBump,
+  fabricTexture,
+  leafBump,
+  leafTexture,
+  leatherBump,
+  leatherTexture,
+  marbleBump,
+  marbleTexture,
+  plasterBump,
+  plasterTexture,
+  stoneBump,
+  stoneTexture,
+  tilePerUnit,
+  woodBump,
+  woodTexture,
+  type FabricStyle,
+} from "../textures";
 import { AMENITY_PIECES, type AmenityPieceId } from "./amenities";
 import { ROOM_PIECES, type RoomPieceId } from "./rooms";
 
@@ -105,32 +125,34 @@ export function getMaterials() {
       tilePerUnit(m, perMetre);
       return m;
     };
+    const cloth = (hex: string, style: FabricStyle, roughness: number, perMetre = 3) =>
+      textured(fabricTexture(hex, style), roughness, perMetre, { bumpMap: fabricBump(hex, style), bumpScale: style === "boucle" ? 0.035 : 0.018 });
     mats = {
-      oak: textured(woodTexture("#c9a57a", "#8b6a48"), 0.55, 0.8),
-      walnut: textured(woodTexture("#8a6748", "#4a3324", 31), 0.5, 0.8),
-      lacquer: std("#ece6dc", 0.4),
-      fabricGrey: textured(fabricTexture("#d8d0c2"), 0.97, 3), // warm oatmeal
-      fabricCream: textured(fabricTexture("#F1EBE0"), 0.98, 3), // boucle
-      fabricAccent: textured(fabricTexture("#A9B39B"), 0.9, 3), // sage
-      leather: std("#6e4a33", 0.55),
-      metalDark: std("#26292e", 0.35, 0.8),
-      brushed: std("#b9bec5", 0.3, 0.9),
-      brass: std("#c9a24a", 0.28, 1),
-      marble: textured(marbleTexture(), 0.18, 0.6),
-      screen: std("#0a0c10", 0.2, 0.2, { emissive: new THREE.Color("#1d3b5c"), emissiveIntensity: 0.5 }),
-      leaf: std("#6f8a62", 0.8),
-      stone: std("#cfc6b7", 0.75),
-      water: new THREE.MeshPhysicalMaterial({ color: "#4fb3d6", roughness: 0.05, metalness: 0.1, transmission: 0, transparent: true, opacity: 0.85, clearcoat: 1 }),
-      rug: textured(fabricTexture("#c8bba5"), 1, 2),
-      rugLight: textured(fabricTexture("#e2d8c7"), 1, 2),
-      linen: textured(fabricTexture("#f6f2ea"), 0.9, 4),
-      plaster: textured(plasterTexture("#E7DFD2"), 0.95, 0.5),
-      ceramic: std("#f7f6f2", 0.12, 0, { envMapIntensity: 1.2 }),
+      oak: textured(woodTexture("#c9a57a", "#8b6a48"), 0.46, 0.8, { bumpMap: woodBump("#c9a57a", "#8b6a48"), bumpScale: 0.04 }),
+      walnut: textured(woodTexture("#8a6748", "#4a3324", 31), 0.4, 0.8, { bumpMap: woodBump("#8a6748", "#4a3324", 31), bumpScale: 0.045 }),
+      lacquer: std("#ece6dc", 0.28, 0, { envMapIntensity: 0.55 }),
+      fabricGrey: cloth("#d8d0c2", "weave", 0.92),
+      fabricCream: cloth("#F1EBE0", "boucle", 0.96),
+      fabricAccent: cloth("#A9B39B", "weave", 0.88),
+      leather: textured(leatherTexture("#6e4a33"), 0.48, 2.2, { bumpMap: leatherBump("#6e4a33"), bumpScale: 0.04 }),
+      metalDark: textured(brushedMetalTexture("#2c3036"), 0.32, 2, { metalness: 0.84, bumpMap: brushedMetalBump("#2c3036"), bumpScale: 0.012, envMapIntensity: 1.15 }),
+      brushed: textured(brushedMetalTexture("#c5ccd4"), 0.24, 2.5, { metalness: 0.92, bumpMap: brushedMetalBump("#c5ccd4"), bumpScale: 0.01, envMapIntensity: 1.25 }),
+      brass: textured(brushedMetalTexture("#c9a24a"), 0.26, 2.5, { metalness: 1, bumpMap: brushedMetalBump("#c9a24a"), bumpScale: 0.008, envMapIntensity: 1.2 }),
+      marble: textured(marbleTexture(), 0.14, 0.6, { bumpMap: marbleBump(), bumpScale: 0.02, envMapIntensity: 0.75 }),
+      screen: std("#0a0c10", 0.15, 0.35, { emissive: new THREE.Color("#1d3b5c"), emissiveIntensity: 0.55 }),
+      leaf: textured(leafTexture(), 0.72, 1.6, { bumpMap: leafBump(), bumpScale: 0.05 }),
+      stone: textured(stoneTexture(), 0.42, 0.7, { bumpMap: stoneBump(), bumpScale: 0.05 }),
+      water: new THREE.MeshPhysicalMaterial({ color: "#4fb3d6", roughness: 0.04, metalness: 0.15, transmission: 0, transparent: true, opacity: 0.85, clearcoat: 1, clearcoatRoughness: 0.08 }),
+      rug: cloth("#c8bba5", "weave", 1, 2),
+      rugLight: cloth("#e2d8c7", "weave", 1, 2),
+      linen: cloth("#f6f2ea", "linen", 0.86, 4),
+      plaster: textured(plasterTexture("#E7DFD2"), 0.92, 0.5, { bumpMap: plasterBump("#E7DFD2"), bumpScale: 0.015 }),
+      ceramic: textured(ceramicTexture(), 0.1, 2, { envMapIntensity: 1.25 }),
       glass: new THREE.MeshPhysicalMaterial({ color: "#dfeef0", roughness: 0.05, metalness: 0, transparent: true, opacity: 0.22, depthWrite: false }),
       piano: std("#0d0e11", 0.12, 0.3, { envMapIntensity: 1.5 }),
       lamp: std("#fff1d6", 0.6, 0, { emissive: new THREE.Color("#ffcf8a"), emissiveIntensity: 1.2, side: THREE.DoubleSide }),
       rubber: std("#2b2d30", 0.95),
-      turf: textured(fabricTexture("#6f9a58"), 1, 4),
+      turf: cloth("#6f9a58", "weave", 0.95, 4),
       screenBright: std("#dfe8f0", 0.4, 0, { emissive: new THREE.Color("#9cc4e8"), emissiveIntensity: 0.9 }),
       play: std("#e08a6a", 0.7),
     };

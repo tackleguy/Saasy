@@ -24,6 +24,7 @@ import { LAYOUT } from "@/lib/siteLayout";
 import type { CityPreset } from "@/lib/cityPresets";
 import { ALONG_MINUS_U, ALONG_U, noRaycast, rng } from "./shared";
 import { SITE_ROTATION_Y, pointInRect, uwToXZ, type UWRect } from "@/lib/siteLayout";
+import { fabricBump, fabricTexture, hairTexture, repeatTexture, skinBump, skinTexture } from "../textures";
 
 interface Person {
   u: number;
@@ -170,6 +171,11 @@ export default function People({ preset, clearings = [] }: { preset: CityPreset;
 
 function Crowd({ people, clearings, shadow }: { people: Person[]; clearings: UWRect[]; shadow: boolean }) {
   const anyWalking = useMemo(() => people.some((p) => p.dir !== 0), [people]);
+  const cloth = useMemo(() => repeatTexture(fabricTexture("#ffffff", "weave"), 2.4, 3.4), []);
+  const clothBump = useMemo(() => repeatTexture(fabricBump("#ffffff", "weave"), 2.4, 3.4), []);
+  const skin = useMemo(() => repeatTexture(skinTexture(), 2.2, 2.6), []);
+  const skinRelief = useMemo(() => repeatTexture(skinBump(), 2.2, 2.6), []);
+  const hair = useMemo(() => repeatTexture(hairTexture(), 3, 2.2), []);
   const refs = {
     torso: useRef<THREE.InstancedMesh>(null),
     head: useRef<THREE.InstancedMesh>(null),
@@ -267,24 +273,29 @@ function Crowd({ people, clearings, shadow }: { people: Person[]; clearings: UWR
     }
   });
 
-  const mesh = (ref: RefObject<THREE.InstancedMesh | null>, geo: THREE.BufferGeometry, count: number, opts: { shadow?: boolean; roughness?: number } = {}) =>
+  const mesh = (
+    ref: RefObject<THREE.InstancedMesh | null>,
+    geo: THREE.BufferGeometry,
+    count: number,
+    opts: { shadow?: boolean; roughness?: number; map?: THREE.Texture; bumpMap?: THREE.Texture; bumpScale?: number } = {}
+  ) =>
     count > 0 ? (
       <instancedMesh ref={ref} args={[geo, undefined, count]} castShadow={opts.shadow} raycast={noRaycast} frustumCulled={false}>
-        <meshStandardMaterial vertexColors roughness={opts.roughness ?? 0.85} />
+        <meshStandardMaterial vertexColors roughness={opts.roughness ?? 0.85} map={opts.map} bumpMap={opts.bumpMap} bumpScale={opts.bumpScale ?? 0.02} />
       </instancedMesh>
     ) : null;
 
   const G = GEOMETRY;
   return (
     <group>
-      {mesh(refs.torso, G.torso, people.length, { shadow })}
-      {mesh(refs.head, G.head, people.length, { roughness: 0.6 })}
-      {mesh(refs.hairShort, G.hairShort, counts.short, { roughness: 0.7 })}
-      {mesh(refs.hairLong, G.hairLong, counts.long, { roughness: 0.7 })}
-      {mesh(refs.legL, G.leg, people.length, { shadow })}
-      {mesh(refs.legR, G.leg, people.length, { shadow })}
-      {mesh(refs.armL, G.arm, people.length)}
-      {mesh(refs.armR, G.arm, people.length)}
+      {mesh(refs.torso, G.torso, people.length, { shadow, map: cloth, bumpMap: clothBump, bumpScale: 0.02, roughness: 0.9 })}
+      {mesh(refs.head, G.head, people.length, { roughness: 0.55, map: skin, bumpMap: skinRelief, bumpScale: 0.012 })}
+      {mesh(refs.hairShort, G.hairShort, counts.short, { roughness: 0.62, map: hair })}
+      {mesh(refs.hairLong, G.hairLong, counts.long, { roughness: 0.62, map: hair })}
+      {mesh(refs.legL, G.leg, people.length, { shadow, map: cloth, bumpMap: clothBump, bumpScale: 0.015 })}
+      {mesh(refs.legR, G.leg, people.length, { shadow, map: cloth, bumpMap: clothBump, bumpScale: 0.015 })}
+      {mesh(refs.armL, G.arm, people.length, { map: cloth, bumpMap: clothBump, bumpScale: 0.015 })}
+      {mesh(refs.armR, G.arm, people.length, { map: cloth, bumpMap: clothBump, bumpScale: 0.015 })}
     </group>
   );
 }

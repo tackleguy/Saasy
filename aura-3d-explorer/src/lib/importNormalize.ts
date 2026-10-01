@@ -22,6 +22,7 @@
  */
 import * as THREE from "three";
 import { MODEL_SCALE } from "@/lib/tower";
+import { plasterBump, plasterTexture, repeatTexture } from "@/components/3d/textures";
 
 export type UnitId = "m" | "mm" | "cm" | "ft" | "in" | "declared" | "unitless";
 
@@ -173,8 +174,11 @@ const GLASS_RE = /glass|glaz|window|vitr|curtain|pane|fenster|vidrio|verre/i;
 export function applyArchMaterials(root: THREE.Object3D, { edges = true }: { edges?: boolean } = {}): MaterialReport {
   const plaster = new THREE.MeshPhysicalMaterial({
     name: "aura-plaster",
-    color: 0xece6dc,
-    roughness: 0.75,
+    color: 0xffffff,
+    map: repeatTexture(plasterTexture("#ece6dc"), 6, 6),
+    bumpMap: repeatTexture(plasterBump("#ece6dc"), 6, 6),
+    bumpScale: 0.02,
+    roughness: 0.72,
     metalness: 0,
     clearcoat: 0,
     side: THREE.DoubleSide, // CAD exports often have inconsistent winding

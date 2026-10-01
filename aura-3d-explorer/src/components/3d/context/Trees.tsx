@@ -10,7 +10,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { LAYOUT, pointInRect, type UWRect } from "@/lib/siteLayout";
 import type { CityPreset } from "@/lib/cityPresets";
-import { barkTexture, leafTexture } from "../textures";
+import { barkBump, barkTexture, leafBump, leafTexture, repeatTexture } from "../textures";
 import { noRaycast, placeUW, rng, uploadInstances } from "./shared";
 
 interface Tree {
@@ -106,8 +106,11 @@ const PALM_GEOMETRY = (() => {
         idx.push(b, n, b + 1, b + 1, n, n + 1, b + 1, n + 1, b + 2, b + 2, n + 1, n + 2);
       }
     }
+    const uv: number[] = [];
+    for (let k = 0; k <= SEG; k++) uv.push(0, k / SEG, 0.5, k / SEG, 1, k / SEG);
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
     g.setIndex(idx);
     fronds.push(g);
   }
@@ -129,10 +132,10 @@ function Palms({ trees }: { trees: Tree[] }) {
   return (
     <group>
       <instancedMesh ref={(m) => uploadInstances(m, matrices)} args={[PALM_GEOMETRY.trunk, undefined, trees.length]} castShadow raycast={noRaycast}>
-        <meshStandardMaterial map={barkTexture()} color="#b39c7c" roughness={0.95} />
+        <meshStandardMaterial map={barkTexture()} bumpMap={barkBump()} bumpScale={0.06} color="#c4a882" roughness={0.92} />
       </instancedMesh>
       <instancedMesh ref={(m) => uploadInstances(m, matrices, colors)} args={[PALM_GEOMETRY.crown, undefined, trees.length]} castShadow raycast={noRaycast}>
-        <meshStandardMaterial roughness={0.8} side={THREE.DoubleSide} />
+        <meshStandardMaterial map={leafTexture()} bumpMap={leafBump()} bumpScale={0.04} roughness={0.78} side={THREE.DoubleSide} />
       </instancedMesh>
     </group>
   );
@@ -145,8 +148,10 @@ export default function Trees({ preset, clearings = [] }: { preset: CityPreset; 
   const trees = useMemo(() => all.filter((t) => t.species !== PALM), [all]);
   const palms = useMemo(() => all.filter((t) => t.species === PALM), [all]);
   const geos = useMemo(() => [0, 1, 2].map(canopyGeometry), []);
-  const bark = barkTexture();
-  const leaf = leafTexture();
+  const bark = useMemo(() => repeatTexture(barkTexture(), 2, 3), []);
+  const barkRelief = useMemo(() => repeatTexture(barkBump(), 2, 3), []);
+  const leaf = useMemo(() => repeatTexture(leafTexture(), 2, 2), []);
+  const leafRelief = useMemo(() => repeatTexture(leafBump(), 2, 2), []);
 
   const trunk = useMemo(
     () => trees.map((t) => placeUW(t.u, t.w, 0.85 * t.s, new THREE.Quaternion(), new THREE.Vector3(t.s, t.s, t.s))),
@@ -158,7 +163,7 @@ export default function Trees({ preset, clearings = [] }: { preset: CityPreset; 
       <Palms trees={palms} />
       {trees.length > 0 && <instancedMesh ref={(m) => uploadInstances(m, trunk)} args={[undefined, undefined, trees.length]} castShadow raycast={noRaycast}>
         <cylinderGeometry args={[0.06, 0.12, 1.7, 7]} />
-        <meshStandardMaterial map={bark} roughness={0.95} />
+        <meshStandardMaterial map={bark} bumpMap={barkRelief} bumpScale={0.08} roughness={0.92} />
       </instancedMesh>}
       {geos.map((geo, species) => {
         const items = trees.filter((t) => t.species === species);
@@ -169,7 +174,7 @@ export default function Trees({ preset, clearings = [] }: { preset: CityPreset; 
         const colors = items.map((t) => t.hue);
         return (
           <instancedMesh key={species} ref={(m) => uploadInstances(m, matrices, colors)} args={[geo, undefined, items.length]} castShadow receiveShadow raycast={noRaycast}>
-            <meshStandardMaterial map={leaf} roughness={0.9} />
+            <meshStandardMaterial map={leaf} bumpMap={leafRelief} bumpScale={0.06} roughness={0.82} />
           </instancedMesh>
         );
       })}

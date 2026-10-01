@@ -24,7 +24,7 @@ import { useFrame } from "@react-three/fiber";
 import { liftDims, liftState } from "@/lib/lift";
 import { liftBankDoors, LiftBankSignals } from "./interior/LiftBank";
 import CoreService, { coreShell } from "./interior/CoreService";
-import { concreteTexture } from "./textures";
+import { brushedMetalTexture, concreteBump, concreteTexture, repeatTexture, stoneBump, stoneTexture } from "./textures";
 
 const noRaycast = () => null;
 
@@ -47,9 +47,23 @@ export default function LiftCore({ coreSize, floorHeight, slab, open = false, wa
   const ow = L.opening / 2;
   const top = slab + L.cabH;
 
-  const concrete = useMemo(() => new THREE.MeshStandardMaterial({ map: concreteTexture(), color: "#e2dcd1", roughness: 0.9 }), []);
-  const steel = useMemo(() => new THREE.MeshStandardMaterial({ color: "#c7ccd2", metalness: 0.85, roughness: 0.32 }), []);
-  const leafMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#b9a78a", metalness: 0.85, roughness: 0.3 }), []);
+  const concrete = useMemo(() => {
+    const rx = Math.max(1, c / 2);
+    const ry = Math.max(1, H / 2);
+    return new THREE.MeshStandardMaterial({
+      map: repeatTexture(concreteTexture(), rx, ry),
+      bumpMap: repeatTexture(concreteBump(), rx, ry),
+      bumpScale: 0.04,
+      color: "#efeae3",
+      roughness: 0.88,
+    });
+  }, [c, H]);
+  const steel = useMemo(() => new THREE.MeshStandardMaterial({ map: repeatTexture(brushedMetalTexture("#d5dbe2"), 4, 6), metalness: 0.88, roughness: 0.28, envMapIntensity: 1.1 }), []);
+  const leafMat = useMemo(() => new THREE.MeshStandardMaterial({ map: repeatTexture(brushedMetalTexture("#c4b496"), 2, 4), metalness: 0.8, roughness: 0.3, envMapIntensity: 0.95 }), []);
+  const cabFloor = useMemo(
+    () => new THREE.MeshStandardMaterial({ map: repeatTexture(stoneTexture(), 3, 4), bumpMap: repeatTexture(stoneBump(), 3, 4), bumpScale: 0.03, color: "#5e5952", roughness: 0.38, metalness: 0.08 }),
+    []
+  );
   const others = liftBankDoors(c, slab, L.cabH, true);
   const shell = coreShell(c, H, slab, open);
 
@@ -85,7 +99,7 @@ export default function LiftCore({ coreSize, floorHeight, slab, open = false, wa
       <group>
         <mesh position={[0, slab + 0.003, (L.zBack + L.zFront) / 2]} rotation-x={-Math.PI / 2} raycast={noRaycast} receiveShadow>
           <planeGeometry args={[L.cabW, L.cabD]} />
-          <meshStandardMaterial color="#3a3835" roughness={0.35} metalness={0.1} />
+          <meshStandardMaterial map={cabFloor.map} bumpMap={cabFloor.bumpMap} bumpScale={0.03} color="#5e5952" roughness={0.38} metalness={0.08} />
         </mesh>
         <mesh position={[0, slab + L.cabH / 2, L.zBack + 0.004]} material={steel} raycast={noRaycast}>
           <planeGeometry args={[L.cabW - 0.01, L.cabH - 0.01]} />
@@ -105,7 +119,7 @@ export default function LiftCore({ coreSize, floorHeight, slab, open = false, wa
         {/* Handrail on the back wall */}
         <mesh position={[0, slab + 0.25, L.zBack + 0.02]} raycast={noRaycast}>
           <boxGeometry args={[L.cabW * 0.8, 0.012, 0.012]} />
-          <meshStandardMaterial color="#c9a24a" metalness={1} roughness={0.28} />
+          <meshStandardMaterial map={brushedMetalTexture("#c9a24a")} metalness={1} roughness={0.26} />
         </mesh>
         {/* Button panel on the right wall, by the door */}
         <mesh position={[cw - 0.008, slab + 0.3, L.zFront - 0.08]} rotation-y={-Math.PI / 2} raycast={noRaycast}>

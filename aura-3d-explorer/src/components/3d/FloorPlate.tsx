@@ -64,7 +64,7 @@ import {
   shapedEdges,
   UNIT_BOX,
 } from "./facadeGeometry";
-import { concreteTexture, marbleTexture, plasterTexture, stoneTexture, woodTexture } from "./textures";
+import { brushedMetalTexture, concreteBump, concreteTexture, marbleBump, marbleTexture, plasterBump, plasterTexture, repeatTexture, stoneBump, stoneTexture, woodBump, woodTexture } from "./textures";
 import { DETAIL } from "./layers";
 import { SETTLE_MS } from "./staticShadows";
 import { mergeTag } from "./mergedStatics";
@@ -216,19 +216,43 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
   const stoneMat = useMemo(() => {
     // ExtrudeGeometry UVs are in scene units, so one stone tile ≈ 2 units.
     const map = stoneTexture().clone();
+    const bump = stoneBump().clone();
     map.repeat.set(0.5, 0.5);
+    bump.repeat.set(0.5, 0.5);
     map.needsUpdate = true;
-    return new THREE.MeshStandardMaterial({ color: "#f2ece2", map, roughness: 0.8 });
+    bump.needsUpdate = true;
+    return new THREE.MeshStandardMaterial({ color: "#f7f3ec", map, bumpMap: bump, bumpScale: 0.05, roughness: 0.72 });
   }, []);
   // Interior floor finish per zone: travertine, polished concrete, oak, marble.
-  const finishMap = useMemo(() => {
-    const src = floor.zone === "podium" ? stoneTexture() : floor.zone === "office" ? concreteTexture() : floor.zone === "residential" ? woodTexture("#c9a57a", "#8b6a48") : marbleTexture();
-    const t = src.clone();
+  const finish = useMemo(() => {
+    const src =
+      floor.zone === "podium"
+        ? { map: stoneTexture(), bump: stoneBump() }
+        : floor.zone === "office"
+          ? { map: concreteTexture(), bump: concreteBump() }
+          : floor.zone === "residential"
+            ? { map: woodTexture("#c9a57a", "#8b6a48"), bump: woodBump("#c9a57a", "#8b6a48") }
+            : { map: marbleTexture(), bump: marbleBump() };
     const reps = floor.zone === "residential" ? 5 : 3;
-    t.repeat.set(Math.max(1, Math.round(floor.width * reps * 0.35)), Math.max(1, Math.round(floor.depth * reps * 0.35)));
-    t.needsUpdate = true;
-    return t;
+    const rx = Math.max(1, Math.round(floor.width * reps * 0.35));
+    const ry = Math.max(1, Math.round(floor.depth * reps * 0.35));
+    return { map: repeatTexture(src.map, rx, ry), bump: repeatTexture(src.bump, rx, ry) };
   }, [floor.zone, floor.width, floor.depth]);
+  const coreTex = useMemo(() => {
+    const rx = Math.max(1, coreSize / 2);
+    const ry = Math.max(1, floor.height / 2);
+    return { map: repeatTexture(concreteTexture(), rx, ry), bump: repeatTexture(concreteBump(), rx, ry) };
+  }, [coreSize, floor.height]);
+  const slabTex = useMemo(() => {
+    const rx = Math.max(1, floor.width / 3);
+    const ry = Math.max(1, floor.depth / 3);
+    return { map: repeatTexture(concreteTexture(), rx, ry), bump: repeatTexture(concreteBump(), rx, ry) };
+  }, [floor.width, floor.depth]);
+  const ceilTex = useMemo(() => {
+    const rx = Math.max(1, (floor.width - inset) / 4);
+    const ry = Math.max(1, (floor.depth - inset) / 4);
+    return { map: repeatTexture(plasterTexture("#f3efe8"), rx, ry), bump: repeatTexture(plasterBump("#f3efe8"), rx, ry) };
+  }, [floor.width, floor.depth, inset]);
   useEffect(() => () => stoneMat.dispose(), [stoneMat]);
 
   const edges = shaped
@@ -334,10 +358,10 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         <>
           <mesh position={[0, floor.height / 2, 0]} castShadow receiveShadow raycast={() => null} userData={TAG.core}>
             <boxGeometry args={[coreSize, floor.height, coreSize]} />
-            <meshStandardMaterial ref={coreMat} map={concreteTexture()} color="#e2dcd1" roughness={0.9} emissive={HIGHLIGHT} emissiveIntensity={0} />
+            <meshStandardMaterial ref={coreMat} map={coreTex.map} bumpMap={coreTex.bump} bumpScale={0.04} color="#efeae3" roughness={0.88} emissive={HIGHLIGHT} emissiveIntensity={0} />
           </mesh>
           <mesh geometry={doors} raycast={() => null} layers={DETAIL} userData={TAG.doors}>
-            <meshStandardMaterial ref={doorMat} color="#b9a78a" metalness={0.85} roughness={0.3} />
+            <meshStandardMaterial ref={doorMat} map={brushedMetalTexture("#c4b496")} metalness={0.78} roughness={0.32} envMapIntensity={0.9} />
           </mesh>
         </>
       )}
@@ -354,7 +378,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
           userData={TAG.slab}
         >
           {!shaped && <boxGeometry args={[w + 0.1, SLAB_THICKNESS, d + 0.1]} />}
-          <meshStandardMaterial ref={slabMat} map={concreteTexture()} color="#e6e1d8" roughness={0.9} />
+          <meshStandardMaterial ref={slabMat} map={slabTex.map} bumpMap={slabTex.bump} bumpScale={0.045} color="#f0ebe4" roughness={0.86} />
         </mesh>
 
         {/* Curtain wall (the main hit target) */}
@@ -405,7 +429,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         {/* Bronze fins / mullions */}
         {fins && (
           <instancedMesh ref={finMesh} args={[UNIT_BOX, undefined, fins.length]} castShadow raycast={() => null} userData={TAG.fins}>
-            <meshStandardMaterial ref={finMat} color={BRONZE} metalness={0.6} roughness={0.35} roughnessMap={concreteTexture()} />
+            <meshStandardMaterial ref={finMat} map={brushedMetalTexture(BRONZE)} metalness={0.62} roughness={0.34} envMapIntensity={0.85} />
           </instancedMesh>
         )}
 
@@ -413,7 +437,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         {balconies && (
           <>
             <mesh geometry={shaped ? shapedBand(shape, w, d, 0.45, 0.07) : balconyBand(w, d, 0.45, 0.07)} position={[0, SLAB_THICKNESS - 0.07, 0]} castShadow receiveShadow raycast={() => null} userData={TAG.band}>
-              <meshStandardMaterial ref={bandMat} map={concreteTexture()} color="#f4f0e9" roughness={0.7} />
+              <meshStandardMaterial ref={bandMat} map={concreteTexture()} bumpMap={concreteBump()} bumpScale={0.03} color="#f7f3ec" roughness={0.68} />
             </mesh>
             <mesh geometry={shaped ? shapedBalustrade(shape, w, d, 0.45, 0.28) : balustrade(w, d, 0.45, 0.28)} position={[0, SLAB_THICKNESS, 0]} raycast={() => null} layers={DETAIL} userData={TAG.balus}>
               <meshPhysicalMaterial ref={balusMat} color="#d7e3e5" roughness={0.1} transparent opacity={0.3} depthWrite={false} />
@@ -442,7 +466,9 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
           {!shaped && <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />}
           <meshStandardMaterial
             ref={ceilMat}
-            map={plasterTexture()}
+            map={ceilTex.map}
+            bumpMap={ceilTex.bump}
+            bumpScale={0.012}
             roughness={0.95}
             side={THREE.DoubleSide}
             emissive={glowing ? WARM_GLOW : undefined}
@@ -461,7 +487,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
               raycast={() => null}
             >
               {!shaped && <planeGeometry args={[w - inset - 0.02, d - inset - 0.02]} />}
-              <meshStandardMaterial map={finishMap} color={look.finish} roughness={floor.zone === "crown" ? 0.2 : 0.55} />
+              <meshStandardMaterial map={finish.map} bumpMap={finish.bump} bumpScale={floor.zone === "residential" ? 0.03 : 0.02} color={look.finish} roughness={floor.zone === "crown" ? 0.16 : floor.zone === "office" ? 0.42 : 0.48} />
             </mesh>
             <FurnitureOverlay floor={floor} coreSize={coreSize} crownFloors={crownFloors} />
           </>

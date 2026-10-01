@@ -23,6 +23,7 @@ import { useFrame } from "@react-three/fiber";
 import type { Building } from "@/types";
 import { buildingHeight, explodedY } from "@/lib/tower";
 import { bankCoreLayout } from "./interior/LiftBank";
+import { brushedMetalTexture, concreteTexture } from "./textures";
 
 /** Distinct accent for everything "core" (shaft, lift cars, section poché edges). */
 export const CORE_ACCENT = "#c8553d";
@@ -61,8 +62,8 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
       shell: new THREE.MeshStandardMaterial({ color: CORE_ACCENT, emissive: CORE_ACCENT, emissiveIntensity: 0.25, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, roughness: 0.6 }),
       edge: new THREE.LineBasicMaterial({ color: CORE_ACCENT, transparent: true, opacity: 0 }),
       shaftEdge: new THREE.LineBasicMaterial({ color: CORE_ACCENT, transparent: true, opacity: 0 }),
-      car: new THREE.MeshStandardMaterial({ color: "#f4efe6", emissive: CORE_ACCENT, emissiveIntensity: 0.6, transparent: true, opacity: 0, roughness: 0.4, metalness: 0.3 }),
-      stair: new THREE.MeshStandardMaterial({ color: "#8a8178", transparent: true, opacity: 0, roughness: 0.9 }),
+      car: new THREE.MeshStandardMaterial({ map: brushedMetalTexture("#f4efe6"), color: "#fffaf4", emissive: CORE_ACCENT, emissiveIntensity: 0.55, transparent: true, opacity: 0, roughness: 0.32, metalness: 0.45 }),
+      stair: new THREE.MeshStandardMaterial({ map: concreteTexture(), color: "#8a8178", transparent: true, opacity: 0, roughness: 0.86 }),
       riser: new THREE.MeshStandardMaterial({ color: CORE_ACCENT, transparent: true, opacity: 0, roughness: 0.5, metalness: 0.4 }),
       chute: new THREE.MeshStandardMaterial({ color: "#c3cad1", emissive: "#5d6a75", emissiveIntensity: 0.35, transparent: true, opacity: 0, roughness: 0.28, metalness: 0.9 }),
     }),
