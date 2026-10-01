@@ -11,6 +11,10 @@
  *
  * Parts are modelled for a 1-unit-tall figure and scaled per person
  * (1.60–1.90 m ≈ 0.45–0.53 scene units).
+ *
+ * Standing and walking people are separate crowds: only standing people cast
+ * shadows (the sun's shadow map is static, see ../staticShadows), and the
+ * standing crowd uploads its matrices only when they change.
  */
 import { useMemo, useRef, type RefObject } from "react";
 import * as THREE from "three";
@@ -152,7 +156,20 @@ const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 
 export default function People({ preset, clearings = [] }: { preset: CityPreset; clearings?: UWRect[] }) {
-  const people = useMemo(() => layout(preset), [preset]);
+  const crowds = useMemo(() => {
+    const all = layout(preset);
+    return { standing: all.filter((p) => p.dir === 0), walking: all.filter((p) => p.dir !== 0) };
+  }, [preset]);
+  return (
+    <group>
+      <Crowd people={crowds.standing} clearings={clearings} shadow />
+      <Crowd people={crowds.walking} clearings={clearings} shadow={false} />
+    </group>
+  );
+}
+
+function Crowd({ people, clearings, shadow }: { people: Person[]; clearings: UWRect[]; shadow: boolean }) {
+  const anyWalking = useMemo(() => people.some((p) => p.dir !== 0), [people]);
   const refs = {
     torso: useRef<THREE.InstancedMesh>(null),
     head: useRef<THREE.InstancedMesh>(null),
@@ -202,6 +219,7 @@ export default function People({ preset, clearings = [] }: { preset: CityPreset;
     };
 
     const refresh = uploadedHidden.current !== hidden;
+    if (!anyWalking && !first.current && !refresh) return; // a standing crowd is static
     uploadedHidden.current = hidden;
     people.forEach((p, i) => {
       if (p.dir !== 0) {
@@ -259,12 +277,12 @@ export default function People({ preset, clearings = [] }: { preset: CityPreset;
   const G = GEOMETRY;
   return (
     <group>
-      {mesh(refs.torso, G.torso, people.length, { shadow: true })}
+      {mesh(refs.torso, G.torso, people.length, { shadow })}
       {mesh(refs.head, G.head, people.length, { roughness: 0.6 })}
       {mesh(refs.hairShort, G.hairShort, counts.short, { roughness: 0.7 })}
       {mesh(refs.hairLong, G.hairLong, counts.long, { roughness: 0.7 })}
-      {mesh(refs.legL, G.leg, people.length, { shadow: true })}
-      {mesh(refs.legR, G.leg, people.length, { shadow: true })}
+      {mesh(refs.legL, G.leg, people.length, { shadow })}
+      {mesh(refs.legR, G.leg, people.length, { shadow })}
       {mesh(refs.armL, G.arm, people.length)}
       {mesh(refs.armR, G.arm, people.length)}
     </group>

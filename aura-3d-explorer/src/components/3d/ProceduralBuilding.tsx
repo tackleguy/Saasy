@@ -17,6 +17,7 @@ import FloorPlate from "./FloorPlate";
 import CoreShaft from "./CoreShaft";
 import SectionCut from "./SectionCut";
 import FloorAnnotations from "./FloorAnnotations";
+import { useMergedStatics } from "./mergedStatics";
 
 interface Props {
   building: Building;
@@ -84,8 +85,13 @@ export default function ProceduralBuilding({ building, explosion, active, select
   const podium = floors[0];
   const hoveredHere = hovered && hovered.buildingId === building.id && hovered.index !== selectedIndex ? hovered : null;
 
+  // Idle (nothing moves or fades): batch the per-floor parts into a few meshes.
+  const root = useRef<THREE.Group>(null);
+  const idle = explosion === 0 && selectedIndex === null && !xray && !section && !walking;
+  useMergedStatics(root, building.id, floors, idle, hovered?.buildingId === building.id);
+
   return (
-    <group position={[building.position[0], 0, building.position[1]]}>
+    <group ref={root} position={[building.position[0], 0, building.position[1]]}>
       {floors.map((floor) => (
         <FloorPlate
           key={floor.index}

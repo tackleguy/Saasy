@@ -55,18 +55,19 @@ interface Props {
 }
 
 export default function PostEffects({ focus }: Props) {
+  const FX: string = typeof window !== "undefined" ? window.localStorage.fx ?? "" : ""; // TEMP-PERF
   const target = useMemo(() => (focus ? new THREE.Vector3(...focus) : null), [focus?.[0], focus?.[1], focus?.[2]]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <EffectComposer multisampling={4} enableNormalPass={false}>
-      <N8AO />
-      <Bloom luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={0.35} mipmapBlur />
+    <EffectComposer multisampling={FX.includes("noms") ? 0 : 4} enableNormalPass={false}>
+      {FX.includes("noao") ? <></> : <N8AO />}
+      {FX.includes("nobloom") ? <></> : <Bloom luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={0.35} mipmapBlur />}
       {target ? <DepthOfField target={target} focalLength={0.02} bokehScale={2} /> : <></>}
       <BrightnessContrast brightness={0} contrast={0.05} />
       <HueSaturation hue={0} saturation={0.06} />
       <Vignette offset={0.3} darkness={0.25} />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-      <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.18} />
+      {FX.includes("nonoise") ? <></> : <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.18} />}
     </EffectComposer>
   );
 }

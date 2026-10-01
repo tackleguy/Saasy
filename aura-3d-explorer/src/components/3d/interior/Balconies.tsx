@@ -33,6 +33,10 @@ import { useFrame } from "@react-three/fiber";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { BalconySpec, Pt } from "@/lib/roomPlan";
 import { pavingTexture } from "../textures";
+import { DETAIL } from "../layers";
+import { mergeTag } from "../mergedStatics";
+
+const TAG = { paving: mergeTag("balc-paving"), solid: mergeTag("balc-solid"), glass: mergeTag("balc-glass") };
 
 const noRaycast = () => null;
 
@@ -287,9 +291,9 @@ export default function Balconies({ specs, geoKey, dimmed = false, xray = false 
 
   return (
     <group>
-      {geo.paving && <mesh geometry={geo.paving} material={mats.paving} castShadow receiveShadow raycast={noRaycast} />}
-      {geo.solid && <mesh geometry={geo.solid} material={mats.solid} castShadow receiveShadow raycast={noRaycast} />}
-      {geo.glass && <mesh geometry={geo.glass} material={mats.glass} raycast={noRaycast} />}
+      {geo.paving && <mesh geometry={geo.paving} material={mats.paving} castShadow receiveShadow raycast={noRaycast} userData={TAG.paving} />}
+      {geo.solid && <mesh geometry={geo.solid} material={mats.solid} castShadow receiveShadow raycast={noRaycast} layers={DETAIL} userData={TAG.solid} />}
+      {geo.glass && <mesh geometry={geo.glass} material={mats.glass} raycast={noRaycast} layers={DETAIL} userData={TAG.glass} />}
     </group>
   );
 }

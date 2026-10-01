@@ -20,6 +20,7 @@ import type { Building } from "@/types";
 import { buildingHeight, explodedY } from "@/lib/tower";
 import { lineExtent, plateOutline, rotateY, type Pt } from "@/lib/plateOutline";
 import { SLAB_THICKNESS } from "./FurnitureOverlay";
+import { invalidateShadows, SHADOW_SETTLE_MS } from "./staticShadows";
 
 const POCHE = "#2b2724";
 const CORE_POCHE = "#7a2f1f";
@@ -74,6 +75,12 @@ export default function SectionCut({ building, explosion }: Props) {
     };
   }, [mats]);
 
+  // The cut also clips shadows: redraw the (static) shadow map when it turns, and on unmount.
+  useEffect(() => {
+    invalidateShadows(SHADOW_SETTLE_MS);
+    return () => invalidateShadows(SHADOW_SETTLE_MS);
+  }, [dirIdx]);
+
   const [bx, bz] = building.position;
   const dir = DIRS[dirIdx];
   // Cut line runs perpendicular to the camera axis, through the core centre.
@@ -108,6 +115,7 @@ export default function SectionCut({ building, explosion }: Props) {
                 mat.clippingPlanes = [plane];
                 mat.clipShadows = true;
                 clipped.current.add(mat);
+                invalidateShadows();
               }
             }
           }

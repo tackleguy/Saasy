@@ -10,6 +10,10 @@
  * double-decker). Each type draws as three instanced meshes (paint, glass,
  * tyres + lights), all sharing the same per-car matrix. Moving vehicles are
  * re-positioned every frame and wrap at the ends of the street.
+ *
+ * Parked and moving vehicles are separate fleets: only parked ones cast
+ * shadows, because the sun's shadow map is static (../staticShadows) and a
+ * moving caster would leave its shadow behind.
  */
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -76,15 +80,17 @@ function layout(preset: CityPreset): Car[] {
   return out;
 }
 
-function VehicleFleet({ type, cars }: { type: VehicleType; cars: Car[] }) {
+function VehicleFleet({ type, cars, shadow }: { type: VehicleType; cars: Car[]; shadow: boolean }) {
   const geo = vehicleGeometry(type);
   const body = useRef<THREE.InstancedMesh>(null);
   const glass = useRef<THREE.InstancedMesh>(null);
   const details = useRef<THREE.InstancedMesh>(null);
   const tmp = useMemo(() => ({ m: new THREE.Matrix4() }), []);
   const first = useRef(true);
+  const moving = cars.some((c) => c.dir !== 0);
 
   useFrame((_, dt) => {
+    if (!moving && !first.current) return; // a parked fleet is uploaded once
     const { m } = tmp;
     const step = Math.min(dt, 0.05);
     cars.forEach((c, i) => {
@@ -98,7 +104,7 @@ function VehicleFleet({ type, cars }: { type: VehicleType; cars: Car[] }) {
       glass.current?.setMatrixAt(i, m);
       details.current?.setMatrixAt(i, m);
     });
-    for (const ref of [body, glass, details]) if (ref.current) ref.current.instanceMatrix.needsUpdate = true;
+    if (moving || first.current) for (const ref of [body, glass, details]) if (ref.current) ref.current.instanceMatrix.needsUpdate = true;
     if (first.current && body.current) {
       cars.forEach((c, i) => body.current!.setColorAt(i, c.color));
       body.current.instanceColor!.needsUpdate = true;
@@ -108,7 +114,7 @@ function VehicleFleet({ type, cars }: { type: VehicleType; cars: Car[] }) {
 
   return (
     <group>
-      <instancedMesh ref={body} args={[geo.body, undefined, cars.length]} castShadow raycast={noRaycast} frustumCulled={false}>
+      <instancedMesh ref={body} args={[geo.body, undefined, cars.length]} castShadow={shadow} raycast={noRaycast} frustumCulled={false}>
         <meshPhysicalMaterial vertexColors roughness={0.32} metalness={0.35} clearcoat={0.8} clearcoatRoughness={0.12} envMapIntensity={1.1} />
       </instancedMesh>
       <instancedMesh ref={glass} args={[geo.glass, undefined, cars.length]} raycast={noRaycast} frustumCulled={false}>
@@ -124,12 +130,15 @@ function VehicleFleet({ type, cars }: { type: VehicleType; cars: Car[] }) {
 export default function Traffic({ preset }: { preset: CityPreset }) {
   const byType = useMemo(() => {
     const cars = layout(preset);
-    return TYPES.map((type) => ({ type, cars: cars.filter((c) => c.type === type) })).filter((g) => g.cars.length);
+    return TYPES.flatMap((type) => [
+      { type, parked: true, cars: cars.filter((c) => c.type === type && c.dir === 0) },
+      { type, parked: false, cars: cars.filter((c) => c.type === type && c.dir !== 0) },
+    ]).filter((g) => g.cars.length);
   }, [preset]);
   return (
     <group>
       {byType.map((g) => (
-        <VehicleFleet key={`${preset.id}:${g.type}`} type={g.type} cars={g.cars} />
+        <VehicleFleet key={`${preset.id}:${g.type}:${g.parked}`} type={g.type} cars={g.cars} shadow={g.parked} />
       ))}
     </group>
   );

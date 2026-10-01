@@ -3,17 +3,19 @@
  * Water — a planar-reflection surface with a scrolling procedural normal map
  * (ripples), plus a few motor boats that bob gently.
  *
- * High quality uses drei's MeshReflectorMaterial (the scene is re-rendered
- * from a mirrored camera into a blurred target); Low uses a glossy standard
- * material with the same normal map, which still catches the HDR sky.
+ * High quality uses a planar reflection (./WaterReflector: drei's
+ * MeshReflectorMaterial shader, re-rendered from a mirrored camera into a
+ * blurred target every other frame, without the small per-floor details);
+ * Low uses a glossy standard material with the same normal map, which still
+ * catches the HDR sky.
  */
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { MeshReflectorMaterial } from "@react-three/drei";
 import { LAYOUT, SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
 import { waterNormalTexture } from "../textures";
 import { ALONG_U, noRaycast, placeUW, rng, uploadInstances } from "./shared";
+import WaterReflector from "./WaterReflector";
 
 function Surface({ quality, color }: { quality: "high" | "low"; color: string }) {
   const depth = 460;
@@ -24,6 +26,8 @@ function Surface({ quality, color }: { quality: "high" | "low"; color: string })
     t.needsUpdate = true;
     return t;
   }, []);
+  const mesh = useRef<THREE.Mesh>(null);
+  const reflectorNormalScale = useMemo(() => new THREE.Vector2(0.22, 0.22), []);
   // Scroll the ripples slowly; two speeds would need two maps, one is enough at this scale.
   useFrame((_, dt) => {
     normal.offset.x += dt * 0.012;
@@ -31,11 +35,12 @@ function Surface({ quality, color }: { quality: "high" | "low"; color: string })
   });
 
   return (
-    <mesh position={[x, 0.008, z]} rotation={[-Math.PI / 2, 0, SITE_ROTATION_Y]} raycast={noRaycast}>
+    <mesh ref={mesh} position={[x, 0.008, z]} rotation={[-Math.PI / 2, 0, SITE_ROTATION_Y]} raycast={noRaycast}>
       {/* Wide enough (u ±550) that bridges at the ends of the street stand on water. */}
       <planeGeometry args={[1100, depth]} />
       {quality === "high" ? (
-        <MeshReflectorMaterial
+        <WaterReflector
+          mesh={mesh}
           resolution={768}
           blur={[300, 80]}
           mixBlur={0.8}
@@ -48,7 +53,7 @@ function Surface({ quality, color }: { quality: "high" | "low"; color: string })
           color={color}
           metalness={0.2}
           normalMap={normal}
-          normalScale={new THREE.Vector2(0.22, 0.22)}
+          normalScale={reflectorNormalScale}
           distortion={0.35}
           distortionMap={normal}
         />
@@ -91,7 +96,7 @@ function Boats() {
 
   return (
     <group>
-      <instancedMesh ref={hull} args={[undefined, undefined, boats.length]} castShadow raycast={noRaycast} frustumCulled={false}>
+      <instancedMesh ref={hull} args={[undefined, undefined, boats.length]} raycast={noRaycast} frustumCulled={false}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color="#f4f1ea" roughness={0.35} />
       </instancedMesh>

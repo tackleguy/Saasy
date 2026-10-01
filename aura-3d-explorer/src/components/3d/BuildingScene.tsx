@@ -17,7 +17,7 @@ import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import type { Building, BuildingId, FloorData } from "@/types";
-import { buildingHeight, floorCentre } from "@/lib/tower";
+import { buildingHeight, explodedY, floorCentre } from "@/lib/tower";
 import type { PhotoAngle, Quality } from "@/lib/explorer";
 import { uwToXZ } from "@/lib/siteLayout";
 import { getCityPreset, type CityId } from "@/lib/cityPresets";
@@ -30,6 +30,8 @@ import WalkControls, { type LiftLink } from "./WalkControls";
 import ImportedModel from "./ImportedModel";
 import ArchitectLayer from "./ArchitectLayer";
 import type { ArchitectSceneState } from "@/lib/architecture";
+import { consumeShadowUpdate, invalidateShadows, SHADOW_SETTLE_MS } from "./staticShadows";
+import { DETAIL_LAYER, RAYCAST_LAYER } from "./layers";
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
 export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
@@ -206,6 +208,75 @@ function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Pro
   return null;
 }
 
+/**
+ * Static shadow map (see ./staticShadows): turns off per-frame shadow
+ * rendering and redraws the map only on the main camera's render when
+ * something that casts shadows changed. Every value in `deps` that can move a
+ * shadow caster re-arms a SHADOW_SETTLE_MS window so eased transitions shadow
+ * correctly while they move.
+ */
+function StaticShadows({ deps }: { deps: unknown[] }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const get = useThree((s) => s.get);
+  useEffect(() => {
+    gl.shadowMap.autoUpdate = false;
+    invalidateShadows(SHADOW_SETTLE_MS);
+    const prev = scene.onBeforeRender;
+    // Runs inside gl.render() just before three draws the shadow maps.
+    scene.onBeforeRender = function (...args) {
+      prev.apply(this, args);
+      if (args[2] === get().camera && consumeShadowUpdate()) gl.shadowMap.needsUpdate = true;
+    };
+    return () => {
+      scene.onBeforeRender = prev;
+      gl.shadowMap.autoUpdate = true;
+    };
+  }, [gl, scene, get]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => invalidateShadows(SHADOW_SETTLE_MS), deps);
+  return null;
+}
+
+/**
+ * The main camera also sees DETAIL_LAYER (small per-floor parts: lift doors,
+ * ceilings, balcony furniture, outlines…). Off-screen cameras — the water's
+ * planar reflection — only see layer 0, so they skip those draws.
+ */
+function CameraLayers() {
+  const camera = useThree((s) => s.camera);
+  const raycaster = useThree((s) => s.raycaster);
+  useEffect(() => {
+    camera.layers.enable(DETAIL_LAYER);
+  }, [camera]);
+  // Pointer picking also hits glass parked on RAYCAST_LAYER while its building is batched.
+  useEffect(() => {
+    raycaster.layers.enable(RAYCAST_LAYER);
+  }, [raycaster]);
+  return null;
+}
+
+/**
+ * The isolated floor's warm indirect light. One light, always mounted (at
+ * intensity 0 when nothing is isolated): adding or removing a light changes
+ * every shader's light count, which recompiles all programs on site.
+ */
+function InteriorLight({ building, floor, explosion }: { building: Building; floor: FloorData | null; explosion: number }) {
+  const light = useRef<THREE.PointLight>(null);
+  useFrame((_, dt) => {
+    const l = light.current;
+    if (!l) return;
+    const k = 1 - Math.pow(0.0008, dt);
+    l.intensity = THREE.MathUtils.lerp(l.intensity, floor ? 3 : 0, k);
+    if (l.intensity < 1e-3) l.intensity = 0;
+    if (!floor) return;
+    l.distance = Math.max(floor.width, floor.depth);
+    const y = explodedY(floor, explosion) + floor.height * 0.85;
+    l.position.set(building.position[0], THREE.MathUtils.lerp(l.position.y, y, k), building.position[1]);
+  });
+  return <pointLight ref={light} color="#ffd9a8" intensity={0} decay={1.6} />;
+}
+
 /** Default when a caller doesn't wire the lift (no rides, no-op callbacks). */
 const NO_LIFT: LiftLink = { ride: { target: -1, nonce: 0 }, arrival: { index: -1, nonce: 0 }, onInside: () => {}, onFloor: () => {}, onArrive: () => {} };
 
@@ -269,7 +340,7 @@ export default function BuildingScene({
   return (
     <Canvas
       shadows="percentage"
-      dpr={high ? [1, 1.75] : 1}
+      dpr={high ? [1, 1.5] : 1}
       camera={{ position: [70, 22, 70], fov: 38, near: 0.1, far: 5000 }}
       gl={{
         antialias: !high, // the composer does its own multisampling
@@ -283,6 +354,10 @@ export default function BuildingScene({
     >
       {/* Auto-detect weak devices: sustained low FPS asks the parent to drop to Low */}
       <PerformanceMonitor onDecline={handleDecline} />
+      <CameraLayers />
+      <StaticShadows
+        deps={[buildings, activeBuildingId, explosion, selectedIndex, xray, section, walking, quality, city, siteEdits, importedModel, lift.ride.nonce, lift.arrival.nonce]}
+      />
 
       <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} />
       <SiteContext quality={quality} preset={preset} edits={siteEdits} />
@@ -307,6 +382,11 @@ export default function BuildingScene({
         );
       })}
 
+      <InteriorLight
+        building={building}
+        floor={selectedIndex !== null && !(importedOn && importedOn === building.id) ? building.floors[selectedIndex] ?? null : null}
+        explosion={explosion}
+      />
       {walking && selectedIndex !== null && (
         <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} />
       )}
