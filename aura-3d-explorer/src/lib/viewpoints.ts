@@ -19,6 +19,7 @@
  */
 import type { AmenityKind, FloorData } from "@/types";
 import { MODEL_SCALE, planOutline, pointInPolygon } from "./tower";
+import { DEFAULT_FIT, type FloorFit } from "./apartmentFit";
 import { coreLayout, coreServiceOpen } from "./coreLayout";
 import { layoutFloor, type Placement } from "@/components/3d/furniture/layouts";
 
@@ -102,11 +103,11 @@ function refuseView(floor: FloorData, coreSize: number): Viewpoint | null {
 const resCache = new Map<string, Viewpoint[]>();
 
 /** Residential views of the +X/+Z apartment, from the placed furniture. */
-function residentialViews(floor: FloorData, crownFloors: number, coreSize: number, A: number, B: number): Viewpoint[] {
-  const key = [floor.width, floor.depth, floor.rotationY.toFixed(4), coreSize, floor.shape?.kind, floor.shape?.amount, floor.zone].join(":");
+function residentialViews(floor: FloorData, crownFloors: number, coreSize: number, A: number, B: number, fit: FloorFit): Viewpoint[] {
+  const key = [floor.width, floor.depth, floor.rotationY.toFixed(4), coreSize, floor.shape?.kind, floor.shape?.amount, floor.zone, fit.scheme, fit.furniture].join(":");
   const hit = resCache.get(key);
   if (hit) return hit;
-  const all = layoutFloor("residential", A * 2, B * 2, coreSize / 2 / MODEL_SCALE, -floor.rotationY, 0, crownFloors, floor.shape);
+  const all = layoutFloor("residential", A * 2, B * 2, coreSize / 2 / MODEL_SCALE, -floor.rotationY, 0, crownFloors, floor.shape, undefined, fit);
   const q = all.filter((p) => p.x > 0 && p.z > 0);
   const find = (...ids: string[]) => q.find((p) => ids.includes(p.piece));
   const off = (p: Placement, dx: number, dz: number): [number, number] => [p.x + dx, p.z + dz];
@@ -155,12 +156,12 @@ function residentialViews(floor: FloorData, crownFloors: number, coreSize: numbe
   return out;
 }
 
-export function viewpointsFor(floor: FloorData, crownFloors = 2, coreSize?: number): Viewpoint[] {
+export function viewpointsFor(floor: FloorData, crownFloors = 2, coreSize?: number, fit: FloorFit = DEFAULT_FIT): Viewpoint[] {
   const A = floor.width / MODEL_SCALE / 2;
   const B = floor.depth / MODEL_SCALE / 2;
   if (floor.amenity) return amenityViewpoints(floor.amenity, A, B);
   if (coreSize !== undefined && (floor.zone === "residential" || floor.zone === "office")) {
-    const base = floor.zone === "residential" ? residentialViews(floor, crownFloors, coreSize, A, B) : viewpointsFor(floor, crownFloors);
+    const base = floor.zone === "residential" ? residentialViews(floor, crownFloors, coreSize, A, B, fit) : viewpointsFor(floor, crownFloors);
     const refuse = refuseView(floor, coreSize);
     return refuse ? [...base, refuse] : base;
   }
