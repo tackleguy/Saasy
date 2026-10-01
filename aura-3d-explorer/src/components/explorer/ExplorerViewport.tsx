@@ -58,7 +58,6 @@ interface Props {
 export default function ExplorerViewport({ explorer: x, metricsById, variant = "full", className, intro = true, architect }: Props) {
   const floorYield = x.selectedIndex !== null ? metricsById?.[x.building.id]?.floors[x.selectedIndex] ?? null : null;
 
-  const openPlan = () => x.setPlanImportOpen(true);
   return (
     <ProjectFloorPlansProvider plans={x.floorPlans}>
     <section aria-label={`3D model of ${x.building.name}`} className={clsx("relative overflow-hidden bg-stone", className)}>
@@ -187,11 +186,6 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             }}
           />
         </>
-      )}
-      {variant === "full" && !x.walking && !x.floorPlanFor(x.building.id) && (
-        <button type="button" onClick={openPlan} className="absolute left-1/2 top-3 z-10 -translate-x-1/2 border border-oak bg-paper/95 px-3 py-1.5 text-[11px] text-ink shadow-sm">
-          Floor plan required
-        </button>
       )}
       {variant === "full" && (
         <FloorPlanImportModal

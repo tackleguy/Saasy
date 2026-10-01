@@ -33,7 +33,7 @@ import { apartmentShaped } from "./apartmentShaped";
 import { MODEL_SCALE } from "@/lib/tower";
 import { galleryWidthM, LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
 import type { AmenityKind } from "@/types";
-import { DEFAULT_FIT, type ApartmentScheme, type FloorFit, type FurnitureSet } from "@/lib/apartmentFit";
+import { DEFAULT_FIT, layoutFit, type ApartmentScheme, type FloorFit, type FurnitureSet } from "@/lib/apartmentFit";
 
 export interface Placement {
   piece: PieceId;
@@ -381,17 +381,16 @@ export function layoutFloor(
   /** Shared amenity programme (see ./amenities) — replaces the zone recipe. */
   amenity?: AmenityKind,
   /** Room plan and furniture. The default is the original apartment recipe. */
-  fit: FloorFit = DEFAULT_FIT,
-  /** Every core on the floor, plate-frame metres. Omit for one core at the origin. */
-  placed?: PlacedCore[]
+  fit: FloorFit = DEFAULT_FIT
 ): Placement[] {
+  // Unfurnished floors keep the standard rooms; FurnitureOverlay just draws no pieces.
+  fit = layoutFit(fit);
   // Shaped residential floors search for their rooms (a few ms – tens of ms), and several views
   // (furniture, room plan, mini plan, viewpoints) ask for the same floor: memoise the result.
-  const coreKey = placed?.map((c) => `${c.x.toFixed(2)},${c.z.toFixed(2)},${c.half.toFixed(2)},${c.primary ? 1 : 0}`).join("|") ?? "";
-  const key = [zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape?.kind, shape?.amount, amenity ?? "", fit.scheme, fit.furniture, coreKey].join(":");
+  const key = [zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape?.kind, shape?.amount, amenity ?? "", fit.scheme, fit.furniture].join(":");
   const hit = layoutCache.get(key);
   if (hit) return hit.slice();
-  const out = planFloor(zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape, amenity, fit, placed);
+  const out = planFloor(zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, shape, amenity, fit);
   if (layoutCache.size >= 512) layoutCache.clear();
   layoutCache.set(key, out);
   return out.slice();

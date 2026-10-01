@@ -3,7 +3,7 @@
  * Every call is guarded (optional chaining, clamping, id validation) so a
  * sloppy command from a small model can never throw.
  */
-import type { AssistantAction } from "./protocol";
+import { intentFromText, type AssistantAction } from "./protocol";
 import type { AssistantRegistration } from "./AssistantBridge";
 import { PHOTO_ANGLES, type PhotoAngle } from "@/lib/explorer";
 import { CITY_PRESETS, type CityId } from "@/lib/cityPresets";
@@ -117,7 +117,7 @@ function furnish(a: Extract<AssistantAction, { type: "furnish" }>, x: NonNullabl
   const name = b.short ?? b.name;
   if (a.reset) {
     x.resetFloorFits?.(b.id);
-    return { label: `Restored the original apartment plans · ${name}`, ok: true };
+    return { label: `Cleared the apartment floors · ${name}`, ok: true };
   }
   if (a.vary) {
     x.varyFloorFits?.(b.id);
@@ -125,7 +125,9 @@ function furnish(a: Extract<AssistantAction, { type: "furnish" }>, x: NonNullabl
     if (first) x.selectFloor?.(first);
     return { label: `Each apartment floor has its own room plan · ${name}`, ok: true };
   }
-  const explicit = a.floor != null ? b.floors[Math.min(Math.max(1, Math.round(a.floor)), b.floors.length) - 1] : undefined;
+  // Small models copy floor numbers from the prompt's examples: keep the open floor unless the user named one.
+  const floorNum = a.floor != null && (!x.selectedFloor || new RegExp(`\\b${Math.round(a.floor)}\\b`).test(userText)) ? a.floor : undefined;
+  const explicit = floorNum != null ? b.floors[Math.min(Math.max(1, Math.round(floorNum)), b.floors.length) - 1] : undefined;
   const floor = apartmentFloor(b, explicit ?? (x.selectedFloor?.buildingId === b.id ? x.selectedFloor : null));
   if (!floor) return { label: `${name} has no apartment floors to rearrange`, ok: false };
   if (explicit && explicit !== floor) {
@@ -134,6 +136,12 @@ function furnish(a: Extract<AssistantAction, { type: "furnish" }>, x: NonNullabl
   const cur = x.floorFitOf?.(b.id, floor.index) ?? DEFAULT_FIT;
   let scheme = cur.scheme;
   let furniture = cur.furniture;
+  // A layout or set the user named outright beats the model's guess.
+  const said = intentFromText(userText);
+  if (said?.type === "furnish") {
+    if (said.scheme && said.scheme !== "next") a = { ...a, scheme: said.scheme };
+    if (said.set && said.set !== "standard") a = { ...a, set: said.set };
+  }
   if (a.scheme) {
     const next = resolveScheme(a.scheme);
     if (!next) return { label: `Unknown room plan “${a.scheme}”. Try ${APARTMENT_SCHEMES.join(", ")}`, ok: false };
@@ -144,7 +152,9 @@ function furnish(a: Extract<AssistantAction, { type: "furnish" }>, x: NonNullabl
     if (!next) return { label: `Unknown furniture “${a.set}”. Try ${FURNITURE_SETS.join(", ")}`, ok: false };
     furniture = next === "next" ? nextFurniture(cur.furniture) : next;
   }
-  if (!a.scheme && !a.set) scheme = nextScheme(cur.scheme);
+  // Small models often drop `set=` when asked to "add furniture" alongside a layout change.
+  if (!a.set && furniture === "none" && /\b(furnish|furniture|furnished|stage|staging|sofa|bed|table)\b/i.test(userText)) furniture = "standard";
+  if (!a.scheme && !a.set && furniture === cur.furniture) scheme = nextScheme(cur.scheme);
   x.selectFloor?.(floor);
   x.setFloorFit?.(b.id, floor.index, { scheme, furniture });
   return { label: `Floor ${floor.number} · ${SCHEME_COPY[scheme].label} · ${FURNITURE_COPY[furniture].label}`, ok: true };

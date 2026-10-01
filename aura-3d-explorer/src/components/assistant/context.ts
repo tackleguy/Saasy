@@ -91,7 +91,6 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
       walking: x.walking,
       photoAngle: x.photoAngle ?? null,
       city: x.city,
-      floorPlanRequired: true,
       floorPlan: x.floorPlanFor?.(x.building.id)
         ? {
             file: x.floorPlanFor(x.building.id)!.fileName,

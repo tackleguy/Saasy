@@ -16,7 +16,7 @@
  *   [[action:furnish scheme=living-out]]  room plan on an apartment floor
  *   [[action:furnish set=lounge]]         furniture set
  *   [[action:furnish vary=true]]          a different plan on every apartment floor
- *   [[action:furnish reset=true]]         original plans
+ *   [[action:furnish reset=true]]         empty corner-suite floors
  *
  * Parsing is stream-safe: complete commands are extracted, an unfinished
  * trailing `[[…` is hidden until it closes, and commands are stripped from the
@@ -105,6 +105,36 @@ export function toAction(verb: string, rawArgs: string): AssistantAction | null 
     default:
       return null;
   }
+}
+
+const SCHEME_WORDS: [RegExp, string][] = [
+  [/living (to|on|toward)s? the (glass|windows?|facade)|living[- ]out/i, "living-out"],
+  [/gallery/i, "gallery"],
+  [/open studio|studio (layout|plan|apartment|condo|rooms?)|one[- ]bed/i, "studio"],
+  [/corner (suites?|layout|plan)/i, "corner"],
+];
+const SET_WORDS: [RegExp, string][] = [
+  [/\b(remove|clear|empty|no|strip|take out)\b.*\bfurniture\b|\bunfurnish/i, "none"],
+  [/\blounge\b|\bcasual\b/i, "lounge"],
+  [/\bformal\b|\bpiano\b|\bsix[- ]seat/i, "formal"],
+  [/\b(add|put|place|stage|furnish|furnished|furniture)\b/i, "standard"],
+];
+
+/**
+ * What a plain-language request implies for the apartment fit, used when the
+ * model replies without a command. Null when the request isn't about rooms or furniture.
+ */
+export function intentFromText(text: string): AssistantAction | null {
+  const t = text.toLowerCase();
+  const aboutLayout = /\b(layout|floor ?plan|room plan|rooms|rearrange|reconfigure|redesign|condo|apartment)\b/.test(t);
+  const aboutFurniture = /furnish|furniture|\bstage\b|staging/.test(t);
+  if (!aboutLayout && !aboutFurniture) return null;
+  const scheme = SCHEME_WORDS.find(([re]) => re.test(t))?.[1] ?? (aboutLayout && /\b(change|switch|different|another|new|rearrange|redesign)\b/.test(t) ? "next" : undefined);
+  const set = aboutFurniture ? SET_WORDS.find(([re]) => re.test(t))?.[1] : undefined;
+  if (/\b(every|each|all) (apartment |condo )?floors?\b|\bvary\b/.test(t)) return { type: "furnish", vary: true };
+  if (!scheme && !set) return null;
+  const n = parseInt(t.match(/\b(?:floor|level)\s+(\d{1,3})\b/)?.[1] ?? "", 10);
+  return { type: "furnish", scheme, set, floor: Number.isFinite(n) ? n : undefined };
 }
 
 export interface ParsedStream {

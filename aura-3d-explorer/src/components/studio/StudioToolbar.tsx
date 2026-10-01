@@ -22,7 +22,7 @@ interface Props {
   siteRevenue: number;
   siteMarginPct: number;
   onImportCad: () => void;
-  /** Required floor-plan import. `ready` once this building has one. */
+  /** Optional floor-plan import. `planReady` once this building has one. */
   onImportPlan: () => void;
   planReady: boolean;
   /** Developer (finance) or Architect (design tools) mode. */
@@ -85,7 +85,7 @@ export default function StudioToolbar({ title, subtitle, viewMode, onViewModeCha
         {children}
         <button onClick={onImportPlan} className="btn-secondary py-2 text-xs" aria-label="Import floor plan">
           <FileBox size={14} aria-hidden />
-          <span className="hidden sm:inline">{planReady ? "Floor plan" : "Floor plan · Required"}</span>
+          <span className="hidden sm:inline">{planReady ? "Floor plan ✓" : "Import floor plan"}</span>
         </button>
         <button onClick={onImportCad} className="btn-secondary py-2 text-xs" aria-label="Import CAD">
           <UploadCloud size={14} aria-hidden />

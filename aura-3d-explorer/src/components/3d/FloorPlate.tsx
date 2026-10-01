@@ -394,6 +394,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
           geometry={shaped ? plateSolid(shape, w, d, -inset / 2, bodyH) : undefined}
           position={[0, shaped ? SLAB_THICKNESS : SLAB_THICKNESS + bodyH / 2, 0]}
           receiveShadow
+          onBeforeRender={glassOnBeforeRender}
           userData={glassTag(floor.zone, !!floor.amenity)}
         >
           {!shaped && <boxGeometry args={[w - inset, bodyH, d - inset]} />}

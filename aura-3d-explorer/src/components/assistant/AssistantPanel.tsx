@@ -19,7 +19,7 @@ import { ArrowUp, Check, Copy, CornerDownRight, Sparkles, Square, Trash2, X } fr
 import { EASE } from "@/components/ui/primitives";
 import { useAssistantBridge } from "./AssistantBridge";
 import { buildAssistantContext } from "./context";
-import { parseAssistantText, type AssistantAction } from "./protocol";
+import { intentFromText, parseAssistantText, type AssistantAction } from "./protocol";
 import { runAction, type ActionResult } from "./actions";
 
 type Status = "checking" | "online" | "offline";
@@ -234,7 +234,16 @@ export default function AssistantPanel() {
           patch((m) => ({ ...m, content: snapshot }));
           dispatch(parseAssistantText(raw).actions);
         }
-        dispatch(parseAssistantText(raw).actions);
+        const final = parseAssistantText(raw).actions;
+        dispatch(final);
+        // The model answered without touching the rooms the user asked about: apply the request directly.
+        if (!final.some((a) => a.type === "furnish" || a.type === "design")) {
+          const intent = intentFromText(prompt);
+          if (intent) {
+            const chip = runAction(intent, bridge?.current() ?? {}, prompt, (href) => router.push(href));
+            patch((m) => ({ ...m, chips: [...m.chips, chip] }));
+          }
+        }
         if (pendingTour) setTimeout(() => router.push("/tour"), 600);
       } catch (err) {
         if ((err as Error).name !== "AbortError") {

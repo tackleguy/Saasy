@@ -34,9 +34,9 @@ function N8AO() {
 
   useEffect(() => {
     const c = pass.configuration;
-    c.aoRadius = 1.2;
+    c.aoRadius = 1.4;
     c.distanceFalloff = 0.6;
-    c.intensity = 2.2;
+    c.intensity = 2.6;
     c.color = new THREE.Color("#3a3128");
     c.halfRes = true;
     c.depthAwareUpsampling = true;
@@ -63,9 +63,9 @@ export default function PostEffects({ focus }: Props) {
       {FX.includes("noao") ? <></> : <N8AO />}
       {FX.includes("nobloom") ? <></> : <Bloom luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={0.35} mipmapBlur />}
       {target ? <DepthOfField target={target} focalLength={0.02} bokehScale={2} /> : <></>}
-      <BrightnessContrast brightness={0} contrast={0.05} />
-      <HueSaturation hue={0} saturation={0.06} />
-      <Vignette offset={0.3} darkness={0.25} />
+      <BrightnessContrast brightness={0} contrast={0.09} />
+      <HueSaturation hue={0} saturation={0.1} />
+      <Vignette offset={0.3} darkness={0.28} />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
       {FX.includes("nonoise") ? <></> : <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.18} />}
     </EffectComposer>

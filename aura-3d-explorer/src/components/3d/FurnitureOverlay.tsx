@@ -99,7 +99,8 @@ interface Props {
 }
 
 export default function FurnitureOverlay({ floor, coreSize, crownFloors, fit = DEFAULT_FIT }: Props) {
-  const batches = useMemo(() => batchesFor(floor, coreSize, crownFloors, fit), [floor, coreSize, crownFloors, fit]);
+  const empty = fit.furniture === "none" && (floor.zone === "residential" || floor.zone === "crown") && !floor.amenity;
+  const batches = useMemo(() => (empty ? [] : batchesFor(floor, coreSize, crownFloors, fit)), [empty, floor, coreSize, crownFloors, fit]);
   const group = useRef<THREE.Group>(null);
 
   // Grow up from the slab on mount.

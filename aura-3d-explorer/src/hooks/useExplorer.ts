@@ -15,7 +15,7 @@ import type { PhotoAngle, Quality } from "@/lib/explorer";
 import type { Object3D } from "three";
 import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
 import { buildingClearing, PLINTH, type UWRect } from "@/lib/siteLayout";
-import { APARTMENT_SCHEMES, DEFAULT_FIT, FURNITURE_SETS, fitKey, type FloorFit } from "@/lib/apartmentFit";
+import { APARTMENT_SCHEMES, DEFAULT_FIT, FURNISHED_SETS, fitKey, type FloorFit } from "@/lib/apartmentFit";
 import { planForBuilding, type ProjectFloorPlan } from "@/lib/projectFloorPlan";
 
 /** Explosion factor applied by the "Exploded" view preset. */
@@ -131,7 +131,7 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
           if (f.zone !== "residential" && f.zone !== "crown") continue;
           next[fitKey(buildingId, f.index)] = {
             scheme: APARTMENT_SCHEMES[i % APARTMENT_SCHEMES.length],
-            furniture: FURNITURE_SETS[i % FURNITURE_SETS.length],
+            furniture: FURNISHED_SETS[i % FURNISHED_SETS.length],
           };
           i++;
         }
