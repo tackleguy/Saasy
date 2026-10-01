@@ -23,6 +23,7 @@ import { layoutFloor } from "@/components/3d/furniture/layouts";
 import { PIECES } from "@/components/3d/furniture/kit";
 import { CORE_ACCENT } from "@/components/3d/CoreShaft";
 import { interiorPlanFor } from "@/components/3d/interior/plan";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { SERVICE_ROOMS, isServiceRoom } from "@/components/3d/furniture/rooms";
 import { coreLayout, coreServiceOpen } from "@/lib/coreLayout";
 import { liftBank } from "@/lib/lift";
@@ -37,11 +38,12 @@ interface Props {
   crownFloors: number;
   /** Walk in from viewpoint `i` (lib/viewpoints). */
   onViewpoint?: (i: number) => void;
+  fit?: FloorFit;
 }
 
 const M = 1 / MODEL_SCALE;
 
-export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoint }: Props) {
+export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoint, fit = DEFAULT_FIT }: Props) {
   const plan = useMemo(() => {
     const A = (floor.width * M) / 2;
     const B = (floor.depth * M) / 2;
@@ -58,7 +60,7 @@ export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoin
     const coreHalfM = h * (Math.abs(Math.cos(r)) + Math.abs(Math.sin(r)));
     let rooms: { x: number; z: number; w: number; d: number; rot: number; piece: string }[] = [];
     try {
-      rooms = layoutFloor(floor.zone, floor.width * M, floor.depth * M, h, -r, floor.zone === "crown" ? floor.zoneIndex : 0, crownFloors, floor.shape).map((p) => ({
+      rooms = layoutFloor(floor.zone, floor.width * M, floor.depth * M, h, -r, floor.zone === "crown" ? floor.zoneIndex : 0, crownFloors, floor.shape, floor.amenity, fit).map((p) => ({
         ...p,
         w: PIECES[p.piece].w,
         d: PIECES[p.piece].d,
@@ -66,11 +68,11 @@ export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoin
     } catch {
       rooms = [];
     }
-    const views = viewpointsFor(floor, crownFloors, coreSize);
+    const views = viewpointsFor(floor, crownFloors, coreSize, fit);
     // Interior walls (solid runs between openings), plate-local metres.
     let walls: { a: [number, number]; b: [number, number]; t: number; glass: boolean }[] = [];
     try {
-      const ip = interiorPlanFor(floor, coreSize, crownFloors);
+      const ip = interiorPlanFor(floor, coreSize, crownFloors, fit);
       for (const w of ip.walls) {
         const L = Math.hypot(w.b[0] - w.a[0], w.b[1] - w.a[1]);
         if (L < 1e-3) continue;
@@ -110,7 +112,7 @@ export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoin
     const pad = Math.max(A, B) * 0.28 + 2;
     const scale = A * 2 > 40 ? 10 : 5;
     return { A, B, outline, core, rooms, views, north, pad, scale, coreHalfM, walls, coreParts, labels };
-  }, [floor, coreSize, crownFloors]);
+  }, [floor, coreSize, crownFloors, fit]);
 
   const { A, B, outline, core, rooms, views, north, pad, scale, coreHalfM, walls, coreParts, labels } = plan;
   const s = Math.max(A, B); // text / glyph scale

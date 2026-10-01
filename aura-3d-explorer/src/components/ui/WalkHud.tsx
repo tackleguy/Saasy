@@ -15,6 +15,7 @@ import clsx from "clsx";
 import type { Building, FloorData } from "@/types";
 import { crownFloorCount, ZONES } from "@/lib/tower";
 import { LIFT_VIEW, viewpointsFor } from "@/lib/viewpoints";
+import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { walkInput } from "@/lib/walkInput";
 
 interface Props {
@@ -29,6 +30,7 @@ interface Props {
   liftFloor?: number | null;
   /** Ride the lift to floor index. */
   onRide?: (index: number) => void;
+  fit?: FloorFit;
 }
 
 /** Lift car operating panel: one button per floor, top floor first. */
@@ -100,8 +102,8 @@ function PadButton({ axis, value, label, children }: { axis: "forward" | "strafe
   );
 }
 
-export default function WalkHud({ building, floor, viewIndex, onView, onExit, inLift = false, liftFloor = null, onRide }: Props) {
-  const views = viewpointsFor(floor, crownFloorCount(building), building.coreSize);
+export default function WalkHud({ building, floor, viewIndex, onView, onExit, inLift = false, liftFloor = null, onRide, fit = DEFAULT_FIT }: Props) {
+  const views = viewpointsFor(floor, crownFloorCount(building), building.coreSize, fit);
 
   return (
     <>
