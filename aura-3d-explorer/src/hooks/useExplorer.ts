@@ -15,6 +15,7 @@ import type { PhotoAngle, Quality } from "@/lib/explorer";
 import type { Object3D } from "three";
 import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
 import { buildingClearing, PLINTH, type UWRect } from "@/lib/siteLayout";
+import { APARTMENT_SCHEMES, DEFAULT_FIT, FURNITURE_SETS, fitKey, type FloorFit } from "@/lib/apartmentFit";
 
 /** Explosion factor applied by the "Exploded" view preset. */
 const EXPLODED_PRESET = 1.5;
@@ -86,6 +87,48 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
 
   const building = site.find((b) => b.id === activeBuildingId) ?? site[0];
   const selectedFloor: FloorData | null = selectedIndex !== null ? building.floors[selectedIndex] ?? null : null;
+  const [floorFits, setFloorFits] = useState<Record<string, FloorFit>>({});
+  const selectedFit: FloorFit = selectedFloor ? floorFits[fitKey(selectedFloor.buildingId, selectedFloor.index)] ?? DEFAULT_FIT : DEFAULT_FIT;
+  const floorFitOf = useCallback((buildingId: BuildingId, index: number): FloorFit => floorFits[fitKey(buildingId, index)] ?? DEFAULT_FIT, [floorFits]);
+  const setFloorFit = useCallback((buildingId: BuildingId, index: number, patch: Partial<FloorFit>) => {
+    setFloorFits((prev) => {
+      const key = fitKey(buildingId, index);
+      const cur = prev[key] ?? DEFAULT_FIT;
+      return { ...prev, [key]: { ...cur, ...patch } };
+    });
+  }, []);
+  const resetFloorFits = useCallback((buildingId?: BuildingId) => {
+    if (!buildingId) {
+      setFloorFits({});
+      return;
+    }
+    setFloorFits((prev) => {
+      const next = { ...prev };
+      const prefix = `${buildingId}:`;
+      for (const key of Object.keys(next)) if (key.startsWith(prefix)) delete next[key];
+      return next;
+    });
+  }, []);
+  const varyFloorFits = useCallback(
+    (buildingId: BuildingId) => {
+      const b = site.find((s) => s.id === buildingId);
+      if (!b) return;
+      setFloorFits((prev) => {
+        const next = { ...prev };
+        let i = 0;
+        for (const f of b.floors) {
+          if (f.zone !== "residential" && f.zone !== "crown") continue;
+          next[fitKey(buildingId, f.index)] = {
+            scheme: APARTMENT_SCHEMES[i % APARTMENT_SCHEMES.length],
+            furniture: FURNITURE_SETS[i % FURNITURE_SETS.length],
+          };
+          i++;
+        }
+        return next;
+      });
+    },
+    [site]
+  );
   const floorCount = building.floors.length;
 
   // The view-mode toggle reflects the current state rather than holding its own.
@@ -268,6 +311,11 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     setExplosion,
     selectedIndex,
     selectedFloor,
+    selectedFit,
+    floorFitOf,
+    setFloorFit,
+    resetFloorFits,
+    varyFloorFits,
     selectFloor,
     stepFloor,
     focusZone,

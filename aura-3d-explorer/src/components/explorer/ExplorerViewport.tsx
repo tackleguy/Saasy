@@ -82,6 +82,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         cameraHold={x.dragging}
         architect={architect}
         importedModel={x.showImported ? x.importedModel : null}
+        fit={x.selectedFit}
       />
 
       {variant === "bare" ? null : variant === "hero" ? (
@@ -105,7 +106,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         </div>
         </>
       ) : x.walking && x.selectedFloor ? (
-        <WalkHud building={x.building} floor={x.selectedFloor} viewIndex={x.viewIndex} onView={x.goToView} onExit={x.stopWalk} inLift={x.inLift} liftFloor={x.liftFloor} onRide={x.rideTo} />
+        <WalkHud building={x.building} floor={x.selectedFloor} viewIndex={x.viewIndex} onView={x.goToView} onExit={x.stopWalk} inLift={x.inLift} liftFloor={x.liftFloor} onRide={x.rideTo} fit={x.selectedFit} />
       ) : (
         <>
           <ViewportHud
@@ -171,6 +172,8 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             building={x.building}
             floor={x.selectedFloor}
             floorYield={floorYield}
+            fit={x.selectedFit}
+            onFit={(patch) => x.selectedFloor && x.setFloorFit(x.selectedFloor.buildingId, x.selectedFloor.index, patch)}
             onClose={() => x.selectFloor(null)}
             onStep={x.stepFloor}
             onWalk={x.startWalk}
