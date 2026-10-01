@@ -119,6 +119,14 @@ Common edits:
 - **Skylines** — each preset's `skyline` block in `src/lib/cityPresets.ts`: downtown
   clusters (centre, radii, peak storeys) shape the silhouette, plus the share of round,
   podium and slender towers and of spires. Distance haze is exponential, from `sky.fogFar`.
+- **Studio modes** — `/studio` has a Developer / Architect switch (`?mode=architect` links to
+  it). Developer is the finance dashboard. Architect swaps the sidebar for
+  `src/components/studio/ArchitectPanel.tsx`: plan and N/E/S/W elevations through an
+  orthographic camera clipped to the site, a measure tool (Shift for vertical), level markers,
+  section cut, core X-ray, clay model, sun study by month and solar time at the city's latitude,
+  a zoning envelope (height plane, FAR and coverage checks) and an area schedule with CSV export.
+  State lives in `src/hooks/useArchitect.ts`, maths in `src/lib/architecture.ts`, and the 3D
+  side in `src/components/3d/ArchitectLayer.tsx`.
 - **Site map** — the Map button in the explorer opens `src/components/explorer/SiteMap.tsx`:
   drag a building (or use the arrow keys) to move it; neighbours, trees and people under it
   are cleared and it gets a paved pad off the plot. Layout state lives in `useExplorer`

@@ -14,10 +14,17 @@
  * isolated, and the sidebar edits its pro forma. On small screens the panes
  * stack: viewport on top, cards below.
  *
+ * Two modes (toolbar switch, also `?mode=architect` in the URL):
+ *   • Developer — the finance dashboard: pro forma, chart, sensitivities,
+ *     commission, scenarios and the printable pro forma.
+ *   • Architect — ArchitectPanel replaces the sidebar: drawing views, measure,
+ *     level markers, section, clay, sun study, zoning envelope and the area
+ *     schedule, with their 3D counterparts in ArchitectLayer.
+ *
  * "Import CAD" opens CadUploadModal; a model with geometry replaces the
  * active building's procedural tower (see useExplorer.setImportedModel).
  */
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { FileDown } from "lucide-react";
 import type { Project } from "@/content/projects";
@@ -25,6 +32,8 @@ import { projectSite } from "@/content/projects";
 import { siteFloorCount } from "@/lib/tower";
 import { useYieldCalculator } from "@/hooks/useYieldCalculator";
 import { useExplorer } from "@/hooks/useExplorer";
+import { useArchitect, type StudioMode } from "@/hooks/useArchitect";
+import { getCityPreset } from "@/lib/cityPresets";
 import { useRegisterExplorer } from "@/components/assistant/AssistantBridge";
 import ExplorerViewport from "@/components/explorer/ExplorerViewport";
 import FinancialSidebar from "@/components/ui/FinancialSidebar";
@@ -35,6 +44,7 @@ import { SegmentedControl } from "@/components/ui/primitives";
 import StudioToolbar from "./StudioToolbar";
 import ScenarioDrawer from "./ScenarioDrawer";
 import ProFormaReport from "./ProFormaReport";
+import ArchitectPanel from "./ArchitectPanel";
 
 // The CAD modal pulls in Three's model loaders — load it only when first opened.
 const CadUploadModal = dynamic(() => import("@/components/ui/CadUploadModal"), { ssr: false });
@@ -45,6 +55,21 @@ export default function StudioApp({ project }: { project: Project }) {
   const yieldCalc = useYieldCalculator(siteBuildings, project.finance);
   const x = useExplorer(siteBuildings, { keyboard: true, keyboardPaused: cadOpen, city: project.backdrop });
   useRegisterExplorer(x, { project, yieldCalc }); // lets the AURA assistant see + drive this explorer
+
+  // Developer / Architect mode, mirrored in the URL (?mode=architect) so a mode can be linked.
+  const [mode, setModeState] = useState<StudioMode>("developer");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("mode") === "architect") setModeState("architect");
+  }, []);
+  const setMode = useCallback((m: StudioMode) => {
+    setModeState(m);
+    const url = new URL(window.location.href);
+    if (m === "architect") url.searchParams.set("mode", "architect");
+    else url.searchParams.delete("mode");
+    window.history.replaceState(null, "", url);
+  }, []);
+  const architect = mode === "architect";
+  const arch = useArchitect(x.site, { latitude: getCityPreset(x.city).latitude, siteAreaSqFt: project.siteAreaSqFt, active: architect });
 
   const building = x.building;
   const inputs = yieldCalc.inputsById[building.id];
@@ -61,12 +86,17 @@ export default function StudioApp({ project }: { project: Project }) {
         siteRevenue={yieldCalc.site.gdv}
         siteMarginPct={yieldCalc.site.marginOnGdvPct}
         onImportCad={() => setCadOpen(true)}
+        studioMode={mode}
+        onStudioModeChange={setMode}
+        summary={architect ? { label: "Site GFA · FAR", value: `${Math.round(arch.schedule.gfaM2).toLocaleString("en-US")} m²`, sub: `FAR ${arch.schedule.far.toFixed(2)}` } : undefined}
       >
         <ScenarioDrawer projectSlug={project.slug} current={yieldCalc.inputsById} onLoad={yieldCalc.load} explorer={x} />
-        <button onClick={() => window.print()} className="btn-secondary py-2 text-xs" aria-label="Export pro forma as PDF">
-          <FileDown size={14} aria-hidden />
-          <span className="hidden sm:inline">Export PDF</span>
-        </button>
+        {!architect && (
+          <button onClick={() => window.print()} className="btn-secondary py-2 text-xs" aria-label="Export pro forma as PDF">
+            <FileDown size={14} aria-hidden />
+            <span className="hidden sm:inline">Export PDF</span>
+          </button>
+        )}
         <div className="hidden w-[132px] xl:block" title={x.autoLowered ? "Switched to Low automatically to keep the frame rate smooth" : undefined}>
           <SegmentedControl
             ariaLabel="Rendering quality"
@@ -83,12 +113,16 @@ export default function StudioApp({ project }: { project: Project }) {
       </StudioToolbar>
 
       <div className="flex flex-1 flex-col lg:min-h-0 lg:flex-row">
-        <ExplorerViewport explorer={x} metricsById={yieldCalc.metricsById} className="h-[60dvh] min-h-[420px] shrink-0 lg:h-auto lg:min-w-0 lg:flex-1" />
+        <ExplorerViewport explorer={x} metricsById={yieldCalc.metricsById} architect={arch.scene} className="h-[60dvh] min-h-[420px] shrink-0 lg:h-auto lg:min-w-0 lg:flex-1" />
 
         <aside
-          aria-label="Financial dashboard"
+          aria-label={architect ? "Architect tools" : "Financial dashboard"}
           className="thin-scroll space-y-4 border-plaster bg-stone/40 p-3 sm:p-4 lg:w-[32%] lg:min-w-[360px] lg:flex-none lg:overflow-y-auto lg:border-l lg:p-5"
         >
+          {architect ? (
+            <ArchitectPanel arch={arch} explorer={x} projectName={project.name} />
+          ) : (
+          <>
           <FinancialSidebar
             buildings={siteBuildings}
             siteName={project.name}
@@ -106,6 +140,8 @@ export default function StudioApp({ project }: { project: Project }) {
           <SensitivityTable inputs={inputs} floors={building.floors} buildingName={building.short} />
           <CommissionModelCard metrics={metrics} site={yieldCalc.site} buildingName={building.short} />
           <p className="caption pb-2 pt-1 text-center">Illustrative figures only · not investment advice</p>
+          </>
+          )}
         </aside>
       </div>
 

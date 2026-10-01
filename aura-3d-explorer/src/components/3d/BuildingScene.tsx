@@ -28,6 +28,8 @@ import SiteContext, { type SiteEdits } from "./SiteContext";
 import PostEffects from "./PostEffects";
 import WalkControls, { type LiftLink } from "./WalkControls";
 import ImportedModel from "./ImportedModel";
+import ArchitectLayer from "./ArchitectLayer";
+import type { ArchitectSceneState } from "@/lib/architecture";
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
 export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
@@ -102,6 +104,8 @@ interface Props {
   cameraHold?: boolean;
   /** Imported CAD model (lib/importNormalize) shown in place of its building's procedural tower. */
   importedModel?: THREE.Object3D | null;
+  /** Studio Architect mode: drawing views, measure, levels, sun study, zoning, clay (see ArchitectLayer). */
+  architect?: ArchitectSceneState;
 }
 
 /** Translates app state into a camera goal and hands it to the GSAP tween hook. */
@@ -228,6 +232,7 @@ export default function BuildingScene({
   siteEdits,
   cameraHold = false,
   importedModel = null,
+  architect,
 }: Props) {
   const [hovered, setHovered] = useState<FloorData | null>(null);
   // Ignore frame-rate dips during the first seconds (shader compile, HDR decode).
@@ -243,14 +248,19 @@ export default function BuildingScene({
   const importedOn: BuildingId | null = importedModel ? (importedModel.userData.buildingId as BuildingId | undefined) ?? activeBuildingId : null;
   const importedBuilding = importedOn ? buildings.find((b) => b.id === importedOn) ?? null : null;
 
+  // Architect mode: orthographic drawing views take over the camera; the measure tool takes clicks.
+  const drawingView = !!architect && architect.view !== "perspective";
+  const measuring = !!architect?.measuring;
+
   // Clicking the selected floor again releases it.
   const handleSelect = useCallback(
     (floor: FloorData) => {
       if (walking) return; // clicks while walking are look-drags, not selections
+      if (measuring) return; // clicks place measure points
       const same = floor.buildingId === activeBuildingId && floor.index === selectedIndex;
       onSelect(same ? null : floor);
     },
-    [onSelect, activeBuildingId, selectedIndex, walking]
+    [onSelect, activeBuildingId, selectedIndex, walking, measuring]
   );
 
   // Depth of field focuses on the isolated floor (not while walking inside it).
@@ -268,13 +278,13 @@ export default function BuildingScene({
         toneMappingExposure: 1.05,
         powerPreference: "high-performance",
       }}
-      onPointerMissed={() => !walking && onSelect(null)}
+      onPointerMissed={() => !walking && !measuring && onSelect(null)}
       className="!absolute inset-0"
     >
       {/* Auto-detect weak devices: sustained low FPS asks the parent to drop to Low */}
       <PerformanceMonitor onDecline={handleDecline} />
 
-      <LightingEnvironment quality={quality} preset={preset} />
+      <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} />
       <SiteContext quality={quality} preset={preset} edits={siteEdits} />
       {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} />}
       {buildings.map((b) => {
@@ -300,7 +310,7 @@ export default function BuildingScene({
       {walking && selectedIndex !== null && (
         <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} />
       )}
-      <OrbitControls enabled={!walking} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={320} maxPolarAngle={Math.PI - 0.08} />
+      <OrbitControls enabled={!walking} enableRotate={!drawingView} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={drawingView ? 5000 : 320} maxPolarAngle={Math.PI - 0.08} />
       {!walking && <GroundClamp />}
       <CameraRig
         building={building}
@@ -308,13 +318,14 @@ export default function BuildingScene({
         explosion={explosion}
         selectedIndex={selectedIndex}
         resetNonce={resetNonce}
-        walking={walking}
+        walking={walking || drawingView}
         photoAngle={photoAngle}
         photoNonce={photoNonce}
         intro={intro}
         heightOverride={importedModel && importedOn === building.id ? (importedModel.userData.heightUnits as number | undefined) : undefined}
         hold={cameraHold}
       />
+      {architect && <ArchitectLayer state={architect} buildings={buildings} building={building} explosion={explosion} />}
       {captureRef && <CaptureBridge captureRef={captureRef} />}
       {high && <PostEffects focus={focus} />}
     </Canvas>

@@ -19,6 +19,7 @@ import dynamic from "next/dynamic";
 import clsx from "clsx";
 import type { BuildingId, YieldMetrics } from "@/types";
 import type { ExplorerState } from "@/hooks/useExplorer";
+import type { ArchitectSceneState } from "@/lib/architecture";
 import ViewportHud from "@/components/ui/ViewportHud";
 import FloorInspectorCard from "@/components/ui/FloorInspectorCard";
 import WalkHud from "@/components/ui/WalkHud";
@@ -48,9 +49,11 @@ interface Props {
   className?: string;
   /** Play the eye-level dolly-out opening shot. */
   intro?: boolean;
+  /** Studio Architect mode tools for the 3D scene (useArchitect().scene). */
+  architect?: ArchitectSceneState;
 }
 
-export default function ExplorerViewport({ explorer: x, metricsById, variant = "full", className, intro = true }: Props) {
+export default function ExplorerViewport({ explorer: x, metricsById, variant = "full", className, intro = true, architect }: Props) {
   const floorYield = x.selectedIndex !== null ? metricsById?.[x.building.id]?.floors[x.selectedIndex] ?? null : null;
 
   return (
@@ -77,6 +80,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         city={x.city}
         siteEdits={x.siteEdits}
         cameraHold={x.dragging}
+        architect={architect}
         importedModel={x.showImported ? x.importedModel : null}
       />
 

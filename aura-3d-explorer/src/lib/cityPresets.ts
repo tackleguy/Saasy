@@ -69,6 +69,8 @@ export interface CityPreset {
   label: string;
   /** One line shown under the picker. */
   blurb: string;
+  /** Latitude in degrees (north positive), for the Architect-mode sun study. */
+  latitude: number;
 
   sky: {
     /** Sun elevation above the horizon, degrees. */
@@ -188,6 +190,7 @@ const DEFAULT_TINTS: CityPreset["tints"] = {
 export const CITY_PRESETS: CityPreset[] = [
   {
     id: "generic",
+    latitude: 40.7,
     label: "Neutral",
     blurb: "Placeless waterfront context, soft afternoon light",
     sky: DEFAULT_SKY,
@@ -209,6 +212,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "new-york",
+    latitude: 40.71,
     label: "New York",
     blurb: "Hudson waterfront, brick walk-ups, deco setbacks, yellow cabs",
     sky: { ...DEFAULT_SKY, elevation: 26, turbidity: 6, haze: "#d9dde0", fogNear: 180, fogFar: 640, hemiSky: "#c8d6e6" },
@@ -240,6 +244,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "miami",
+    latitude: 25.76,
     label: "Miami",
     blurb: "Turquoise bay, white condo towers, pastel stucco and palms",
     sky: { ...DEFAULT_SKY, elevation: 42, turbidity: 3.2, rayleigh: 1.1, sunColor: "#fff3de", sunIntensity: 3.0, haze: "#dbe8ee", fogNear: 200, fogFar: 700, hemiSky: "#c4dcef", hemiGround: "#d6c9ae", envIntensity: 0.65 },
@@ -270,6 +275,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "los-angeles",
+    latitude: 34.05,
     label: "Los Angeles",
     blurb: "Warm haze, low stucco sprawl, a glass downtown and tall palms",
     sky: { ...DEFAULT_SKY, elevation: 22, turbidity: 8, rayleigh: 1.2, sunColor: "#ffdcb0", sunIntensity: 2.8, haze: "#e6ddce", fogNear: 150, fogFar: 560, hemiSky: "#d6dfe6", hemiGround: "#c8b590", envIntensity: 0.6 },
@@ -300,6 +306,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "chicago",
+    latitude: 41.88,
     label: "Chicago",
     blurb: "Lake blue water, stone and steel, dark tube towers",
     sky: { ...DEFAULT_SKY, elevation: 30, turbidity: 4.2, sunColor: "#fff0dc", haze: "#d7dfe5", fogNear: 180, fogFar: 620, hemiSky: "#c3d4e6" },
@@ -330,6 +337,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "san-francisco",
+    latitude: 37.77,
     label: "San Francisco",
     blurb: "Cool bay fog, pastel row houses, a red suspension bridge",
     sky: { ...DEFAULT_SKY, elevation: 24, turbidity: 7, rayleigh: 1.6, sunColor: "#fff1e2", sunIntensity: 2.3, haze: "#dde3e6", fogNear: 140, fogFar: 580, hemiSky: "#ccd8e2", hemiGround: "#b9b3a6", envIntensity: 0.6 },
@@ -360,6 +368,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "seattle",
+    latitude: 47.61,
     label: "Seattle",
     blurb: "Soft overcast, Puget Sound greys, evergreens and a saucer tower",
     sky: { ...DEFAULT_SKY, elevation: 34, turbidity: 10, rayleigh: 2.2, sunColor: "#f4f1ea", sunIntensity: 1.9, haze: "#d6dadb", fogNear: 140, fogFar: 560, hemiSky: "#d2d8de", hemiGround: "#a9aca2", envIntensity: 0.7 },
@@ -390,6 +399,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "boston",
+    latitude: 42.36,
     label: "Boston",
     blurb: "Charles River light, red-brick rows, a mirror-glass slab",
     sky: { ...DEFAULT_SKY, elevation: 27, turbidity: 5, sunColor: "#ffecd2", haze: "#dde1e2" },
@@ -419,6 +429,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "toronto",
+    latitude: 43.65,
     label: "Toronto",
     blurb: "Lake Ontario harbourfront, blue-glass condos and a needle tower",
     sky: { ...DEFAULT_SKY, elevation: 30, turbidity: 4.5, sunColor: "#fff0da", haze: "#d8e0e5", fogNear: 180, fogFar: 620 },
@@ -449,6 +460,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "london",
+    latitude: 51.51,
     label: "London",
     blurb: "Thames grey light, Portland stone and stock brick, red buses",
     sky: { ...DEFAULT_SKY, elevation: 20, turbidity: 9, rayleigh: 2, sunColor: "#f6ecdc", sunIntensity: 2.0, haze: "#d4d6d4", fogNear: 140, fogFar: 560, hemiSky: "#cfd5da", hemiGround: "#aca596", envIntensity: 0.65 },
@@ -485,6 +497,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
   {
     id: "dubai",
+    latitude: 25.2,
     label: "Dubai",
     blurb: "Desert haze, sand stone, blue glass supertalls and palms",
     sky: { ...DEFAULT_SKY, elevation: 36, turbidity: 10, rayleigh: 0.8, sunColor: "#fff0d4", sunIntensity: 3.0, haze: "#e8dfcd", fogNear: 150, fogFar: 620, hemiSky: "#dfe3e4", hemiGround: "#d7c29a", envIntensity: 0.65 },
