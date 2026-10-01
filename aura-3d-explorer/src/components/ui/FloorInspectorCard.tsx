@@ -13,6 +13,7 @@ import { fmtMoney, fmtNum } from "@/lib/format";
 import FloorPlanMini from "./FloorPlanMini";
 import AmenityIcon from "./AmenityIcon";
 import { AMENITIES, AMENITY_ACCENT, amenityName } from "@/lib/amenities";
+import { APARTMENT_SCHEMES, FURNITURE_COPY, FURNITURE_SETS, SCHEME_COPY, type FloorFit } from "@/lib/apartmentFit";
 
 interface Props {
   building: Building;
@@ -24,6 +25,29 @@ interface Props {
   onWalk: () => void;
   /** Walk in from a specific viewpoint (plan minimap). */
   onViewpoint?: (i: number) => void;
+  fit?: FloorFit;
+  onFit?: (patch: Partial<FloorFit>) => void;
+}
+
+function ChoiceRow<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { id: T; label: string }[]; onChange: (id: T) => void }) {
+  return (
+    <div className="mt-2">
+      <p className="caption mb-1">{label}</p>
+      <div className="flex flex-wrap gap-1" role="group" aria-label={label}>
+        {options.map((o) => (
+          <button
+            key={o.id}
+            type="button"
+            aria-pressed={value === o.id}
+            onClick={() => onChange(o.id)}
+            className={`rounded-[3px] border px-2 py-1 text-[10px] transition ${value === o.id ? "border-ink bg-ink text-paper" : "border-plaster text-ash hover:border-oak/40 hover:text-ink"}`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 /** "4 residences · 2 bed / 2 bath each", "Penthouse · 4 bed / 4 bath", … */
@@ -61,7 +85,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   );
 }
 
-export default function FloorInspectorCard({ building, floor, floorYield, onClose, onStep, onWalk, onViewpoint }: Props) {
+export default function FloorInspectorCard({ building, floor, floorYield, onClose, onStep, onWalk, onViewpoint, fit, onFit }: Props) {
   const floorCount = building.floors.length;
   return (
     <AnimatePresence mode="wait">
@@ -128,7 +152,17 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             {floor.amenity ? "Recessed sky-terrace glazing · warm interior light" : materialLine(floor.zone, building.facade)}
           </p>
 
-          <FloorPlanMini floor={floor} coreSize={building.coreSize} crownFloors={crownFloorCount(building)} onViewpoint={onViewpoint} />
+          {(floor.zone === "residential" || floor.zone === "crown") && !floor.amenity && fit && onFit && (
+            <div className="mt-3 border-t border-plaster pt-3">
+              <ChoiceRow label="Room plan" value={fit.scheme} options={APARTMENT_SCHEMES.map((id) => ({ id, label: SCHEME_COPY[id].label }))} onChange={(scheme) => onFit({ scheme })} />
+              <ChoiceRow label="Furniture" value={fit.furniture} options={FURNITURE_SETS.map((id) => ({ id, label: FURNITURE_COPY[id].label }))} onChange={(furniture) => onFit({ furniture })} />
+              <p className="mt-1.5 text-[10px] leading-snug text-ash">
+                {SCHEME_COPY[fit.scheme].blurb} {FURNITURE_COPY[fit.furniture].blurb}
+              </p>
+            </div>
+          )}
+
+          <FloorPlanMini floor={floor} coreSize={building.coreSize} crownFloors={crownFloorCount(building)} onViewpoint={onViewpoint} fit={fit} />
 
           <button
             onClick={onWalk}
