@@ -10,7 +10,8 @@
  * planner drops pieces that don't fit, and uses fallback spots), not from the
  * recipes, so rooms follow what is on the floor:
  *
- *   residential  • a corridor ring around the core (demising construction)
+ *   residential  • a corridor ring around the core (demising construction),
+ *                  as wide as the gallery (lib/coreLayout `galleryWidthM`)
  *                  with a bump that encloses the lift lobby in front of the
  *                  core's +Z face (building frame — the core never twists)
  *                • four demising walls on the plate axes, core → facade,
@@ -62,6 +63,7 @@
 import type { PlanShape, ZoneId } from "@/types";
 import { edgeNormal, offsetOutline, planOutline, pointInPolygon, type PlanPoint } from "@/lib/tower";
 import { isServiceRoom, SERVICE_ROOMS } from "@/components/3d/furniture/rooms";
+import { galleryWidthM } from "@/lib/coreLayout";
 
 export type Pt = PlanPoint;
 
@@ -187,8 +189,6 @@ export const DOOR_OPEN = (75 * Math.PI) / 180;
 const T_DEMISING = 0.22;
 const T_PARTITION = 0.13;
 const T_GLASS = 0.05;
-/** Corridor width around the core (matches the furniture planner's keep-out). */
-const CORRIDOR = 1.2;
 /** Gap left between a wall and furniture. */
 const CLEAR = 0.03;
 /** Room boxes grow this much around their furniture. */
@@ -658,9 +658,10 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
   const pieces = inp.pieces;
   const obstacles = pieces.map(pieceRect);
 
-  // Corridor ring (building frame) with a bump enclosing the lift lobby.
+  // Corridor ring (building frame) with a bump enclosing the lift lobby. Its
+  // width is the gallery the furniture planner keeps clear (lib/coreLayout).
   const withRing = inp.zone !== "crown";
-  const R = ch + CORRIDOR;
+  const R = ch + galleryWidthM(inp.zone, A, B, ch);
   const hb = Math.min(lobbyHW + 0.12, R - 0.3);
   const zb = Math.max(R + 0.3, ch + lobbyD + 0.12);
   const ringB: Pt[] = [

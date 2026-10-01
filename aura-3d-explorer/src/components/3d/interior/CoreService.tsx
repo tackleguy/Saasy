@@ -1,6 +1,7 @@
 "use client";
 /**
- * CoreService — the walkable service band of the core: passage, refuse room
+ * CoreService — the walkable service band of the core: passage (+ the walkway
+ * out through the −Z face), refuse room
  * with its chutes, electrical / riser closet.
  * -----------------------------------------------------------------------------
  * Building-local scene units (the core never twists), mounted by LiftCore on
@@ -132,6 +133,7 @@ export default function CoreService({ coreSize, floorHeight, slab }: Props) {
     <group>
       {/* Floors: stone passage, grey resin rooms */}
       <Box x0={p.x0} x1={p.x1} y0={slab} y1={y0} z0={p.z0} z1={p.z1} material={im.lobby} />
+      {sv.walk && <Box x0={sv.walk.x0} x1={sv.walk.x1} y0={slab} y1={y0} z0={sv.walk.z0} z1={sv.walk.z1} material={im.lobby} />}
       <Box x0={r.x0} x1={r.x1} y0={slab} y1={y0} z0={r.z0} z1={r.z1} material={m.resin} />
       <Box x0={e.x0} x1={e.x1} y0={slab} y1={y0} z0={e.z0} z1={e.z1} material={m.resin} />
       {/* Door-wall openings get the stone too, so the thresholds read */}

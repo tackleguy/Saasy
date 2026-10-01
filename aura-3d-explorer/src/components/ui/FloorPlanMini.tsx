@@ -95,6 +95,7 @@ export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoin
       cars: bank.cars.map((c) => quad(c.x - c.cabW / 2, c.x + c.cabW / 2, bank.zBack, bank.zFront)),
       stair: quad(lay.stair.x0, lay.stair.x1, lay.stair.z0, lay.stair.z1),
       passage: sv ? quad(sv.passage.x0, sv.passage.x1, sv.passage.z0, sv.passage.z1) : null,
+      walk: sv?.walk ? quad(sv.walk.x0, sv.walk.x1, sv.walk.z0, sv.walk.z1) : null,
       refuse: sv ? quad(sv.refuse.x0, sv.refuse.x1, sv.refuse.z0, sv.refuse.z1) : null,
       electrical: sv ? quad(sv.electrical.x0, sv.electrical.x1, sv.electrical.z0, sv.electrical.z1) : null,
       chutes: sv ? sv.chutes.map((k) => ({ c: P(k.x, k.z), r: k.r * M, kind: k.kind })) : [],
@@ -207,6 +208,7 @@ export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoin
           <polygon points={pts(coreParts.stair)} strokeDasharray="2 1.5" vectorEffect="non-scaling-stroke" />
         </g>
         {coreParts.passage && <polygon points={pts(coreParts.passage)} className="fill-paper" vectorEffect="non-scaling-stroke" />}
+        {coreParts.walk && <polygon points={pts(coreParts.walk)} className="fill-paper" vectorEffect="non-scaling-stroke" />}
         {coreParts.refuse && <polygon points={pts(coreParts.refuse)} className="fill-paper" fillOpacity={0.85} vectorEffect="non-scaling-stroke" />}
         {coreParts.electrical && <polygon points={pts(coreParts.electrical)} className="fill-paper" fillOpacity={0.6} vectorEffect="non-scaling-stroke" />}
         {coreParts.chutes.map((k) => (

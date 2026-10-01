@@ -9,10 +9,14 @@
  *   │  │L │ M │L │  │  lift bank (main walk-in lift M in the middle)
  *   ├──┴──┴───┴──┴──┤  z = passage.z1
  *   ═  service passage ═   open on BOTH ±X faces into the corridor ring
- *   ├──────┬──╥─┬─╥─┤  z = passage.z0 (doors off the passage)
- *   │stair │EL│ REF │  stair · electrical / riser closet · refuse room
- *   │      │  │▣ ▣  │  ▣ = refuse + recycling chutes (continuous, full height)
- *   └──────┴──┴─────┘  z = −h
+ *   ├────┬───┬──╥─┬─╥─┤  z = passage.z0 (doors off the passage)
+ *   │stair│ W │EL│ REF │  stair · walkway · electrical / riser closet · refuse room
+ *   │     │ ↕ │  │▣ ▣  │  ▣ = refuse + recycling chutes (continuous, full height)
+ *   └─────┘   └──┴─────┘  z = −h   (W opens onto the −Z face)
+ *
+ * The passage and the walkway W make a T through the core: from the
+ * gallery you can cross it east–west, or walk in from the back (−Z) face
+ * and out either side. W is dropped when the core is too small for it.
  *
  * On residential and office floors the passage and rooms are walkable
  * (`coreServiceOpen`); elsewhere that band is solid core. When the core is
@@ -29,6 +33,24 @@ import { liftBank, liftDims } from "./lift";
 
 /** Depth of the lift lobby kept clear in front of the bank, metres. */
 export const LOBBY_DEPTH_M = 1.8;
+
+/** Narrowest gallery (corridor ring) between the core and the units, metres. */
+export const GALLERY_MIN_M = 1.2;
+
+/**
+ * Width of the gallery round the core, metres — the walkway between the core
+ * and the residences (or office floor). Roomy plates get a generous
+ * lobby-gallery (up to 2.6 m on residential floors, like the supertall plans
+ * it is modelled on); small or tapered plates keep the 1.2 m minimum so the
+ * apartments still fit. Shared by the furniture planner, the room plan and
+ * the mini plan so walls, furniture and drawings agree.
+ */
+export function galleryWidthM(zone: ZoneId | string, halfWM: number, halfDM: number, coreHalfM: number): number {
+  if (zone === "crown") return GALLERY_MIN_M; // one home: no ring
+  const reach = Math.min(halfWM, halfDM) - coreHalfM; // core face → facade
+  const max = zone === "residential" ? 2.6 : 2.2;
+  return Math.round(Math.min(max, Math.max(GALLERY_MIN_M, reach * 0.24)) * 100) / 100;
+}
 
 export interface Box {
   x0: number;
@@ -55,6 +77,8 @@ export interface ChuteSpec {
 export interface CoreService {
   /** Through passage behind the lift bank (x0 = −h, x1 = +h). */
   passage: Box;
+  /** Walkway from the passage out through the −Z face (z0 = −h), or null on small cores. */
+  walk: Box | null;
   refuse: Box;
   electrical: Box;
   /** Door openings (x ranges) in the wall z ∈ [wall.z0, wall.z1] between the rooms and the passage. */
@@ -101,11 +125,17 @@ export function coreLayout(core: number): CoreLayout {
   const Ew = Math.min(Math.max(innerW * 0.17, 1.2 * s), 1.6 * s);
   const Sw = innerW - Rw - Ew - 2 * wT;
   const doorW = Math.min(0.95 * s, core * 0.3);
+  // Walkway through the back of the core, between the stair and the riser closet.
+  const Ww = 1.5 * s;
+  const withWalk = Sw - Ww - wT >= 2.2 * s;
+  const stairW = withWalk ? Sw - Ww - wT : Sw;
 
   let out: CoreLayout;
   if (D >= 2.2 * s && Sw >= 2.2 * s) {
-    const stair = { x0: xa, x1: xa + Sw, z0, z1: rz1 };
-    const electrical = { x0: stair.x1 + wT, x1: stair.x1 + wT + Ew, z0, z1: rz1 };
+    const stair = { x0: xa, x1: xa + stairW, z0, z1: rz1 };
+    const walk = withWalk ? { x0: stair.x1 + wT, x1: stair.x1 + wT + Ww, z0: -h, z1: pz0 } : null;
+    const elX = walk ? walk.x1 + wT : stair.x1 + wT;
+    const electrical = { x0: elX, x1: elX + Ew, z0, z1: rz1 };
     const refuse = { x0: electrical.x1 + wT, x1: xb, z0, z1: rz1 };
     const dw = 0.9 * s;
     const ex = (electrical.x0 + electrical.x1) / 2;
@@ -123,6 +153,7 @@ export function coreLayout(core: number): CoreLayout {
       stair: { ...stair, doorX: (stair.x0 + stair.x1) / 2, doorW },
       service: {
         passage: { x0: -h, x1: h, z0: pz0, z1: pz1 },
+        walk,
         refuse,
         electrical,
         refuseDoor: [rdx, rdx + dw],
@@ -165,7 +196,14 @@ export function coreBlocks(core: number, floorH: number, slab: number, open: boo
   if (sv) {
     const { refuse: r, electrical: e, wall } = sv;
     const doorTop = slab + Math.min(2.05 * MODEL_SCALE, floorH - slab - 0.2 * MODEL_SCALE);
-    out.push(b(-h, h, -h, r.z0), b(-h, e.x0, r.z0, wall.z1), b(e.x1, r.x0, r.z0, wall.z1), b(r.x1, h, r.z0, wall.z1));
+    const w = sv.walk;
+    if (w) {
+      // Back wall and stair block stop at the walkway; a wall separates it from the riser closet.
+      out.push(b(-h, w.x0, -h, r.z0), b(w.x1, h, -h, r.z0), b(-h, w.x0, r.z0, wall.z1), b(w.x1, e.x0, r.z0, wall.z1));
+    } else {
+      out.push(b(-h, h, -h, r.z0), b(-h, e.x0, r.z0, wall.z1));
+    }
+    out.push(b(e.x1, r.x0, r.z0, wall.z1), b(r.x1, h, r.z0, wall.z1));
     for (const [room, [d0, d1]] of [
       [e, sv.electricalDoor],
       [r, sv.refuseDoor],

@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * Works in real metres in the plate's local (un-twisted) frame. A tiny
  * planner rejects any piece that would leave the plate, clip the lift core
- * (plus a circulation corridor) or collide with a piece already placed, so
+ * (plus the gallery round it — lib/coreLayout `galleryWidthM`) or collide with a piece already placed, so
  * the same recipe adapts to every building's plate size. The core stays
  * square to the world while plates twist, so in the plate frame it is a
  * rotated square — tested exactly (separating axes), not by its bounding box.
@@ -29,7 +29,7 @@ import { PIECES, type PieceId } from "./kit";
 import { amenityLayout } from "./amenities";
 import { apartment } from "./apartment";
 import { MODEL_SCALE } from "@/lib/tower";
-import { LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
+import { galleryWidthM, LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
 import type { AmenityKind } from "@/types";
 
 export interface Placement {
@@ -47,18 +47,17 @@ interface Rect {
 }
 
 const WALL_MARGIN = 0.3;
-const CORRIDOR = 1.2;
 
 class Planner {
   readonly placements: Placement[] = [];
   private rects: Rect[] = [];
-  /** Keep-out half-size around the core (core + corridor), and its angle in the plate frame. */
+  /** Keep-out half-size around the core (core + gallery), and its angle in the plate frame. */
   private coreKeep: number;
   private coreCos: number;
   private coreSin: number;
 
-  constructor(private halfW: number, private halfD: number, coreHalf: number, coreAngle: number, private outline: PlanPoint[] | null = null) {
-    this.coreKeep = coreHalf + CORRIDOR;
+  constructor(private halfW: number, private halfD: number, coreHalf: number, coreAngle: number, private outline: PlanPoint[] | null = null, gallery = 1.2) {
+    this.coreKeep = coreHalf + gallery;
     // The world-square core rotated by `coreAngle` in the plate frame: its +X
     // axis is (cos a, −sin a) in plate (x, z) — the same frame lib/roomPlan
     // and the walk-through use (building +X = (cos r, sin r) with r = −a).
@@ -253,8 +252,8 @@ function podium(p: Planner, A: number, B: number) {
  * face, building frame) as an oriented keep-out in the plate frame — the same
  * box lib/roomPlan draws the ring round, so furniture never forces a hole in it.
  */
-function lobbyKeepOut(coreHalfM: number, coreAngle: number) {
-  const R = coreHalfM + CORRIDOR;
+function lobbyKeepOut(coreHalfM: number, coreAngle: number, gallery: number) {
+  const R = coreHalfM + gallery;
   const hb = Math.min(lobbyHalfWidthM(coreHalfM * 2 * MODEL_SCALE) + 0.12, R - 0.3);
   const zb = Math.max(R + 0.3, coreHalfM + LOBBY_DEPTH_M + 0.12);
   const r = -coreAngle;
@@ -287,8 +286,10 @@ export function layoutFloor(
   const A = widthM / 2;
   const B = depthM / 2;
   const outline = shape && shape.kind !== "rect" ? planOutline(shape, widthM, depthM) : null;
-  const p = new Planner(A, B, coreHalfM, coreAngle, outline);
-  if (zone !== "crown") p.keepOuts.push(lobbyKeepOut(coreHalfM, coreAngle));
+  // The gallery round the core widens on roomy plates (lib/coreLayout) — the room plan draws its ring there.
+  const gallery = galleryWidthM(zone, A, B, coreHalfM);
+  const p = new Planner(A, B, coreHalfM, coreAngle, outline, gallery);
+  if (zone !== "crown") p.keepOuts.push(lobbyKeepOut(coreHalfM, coreAngle, gallery));
   if (amenity) {
     amenityLayout(p, amenity, A, B);
     return p.placements;
