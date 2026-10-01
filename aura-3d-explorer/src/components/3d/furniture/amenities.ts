@@ -556,9 +556,10 @@ function observation(p: P, A: number, B: number) {
 }
 
 function dining(p: P, A: number, B: number) {
-  first(p, "chefTable", [[0, B - 4.3, 0], [0, -(B - 4.3), 0]]);
-  first(p, "kitchen", [[0, B - 1.6, FACE.nz], [0, -(B - 1.6), FACE.pz]]);
-  first(p, "bar", [[0, -(B - 1.6), FACE.pz], [A - 1.6, 0, FACE.nx]]);
+  // Kitchen against the glass, chef's table in front of it (fallbacks for tapered / twisted plates).
+  first(p, "kitchen", [[0, B - 1.9, FACE.nz], [-(A / 2), B - 1.9, FACE.nz], [A - 1.9, 0, FACE.nx], [0, -(B - 1.9), FACE.pz]]);
+  first(p, "chefTable", [[0, B - 4.3, 0], [A / 2 - 0.5, B - 2.0, 0], [-(A / 2 - 0.5), B - 2.0, 0], [A - 1.7, B / 2 - 1, Math.PI / 2], [0, -(B - 1.9), 0], [-(A - 1.7), 0, Math.PI / 2]]);
+  first(p, "bar", [[0, -(B - 1.6), FACE.pz], [A - 1.6, 0, FACE.nx], [-(A - 1.6), 0, FACE.px]]);
   many(p, "dining6", ring(A, B, 1.7, 3.6), 4);
   many(p, "lounge", ring(A, B, 2.2, 4.4), 2);
   many(p, "plantLarge", corners(A, B, 1.2));

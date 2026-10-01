@@ -10,6 +10,10 @@ import { useState } from "react";
 import clsx from "clsx";
 import type { Building, FloorData } from "@/types";
 import { ZONES } from "@/lib/tower";
+import { AMENITY_ACCENT, amenityName } from "@/lib/amenities";
+
+/** Amenity floors are marked in the amenity colour; others by zone. */
+const accentOf = (f: FloorData) => (f.amenity ? AMENITY_ACCENT : ZONES[f.zone].accent);
 
 interface Props {
   building: Building;
@@ -38,9 +42,9 @@ export default function StackingBar({ building, selectedIndex, onSelect, classNa
               onMouseEnter={() => setHover(f.index)}
               onFocus={() => setHover(f.index)}
               onBlur={() => setHover(null)}
-              aria-label={`Floor ${f.number} · ${ZONES[f.zone].short}`}
+              aria-label={`Floor ${f.number} · ${f.amenity ? `Amenity · ${amenityName(f)}` : ZONES[f.zone].short}`}
               aria-pressed={selected}
-              title={`L${f.number} · ${ZONES[f.zone].label}`}
+              title={`L${f.number} · ${f.amenity ? `Amenity · ${amenityName(f)}` : ZONES[f.zone].label}`}
               className="group relative flex min-h-px w-full items-stretch justify-center focus-visible:outline-none"
               style={{ flexGrow: f.height, flexBasis: 0 }}
             >
@@ -49,15 +53,16 @@ export default function StackingBar({ building, selectedIndex, onSelect, classNa
                   "block rounded-[1px] transition-all duration-200",
                   selected ? "w-full bg-ink" : "w-2/3 opacity-60 group-hover:w-full group-hover:opacity-100 group-focus-visible:w-full group-focus-visible:opacity-100"
                 )}
-                style={selected ? undefined : { background: ZONES[f.zone].accent }}
+                style={selected ? undefined : { background: accentOf(f) }}
               />
+              {f.amenity && <span aria-hidden className="absolute -right-1 top-1/2 h-1 w-1 -translate-y-1/2 rounded-full" style={{ background: AMENITY_ACCENT }} />}
               {zoneStart && <span aria-hidden className="absolute -left-1 bottom-0 h-px w-1 bg-ash/60" />}
             </button>
           );
         })}
       </div>
-      <p className="caption w-full truncate text-center text-[9px]" style={shown ? { color: ZONES[shown.zone].accent } : undefined}>
-        {shown ? ZONES[shown.zone].short : "Stack"}
+      <p className="caption w-full truncate text-center text-[9px]" style={shown ? { color: accentOf(shown) } : undefined}>
+        {shown ? (shown.amenity ? amenityName(shown) : ZONES[shown.zone].short) : "Stack"}
       </p>
     </nav>
   );

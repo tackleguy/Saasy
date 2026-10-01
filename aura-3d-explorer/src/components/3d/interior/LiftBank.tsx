@@ -20,6 +20,7 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { liftBank, liftDims } from "@/lib/lift";
+import { coreLayout } from "@/lib/coreLayout";
 
 const noRaycast = () => null;
 const cache = new Map<string, THREE.BufferGeometry>();
@@ -46,7 +47,8 @@ export function liftBankDoors(core: number, y0: number, doorH: number, skipMain 
     box(ow + f * 2, f, 0.02, car.x, y0 + doorH + f / 2, face + 0.01);
   }
   const sh = doorH * 0.95;
-  box(bank.stair.doorW, sh, 0.012, bank.stair.doorX, y0 + sh / 2, -(face + 0.006));
+  const stair = coreLayout(core).stair;
+  box(stair.doorW, sh, 0.012, stair.doorX, y0 + sh / 2, -(face + 0.006));
   const g = mergeGeometries(parts, false) ?? new THREE.BufferGeometry();
   parts.forEach((p) => p.dispose());
   cache.set(key, g);
@@ -79,14 +81,21 @@ export function LiftBankSignals({ coreSize, floorHeight, slab }: { coreSize: num
   );
 }
 
-/** CoreShaft's core layout (shafts, stair, risers) derived from the lift bank. */
+/**
+ * CoreShaft's core layout (shafts, stair, risers, refuse chutes) from the
+ * lift bank and lib/coreLayout, so the X-ray shafts sit behind the real doors
+ * and the chutes run up through every floor's refuse room.
+ */
 export function bankCoreLayout(c: number) {
   const bank = liftBank(c);
+  const lay = coreLayout(c);
   const shafts = bank.cars.map((car) => ({ x: car.x, z: (bank.zBack + bank.zFront) / 2, w: car.cabW, d: bank.zFront - bank.zBack }));
+  const { x0, x1, z0, z1 } = lay.stair;
+  const stair = lay.service ? { x0, x1, z0, z1 } : { x0, x1: x0 + (x1 - x0) * 0.64, z0, z1 };
+  const sv = lay.service;
+  const riserR = sv ? sv.riserR : c * 0.04;
   const pad = c * 0.07;
-  const { x0, z0, z1 } = bank.stair;
-  const stair = { x0, x1: x0 + (c - pad * 2) * 0.64, z0, z1 };
-  const riserR = c * 0.04;
-  const risers = [0, 1, 2].map((i) => ({ x: c / 2 - pad - riserR * (1.4 + i * 2.6), z: -c / 2 + pad + riserR * 1.6 }));
-  return { shafts, stair, risers, riserR };
+  const risers = sv ? sv.risers : [0, 1, 2].map((i) => ({ x: c / 2 - pad - riserR * (1.4 + i * 2.6), z: -c / 2 + pad + riserR * 1.6 }));
+  const chutes = sv ? sv.chutes.map((k) => ({ kind: k.kind, x: k.x, z: k.z, r: k.r })) : [];
+  return { shafts, stair, risers, riserR, chutes };
 }

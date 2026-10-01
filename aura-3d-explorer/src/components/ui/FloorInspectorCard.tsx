@@ -11,6 +11,8 @@ import type { Building, FloorData, FloorYield } from "@/types";
 import { crownFloorCount, penthouseBedsOnFloor, toMetres, UNIT_MIX, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
 import FloorPlanMini from "./FloorPlanMini";
+import AmenityIcon from "./AmenityIcon";
+import { AMENITIES, AMENITY_ACCENT, amenityName } from "@/lib/amenities";
 
 interface Props {
   building: Building;
@@ -87,20 +89,44 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             </button>
           </div>
 
-          <p className="mt-2 text-xs leading-relaxed text-ash">{ZONES[floor.zone].description}</p>
+          {floor.amenity ? (
+            <div className="mt-2 rounded-[3px] border px-2.5 py-2" style={{ borderColor: `${AMENITY_ACCENT}55`, background: `${AMENITY_ACCENT}10` }}>
+              <p className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
+                <AmenityIcon kind={floor.amenity} size={14} style={{ color: AMENITY_ACCENT }} />
+                {amenityName(floor)}
+              </p>
+              <p className="caption mt-0.5" style={{ color: AMENITY_ACCENT }}>
+                Amenity · {AMENITIES[floor.amenity].label}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-ash">{AMENITIES[floor.amenity].description}</p>
+            </div>
+          ) : (
+            <p className="mt-2 text-xs leading-relaxed text-ash">{ZONES[floor.zone].description}</p>
+          )}
 
           <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-plaster pt-3 text-xs">
             <Row label="Model plate (W×D×H)" value={`${floor.width} × ${floor.depth} × ${floor.height}`} />
             <Row label="Real plate" value={`${toMetres(floor.width).toFixed(0)} × ${toMetres(floor.depth).toFixed(0)} m · ${toMetres(floor.height).toFixed(1)} m f2f`} />
             <Row label="Twist (R_y)" value={`${((floor.rotationY * 180) / Math.PI).toFixed(1)}°`} />
             <Row label="Gross area" value={`${fmtNum(floorYield.sqFt)} sf`} />
-            <Row label="Units" value={unitsLine(floor, floorYield.units, crownFloorCount(building))} />
-            <Row label="Build cost" value={fmtMoney(floorYield.cost)} />
-            <Row label="Floor profit" value={fmtMoney(floorYield.profit)} />
-            <Row label="Floor revenue" value={fmtMoney(floorYield.revenue)} accent />
+            {floor.amenity ? (
+              <>
+                <Row label="Use" value="Shared amenity · not for sale" />
+                <Row label="Build + fit-out cost" value={fmtMoney(floorYield.cost)} accent />
+              </>
+            ) : (
+              <>
+                <Row label="Units" value={unitsLine(floor, floorYield.units, crownFloorCount(building))} />
+                <Row label="Build cost" value={fmtMoney(floorYield.cost)} />
+                <Row label="Floor profit" value={fmtMoney(floorYield.profit)} />
+                <Row label="Floor revenue" value={fmtMoney(floorYield.revenue)} accent />
+              </>
+            )}
           </dl>
 
-          <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash">{materialLine(floor.zone, building.facade)}</p>
+          <p className="mt-3 rounded-[3px] bg-stone/50 px-2.5 py-1.5 text-[10px] text-ash">
+            {floor.amenity ? "Recessed sky-terrace glazing · warm interior light" : materialLine(floor.zone, building.facade)}
+          </p>
 
           <FloorPlanMini floor={floor} coreSize={building.coreSize} crownFloors={crownFloorCount(building)} onViewpoint={onViewpoint} />
 

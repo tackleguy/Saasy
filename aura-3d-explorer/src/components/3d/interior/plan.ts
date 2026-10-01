@@ -11,15 +11,14 @@
  */
 import type { FacadeSpec, FloorData } from "@/types";
 import { MODEL_SCALE } from "@/lib/tower";
-import { liftBank } from "@/lib/lift";
+import { LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
 import { balconyPlan, roomPlan, type BalconySpec, type Collider, type RoomPlan } from "@/lib/roomPlan";
 import { layoutFloor } from "../furniture/layouts";
 import { PIECES } from "../furniture/kit";
 import { GLASS_ROOM_PIECES } from "../furniture/amenities";
 import { SLAB_THICKNESS } from "../FurnitureOverlay";
 
-/** Depth of the lift lobby kept clear in front of the bank, metres. */
-export const LOBBY_DEPTH_M = 1.8;
+export { LOBBY_DEPTH_M };
 
 const planCache = new Map<string, RoomPlan>();
 
@@ -35,7 +34,6 @@ export function interiorPlanFor(floor: FloorData, coreSize: number, crownFloors:
   const widthM = floor.width / MODEL_SCALE;
   const depthM = floor.depth / MODEL_SCALE;
   const placements = layoutFloor(floor.zone, widthM, depthM, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity);
-  const bank = liftBank(coreSize, floor.height - SLAB_THICKNESS);
   const plan = roomPlan({
     // Amenity floors are open plan: no apartment demising, glass lobby screens.
     zone: floor.amenity ? "podium" : floor.zone,
@@ -48,7 +46,7 @@ export function interiorPlanFor(floor: FloorData, coreSize: number, crownFloors:
     zoneIndex,
     crownFloors,
     pieces: placements.map((p) => ({ piece: p.piece, x: p.x, z: p.z, rot: p.rot, w: PIECES[p.piece].w, d: PIECES[p.piece].d })),
-    lobby: { halfWidthM: bank.halfWidth / MODEL_SCALE + 0.35, depthM: LOBBY_DEPTH_M },
+    lobby: { halfWidthM: lobbyHalfWidthM(coreSize), depthM: LOBBY_DEPTH_M },
     clearHeightM: (floor.height - SLAB_THICKNESS) / MODEL_SCALE,
   });
   planCache.set(key, plan);

@@ -11,6 +11,7 @@ import clsx from "clsx";
 import type { Building, BuildingId, ZoneId } from "@/types";
 import { EXPLODE_MAX, EXPLODE_MIN, ZONE_ORDER, ZONES } from "@/lib/tower";
 import { RangeSlider } from "./primitives";
+import { AMENITY_ACCENT, amenityFloors, amenityName } from "@/lib/amenities";
 import { PHOTO_ANGLES, type PhotoAngle } from "@/lib/explorer";
 import type { CityId } from "@/lib/cityPresets";
 import CityPicker from "./CityPicker";
@@ -141,6 +142,16 @@ export default function ViewportHud({
             </button>
           );
         })}
+        {amenityFloors(building).length > 0 && (
+          <p
+            className="flex items-center gap-2 border-t border-plaster/70 px-1.5 pb-0.5 pt-1.5 text-[11px] text-ash"
+            title={amenityFloors(building).map((f) => `F${f.number} ${amenityName(f)}`).join(" · ")}
+          >
+            <span className="h-2 w-2 rounded-full" style={{ background: AMENITY_ACCENT }} />
+            Amenity
+            <span className="ml-auto pl-4 font-mono text-[10px] tabular-nums text-ash">{amenityFloors(building).length} fl</span>
+          </p>
+        )}
       </motion.nav>}
 
       {/* Control dock — bottom centre (compact on phones) */}

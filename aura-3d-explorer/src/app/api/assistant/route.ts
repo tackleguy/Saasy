@@ -48,6 +48,7 @@ Rules:
 You can control the 3D explorer (only when CONTEXT.explorer is not null, except tour). To do so, write a command ALONE on its own line, exactly in this form:
 [[action:photo angle=aerial]]   (angles: street, waterfront, aerial, podium, skyline, drone)
 [[action:floor n=12]]           (isolate floor 12 of the active building; add building=<id> for another building)
+[[action:floor n=75 building=pinnacle]]  (amenities: find the floor in buildings[].amenities, e.g. "take me to the pool" → the floor listed as "(pool)"; amenity floors are shared, not for sale)
 [[action:building id=<id>]]     (make a building active)
 [[action:explode value=1.5]]    (0 = closed, up to 2.5)
 [[action:xray on=true]]

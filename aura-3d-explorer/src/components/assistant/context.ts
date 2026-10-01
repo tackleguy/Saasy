@@ -10,6 +10,7 @@ import { PROJECTS, projectSite, type Project } from "@/content/projects";
 import { computeSite, computeYield, DEFAULT_INPUTS } from "@/lib/finance";
 import { PHOTO_ANGLES } from "@/lib/explorer";
 import { CITY_PRESETS } from "@/lib/cityPresets";
+import { amenityFloors, amenityName } from "@/lib/amenities";
 import type { BuildingId, SiteMetrics, YieldMetrics } from "@/types";
 
 const $m = (n: number) => `$${(n / 1e6).toFixed(1)}M`;
@@ -65,6 +66,8 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
       floors: b.floors.length,
       tagline: b.tagline,
       zones: Object.fromEntries(Object.entries(b.zones).map(([z, g]) => [z, `${g.floors[0]}-${g.floors[1]}`])),
+      // Shared amenity floors (not sold), e.g. "75: Infinity Pool (pool)" — for "take me to the pool".
+      ...(amenityFloors(b).length ? { amenities: amenityFloors(b).map((f) => `${f.number}: ${amenityName(f)} (${f.amenity})`) } : {}),
       yield: metrics.byId[b.id] ? metricsSummary(metrics.byId[b.id]) : undefined,
     }));
     ctx.siteYield = metricsSummary(metrics.site);
@@ -75,7 +78,9 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
     ctx.explorer = {
       activeBuilding: x.building?.id,
       activeBuildingFloors: x.building?.floors?.length,
-      selectedFloor: x.selectedFloor ? { number: x.selectedFloor.number, zone: x.selectedFloor.zone } : null,
+      selectedFloor: x.selectedFloor
+        ? { number: x.selectedFloor.number, zone: x.selectedFloor.zone, ...(x.selectedFloor.amenity ? { amenity: amenityName(x.selectedFloor) } : {}) }
+        : null,
       explosion: Number((x.explosion ?? 0).toFixed(2)),
       xray: x.xray,
       walking: x.walking,

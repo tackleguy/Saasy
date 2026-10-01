@@ -8,7 +8,9 @@
  * plate, with its anatomy readable inside:
  *   • N lift shafts (outlined) with lift cars gently travelling up and down
  *   • a scissor stair — one flight per floor, re-spaced as the stack explodes
- *   • service risers
+ *   • service risers (in the electrical closet)
+ *   • the refuse + recycling chutes — continuous stainless tubes from the
+ *     ground to the roof, through every floor's refuse room
  *
  * It is shown for the active building in X-ray, Section and exploded views
  * (softened while a floor is isolated) and fades out otherwise. Everything
@@ -62,6 +64,7 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
       car: new THREE.MeshStandardMaterial({ color: "#f4efe6", emissive: CORE_ACCENT, emissiveIntensity: 0.6, transparent: true, opacity: 0, roughness: 0.4, metalness: 0.3 }),
       stair: new THREE.MeshStandardMaterial({ color: "#8a8178", transparent: true, opacity: 0, roughness: 0.9 }),
       riser: new THREE.MeshStandardMaterial({ color: CORE_ACCENT, transparent: true, opacity: 0, roughness: 0.5, metalness: 0.4 }),
+      chute: new THREE.MeshStandardMaterial({ color: "#c3cad1", emissive: "#5d6a75", emissiveIntensity: 0.35, transparent: true, opacity: 0, roughness: 0.28, metalness: 0.9 }),
     }),
     []
   );
@@ -91,6 +94,7 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
     mats.car.opacity = v;
     mats.stair.opacity = 0.75 * v;
     mats.riser.opacity = 0.85 * v;
+    mats.chute.opacity = 0.95 * v;
 
     // Lift cars: smoothed ping-pong between ground and roof.
     const t = state.clock.elapsedTime;
@@ -146,6 +150,9 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
           scale={[layout.stair.x1 - layout.stair.x0, 1, layout.stair.z1 - layout.stair.z0]}
           raycast={noRaycast}
         />
+        {layout.chutes.map((k, i) => (
+          <mesh key={`c${i}`} geometry={UNIT_CYL} material={mats.chute} position={[k.x, 0.5, k.z]} scale={[k.r, 1, k.r]} raycast={noRaycast} />
+        ))}
         {layout.risers.map((r, i) => (
           <mesh key={i} geometry={UNIT_CYL} material={mats.riser} position={[r.x, 0.5, r.z]} scale={[layout.riserR, 1, layout.riserR]} raycast={noRaycast} />
         ))}

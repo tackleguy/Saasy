@@ -101,7 +101,7 @@ function PadButton({ axis, value, label, children }: { axis: "forward" | "strafe
 }
 
 export default function WalkHud({ building, floor, viewIndex, onView, onExit, inLift = false, liftFloor = null, onRide }: Props) {
-  const views = viewpointsFor(floor, crownFloorCount(building));
+  const views = viewpointsFor(floor, crownFloorCount(building), building.coreSize);
 
   return (
     <>

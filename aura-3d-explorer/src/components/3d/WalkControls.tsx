@@ -14,9 +14,12 @@
  *             explorer switches to the new floor and the doors open again.
  *
  * The walker stays at standing eye height (1.6 m), can't leave the plate
- * through the glass and can't walk through the core — except into the lift
- * cab through open doors. Furniture is not solid, so every viewpoint is
- * reachable.
+ * through the glass and can't walk through the core's walls, shafts, stair or
+ * chute enclosures (lib/coreLayout `coreColliders`). On residential / office
+ * floors the service passage behind the lift bank is open at both ends, and
+ * the refuse room and riser closet are entered through their door openings.
+ * The lift cab is entered through its doors only while they are open.
+ * Furniture is not solid, so every viewpoint is reachable.
  *
  * Mounted only while walk mode is on; OrbitControls are disabled meanwhile.
  * On unmount the camera's FOV / near plane are restored and the regular
@@ -31,6 +34,7 @@ import { crownFloorCount, explodedY, MODEL_SCALE } from "@/lib/tower";
 import { EYE_HEIGHT_M, LIFT_VIEW, viewpointsFor } from "@/lib/viewpoints";
 import { walkInput, resetWalkInput } from "@/lib/walkInput";
 import { liftDims, liftState, resetLiftState } from "@/lib/lift";
+import { coreColliders, coreServiceOpen, pushOutOfBoxes } from "@/lib/coreLayout";
 import { SLAB_THICKNESS } from "./FurnitureOverlay";
 import { wallCollidersFor } from "./interior/plan";
 import { pushOutOfWalls } from "@/lib/roomPlan";
@@ -95,6 +99,12 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const cabCentreZ = (L.zBack + L.zFront) / 2;
   // Interior walls (door openings stay passable; the lift lobby has no colliders).
   const walls = useMemo(() => wallCollidersFor(floor, building.coreSize, crownFloorCount(building)), [floor, building]);
+  // Core solids (building-local scene units) — the lift doorway is added while the doors are shut.
+  const coreSolids = useMemo(() => {
+    const solids = coreColliders(building.coreSize, floor.height, SLAB_THICKNESS, coreServiceOpen(floor.zone));
+    const leaf = { x0: -L.opening / 2, x1: L.opening / 2, z0: L.zFront, z1: building.coreSize / 2 };
+    return { open: solids, shut: [...solids, leaf] };
+  }, [building.coreSize, floor.height, floor.zone, L]);
 
   /** Plate-local (scene units) → world x/z. */
   const toWorld = useMemo(() => (lx: number, lz: number) => new THREE.Vector2(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos), [bx, bz, cos, sin]);
@@ -119,12 +129,9 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
           x = THREE.MathUtils.clamp(x, -(L.opening / 2 - m / 2), L.opening / 2 - m / 2);
         }
         if (liftState.open < 0.6) z = Math.min(z, L.zFront - m); // doors shut: stay in the cab
-      } else if (Math.abs(x) < ch && Math.abs(z) < ch) {
-        // Core (square to the world)
-        const px = ch - Math.abs(x);
-        const pz = ch - Math.abs(z);
-        if (px < pz) x = Math.sign(x || 1) * ch;
-        else z = Math.sign(z || 1) * ch;
+      } else if (Math.abs(x) < ch + 0.1 && Math.abs(z) < ch + 0.1) {
+        // Core (square to the world): solid blocks, shafts and chutes; the passage and service rooms stay open.
+        [x, z] = pushOutOfBoxes(x, z, liftState.open > 0.6 ? coreSolids.open : coreSolids.shut, WALKER_RADIUS_M * MODEL_SCALE);
       }
       // Glass line (in the twisted plate frame)
       const margin = 0.12;
@@ -138,7 +145,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       p.set(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos);
       return p;
     },
-    [bx, bz, cos, sin, building.coreSize, floor.width, floor.depth, L, walls]
+    [bx, bz, cos, sin, building.coreSize, floor.width, floor.depth, L, walls, coreSolids]
   );
 
   const eyeY = explodedY(floor, explosion) + SLAB_THICKNESS + EYE;
@@ -202,7 +209,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       from = new THREE.Vector2(bx, bz + building.coreSize / 2 + 0.32);
       look = new THREE.Vector2(bx, bz);
     } else {
-      const views = viewpointsFor(floor, crownFloorCount(building));
+      const views = viewpointsFor(floor, crownFloorCount(building), building.coreSize);
       const v = views[Math.min(Math.max(viewIndex, 0), views.length - 1)];
       const s = MODEL_SCALE;
       from = resolve(toWorld(v.from[0] * s, v.from[1] * s));

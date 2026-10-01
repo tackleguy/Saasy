@@ -10,6 +10,7 @@
  *               (no frame: the plaster arch is the surround)
  *   • slider  — two glass panels in dark bronze frames, the sliding one
  *               parked over the fixed one (half the opening is clear)
+ *   • bifold  — closet doors: two-panel leaves folded into a V at each jamb
  *   • passage — frame only (a cased opening in front of a bathroom door)
  * ~6 InstancedMeshes per floor.
  */
@@ -135,6 +136,25 @@ function build(doors: DoorSpec[]): Batches {
         out.glass.push(boxAt(c, 0.01 + ph / 2, e, pw - STILE, ph - STILE * 2, PANEL_T));
         for (const s of [-1, 1]) out.bronze.push(boxAt(add(c, mul(e, (s * (pw - STILE)) / 2)), 0.01 + ph / 2, e, STILE, ph, PANEL_T + 0.01 + off * 0.002));
         for (const y of [0.01 + STILE / 2, ph - STILE / 2 + 0.01]) out.bronze.push(boxAt(c, y, e, pw, STILE, PANEL_T + 0.01));
+      }
+    } else if (d.kind === "bifold") {
+      // Closet bifolds: a pair of two-panel leaves per side, folded into a shallow V at each jamb.
+      const pw = clearW / 4 - 0.006;
+      const lh = H - 0.02;
+      const fold = (55 * Math.PI) / 180;
+      for (const [jamb, closed] of [
+        [add(d.a, mul(e, JAMB)), e],
+        [add(d.b, mul(e, -JAMB)), mul(e, -1)],
+      ] as [Pt, Pt][]) {
+        const h0 = add(jamb, mul(n, d.swing * (d.wallThickness / 2)));
+        const d1 = add(mul(closed, Math.cos(fold)), mul(n, d.swing * Math.sin(fold)));
+        const d2 = add(mul(closed, Math.cos(fold)), mul(n, -d.swing * Math.sin(fold)));
+        const k = add(h0, mul(d1, pw));
+        out.leaf.push(boxAt(add(h0, mul(d1, pw / 2)), 0.01 + lh / 2, d1, pw, lh, LEAF_T * 0.7));
+        out.leaf.push(boxAt(add(k, mul(d2, pw / 2)), 0.01 + lh / 2, d2, pw, lh, LEAF_T * 0.7));
+        const tip = add(k, mul(d2, pw - 0.05));
+        const ln: Pt = [-d2[1], d2[0]];
+        out.handle.push(boxAt(add(tip, mul(ln, d.swing * (LEAF_T * 0.35 + 0.012))), 1.0, d2, 0.025, 0.12, 0.02));
       }
     }
     // passage: frame only

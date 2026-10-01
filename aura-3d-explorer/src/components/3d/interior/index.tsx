@@ -51,12 +51,13 @@ function FloorPatches({ plan }: { plan: RoomPlan }) {
   const lobby = useMemo(() => {
     const { center: c, halfW, halfD, rotY } = plan.lobby;
     const ax: [number, number] = [Math.cos(rotY) * halfW, -Math.sin(rotY) * halfW]; // box local +X after Ry(rotY)
-    return [runMatrix([c[0] - ax[0], c[1] - ax[1]], [c[0] + ax[0], c[1] + ax[1]], 0, 0.01, halfD * 2)];
+    const foyers = (plan.stone ?? []).map((r) => runMatrix([r.x0, (r.z0 + r.z1) / 2], [r.x1, (r.z0 + r.z1) / 2], 0, 0.01, r.z1 - r.z0));
+    return [runMatrix([c[0] - ax[0], c[1] - ax[1]], [c[0] + ax[0], c[1] + ax[1]], 0, 0.01, halfD * 2), ...foyers];
   }, [plan]);
   return (
     <group>
       <Patch key={`t${tiles.length}`} matrices={tiles} mat="tile" />
-      <Patch matrices={lobby} mat="lobby" />
+      <Patch key={`l${lobby.length}`} matrices={lobby} mat="lobby" />
     </group>
   );
 }

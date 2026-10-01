@@ -13,6 +13,7 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { fabricTexture, marbleTexture, plasterTexture, tilePerUnit, woodTexture } from "../textures";
 import { AMENITY_PIECES, type AmenityPieceId } from "./amenities";
+import { ROOM_PIECES, type RoomPieceId } from "./rooms";
 
 /* ------------------------------------------------------------------ geometry */
 
@@ -516,7 +517,8 @@ export type PieceId =
   | "tub"
   | "bedDouble"
   | "bathroom"
-  | AmenityPieceId;
+  | AmenityPieceId
+  | RoomPieceId;
 
 interface PieceDef {
   build: () => Part[];
@@ -547,6 +549,7 @@ export const PIECES: Record<PieceId, PieceDef> = {
   bedDouble: { build: bedDouble, w: 2.8, d: 2.4 },
   bathroom: { build: bathroom, w: 2.6, d: 2.3 },
   ...AMENITY_PIECES,
+  ...ROOM_PIECES,
 };
 
 /** Single items and helpers, for other planners (e.g. the Aura Engine catalog). */

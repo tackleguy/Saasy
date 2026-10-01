@@ -15,6 +15,8 @@ import clsx from "clsx";
 import type { Building, FloorYield, ProjectStatus, YieldMetrics } from "@/types";
 import { UNIT_MIX, ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
+import { AMENITY_ACCENT, amenityName } from "@/lib/amenities";
+import AmenityIcon from "@/components/ui/AmenityIcon";
 
 export type UnitStatus = "Available" | "Reserved" | "Sold";
 
@@ -84,6 +86,8 @@ export function buildUnits(slug: string, status: ProjectStatus, building: Buildi
     : null;
 
   return building.floors.map((f) => {
+    // Shared amenity floors are not sold: no unit cells (the row shows an amenity band).
+    if (f.amenity) return [];
     if (f.zone === "crown" && penthouse) return [penthouse];
     const fy = metrics.floors[f.index];
     const count = Math.max(1, Math.min(MAX_PER_ROW, fy.units));
@@ -153,8 +157,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
         <table className="w-full border-collapse text-xs">
           <caption className="sr-only">Unit availability by floor for {building.name}</caption>
           <tbody>
-            {[...rows].reverse().map((row) => {
-              const f = building.floors[row[0].floorIndex];
+            {rows.map((row, i) => ({ row, f: building.floors[i] })).reverse().map(({ row, f }) => {
               return (
                 <tr key={f.index} className="border-b border-plaster/60 last:border-0">
                   <th scope="row" className="w-24 py-1 pr-3 text-left font-normal">
@@ -163,11 +166,25 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                       className="flex items-center gap-2 text-ash transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40"
                       title={`Show floor ${f.number} in 3D`}
                     >
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: ZONES[f.zone].accent }} aria-hidden />
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: f.amenity ? AMENITY_ACCENT : ZONES[f.zone].accent }} aria-hidden />
                       <span className="tabular-nums">F{f.number}</span>
                     </button>
                   </th>
                   <td className="py-1">
+                    {f.amenity ? (
+                      <button
+                        onClick={() => onShowFloor(f.index)}
+                        className="flex h-7 w-full items-center gap-2 border px-2 text-left text-[11px] text-ink transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50"
+                        style={{ borderColor: `${AMENITY_ACCENT}66`, background: `${AMENITY_ACCENT}14` }}
+                        title={`Show ${amenityName(f)} in 3D`}
+                      >
+                        <AmenityIcon kind={f.amenity} size={13} style={{ color: AMENITY_ACCENT }} />
+                        <span className="truncate">{amenityName(f)}</span>
+                        <span className="ml-auto shrink-0 text-[10px] uppercase tracking-wide" style={{ color: AMENITY_ACCENT }}>
+                          Amenity
+                        </span>
+                      </button>
+                    ) : (
                     <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${MAX_PER_ROW}, minmax(0, 1fr))` }}>
                       {row.map((u) => (
                         <button
@@ -179,6 +196,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                         />
                       ))}
                     </div>
+                    )}
                   </td>
                 </tr>
               );

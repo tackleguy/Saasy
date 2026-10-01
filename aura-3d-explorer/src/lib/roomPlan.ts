@@ -24,8 +24,16 @@
  *                  wall piece, when present, becomes the bedroom's doorway
  *                  (it gets a pair of arched door leaves); bathrooms keep
  *                  their own kit walls and get a real door leaf, plus a
- *                  cased opening wherever a partition stands in front of
- *                  their doorway.
+ *                  cased opening only where the strip in front of their
+ *                  doorway is too narrow to walk. The walk-in wardrobe joins
+ *                  the master suite.
+ *                • service rooms (furniture/rooms: WC, laundry, coat closet,
+ *                  pantry, WIR, study): partitions drawn inside the piece's
+ *                  footprint (none on a side backed by a demising axis, the
+ *                  corridor ring or the facade), a walnut door or closet
+ *                  bifold on its +Z face, tiled floors in wet rooms and a
+ *                  stone foyer patch. The front door goes in the ring opposite
+ *                  the unit's foyer.
  *   crown        • a partitioned suite around every bed (+ nearest bath) and
  *                  a glass screen round the plunge pool. No ring (one home).
  *   office       • glass lobby screen round the core with two glass sliders,
@@ -53,13 +61,14 @@
  */
 import type { PlanShape, ZoneId } from "@/types";
 import { edgeNormal, offsetOutline, planOutline, pointInPolygon, type PlanPoint } from "@/lib/tower";
+import { isServiceRoom, SERVICE_ROOMS } from "@/components/3d/furniture/rooms";
 
 export type Pt = PlanPoint;
 
 /* -------------------------------------------------------------------- types */
 
 export type WallKind = "demising" | "partition" | "glass";
-export type OpeningKind = "door" | "slider" | "passage";
+export type OpeningKind = "door" | "slider" | "passage" | "bifold";
 
 export interface Opening {
   /** Start / end of the opening along the wall, metres from `a`. */
@@ -127,6 +136,8 @@ export interface RoomPlan {
   lobby: LobbyPatch;
   /** Pale tile floor patches (kitchens), plate-local metres. */
   tiles: { x0: number; x1: number; z0: number; z1: number }[];
+  /** Stone floor patches (apartment foyers), plate-local metres. */
+  stone?: { x0: number; x1: number; z0: number; z1: number }[];
   /** Wall height, metres. */
   height: number;
 }
@@ -544,7 +555,7 @@ function alignPassage(pieces: WallSegment[], bath: PlacedPiece) {
     const dn = dot(out, n);
     if (Math.abs(dn) < 0.9) continue;
     const t = dot(sub(seg.a, centre), n) / dn; // distance along `out` to the wall line
-    if (t <= 0 || t > 1.2) continue;
+    if (t <= 0 || t > 0.75) continue; // wider strips are walkable inside the room
     const s = dot(sub(add(centre, mul(out, t)), seg.a), u);
     const L = len(sub(seg.b, seg.a));
     const t0 = s - DOOR_W / 2;
@@ -696,7 +707,10 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
   /* ---- front doors: one per apartment (residential) / two lobby sliders ---- */
   if (ring) {
     const want = inp.zone === "residential" ? [0, 1, 2, 3] : [0, 2];
-    const best = new Map<number, { seg: WallSegment; s0: number; s1: number }>();
+    const best = new Map<number, { seg: WallSegment; s0: number; s1: number; score: number }>();
+    // Residential: the front door goes in the ring opposite the unit's foyer (furniture/apartment).
+    const foyers = pieces.filter((p) => p.piece === "foyer" || p.piece === "foyerM");
+    const foyerIn = (q: number) => foyers.find((f) => Math.sign(f.x || 1) === QUADRANTS[q][0] && Math.sign(f.z || 1) === QUADRANTS[q][1]);
     for (const seg of ringPieces) {
       const d = sub(seg.b, seg.a);
       const L = len(d);
@@ -715,13 +729,20 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
         const m = add(seg.a, mul(d, (s0 + s1) / 2 / L));
         const q = QUADRANTS.findIndex(([sx, sz]) => Math.sign(m[0] || 1) === sx && Math.sign(m[1] || 1) === sz);
         if (!want.includes(q)) continue;
+        const f = foyerIn(q);
+        const uu = unit(d);
+        // Score: distance from the foyer to this span (smaller wins), else the longest span.
+        const score = f
+          ? len(sub([f.x, f.z], add(seg.a, mul(uu, Math.min(Math.max(dot(sub([f.x, f.z], seg.a), uu), s0), s1)))))
+          : -(s1 - s0);
         const cur = best.get(q);
-        if (!cur || s1 - s0 > cur.s1 - cur.s0) best.set(q, { seg, s0, s1 });
+        if (!cur || score < cur.score) best.set(q, { seg, s0, s1, score });
       }
     }
-    for (const { seg, s0, s1 } of best.values()) {
-      const c = (s0 + s1) / 2;
+    for (const [q, { seg, s0, s1 }] of best) {
       const u = unit(sub(seg.b, seg.a));
+      const f = foyerIn(q);
+      const c = f ? Math.min(Math.max(dot(sub([f.x, f.z], seg.a), u), s0 + DOOR_W / 2), s1 - DOOR_W / 2) : (s0 + s1) / 2;
       const mid = add(seg.a, mul(u, c));
       const out: 1 | -1 = dot(leftN(u), mid) >= 0 ? 1 : -1; // into the apartment
       seg.openings.push({ t0: c - DOOR_W / 2, t1: c + DOOR_W / 2, kind: inp.zone === "residential" ? "door" : "slider", swing: out, hinge: "t0" });
@@ -790,7 +811,8 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
         const bed = inQ.find((p) => p.piece === bedKind);
         if (!bed) continue;
         const bath = nearestBath(bed);
-        room(`${bedKind}${sx}${sz}`, bath ? [bed, bath] : [bed], target, { axes: true, baths: bath ? [bath] : [] });
+        const wir = bedKind === "bed" ? inQ.find((p) => p.piece === "wir" && Math.hypot(p.x - bed.x, p.z - bed.z) < 6) : undefined;
+        room(`${bedKind}${sx}${sz}`, [bed, ...(bath ? [bath] : []), ...(wir ? [wir] : [])], target, { axes: true, baths: bath ? [bath] : [] });
       }
     }
   } else if (inp.zone === "crown") {
@@ -805,6 +827,91 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
     if (conf) room("meeting", [conf], [0, 0], { kind: "glass", door: "slider", grow: 0.35 });
     const pantry = pieces.find((p) => p.piece === "kitchen");
     if (pantry) room("pantry", [pantry], [0, 0], { grow: 0.45 });
+  }
+
+  /* ---- service rooms (furniture/rooms): walls inside the footprint, door on the piece's +Z face ---- */
+  const tiles: Rect[] = [];
+  const stone: Rect[] = [];
+  if (inp.zone === "residential") {
+    pieces.forEach((p, i) => {
+      if (!isServiceRoom(p.piece)) return;
+      const sp = SERVICE_ROOMS[p.piece];
+      const r = pieceRect(p);
+      if (sp.floor === "tile") tiles.push(grow(r, -T_PARTITION));
+      if (sp.floor === "stone") stone.push(r);
+      if (!sp.door) return;
+      // Other furniture only: the room's own contents sit inside its walls.
+      const sctx: Ctx = { ...ctx, obstacles: obstacles.filter((_, j) => j !== i) };
+      const e = T_PARTITION / 2;
+      const bx = { x0: r.x0 + e, x1: r.x1 - e, z0: r.z0 + e, z1: r.z1 - e };
+      const dd = localDir(p.rot, 0, 1);
+      const doorN: Pt = Math.abs(dd[0]) > Math.abs(dd[1]) ? [Math.sign(dd[0]), 0] : [0, Math.sign(dd[1])];
+      type Side = { n: Pt; a: Pt; b: Pt; back: number | null };
+      const sides: Side[] = [
+        { n: [0, -1], a: [bx.x0, bx.z0], b: [bx.x1, bx.z0], back: null },
+        { n: [0, 1], a: [bx.x0, bx.z1], b: [bx.x1, bx.z1], back: null },
+        { n: [-1, 0], a: [bx.x0, bx.z0], b: [bx.x0, bx.z1], back: null },
+        { n: [1, 0], a: [bx.x1, bx.z0], b: [bx.x1, bx.z1], back: null },
+      ];
+      // A side backed by a demising axis, the corridor ring or the facade gets no wall of its own.
+      for (const sd of sides) {
+        if (sd.n[0] === doorN[0] && sd.n[1] === doorN[1]) continue;
+        const mid = mul(add(sd.a, sd.b), 0.5);
+        const k = sd.n[0] !== 0 ? 0 : 1;
+        const toAxis = -mid[k] * (sd.n[k] as number); // distance to the axis, outwards
+        if (toAxis > 0 && toAxis < 0.45) sd.back = toAxis + T_DEMISING / 2;
+        else {
+          const probe = add(mid, mul(sd.n, 0.45));
+          if ((ring && pointInPolygon(ring, probe[0], probe[1])) || !pointInPolygon(outline, probe[0], probe[1])) sd.back = 0.5;
+        }
+      }
+      const extOf = (n: Pt) => sides.find((x) => x.n[0] === n[0] && x.n[1] === n[1])!.back ?? e;
+      for (const sd of sides) {
+        if (sd.back !== null) continue;
+        const dir = unit(sub(sd.b, sd.a));
+        const n0: Pt = sd.n[0] === 0 ? [-1, 0] : [0, -1]; // side at the start of a → b
+        const n1: Pt = sd.n[0] === 0 ? [1, 0] : [0, 1];
+        const a = sub(sd.a, mul(dir, extOf(n0)));
+        const b = add(sd.b, mul(dir, extOf(n1)));
+        const pcs = clipWall({ a, b, kind: "partition", thickness: T_PARTITION, role: `room:${p.piece}`, clipFurniture: true }, sctx);
+        walls.push(...pcs);
+        if (sd.n[0] !== doorN[0] || sd.n[1] !== doorN[1]) continue;
+        // The door: centred on the spec's local x, on whichever clipped piece holds it.
+        const want = local(p, sp.doorAt, 0);
+        const W = sp.doorW;
+        for (const seg of pcs) {
+          const L = len(sub(seg.b, seg.a));
+          const u = unit(sub(seg.b, seg.a));
+          const sAt = dot(sub(want, seg.a), u);
+          if (L < W + 0.16 || sAt < -0.3 || sAt > L + 0.3) continue;
+          const c = Math.min(Math.max(sAt, W / 2 + 0.08), L - W / 2 - 0.08);
+          const ln = leftN(u);
+          const outSide: 1 | -1 = dot(ln, sd.n) >= 0 ? 1 : -1;
+          let swing: 1 | -1 = sp.swing === "out" || sp.door === "bifold" ? outSide : (-outSide as 1 | -1);
+          let hinge: "t0" | "t1" = "t0";
+          if (sp.door === "door") {
+            const centre: Pt = [(r.x0 + r.x1) / 2, (r.z0 + r.z1) / 2];
+            // Hang the leaf on the jamb nearer the room's side wall, so it folds back against it.
+            hinge = dot(sub(centre, seg.a), u) > c ? "t0" : "t1";
+            if (sp.swing === "out") {
+              const ok = (sw: 1 | -1, hg: "t0" | "t1") => {
+                const hp = add(seg.a, mul(u, hg === "t0" ? c - W / 2 : c + W / 2));
+                const closed = hg === "t0" ? u : mul(u, -1);
+                const open = add(mul(closed, Math.cos(DOOR_OPEN)), mul(ln, sw * Math.sin(DOOR_OPEN)));
+                return leafClear(hp, add(hp, mul(open, W - 0.06)), sctx);
+              };
+              const alt: "t0" | "t1" = hinge === "t0" ? "t1" : "t0";
+              if (!ok(swing, hinge)) {
+                if (ok(swing, alt)) hinge = alt;
+                else swing = -swing as 1 | -1; // nothing clear outside: open inwards
+              }
+            }
+          }
+          seg.openings.push({ t0: c - W / 2, t1: c + W / 2, kind: sp.door, swing, hinge });
+          break;
+        }
+      }
+    });
   }
 
   /* ---- door specs: planned openings ---- */
@@ -880,12 +987,16 @@ export function roomPlan(inp: RoomPlanInput): RoomPlan {
     doors,
     colliders,
     lobby: { center: lobby.c, halfW: lobbyHW, halfD: lobbyD / 2, rotY: -inp.rotationY },
-    tiles: pieces
-      .filter((p) => p.piece === "kitchen")
-      .map((p) => {
-        const r = grow(pieceRect(p), 0.35);
-        return { x0: Math.max(r.x0, -A), x1: Math.min(r.x1, A), z0: Math.max(r.z0, -B), z1: Math.min(r.z1, B) };
-      }),
+    tiles: [
+      ...pieces
+        .filter((p) => p.piece === "kitchen")
+        .map((p) => {
+          const r = grow(pieceRect(p), 0.35);
+          return { x0: Math.max(r.x0, -A), x1: Math.min(r.x1, A), z0: Math.max(r.z0, -B), z1: Math.min(r.z1, B) };
+        }),
+      ...tiles,
+    ],
+    stone,
     height,
   };
 }

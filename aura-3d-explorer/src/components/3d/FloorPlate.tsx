@@ -40,6 +40,7 @@ import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
 import LiftCore from "./LiftCore";
+import { coreServiceOpen } from "@/lib/coreLayout";
 import InteriorShell, { liftBankDoors } from "./interior";
 import {
   arcadePanel,
@@ -149,7 +150,8 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
         ? { spacing: 1.2, thickness: 0.06, depth: 0.2 }
         : look.fin;
   // The arcade glazing is recessed behind the stone.
-  const inset = arcade ? 0.7 : 0;
+  // Amenity floors read as a recessed "sky terrace": glazing set back behind the slab edge and fins.
+  const inset = arcade ? 0.7 : floor.amenity ? 0.5 : 0;
 
   const group = useRef<THREE.Group>(null);
   const glassMat = useRef<THREE.MeshPhysicalMaterial>(null);
@@ -227,7 +229,8 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
       glass.transmission = lerp(glass.transmission, faded ? 0 : look.transmission, k);
       const target = dimmed ? DIMMED_OPACITY * 0.6 : walking ? 0.08 : selected ? 0.1 : xray ? XRAY_OPACITY : 1;
       glass.opacity = lerp(glass.opacity, target, k);
-      glass.emissiveIntensity = lerp(glass.emissiveIntensity, hovered && !selected ? 0.18 : 0, k);
+      // Amenity floors keep a faint warm glow (lit shared spaces) so they read from outside.
+      glass.emissiveIntensity = lerp(glass.emissiveIntensity, hovered && !selected ? 0.18 : floor.amenity && !dimmed && !xray ? 0.12 : 0, k);
     }
 
     fadeSolid(slabMat.current, fade, k);
@@ -273,8 +276,8 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
   return (
     <group ref={group} position={[0, floor.baseY, 0]}>
       {/* ── Core: vertical lift & stair shaft (never twists). Walking a floor opens up its lift. ── */}
-      {walking ? (
-        <LiftCore coreSize={coreSize} floorHeight={floor.height} slab={SLAB_THICKNESS} />
+      {walking || (selected && coreServiceOpen(floor.zone)) ? (
+        <LiftCore coreSize={coreSize} floorHeight={floor.height} slab={SLAB_THICKNESS} open={coreServiceOpen(floor.zone)} walking={walking} />
       ) : (
         <>
           <mesh position={[0, floor.height / 2, 0]} castShadow receiveShadow raycast={() => null}>
@@ -385,8 +388,8 @@ export default function FloorPlate({ floor, explosion, coreSize, facade, selecte
           <meshStandardMaterial ref={ceilMat} map={plasterTexture()} roughness={0.95} side={THREE.DoubleSide} />
         </mesh>
 
-        {/* Crown: warm interior glow */}
-        {floor.zone === "crown" && (
+        {/* Crown + amenity floors: warm interior glow */}
+        {(floor.zone === "crown" || !!floor.amenity) && (
           <pointLight ref={crownLight} position={[0, floor.height * 0.6, 0]} color="#f59e0b" intensity={2.2} distance={8} decay={2} />
         )}
 

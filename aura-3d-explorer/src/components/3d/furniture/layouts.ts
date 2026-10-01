@@ -7,10 +7,13 @@
  * the same recipe adapts to every building's plate size. The core stays
  * square to the world while plates twist, so in the plate frame it is a
  * rotated square — tested exactly (separating axes), not by its bounding box.
+ * The corridor ring's bump round the lift lobby is kept clear too (keepOuts).
  *
  * Unit mix (see UNIT_MIX in lib/tower):
  *   • residential floors: four corner residences, each 2 bed / 2 bath —
- *     master bed + ensuite, second bedroom + bathroom, living, kitchen, dining
+ *     master bed + ensuite + walk-in wardrobe, second bedroom + bathroom,
+ *     living, kitchen, dining, and on the corridor side a foyer, guest WC,
+ *     coat closet, laundry, study and pantry where they fit (./apartment)
  *   • crown: one 4 bed / 4 bath penthouse spread over the crown floors
  * Bedrooms and bathrooms are placed first (with fallback spots) so they win
  * the space on small or tapered plates.
@@ -24,6 +27,9 @@ import type { PlanShape, ZoneId } from "@/types";
 import { penthouseBedsOnFloor, planOutline, pointInPolygon, type PlanPoint } from "@/lib/tower";
 import { PIECES, type PieceId } from "./kit";
 import { amenityLayout } from "./amenities";
+import { apartment } from "./apartment";
+import { MODEL_SCALE } from "@/lib/tower";
+import { LOBBY_DEPTH_M, lobbyHalfWidthM } from "@/lib/coreLayout";
 import type { AmenityKind } from "@/types";
 
 export interface Placement {
@@ -53,8 +59,20 @@ class Planner {
 
   constructor(private halfW: number, private halfD: number, coreHalf: number, coreAngle: number, private outline: PlanPoint[] | null = null) {
     this.coreKeep = coreHalf + CORRIDOR;
+    // The world-square core rotated by `coreAngle` in the plate frame: its +X
+    // axis is (cos a, −sin a) in plate (x, z) — the same frame lib/roomPlan
+    // and the walk-through use (building +X = (cos r, sin r) with r = −a).
     this.coreCos = Math.cos(coreAngle);
-    this.coreSin = Math.sin(coreAngle);
+    this.coreSin = -Math.sin(coreAngle);
+  }
+
+  /** Extra keep-out zones (e.g. the lift lobby bump of the corridor ring): oriented rects. */
+  keepOuts: { c: PlanPoint; ux: PlanPoint; hx: number; hz: number; /** false: `grow` doesn't apply (clearance zones). */ grows?: boolean }[] = [];
+
+  /** Does an axis-aligned rect (grown by `grow`) hit the core corridor or a keep-out? */
+  blocked(r: Rect, grow = 0): boolean {
+    const g = { x0: r.x0 - grow, x1: r.x1 + grow, z0: r.z0 - grow, z1: r.z1 + grow };
+    return this.hitsCore(g) || this.keepOuts.some((k) => rectHitsORect(k.grows === false ? r : g, k));
   }
 
   /** Axis-aligned rect vs the rotated core square (separating-axis test). */
@@ -88,7 +106,7 @@ class Planner {
 
     const e = 1e-6; // spots are written as "A − x" so they land exactly on the margin
     const inside = r.x0 >= -this.halfW + WALL_MARGIN - e && r.x1 <= this.halfW - WALL_MARGIN + e && r.z0 >= -this.halfD + WALL_MARGIN - e && r.z1 <= this.halfD - WALL_MARGIN + e;
-    if (!inside || this.hitsCore(r) || this.rects.some((o) => overlaps(r, o))) return false;
+    if (!inside || this.blocked(r) || this.rects.some((o) => overlaps(r, o))) return false;
     if (this.outline && !rectInPolygon(r, this.outline, WALL_MARGIN)) return false;
 
     this.rects.push(r);
@@ -123,6 +141,22 @@ function rectInPolygon(r: Rect, poly: PlanPoint[], margin: number): boolean {
   const probes: PlanPoint[] = [[x0, z0], [x1, z0], [x1, z1], [x0, z1], [xm, z0], [xm, z1], [x0, zm], [x1, zm]];
   if (!probes.every(([x, z]) => pointInPolygon(poly, x, z))) return false;
   return !poly.some(([x, z]) => x > x0 && x < x1 && z > z0 && z < z1);
+}
+
+/** Axis-aligned rect vs an oriented rect (separating axes). */
+function rectHitsORect(r: Rect, k: { c: PlanPoint; ux: PlanPoint; hx: number; hz: number }): boolean {
+  const cx = (r.x0 + r.x1) / 2 - k.c[0];
+  const cz = (r.z0 + r.z1) / 2 - k.c[1];
+  const hw = (r.x1 - r.x0) / 2;
+  const hd = (r.z1 - r.z0) / 2;
+  const [ax, az] = k.ux; // oriented rect axes: ux and (−az, ax)
+  const c = Math.abs(ax);
+  const s = Math.abs(az);
+  if (Math.abs(cx) >= hw + k.hx * c + k.hz * s) return false;
+  if (Math.abs(cz) >= hd + k.hx * s + k.hz * c) return false;
+  if (Math.abs(cx * ax + cz * az) >= k.hx + hw * c + hd * s) return false;
+  if (Math.abs(-cx * az + cz * ax) >= k.hz + hw * s + hd * c) return false;
+  return true;
 }
 
 const overlaps = (a: Rect, b: Rect) => a.x0 < b.x1 && a.x1 > b.x0 && a.z0 < b.z1 && a.z1 > b.z0;
@@ -164,29 +198,10 @@ function suite(p: Planner, sx: 1 | -1, sz: 1 | -1, A: number, B: number) {
 }
 
 function residential(p: Planner, A: number, B: number) {
-  // Four corner residences, mirrored. Each is 2 bed / 2 bath.
-  for (const [sx, sz] of QUADRANTS) {
-    // 1 · master bedroom + ensuite (top corner)
-    suite(p, sx, sz, A, B);
-    // 2 · second bedroom + bathroom (along the side facade, towards the neighbour)
-    p.addFirst(sx, sz, "bedDouble", [
-      [A - 1.5, 1.6, -Math.PI / 2],
-      [A - 1.5, 4.4, -Math.PI / 2],
-      [1.7, B - 1.5, Math.PI],
-    ]);
-    p.addFirst(sx, sz, "bathroom", [
-      [A - 4.6, 1.55, -Math.PI / 2],
-      [A - 4.6, 4.2, -Math.PI / 2],
-      [4.4, B - 1.45, Math.PI],
-    ]);
-    // 3 · living, kitchen, dining
-    p.addMirrored(sx, sz, "archWall", A - 2.1, B - 3.0); // arched doorway into the master bedroom
-    p.addMirrored(sx, sz, "living", A - 2.2, B - 5.1, -Math.PI / 2); // sofa backs onto the window
-    p.addMirrored(sx, sz, "kitchen", A - 8.3, B - 1.9, Math.PI);
-    p.addMirrored(sx, sz, "dining4", A - 8.3, B - 5.0, Math.PI / 2);
-    p.addMirrored(sx, sz, "plant", A - 0.7, B - 7.6);
-    p.addMirrored(sx, sz, "plant", A - 6.8, B - 5.0);
-  }
+  // Four corner residences, mirrored. Each is 2 bed / 2 bath plus foyer, WC,
+  // laundry, coat closet and — where they fit — walk-in wardrobe, study, pantry.
+  const sizes = Object.fromEntries(Object.entries(PIECES).map(([k, v]) => [k, { w: v.w, d: v.d }]));
+  for (const [sx, sz] of QUADRANTS) apartment(p, sx, sz, A, B, sizes);
 }
 
 /**
@@ -234,6 +249,20 @@ function podium(p: Planner, A: number, B: number) {
 }
 
 /**
+ * The corridor ring's bump round the lift lobby (in front of the core's +Z
+ * face, building frame) as an oriented keep-out in the plate frame — the same
+ * box lib/roomPlan draws the ring round, so furniture never forces a hole in it.
+ */
+function lobbyKeepOut(coreHalfM: number, coreAngle: number) {
+  const R = coreHalfM + CORRIDOR;
+  const hb = Math.min(lobbyHalfWidthM(coreHalfM * 2 * MODEL_SCALE) + 0.12, R - 0.3);
+  const zb = Math.max(R + 0.3, coreHalfM + LOBBY_DEPTH_M + 0.12);
+  const r = -coreAngle;
+  const zc = (R - 0.2 + zb) / 2;
+  return { c: [-zc * Math.sin(r), zc * Math.cos(r)] as PlanPoint, ux: [Math.cos(r), Math.sin(r)] as PlanPoint, hx: hb, hz: (zb - R + 0.2) / 2 };
+}
+
+/**
  * Lay out one floor.
  * @param widthM      plate width in metres
  * @param depthM      plate depth in metres
@@ -259,6 +288,7 @@ export function layoutFloor(
   const B = depthM / 2;
   const outline = shape && shape.kind !== "rect" ? planOutline(shape, widthM, depthM) : null;
   const p = new Planner(A, B, coreHalfM, coreAngle, outline);
+  if (zone !== "crown") p.keepOuts.push(lobbyKeepOut(coreHalfM, coreAngle));
   if (amenity) {
     amenityLayout(p, amenity, A, B);
     return p.placements;

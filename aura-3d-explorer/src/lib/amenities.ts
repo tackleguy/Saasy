@@ -33,7 +33,7 @@ export const FIT_OUT_PREMIUM = 0.2;
 export const AMENITIES: Record<AmenityKind, AmenityMeta> = {
   "sky-lobby": { kind: "sky-lobby", label: "Sky Lobby", description: "Transfer lobby with concierge desk, lounge seating and planting — residents change lifts here." },
   gym: { kind: "gym", label: "Fitness Club", description: "Cardio row facing the glass, free weights and racks on rubber flooring, mirrored studio wall." },
-  pool: { kind: "pool", label: "Infinity Pool", description: "25 m lap pool along the facade with sun loungers and parasols on a timber deck." },
+  pool: { kind: "pool", label: "Infinity Pool", description: "Lap pool sunk into a timber deck along the facade with sun loungers and parasols on a timber deck." },
   spa: { kind: "spa", label: "Spa & Wellness", description: "Treatment rooms behind glass, sauna, cold plunge pool and a quiet relaxation lounge." },
   lounge: { kind: "lounge", label: "Residents' Lounge", description: "Library lounge with sofa groups on rugs and a cocktail bar with stools." },
   cinema: { kind: "cinema", label: "Private Cinema", description: "Tiered screening room with lounge seating, enclosed behind acoustic glass." },

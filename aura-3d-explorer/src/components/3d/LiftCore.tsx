@@ -11,7 +11,11 @@
  *     `liftState.open` rises (driven by WalkControls)
  *   • cab lining: brushed-steel walls, stone floor, light panel, handrail,
  *     button panel; a call button and floor indicator outside
- *   • the other five lift doors stay as flat panels
+ *   • the other lift doors stay as flat panels
+ *   • on residential / office floors the service passage behind the bank,
+ *     the refuse room (chutes) and the riser closet (interior/CoreService)
+ * The concrete is one merged, cached geometry from lib/coreLayout. Also shown
+ * on an isolated (not walked) floor so the cutaway reads from above.
  * Building-local coordinates, like the core (it never twists).
  */
 import { useMemo, useRef } from "react";
@@ -19,6 +23,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { liftDims, liftState } from "@/lib/lift";
 import { liftBankDoors, LiftBankSignals } from "./interior/LiftBank";
+import CoreService, { coreShell } from "./interior/CoreService";
 import { concreteTexture } from "./textures";
 
 const noRaycast = () => null;
@@ -27,18 +32,13 @@ interface Props {
   coreSize: number;
   floorHeight: number;
   slab: number;
+  /** The service passage + refuse room are walkable on this floor (lib/coreLayout `coreServiceOpen`). */
+  open?: boolean;
+  /** Walking this floor (the cab light is only lit then). */
+  walking?: boolean;
 }
 
-/** A box from [x0,x1] × [y0,y1] × [z0,z1]. */
-function Block({ x0, x1, y0, y1, z0, z1, material }: { x0: number; x1: number; y0: number; y1: number; z0: number; z1: number; material: THREE.Material }) {
-  return (
-    <mesh position={[(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2]} material={material} castShadow receiveShadow raycast={noRaycast}>
-      <boxGeometry args={[x1 - x0, y1 - y0, z1 - z0]} />
-    </mesh>
-  );
-}
-
-export default function LiftCore({ coreSize, floorHeight, slab }: Props) {
+export default function LiftCore({ coreSize, floorHeight, slab, open = false, walking = true }: Props) {
   const c = coreSize;
   const H = floorHeight;
   const L = liftDims(c, H - slab);
@@ -51,6 +51,7 @@ export default function LiftCore({ coreSize, floorHeight, slab }: Props) {
   const steel = useMemo(() => new THREE.MeshStandardMaterial({ color: "#c7ccd2", metalness: 0.85, roughness: 0.32 }), []);
   const leafMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#b9a78a", metalness: 0.85, roughness: 0.3 }), []);
   const others = liftBankDoors(c, slab, L.cabH, true);
+  const shell = coreShell(c, H, slab, open);
 
   const left = useRef<THREE.Mesh>(null);
   const right = useRef<THREE.Mesh>(null);
@@ -68,14 +69,9 @@ export default function LiftCore({ coreSize, floorHeight, slab }: Props) {
 
   return (
     <group>
-      {/* Core shell around the cab */}
-      <Block x0={-half} x1={-cw} y0={0} y1={H} z0={-half} z1={half} material={concrete} />
-      <Block x0={cw} x1={half} y0={0} y1={H} z0={-half} z1={half} material={concrete} />
-      <Block x0={-cw} x1={cw} y0={0} y1={H} z0={-half} z1={L.zBack} material={concrete} />
-      <Block x0={-cw} x1={cw} y0={top} y1={H} z0={L.zBack} z1={half} material={concrete} />
-      {/* Jambs either side of the opening */}
-      <Block x0={-cw} x1={-ow} y0={slab} y1={top} z0={L.zFront} z1={half} material={concrete} />
-      <Block x0={ow} x1={cw} y0={slab} y1={top} z0={L.zFront} z1={half} material={concrete} />
+      {/* Core shell: cab surround, head, jambs and (open floors) the walls round the service band */}
+      <mesh geometry={shell} material={concrete} castShadow receiveShadow raycast={noRaycast} />
+      {open && <CoreService coreSize={c} floorHeight={H} slab={slab} />}
 
       {/* Sliding leaves */}
       <mesh ref={left} position={[-ow / 2, slab + L.cabH / 2, leafZ]} material={leafMat} raycast={noRaycast}>
@@ -105,7 +101,7 @@ export default function LiftCore({ coreSize, floorHeight, slab }: Props) {
           <planeGeometry args={[L.cabW * 0.7, L.cabD * 0.7]} />
           <meshStandardMaterial color="#fff6e6" emissive="#fff1d6" emissiveIntensity={1.4} />
         </mesh>
-        <pointLight position={[0, top - 0.05, (L.zBack + L.zFront) / 2]} color="#fff1d6" intensity={0.6} distance={1.2} decay={2} />
+        {walking && <pointLight position={[0, top - 0.05, (L.zBack + L.zFront) / 2]} color="#fff1d6" intensity={0.6} distance={1.2} decay={2} />}
         {/* Handrail on the back wall */}
         <mesh position={[0, slab + 0.25, L.zBack + 0.02]} raycast={noRaycast}>
           <boxGeometry args={[L.cabW * 0.8, 0.012, 0.012]} />
