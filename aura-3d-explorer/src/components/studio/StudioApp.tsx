@@ -86,6 +86,8 @@ export default function StudioApp({ project }: { project: Project }) {
         siteRevenue={yieldCalc.site.gdv}
         siteMarginPct={yieldCalc.site.marginOnGdvPct}
         onImportCad={() => setCadOpen(true)}
+        onImportPlan={() => x.setPlanImportOpen(true)}
+        planReady={!!x.floorPlanFor(x.building.id)}
         studioMode={mode}
         onStudioModeChange={setMode}
         summary={architect ? { label: "Site GFA · FAR", value: `${Math.round(arch.schedule.gfaM2).toLocaleString("en-US")} m²`, sub: `FAR ${arch.schedule.far.toFixed(2)}` } : undefined}

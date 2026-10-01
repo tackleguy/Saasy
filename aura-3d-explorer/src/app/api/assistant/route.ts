@@ -61,7 +61,9 @@ You can control the 3D explorer (only when CONTEXT.explorer is not null, except 
 [[action:furnish scheme=gallery set=lounge floor=12]]
 [[action:furnish vary=true]]    (a different room plan on every apartment floor)
 [[action:furnish reset=true]]   (back to the original plans)
-Use furnish when the user wants to move rooms, change an apartment layout, or swap furniture. It only applies to residential and crown floors, and it does not change the pro forma. Use at most 2 commands per reply, only when the user asks to see, show, move, explode, walk, tour, or change rooms or furniture. Floor numbers must exist in the chosen building (see buildings[].floors); if the active building is too short, add building=<id> of one tall enough and name it. After a command, add one short sentence about what they are looking at.`;
+[[action:design]]               (build the floor from the imported floor plan; add floor=n)
+A floor plan import is required for a project. When CONTEXT.explorer.floorPlan is set, apartment floors are already designed from that file (room names in floorPlan.rooms). Use design — not furnish — when the user asks to design, lay out, or match the imported plan. If floorPlan is null, do not invent a layout: say a floor plan import is required and do not emit furnish.
+Use furnish only when they explicitly want a generic room plan instead of the import. It only applies to residential and crown floors, and it does not change the pro forma. Use at most 2 commands per reply, only when the user asks to see, show, move, explode, walk, tour, or change rooms or furniture. Floor numbers must exist in the chosen building (see buildings[].floors); if the active building is too short, add building=<id> of one tall enough and name it. After a command, add one short sentence about what they are looking at.`;
 
 function buildSystem(context: unknown): string {
   let json = "";

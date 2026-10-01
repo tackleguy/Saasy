@@ -99,6 +99,8 @@ export function runAction(a: AssistantAction, reg: AssistantRegistration, userTe
       return { label: "View reset", ok: true };
     case "furnish":
       return furnish(a, x, userText);
+    case "design":
+      return designFromPlan(a, x, userText);
   }
 }
 
@@ -146,4 +148,20 @@ function furnish(a: Extract<AssistantAction, { type: "furnish" }>, x: NonNullabl
   x.selectFloor?.(floor);
   x.setFloorFit?.(b.id, floor.index, { scheme, furniture });
   return { label: `Floor ${floor.number} · ${SCHEME_COPY[scheme].label} · ${FURNITURE_COPY[furniture].label}`, ok: true };
+}
+
+/** Open an apartment floor that was designed from the project's imported plan. */
+function designFromPlan(a: Extract<AssistantAction, { type: "design" }>, x: NonNullable<AssistantRegistration["explorer"]>, userText: string): ActionResult {
+  const site = x.site ?? [];
+  const b = resolveBuilding(site, x.building, a.floor ?? 1, a.building, userText);
+  if (!b?.floors?.length) return { label: "No building to design", ok: false };
+  const plan = x.floorPlanFor?.(b.id);
+  if (!plan) return { label: `A floor plan import is required before ${b.short ?? b.name} can be designed`, ok: false };
+  const explicit = a.floor != null ? b.floors[Math.min(Math.max(1, Math.round(a.floor)), b.floors.length) - 1] : undefined;
+  const floor = apartmentFloor(b, explicit ?? (x.selectedFloor?.buildingId === b.id ? x.selectedFloor : null));
+  if (!floor) return { label: `${b.short ?? b.name} has no apartment floors to design`, ok: false };
+  x.setExplosion?.(Math.max(x.explosion ?? 0, 1));
+  x.selectFloor?.(floor);
+  const names = plan.result.scene.rooms.map((r) => r.name).slice(0, 6).join(", ");
+  return { label: `Floor ${floor.number} designed from ${plan.fileName}${names ? ` · ${names}` : ""}`, ok: true };
 }

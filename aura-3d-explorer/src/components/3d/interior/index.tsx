@@ -95,9 +95,11 @@ interface Props {
   xray?: boolean;
   hideBalconies?: boolean;
   fit?: FloorFit;
+  /** False when an imported floor plan is drawing the rooms instead. Balconies stay. */
+  rooms?: boolean;
 }
 
-export default function InteriorShell({ floor, coreSize, facade, crownFloors, isolated, dimmed = false, xray = false, hideBalconies = false, fit = DEFAULT_FIT }: Props) {
+export default function InteriorShell({ floor, coreSize, facade, crownFloors, isolated, dimmed = false, xray = false, hideBalconies = false, fit = DEFAULT_FIT, rooms = true }: Props) {
   const specs = useMemo(() => (hideBalconies ? [] : balconiesFor(floor, facade)), [floor, facade, hideBalconies]);
   const band = floor.zone === "residential" && facade.balconies;
   const geoKey = [floor.zone, floor.width, floor.depth, floor.shape?.kind, floor.shape?.amount, band].join(":");
@@ -108,7 +110,7 @@ export default function InteriorShell({ floor, coreSize, facade, crownFloors, is
           <Balconies specs={specs} geoKey={geoKey} dimmed={dimmed} xray={xray} />
         </group>
       )}
-      {isolated && <Rooms floor={floor} coreSize={coreSize} crownFloors={crownFloors} fit={fit} />}
+      {isolated && rooms && <Rooms floor={floor} coreSize={coreSize} crownFloors={crownFloors} fit={fit} />}
     </group>
   );
 }

@@ -27,6 +27,8 @@ import ImportedModelHud from "@/components/ui/ImportedModelHud";
 import CityPicker from "@/components/ui/CityPicker";
 import StackingBar from "@/components/ui/StackingBar";
 import { PHOTO_ANGLES } from "@/lib/explorer";
+import { ProjectFloorPlansProvider } from "@/components/3d/floorPlanContext";
+import FloorPlanImportModal from "@/components/ui/FloorPlanImportModal";
 
 // The site map reads the 3D city plan, so it loads only when first opened.
 const SiteMap = dynamic(() => import("./SiteMap"), { ssr: false });
@@ -56,7 +58,9 @@ interface Props {
 export default function ExplorerViewport({ explorer: x, metricsById, variant = "full", className, intro = true, architect }: Props) {
   const floorYield = x.selectedIndex !== null ? metricsById?.[x.building.id]?.floors[x.selectedIndex] ?? null : null;
 
+  const openPlan = () => x.setPlanImportOpen(true);
   return (
+    <ProjectFloorPlansProvider plans={x.floorPlans}>
     <section aria-label={`3D model of ${x.building.name}`} className={clsx("relative overflow-hidden bg-stone", className)}>
       <BuildingScene
         buildings={x.site}
@@ -184,6 +188,29 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
           />
         </>
       )}
+      {variant === "full" && !x.walking && !x.floorPlanFor(x.building.id) && (
+        <button type="button" onClick={openPlan} className="absolute left-1/2 top-3 z-10 -translate-x-1/2 border border-oak bg-paper/95 px-3 py-1.5 text-[11px] text-ink shadow-sm">
+          Floor plan required
+        </button>
+      )}
+      {variant === "full" && (
+        <FloorPlanImportModal
+          open={x.planImportOpen}
+          onOpenChange={x.setPlanImportOpen}
+          building={x.building}
+          existing={x.floorPlanFor(x.building.id)}
+          onComplete={(plan) => {
+            x.addFloorPlan(plan);
+            x.setPlanImportOpen(false);
+            const floor = x.building.floors.find((f) => f.zone === "residential" && !f.amenity) ?? x.building.floors.find((f) => f.zone === "crown");
+            if (floor) {
+              x.setExplosion(Math.max(x.explosion, 1));
+              x.selectFloor(floor);
+            }
+          }}
+        />
+      )}
     </section>
+    </ProjectFloorPlansProvider>
   );
 }

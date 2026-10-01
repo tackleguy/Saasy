@@ -41,6 +41,8 @@ import { liftDims, liftState, resetLiftState } from "@/lib/lift";
 import { coreColliders, coreServiceOpen, separateFromBoxes } from "@/lib/coreLayout";
 import { SLAB_THICKNESS } from "./FurnitureOverlay";
 import { wallCollidersFor } from "./interior/plan";
+import { designForFloor } from "@/lib/projectFloorPlan";
+import { useProjectFloorPlans } from "./floorPlanContext";
 import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { containInOutline, separateFromWalls } from "@/lib/roomPlan";
 
@@ -140,7 +142,9 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const L = useMemo(() => liftDims(building.coreSize, floor.height - SLAB_THICKNESS), [building.coreSize, floor.height]);
   const cabCentreZ = (L.zBack + L.zFront) / 2;
   // Interior walls (door openings stay passable; the lift lobby has no colliders).
-  const walls = useMemo(() => wallCollidersFor(floor, building.coreSize, crownFloorCount(building), fit), [floor, building, fit]);
+  const plans = useProjectFloorPlans();
+  const fitted = useMemo(() => designForFloor(plans, floor), [plans, floor]);
+  const walls = useMemo(() => (fitted ? fitted.colliders : wallCollidersFor(floor, building.coreSize, crownFloorCount(building), fit)), [fitted, floor, building, fit]);
   // Core solids (building-local scene units) — the lift doorway is added while the doors are shut.
   const coreSolids = useMemo(() => {
     const solids = coreColliders(building.coreSize, floor.height, SLAB_THICKNESS, coreServiceOpen(floor.zone));

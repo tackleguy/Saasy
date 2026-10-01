@@ -16,6 +16,7 @@ import type { Object3D } from "three";
 import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
 import { buildingClearing, PLINTH, type UWRect } from "@/lib/siteLayout";
 import { APARTMENT_SCHEMES, DEFAULT_FIT, FURNITURE_SETS, fitKey, type FloorFit } from "@/lib/apartmentFit";
+import { planForBuilding, type ProjectFloorPlan } from "@/lib/projectFloorPlan";
 
 /** Explosion factor applied by the "Exploded" view preset. */
 const EXPLODED_PRESET = 1.5;
@@ -84,6 +85,16 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   // Imported CAD model (normalised Object3D from lib/importNormalize) + visibility
   const [importedModel, setImportedModelState] = useState<Object3D | null>(null);
   const [showImported, setShowImported] = useState(true);
+  // Required floor-plan import. Residential and penthouse floors are designed from it.
+  const [floorPlans, setFloorPlans] = useState<ProjectFloorPlan[]>([]);
+  const [planImportOpen, setPlanImportOpen] = useState(false);
+  const floorPlanFor = useCallback((buildingId: BuildingId) => planForBuilding(floorPlans, buildingId), [floorPlans]);
+  const addFloorPlan = useCallback((plan: ProjectFloorPlan) => {
+    setFloorPlans((prev) => [...prev.filter((p) => p.buildingId !== plan.buildingId), plan]);
+  }, []);
+  const removeFloorPlan = useCallback((buildingId: BuildingId) => {
+    setFloorPlans((prev) => prev.filter((p) => p.buildingId !== buildingId));
+  }, []);
 
   const building = site.find((b) => b.id === activeBuildingId) ?? site[0];
   const selectedFloor: FloorData | null = selectedIndex !== null ? building.floors[selectedIndex] ?? null : null;
@@ -284,7 +295,7 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   useEffect(() => {
     if (!keyboard) return;
     const onKey = (e: KeyboardEvent) => {
-      if (keyboardPaused) return;
+      if (keyboardPaused || planImportOpen) return;
       if (walking) {
         if (e.key === "Escape") setWalking(false);
         return;
@@ -300,7 +311,7 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [keyboard, keyboardPaused, floorCount, walking]);
+  }, [keyboard, keyboardPaused, planImportOpen, floorCount, walking]);
 
   return {
     site,
@@ -330,6 +341,12 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     setImportedModel,
     showImported,
     setShowImported,
+    floorPlans,
+    floorPlanFor,
+    addFloorPlan,
+    removeFloorPlan,
+    planImportOpen,
+    setPlanImportOpen,
     viewMode,
     setViewMode,
     walking,

@@ -11,6 +11,7 @@ import { computeSite, computeYield, DEFAULT_INPUTS } from "@/lib/finance";
 import { PHOTO_ANGLES } from "@/lib/explorer";
 import { CITY_PRESETS } from "@/lib/cityPresets";
 import { amenityFloors, amenityName } from "@/lib/amenities";
+import { planSummary } from "@/lib/projectFloorPlan";
 import { APARTMENT_SCHEMES, FURNITURE_COPY, FURNITURE_SETS, SCHEME_COPY } from "@/lib/apartmentFit";
 import type { BuildingId, SiteMetrics, YieldMetrics } from "@/types";
 
@@ -90,6 +91,14 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
       walking: x.walking,
       photoAngle: x.photoAngle ?? null,
       city: x.city,
+      floorPlanRequired: true,
+      floorPlan: x.floorPlanFor?.(x.building.id)
+        ? {
+            file: x.floorPlanFor(x.building.id)!.fileName,
+            summary: planSummary(x.floorPlanFor(x.building.id)!),
+            rooms: x.floorPlanFor(x.building.id)!.result.scene.rooms.map((r) => r.name).slice(0, 12),
+          }
+        : null,
     };
     ctx.options = {
       photoAngles: PHOTO_ANGLES.map((a) => a.id),

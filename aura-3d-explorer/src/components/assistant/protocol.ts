@@ -33,7 +33,8 @@ export type AssistantAction =
   | { type: "city"; id: string }
   | { type: "reset" }
   | { type: "tour" }
-  | { type: "furnish"; scheme?: string; set?: string; floor?: number; building?: string; vary?: boolean; reset?: boolean };
+  | { type: "furnish"; scheme?: string; set?: string; floor?: number; building?: string; vary?: boolean; reset?: boolean }
+  | { type: "design"; floor?: number; building?: string };
 
 /** Matches one complete command. Tolerates spaces, quotes and `action :` variants. */
 const ACTION_RE = /\[\[\s*action\s*:\s*([a-z_-]+)([^\]]*)\]\]/gi;
@@ -74,6 +75,10 @@ export function toAction(verb: string, rawArgs: string): AssistantAction | null 
       return { type: "reset" };
     case "tour":
       return { type: "tour" };
+    case "design": {
+      const n = parseInt(a.floor ?? a.n ?? a.level ?? "", 10);
+      return { type: "design", floor: Number.isFinite(n) ? n : undefined, building: a.building?.toLowerCase() };
+    }
     case "furnish":
     case "layout":
     case "rooms":

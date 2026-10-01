@@ -46,6 +46,9 @@ import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { FacadeSpec, FloorData, ZoneId } from "@/types";
 import { explodedY } from "@/lib/tower";
 import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
+import { designForFloor } from "@/lib/projectFloorPlan";
+import { useProjectFloorPlans } from "./floorPlanContext";
+import ImportedFloorDesign from "./ImportedFloorDesign";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
 import LiftCore from "./LiftCore";
 import { coreServiceOpen } from "@/lib/coreLayout";
@@ -169,6 +172,8 @@ interface Props {
 }
 
 function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hovered, xray, walking, onSelect, onHover, coreGhost = false, crownFloors = 2, fit = DEFAULT_FIT }: Props) {
+  const plans = useProjectFloorPlans();
+  const fitted = useMemo(() => designForFloor(plans, floor), [plans, floor]);
   const look = LOOKS[floor.zone];
   const bodyH = floor.height - SLAB_THICKNESS;
   const doorH = Math.min(bodyH * 0.8, 0.62);
@@ -449,7 +454,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         )}
 
         {/* Interior walls & doors (isolated) + balconies (always) */}
-        <InteriorShell floor={floor} coreSize={coreSize} facade={facade} crownFloors={crownFloors} isolated={selected} dimmed={dimmed} xray={xray} fit={fit} />
+        <InteriorShell floor={floor} coreSize={coreSize} facade={facade} crownFloors={crownFloors} isolated={selected} dimmed={dimmed} xray={xray} fit={fit} rooms={!fitted} />
 
         {/* Hover / selection outline */}
         <lineSegments ref={edgeMesh} geometry={edges} raycast={() => null} layers={DETAIL} visible={false}>
@@ -480,7 +485,8 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         </mesh>
 
         {/* Interior: floor finish and furniture — only when isolated (its warm light is <InteriorLight> in BuildingScene) */}
-        {selected && (
+        {selected && fitted && <ImportedFloorDesign fitted={fitted} />}
+        {selected && !fitted && (
           <>
             <mesh
               geometry={shaped ? plateFloor(shape, w, d, -inset / 2 - 0.01) : undefined}

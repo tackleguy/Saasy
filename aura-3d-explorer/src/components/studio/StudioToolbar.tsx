@@ -6,7 +6,7 @@
  * studio actions.
  * Extra actions (quality, scenarios, export) are passed in as children.
  */
-import { Box, DraftingCompass, Rows3, Sofa, TrendingUp, UploadCloud } from "lucide-react";
+import { Box, DraftingCompass, FileBox, Rows3, Sofa, TrendingUp, UploadCloud } from "lucide-react";
 import type { StudioMode } from "@/hooks/useArchitect";
 import type { ReactNode } from "react";
 import type { ViewMode } from "@/types";
@@ -22,6 +22,9 @@ interface Props {
   siteRevenue: number;
   siteMarginPct: number;
   onImportCad: () => void;
+  /** Required floor-plan import. `ready` once this building has one. */
+  onImportPlan: () => void;
+  planReady: boolean;
   /** Developer (finance) or Architect (design tools) mode. */
   studioMode: StudioMode;
   onStudioModeChange: (mode: StudioMode) => void;
@@ -41,7 +44,7 @@ const VIEW_OPTIONS: { value: ViewMode; label: string; icon: ReactNode }[] = [
   { value: "interior", label: "Interior", icon: <Sofa size={12} aria-hidden /> },
 ];
 
-export default function StudioToolbar({ title, subtitle, viewMode, onViewModeChange, siteRevenue, siteMarginPct, onImportCad, studioMode, onStudioModeChange, summary, children }: Props) {
+export default function StudioToolbar({ title, subtitle, viewMode, onViewModeChange, siteRevenue, siteMarginPct, onImportCad, onImportPlan, planReady, studioMode, onStudioModeChange, summary, children }: Props) {
   return (
     <div className="no-print flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-plaster bg-paper px-4 py-2.5 sm:px-6">
       <div className="min-w-0">
@@ -80,6 +83,10 @@ export default function StudioToolbar({ title, subtitle, viewMode, onViewModeCha
           </div>
         )}
         {children}
+        <button onClick={onImportPlan} className="btn-secondary py-2 text-xs" aria-label="Import floor plan">
+          <FileBox size={14} aria-hidden />
+          <span className="hidden sm:inline">{planReady ? "Floor plan" : "Floor plan · Required"}</span>
+        </button>
         <button onClick={onImportCad} className="btn-secondary py-2 text-xs" aria-label="Import CAD">
           <UploadCloud size={14} aria-hidden />
           <span className="hidden sm:inline">Import CAD</span>
