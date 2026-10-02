@@ -98,7 +98,7 @@ of the model; it is not inserted at a surveyed address.
 Only Neutral retains the instanced illustrative buildings. Named cities no longer
 scatter buildings or draw a generated street grid through the downloaded district.
 One city is loaded on demand, with loading/retry feedback, and its GPU resources
-are disposed on switching cities. Districts retain uniform scale with a 70-unit height cap and a setback behind the proposal. Ragged scan skirts are clipped below ground; Manhattan and London use an explicit ground-cut offset. Geometry is welded
+are disposed on switching cities. Districts retain their original uniform backdrop scale and setback. Each model has a source-space ground elevation measured from its broad horizontal ground faces; underground geometry stays below the site plane instead of raising the skyline. Geometry is welded
 and 16-bit position quantized, textures resized to at most 2048px and compressed.
 Miami geometry is also simplified. Downloads range from approximately 8–57 MB;
 large models can still take time on mobile connections. The installer normally
@@ -253,3 +253,21 @@ Next.js 15 (App Router) · React 19 · TypeScript (strict) · Tailwind CSS · th
 Motion · Radix UI · Recharts · Lucide.
 
 Illustrative figures only — not investment, valuation or financial advice.
+
+### City texture review
+
+Sketchfab’s direct GLB downloads for these city scans contained 1024px atlases.
+The glTF ZIP downloads supply the higher-resolution originals. Use
+`python3 scripts/sketchfab.py download <uid> --format gltf` when sourcing textured
+city models, then convert the glTF plus its local textures to a self-contained GLB.
+The eight textured city models now ship with real 2048px textures for Low/Medium
+and a `model-hq.glb` variant capped at 4096px for High. These variants are derived
+from the original glTF texture files, not upscaled from 1K. The renderer applies
+anisotropic filtering and releases textures when changing city or quality tier.
+
+The Existing city context uses the original daylight lighting; Cinematic context
+remains separate. Scan photography is not relit as if its
+baked shadows were plain albedo. Miami and Dubai remain untextured geometry.
+Photogrammetric holes, rough perimeter geometry, baked shadows and limited
+district coverage remain source limitations; these assets are not certified
+client-ready close-up reconstructions.

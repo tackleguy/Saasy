@@ -1,0 +1,28 @@
+[
+  {
+    "minute": 0,
+    "tier": "high",
+    "fps": 43,
+    "calls": 103,
+    "triangles": 1004581,
+    "geometries": 348,
+    "textures": 68,
+    "programs": 55,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 1,
+    "tier": "high",
+    "fps": 42,
+    "calls": 105,
+    "triangles": 1004585,
+    "geometries": 348,
+    "textures": 68,
+    "programs": 55,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  }
+]

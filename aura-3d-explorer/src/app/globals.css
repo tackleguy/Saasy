@@ -6,18 +6,18 @@
 /* RGB triplets so Tailwind can apply opacity: rgb(var(--ink) / 0.6) */
 :root {
   color-scheme: light;
-  --font-serif: "Instrument Serif";
-  --font-sans: "Inter Variable";
+  --font-serif: var(--font-aura-serif, "Instrument Serif");
+  --font-sans: var(--font-aura-sans, "Inter Variable");
 
   --paper: 246 244 239; /* #F6F4EF */
   --stone: 233 229 221; /* #E9E5DD */
   --plaster: 221 214 202; /* #DDD6CA */
   --ink: 28 27 25; /* #1C1B19 */
   --ash: 98 94 87; /* #625E57 — AA on paper (5.9:1) and stone (5.1:1) */
-  --oak: 156 122 82; /* #9C7A52 */
+  --oak: 127 96 59; /* #7F603B — accessible oak text on paper and stone */
   --sage: 142 158 134; /* #8E9E86 */
   --brass: 184 154 92; /* #B89A5C */
-  --positive: 74 120 88;
+  --positive: 60 107 74;
   --negative: 170 78 62;
 }
 

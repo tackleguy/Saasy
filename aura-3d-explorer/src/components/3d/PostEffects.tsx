@@ -18,7 +18,7 @@
  */
 import { useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
-import { Bloom, BrightnessContrast, DepthOfField, EffectComposer, HueSaturation, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { Bloom, BrightnessContrast, DepthOfField, EffectComposer, HueSaturation, ToneMapping, Vignette, SMAA } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 import { N8AOPostPass } from "n8ao";
 import * as THREE from "three";
@@ -44,6 +44,7 @@ function N8AO() {
 
   useEffect(() => pass.setSize(size.width, size.height), [pass, size.width, size.height]);
 
+  useEffect(() => () => pass.dispose(), [pass]);
   return <primitive object={pass} dispose={null} />;
 }
 
@@ -53,17 +54,18 @@ interface Props {
 }
 
 export default function PostEffects({ focus }: Props) {
-  const FX: string = typeof window !== "undefined" ? window.localStorage.fx ?? "" : ""; // TEMP-PERF
+
   const target = useMemo(() => (focus ? new THREE.Vector3(...focus) : null), [focus?.[0], focus?.[1], focus?.[2]]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <EffectComposer multisampling={FX.includes("noms") ? 0 : 4} enableNormalPass={false}>
-      {FX.includes("noao") ? <></> : <N8AO />}
-      {FX.includes("nobloom") ? <></> : <Bloom luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={0.35} mipmapBlur />}
-      {target ? <DepthOfField target={target} focalLength={0.02} bokehScale={2} /> : <></>}
+    <EffectComposer multisampling={0} enableNormalPass={false}>
+      <N8AO />
+      <Bloom luminanceThreshold={0.85} luminanceSmoothing={0.2} intensity={0.35} mipmapBlur />
+      {target ? <DepthOfField target={target} focalLength={0.02} bokehScale={2.5} /> : <></>}
       <BrightnessContrast brightness={0} contrast={0.09} />
       <HueSaturation hue={0} saturation={0.1} />
-      <Vignette offset={0.3} darkness={0.28} />
+      <Vignette offset={0.3} darkness={0.3} />
+      <SMAA />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
     </EffectComposer>
   );

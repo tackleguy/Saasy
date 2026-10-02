@@ -1,0 +1,30 @@
+/ {
+  performance: 49,
+  accessibility: 100,
+  'best-practices': 100,
+  seo: 100
+}
+/projects {
+  performance: 88,
+  accessibility: 100,
+  'best-practices': 100,
+  seo: 100
+}
+/developers {
+  performance: 88,
+  accessibility: 100,
+  'best-practices': 100,
+  seo: 100
+}
+/studio {
+  performance: 49,
+  accessibility: 100,
+  'best-practices': 100,
+  seo: 100
+}
+/engine {
+  performance: 64,
+  accessibility: 100,
+  'best-practices': 100,
+  seo: 100
+}

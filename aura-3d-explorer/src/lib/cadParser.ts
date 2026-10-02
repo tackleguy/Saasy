@@ -193,13 +193,21 @@ function dxfGeometry(ents: DxfEntity[], storeyInUnits: number): { root: THREE.Gr
 /* ----------------------------------------------------------------- parse --- */
 
 export async function parseCadFile(file: File): Promise<CadReport> {
+  if (file.size === 0) throw new Error("This file is empty. Choose a CAD file with geometry.");
+  if (file.size > 50 * 1024 * 1024) throw new Error("This file exceeds 50 MB. Export a smaller model and try again.");
   const ext = file.name.split(".").pop()?.toLowerCase();
   const sizeKb = file.size / 1024;
   const buf = await file.arrayBuffer();
   const base = { fileName: file.name, sizeKb };
 
   if (ext === "stl") {
+    if (buf.byteLength >= 84) {
+      const triangles = new DataView(buf).getUint32(80, true);
+      const binary = 84 + triangles * 50 === buf.byteLength;
+      if (binary && triangles > 1_000_000) throw new Error("This STL is too detailed. Export fewer than one million triangles.");
+    }
     const geo = new STLLoader().parse(buf);
+    if (!geo.getAttribute("position")?.count) { geo.dispose(); throw new Error("No geometry was found. Export a valid STL and try again."); }
     // Many exporters write zeroed facet normals — recompute for correct shading
     geo.deleteAttribute("normal");
     geo.computeVertexNormals();
@@ -216,9 +224,14 @@ export async function parseCadFile(file: File): Promise<CadReport> {
 
   if (ext === "glb" || ext === "gltf") {
     const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+    const manager = new THREE.LoadingManager();
+    manager.setURLModifier((url) => {
+      if (!url.startsWith("data:") && !url.startsWith("blob:")) throw new Error("External model resources are not supported. Export a self-contained GLB.");
+      return url;
+    });
     let gltf;
     try {
-      gltf = await new GLTFLoader().parseAsync(ext === "gltf" ? new TextDecoder().decode(buf) : buf, "");
+      gltf = await new GLTFLoader(manager).parseAsync(ext === "gltf" ? new TextDecoder().decode(buf) : buf, "");
     } catch (e) {
       throw new Error(
         ext === "gltf"

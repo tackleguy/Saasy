@@ -7,3 +7,5 @@ next-env.d.ts
 !.env.example
 model-downloads/
 __pycache__/
+
+.next-qa*

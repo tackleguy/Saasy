@@ -1,0 +1,3 @@
+
+> aura-3d-explorer@1.0.0 lint
+> tsc --noEmit

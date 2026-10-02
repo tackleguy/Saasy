@@ -3,8 +3,8 @@
  * ScenarioDrawer — save, load and delete scenarios for a project: the
  * pro-forma inputs plus the site layout (buildings moved on the site map).
  * Stored in this browser's localStorage (per project), so scenarios are
- * private to the viewer and survive reloads. Every storage access is guarded:
- * private windows or blocked storage simply show an empty list.
+ * private to the viewer and survive reloads. Storage failures are reported
+ * without claiming a successful save; persisted inputs are validated on read.
  */
 import { useCallback, useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";

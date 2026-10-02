@@ -169,9 +169,9 @@ export default function EngineApp() {
         </p>
       </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-12">
+      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-12">
         {/* Left: input + report */}
-        <div className="flex flex-col gap-4 lg:col-span-4">
+        <div className="flex min-w-0 flex-col gap-4 lg:col-span-4">
           <div
             onDragOver={(e) => {
               e.preventDefault();
@@ -298,7 +298,7 @@ export default function EngineApp() {
         </div>
 
         {/* Right: viewer + rooms */}
-        <div className="flex flex-col gap-4 lg:col-span-8">
+        <div className="flex min-w-0 flex-col gap-4 lg:col-span-8">
           <div className="relative h-[440px] overflow-hidden rounded-[3px] border border-plaster bg-stone sm:h-[560px]">
             {scene && scene.rooms.length > 0 ? (
               <EngineViewer scene={scene} openings={report?.openings ?? []} cutaway={cutaway} labels={labels} selected={selected} onSelect={setSelected} />
@@ -329,7 +329,7 @@ export default function EngineApp() {
           </div>
 
           {scene && (
-            <div className="overflow-x-auto rounded-[3px] border border-plaster bg-paper">
+            <div role="region" aria-label="Room schedule" tabIndex={0} className="overflow-x-auto rounded-[3px] border border-plaster bg-paper">
               <table className="w-full min-w-[560px] text-[13px]">
                 <thead>
                   <tr className="border-b border-plaster text-left text-ash">
@@ -375,7 +375,7 @@ export default function EngineApp() {
               </button>
             </div>
           </div>
-          <pre className="thin-scroll max-h-[420px] overflow-auto p-4 font-mono text-[12px] leading-relaxed text-ink/85">{json}</pre>
+          <pre role="region" tabIndex={0} aria-label="Scene JSON" className="thin-scroll max-h-[420px] overflow-auto p-4 font-mono text-[12px] leading-relaxed text-ink/85">{json}</pre>
         </div>
       )}
     </div>

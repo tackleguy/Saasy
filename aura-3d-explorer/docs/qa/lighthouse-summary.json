@@ -1,0 +1,57 @@
+[
+  {
+    "route": "/",
+    "scores": {
+      "performance": 40,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "cls": 0,
+    "lcp": 5492.1704
+  },
+  {
+    "route": "/projects",
+    "scores": {
+      "performance": 88,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "cls": 0,
+    "lcp": 3948.0882
+  },
+  {
+    "route": "/developers",
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "cls": 0,
+    "lcp": 2725.2878
+  },
+  {
+    "route": "/studio",
+    "scores": {
+      "performance": 56.99999999999999,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "cls": 0,
+    "lcp": 3175.7804
+  },
+  {
+    "route": "/engine",
+    "scores": {
+      "performance": 62,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "cls": 0.0255294615470387,
+    "lcp": 3238.9601999999995
+  }
+]

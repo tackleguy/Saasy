@@ -1,0 +1,46 @@
+
+> aura-3d-explorer@1.0.0 build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.mjs took 10ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 31.8s
+  Running TypeScript ...
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+    - include was updated to add '.next-qa-release/types/**/*.ts'
+    - include was updated to add '.next-qa-release/dev/types/**/*.ts'
+
+  Finished TypeScript in 26.5s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/31) ...
+  Generating static pages using 7 workers (7/31)
+  Generating static pages using 7 workers (15/31)
+  Generating static pages using 7 workers (23/31)
+✓ Generating static pages using 7 workers (31/31) in 1553ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /api/assistant
+├ ƒ /api/engine
+├ ƒ /developers
+├ ƒ /engine
+├ ○ /icon.svg
+├ ƒ /projects
+├ ƒ /projects/[slug]
+├ ƒ /render/[slug]
+├ ƒ /studio
+└ ƒ /tour
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

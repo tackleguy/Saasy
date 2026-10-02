@@ -81,7 +81,7 @@ export default function CommissionModelCard({ metrics: m, site, buildingName }: 
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
             <div className="caption">Traditional fee / profit</div>
-            <div className="text-sm tabular-nums text-ink/60 line-through decoration-negative/60">{fmtMoney(traditionalFee)}</div>
+            <div className="text-sm tabular-nums text-ash line-through decoration-negative/60">{fmtMoney(traditionalFee)}</div>
             <div className="caption tabular-nums">profit {fmtMoney(traditionalProfit)}</div>
           </div>
           <div className="text-right">

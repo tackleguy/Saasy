@@ -32,7 +32,6 @@ export default function ProjectCard({ project, aspect = "aspect-[4/3]", priority
   const images = project.heroImages;
   const [frame, setFrame] = useState(0);
   const [armed, setArmed] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [broken, setBroken] = useState<Record<number, boolean>>({});
 
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -67,11 +66,9 @@ export default function ProjectCard({ project, aspect = "aspect-[4/3]", priority
               fill
               sizes={sizes}
               priority={i === 0 && priority}
-              onLoad={i === 0 ? () => setLoaded(true) : undefined}
               onError={() => setBroken((b) => ({ ...b, [i]: true }))}
               className={clsx(
                 "object-cover transition-[opacity,transform] duration-700 ease-calm",
-                i === 0 && !loaded ? "scale-[1.02] opacity-0" : "",
                 i === frame ? "opacity-100" : "opacity-0",
                 "group-hover:scale-[1.025]"
               )}

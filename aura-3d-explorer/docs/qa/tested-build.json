@@ -1,0 +1,605 @@
+{
+  "buildId": "NF3gJhRpltPZQjt5E-1ZM",
+  "gitHead": "eae832168b69241230f4c71ea2494334d6d1c6c8",
+  "url": "http://localhost:3141",
+  "recordedAt": "2026-10-02T05:01:22.564Z",
+  "note": "Compiled snapshot; concurrent source edits may differ.",
+  "files": [
+    {
+      "path": ".next-qa-release/static/NF3gJhRpltPZQjt5E-1ZM/_buildManifest.js",
+      "sha256": "9476e0afd3f9da68a64e6ec58631191fd3eaca62c9f5a377e7517fe9a89e59ea"
+    },
+    {
+      "path": ".next-qa-release/static/NF3gJhRpltPZQjt5E-1ZM/_clientMiddlewareManifest.js",
+      "sha256": "0d12e59e20ca802f49337460e5596e070143b16f261a0768efb6b38da6f0224d"
+    },
+    {
+      "path": ".next-qa-release/static/NF3gJhRpltPZQjt5E-1ZM/_ssgManifest.js",
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/033tn53vfce5l.js",
+      "sha256": "56ab40abf8fd32944399c60b23d7c9f0d19ac752a3a54ef6cb93de780899d108"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/05f-qa_bjcnhh.js",
+      "sha256": "20fada9e528042e45ac8c1da296ba7268a1a76d31f05b6a74b18dfc90d92f35e"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/06hw0cm6etirt.js",
+      "sha256": "42ac9ae85eb5c66d5168d49204576c7aec5a24d51bd9762b892c6785c230a4c2"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/09jbm4gy8ay1u.js",
+      "sha256": "c389b920d7ea538c3f405ca319bbd5fe767827fb7768d26985b1fcae4c2123ad"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0_3dpr5_h9glw.js",
+      "sha256": "9b1618a8112b4cb77c76242e03856b29565fec4082c5622f786b6196dafc962a"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0bgx8ufuqgt-r.js",
+      "sha256": "6e6e4088a585faf7bad8d98ac44cc9f604280269777fc7c18fda3abc5ffe317e"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0cz1d0mv5g_q7.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0do55uw5t9poh.js",
+      "sha256": "570fb8a05eaa15336295d8a8e4935310fe406861c89b376d2aa2f242ce35ead8"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0eo1cde-rr3bs.js",
+      "sha256": "6142276778eaa9e458643788acc914e9e4066ca31666dc11643e003e62669e62"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0gx-rfv_eguaq.js",
+      "sha256": "782566f78a072e8209d40b770f69ce47058bdf42e19b24ff2a2458eb97774e89"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0h2qsuyze9ds1.js",
+      "sha256": "48149c53d721866862423503a65dddedeee9671f8c59c7ed60f80bb6008285aa"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0h84czmhtf2q5.js",
+      "sha256": "f4c6a43dccac510bc6aeffe8f6ba678c46dbbb15e85103f811cb41bda8ef130c"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0s1g1zodiv6wo.js",
+      "sha256": "56e5b5bb734b0439572e17cd0627ac2cebf51001713212bc505a97b0a549a2fc"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0s4fu-1mbe-fr.js",
+      "sha256": "686b167f39cecb0b5ff27aaeb276ad1c14e36cb289e49264503e3f4774b70274"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0v4jbtmxl1ba1.js",
+      "sha256": "eed69130d3250b46ca1fbf78475a2c870cfac01534fff89338b4312b487a0569"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/0wj5nabv5m4kt.js",
+      "sha256": "b3d3b56b2d7e1be95c2b2b71e4f9b5a1ba793c344b3299143334ec73f1da726b"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/12v-8a7jabjxf.js",
+      "sha256": "72083f9f1a02c1c9476266a80cef21552a47fdd47febe5f68234066161e0f6e9"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/1607qil50my4g.js",
+      "sha256": "37d60ad2d5a9726ae6fb460653ffbaa429ee7d1e5ce73c53112e44d60fc546b4"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/1_k1thi86dy74.js",
+      "sha256": "78c7856c301c94c23a665386bde28bc075fa96781c2774575bf16012efc79532"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/1fnd2z8qq60zs.js",
+      "sha256": "9c495bd1aee55db5d9af1fe70c3648262e8f901153d3a494c7489090587bfb36"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/1r2ti_55v5oi5.js",
+      "sha256": "4d655c3354fb816df45fc2ebd5c0d3a11dbd0a04bd036982cb8c0e1711994c69"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/21gp3khy5-aps.js",
+      "sha256": "c4815f46d5a19aa8a7e11d5a80bf4dceb075b0541227c153646aba335903b191"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/231polvmafgdh.js",
+      "sha256": "9b4ecef9efa5841d644817e9ae583c9cfe24fe29b11377e6bdfc25fc23034d16"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/23nx0evpmi993.js",
+      "sha256": "4e2a6b47ff2213002033ed733e126737fbf447427e9ce2845956d3d2fa599115"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2700glr9vjnhs.js",
+      "sha256": "a8f50532481a03d11b8da885cfbc42179f18990939d162675824d44da9cc9d00"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2bzvzvo78_skv.js",
+      "sha256": "5908e7b38b02bbfdf7ab80f03c5991f19caad3fe82d88b6dc5bb08e28093a228"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2ifzna16vis-_.js",
+      "sha256": "58ec30319e8c48dfa43041889951507a285cc36a1d395cbad149787bdd3cd6eb"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2ijq16oiq3xq5.js",
+      "sha256": "7de77f16d915d4d6fb9f9c853e90809db94e268b0102b9fe73071786f429dc5f"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2ma9scv0dqd45.js",
+      "sha256": "d4f9a43afc4a610aeedca9e066ee899b9a4c21fea634f839d87fdd8156c9790f"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2msppf6klw6gb.js",
+      "sha256": "dffff2308b9f7131936fb2ae7d8155157a7c019bb2c537716c1a8c436bacbc0f"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2n0zigzxdbei9.js",
+      "sha256": "ea8bdc9e2e8d2746c12c0b8eb4cf6f799d417af1ce422181283f3bc568f7a28d"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2q5mmfdydi5au.js",
+      "sha256": "2e779b27eef59df83a6ee7ccd14b27138b63f2cf75bc734033ff87f6ca07c5aa"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2u4_rl4hvfxmd.js",
+      "sha256": "d89445e957934dd5882dbdf161014b94698192cc721beeda18daae191874a187"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2ycbo-71ugtgk.js",
+      "sha256": "ae04bc0daeeb621dffc0e502a052ccce6fe518934c6f29466bda4a99a65fbffb"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/2ycmbgxhcsroy.js",
+      "sha256": "396be4bcab31b215e38d01cf515637796d30725fa1fa920fb0358aabf2dd71df"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/34wvn5zw0a69w.js",
+      "sha256": "d7fe78770621bde00f44c2bf716c710257abd35c3e38b045d1a7818273f0f6da"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/37jdww0edpqjl.js",
+      "sha256": "55389cf0001cf9b5f8a12b230eeafe06360b825d79c25a54a1722dfae96d298f"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/3qsp1g54jmyq4.js",
+      "sha256": "92cb99dee910d0aa2ac149b4753124e65e0a0043a2b601ccaec5b298c1b0aed2"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/3s6nzrbk-8mnv.js",
+      "sha256": "1d36f2e3f57740f75eb021aaec1208d7e938130e36c106a9f28678e4a98559b0"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/3tix1-iurj-br.css",
+      "sha256": "a275567cf2503f9b9f0f80aa81f1c2939e17cbff0109de9db343af7c4cd98050"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/3x_-4inkf8_6d.js",
+      "sha256": "3e24e3af14ee8034e1ca95170e448695e7e938407de210cca2e9a777cf1c8b2c"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/4326bol0nmbl6.js",
+      "sha256": "197d69804e4e2463e600a422d21e034c0881dbfc6f3bd9a9283a96880d0d887a"
+    },
+    {
+      "path": ".next-qa-release/static/chunks/turbopack-25fn3m40z95vh.js",
+      "sha256": "0d271215b38bc9444772523afb4bf2410fe3f7e0126fc73d932bab61014e0660"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/developers/page.js",
+      "sha256": "12d76a446d7a4fa4ed74a7433b7fa74dd95f57aa77a02fd8b1e097d04f77ba32"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/developers/page_client-reference-manifest.js",
+      "sha256": "58ee14e32900a3e34a534235d74c678591976b4f9120835c36fbbfaa71e74372"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/engine/page.js",
+      "sha256": "9e4c66012bdb15f605175b3962d8493a4d3c6ad690ef24420de8d47696d2bf19"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/engine/page_client-reference-manifest.js",
+      "sha256": "9fbe1c87d5d6807acc5531860e19389aa356de4f0886a941f595a308197c1649"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/page.js",
+      "sha256": "1932284c45abf6dbd2e74b634401ca11d8ab52f4720883d6dd5f591398a91cc8"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/page_client-reference-manifest.js",
+      "sha256": "506c29eb79851a5551a53a70cb643a364079290a6162cb222685af3d999af90c"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/projects/[slug]/page.js",
+      "sha256": "549bad22f2162bf95f44f6e8f10e3bd1be4b7071d9cbf2709c02379b0e8c941d"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/projects/[slug]/page_client-reference-manifest.js",
+      "sha256": "69be6f80ba46d550ec1ed1e40eeee97809b9ffc53022bb1bce03e7430e3d1966"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/projects/page.js",
+      "sha256": "41204757d38bc01d0a886c1bd305d3741141d257536ef3e195805be89644c262"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/projects/page_client-reference-manifest.js",
+      "sha256": "c0b76fe9d176ad9e5e60f0d6deb6692ef848f7ec8d316065e81c25a725fcebde"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/studio/page.js",
+      "sha256": "60dbadfb2c367429ad502dc30ccff0f20182a7b242d4f2c8b6d742ef9055d90e"
+    },
+    {
+      "path": ".next-qa-release/server/app/(site)/studio/page_client-reference-manifest.js",
+      "sha256": "ebac56c6cb04b34a23bed6b8faa490125550f765a65b69e7228a9d5fbd8a02a5"
+    },
+    {
+      "path": ".next-qa-release/server/app/_global-error/page.js",
+      "sha256": "8adf0750379b4eb01d82c2754425aea1d256c518bd227b268375f98216668337"
+    },
+    {
+      "path": ".next-qa-release/server/app/_global-error/page_client-reference-manifest.js",
+      "sha256": "63c3378bf2dd9e81d97c247b922b19cdc9b0271cebaa892d78a9a2f5196b2bb0"
+    },
+    {
+      "path": ".next-qa-release/server/app/_not-found/page.js",
+      "sha256": "085ded785344acb4f1b8f23319b49dd314c1cebbdbb2273d1e1e71eb8551e39e"
+    },
+    {
+      "path": ".next-qa-release/server/app/_not-found/page_client-reference-manifest.js",
+      "sha256": "5133478fdd06622e59d99f66e6613eefa7e96d0cce8a30294d6964d79f369860"
+    },
+    {
+      "path": ".next-qa-release/server/app/api/assistant/route.js",
+      "sha256": "879c718766e7f1b3012122e1362c9607ab39b12fa1cbefdcc871814042dcb1f5"
+    },
+    {
+      "path": ".next-qa-release/server/app/api/assistant/route_client-reference-manifest.js",
+      "sha256": "a21cf8a5726b2d8a66daeaa3bbf3e0c4e9ba66a977a3203f44eab2a582dc16f8"
+    },
+    {
+      "path": ".next-qa-release/server/app/api/engine/route.js",
+      "sha256": "398247790f87dcb53559c34a0f6b01a1af00874295c4649b47df5d6ea29cad8a"
+    },
+    {
+      "path": ".next-qa-release/server/app/api/engine/route_client-reference-manifest.js",
+      "sha256": "5b21fd27a3b7a526dc7e3579f7061ea0ace6cd3ac9eb36b035e53c8924b9ccc4"
+    },
+    {
+      "path": ".next-qa-release/server/app/icon.svg/route.js",
+      "sha256": "82c19e80428f1e5608ff884234259be4e7bbf7c04d66a295514ecb30cb17f3f1"
+    },
+    {
+      "path": ".next-qa-release/server/app/render/[slug]/page.js",
+      "sha256": "0f591b184010f480be22d3d8cf0c2603a9af0b1cd4acb8928a1427b8cc84663a"
+    },
+    {
+      "path": ".next-qa-release/server/app/render/[slug]/page_client-reference-manifest.js",
+      "sha256": "1b6356064fbc6352ab68787a79eb687bfc07db658066444c3518a983c1fdc764"
+    },
+    {
+      "path": ".next-qa-release/server/app/tour/page.js",
+      "sha256": "0399bca6dcb1c1ab0d3c977501461b1c6a867d4669bd9f198ce5fbcf5defe992"
+    },
+    {
+      "path": ".next-qa-release/server/app/tour/page_client-reference-manifest.js",
+      "sha256": "daacc3307d164e651b556e2d93fa94be889ecb238d17cd9b018026d83fe45728"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/[externals]__0yx2pta._.js",
+      "sha256": "17d1e4d23d0e6530213ed0574dfa51c6e09f4a0789e78e7b8e69e88fd02764a4"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/[root-of-the-server]__14ebpc9._.js",
+      "sha256": "aee0db27a26e9187478d5458d0eff92bd44065ca40a097dec24b8ce90b4853a4"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/[root-of-the-server]__19vrhl-._.js",
+      "sha256": "e172f3dc7aa3d9b690af5ed958c75d9959d68c7d5aaf96e3e6903e14439fa25a"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/[root-of-the-server]__1nb5ilq._.js",
+      "sha256": "9fcf2ff4a20cbbf399a73d4421996f57eca183a14df6a083e65d1b0d5b145fb2"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/[root-of-the-server]__1ya8itu._.js",
+      "sha256": "30f8fe235535709260d64834e01a34eba6905cb194d6daf2216c6b11cc9e5b70"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/[turbopack]_runtime.js",
+      "sha256": "5713316b175983dffa2828678abd618f418611d5076da1ed4bb2cf6df551e39f"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/_05zec49._.js",
+      "sha256": "4276e83419e8f2a05bef60e27dafa01603ad883bb474f422622a508b7a2fe554"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/_1al-du5._.js",
+      "sha256": "252d69878d13536ab86e00339734cb944ec2a3a9c95066ccdf994cf706c76c2c"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/_next-internal_server_app_api_assistant_route_actions_1w4zl8n.js",
+      "sha256": "3c58197ec2f158e7b850d23d77da362c9094575013acd136e0b7f359d4eb661b"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/_next-internal_server_app_api_engine_route_actions_12j-_gn.js",
+      "sha256": "4124559fbb6aba586c083d43628a20f17b359435df4adb059223e1dd5eef89bf"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/_next-internal_server_app_icon_svg_route_actions_1r2h_ub.js",
+      "sha256": "238c8bc078106c4e449d7c5383c4832e2619fd2d873b693bd0865b102ab9281c"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__07-iozk._.js",
+      "sha256": "5b2d010ffb98b7484483696893d8c6df3ce5fb53f705f774bc72c74a23d74892"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__07sxi-7._.js",
+      "sha256": "7cae23b251522500293fe6df9e96f7a4753359c8c7bbd400be738b2c98fe3918"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__0he8b2u._.js",
+      "sha256": "8848602e9aedf2619eca604cebbbc8e7834c57f121915f7d69899b6172b66d7a"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__0nh6ihk._.js",
+      "sha256": "22680926ce0b581679272f2637d5e86cbc8e8bf2d57fe666ec9c9bcb28ff5cf1"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__0p55_gn._.js",
+      "sha256": "f292c43a80ba3fd862eb6092274a56357b0754fc8eee3d3be51dc728e1d11a34"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__0qmao2d._.js",
+      "sha256": "4817209e32aea6c7ed47dda7c33133d1465d37b5e5fa0ae8f36dacb4f4705a35"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__0shdc11._.js",
+      "sha256": "c2f89e432e990014976dccb91e0c1fec3492f7b463a4bb83d09d9d415fd35a76"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__0yx8dmc._.js",
+      "sha256": "d43a73184aa9533eb376c5e5e705114aeb271c122131f38b6aaead8c502387a2"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__14qfikv._.js",
+      "sha256": "f2c04762e314e3c841f5f879dc1c5fb5c1044d4a85df25b44132034348fb69a4"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__198-42w._.js",
+      "sha256": "1b285daf11603c8c2bee832ff8d3a1902a6ac7a92cabb2684d30344910a17a72"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__1dgnbju._.js",
+      "sha256": "6269f4c51e56a9c3f367180301f91b7be360e67a542cc92eeb8e8f2397737280"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__1dnc8id._.js",
+      "sha256": "3e7b0b1d380e6ea8a1e31e929fffce34eb4531ffc0b36960b917c29d3de523d5"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__1io3bae._.js",
+      "sha256": "fe9f554a9aa6511759b8eb012c826a4fbcd5ea3f215b203d5dfc4d17ab28e397"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[root-of-the-server]__1y6hupz._.js",
+      "sha256": "78993dbee306ed139e91669c5fdb67ea03845bd7cc40a17c688f9f62e9d54fd3"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/[turbopack]_runtime.js",
+      "sha256": "fecc24d1f9639b12df3815314ef364d88371097c2c82b19a9d15bd016f761181"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_08s61_p._.js",
+      "sha256": "b4e3e9988ace607cd1adffcc324e5e155d1472dad6338544da25a24cf19db452"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_0dfbpf0._.js",
+      "sha256": "21257120a6bad179d817a89e1bf44739f6c1464b2168226718a46f7c7bc88cb3"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_0l50nwt._.js",
+      "sha256": "74e90b9442246238437e8b397cfcd848c777a2757512b0722c8772dc16583c1e"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_0p85855._.js",
+      "sha256": "a2280b9e3fd32b73a20d9fe346818ffb8ba5b21ac1e1093916481e187992c6b2"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_0rldk-j._.js",
+      "sha256": "6ee19911f97a46e6a291be56f138b20e7be35751c061b7f3cccc458814a8f68f"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_0ss3ooi._.js",
+      "sha256": "caf31a29733ec7eab69de3a65240e449a49020296720958666ad4ae52f8b4c1b"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_0tirqfh._.js",
+      "sha256": "78a2ba4df8b2fefb61bd5946d8a4ab4d423e182c92c628843fc711199977735f"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_0xccgmm._.js",
+      "sha256": "940647ac0a46996dc1a815bdc79307ef51164512387eb22f67feb0837440090c"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_13_i_yw._.js",
+      "sha256": "ad55ca2855fd30bb17b3c958fbf83edf03ac6b8cd20d743b10e9cb765b744784"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_13ew5o-._.js",
+      "sha256": "2db585a5fdb9bc512635042d3725de12daa64ebb3e1f9fb5ae6361784ae05fc7"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1anzi9t._.js",
+      "sha256": "b7efc1c5561667589392428c07c65ce71d279816c230c86ade0959352ce57d99"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1audumu._.js",
+      "sha256": "c839645d925ffcf12c83195faf7aa9519c669fa9794a11ea31268f05e98402c3"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1bfg6ej._.js",
+      "sha256": "65c8665f6fa6685e8f5df353ad644e9d510379ad65dc545b12e6b4dd75392221"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1ccs1tq._.js",
+      "sha256": "8a6fc2b637ebf7964f5e0c969afc6e3439f695991424fb9a0e1f561cf22a8ec2"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1en1klq._.js",
+      "sha256": "5595178d673c76ea6b664ad4bb9a8a1acf7dc4460bfc45b31d5cc52471a21c3e"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1ff88aq._.js",
+      "sha256": "5f2355002f065391b734b7623331d43ecae6bad39b863b95ec621cfdbc8f6c8f"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1g2-ngh._.js",
+      "sha256": "5fa20d779780eae5bd4c56b4abcd5788763e42d4ec3f65b3d3972a2a33ce3c58"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1grfn0c._.js",
+      "sha256": "a238aca33a3f9767c5e19c4c68350a22824442c13e6ee2d4046e52a4135e3c44"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1hx1xcy._.js",
+      "sha256": "4694be0e59af74c6c1a5d9a6f51f72019b3cdfd3f1120e402da1a00516a9c5fd"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_1yvcs7i._.js",
+      "sha256": "adf20b5911bb90932c801d77715bf098d6626590f6ca236ba9aed21c8e5af9ef"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_(site)_developers_page_actions_1pkymw-.js",
+      "sha256": "db41cd0042e1d37037c956466cb22b889734cfbb64678eb7ee5bd7c69e8eb803"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_(site)_engine_page_actions_08wefco.js",
+      "sha256": "8462e446df95a1cf7a240e1909df9d7526557d934fba0284d0beef0ac12670e0"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_(site)_page_actions_00xswjq.js",
+      "sha256": "5c42e58c67003503b569e222cbd7bb66cba4e384f20cb0a3ff087c04fbbe170e"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_(site)_projects_[slug]_page_actions_1o-qd1o.js",
+      "sha256": "72f46b2f505bdccd3dc620591f6ba85b0169e3ca2920d18f961da13e9ee62606"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_(site)_projects_page_actions_0z56azi.js",
+      "sha256": "297a70d53c01e0f0c203f91447f427abd5ec8ef11b1c77e0e1afdc475a53dab3"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_(site)_studio_page_actions_0o4ub0w.js",
+      "sha256": "672cc99750d31017ceebc7f45847a36ef46a8119fa550343ef79be0a48209569"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app__global-error_page_actions_0zi5s8-.js",
+      "sha256": "c898e6139d76ae88f36ae1daa7cd2950dfd0eccaff3bea76692d9f4655d76914"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app__not-found_page_actions_0pt47yr.js",
+      "sha256": "174b05d9df2550c3ea4fe731a2750d7e0e93465ab60d2fac0cc47f127c0de36b"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_render_[slug]_page_actions_0pm4f88.js",
+      "sha256": "f597e2947d8a87f215d1b2d053cd089093a787fd31d005d45198659705a42911"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/_next-internal_server_app_tour_page_actions_1ha798b.js",
+      "sha256": "cac41018e8f79a804ac529a5a99f47a9c3ec2e696acbcb8ab915432c4129cc86"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_01xbj_9._.js",
+      "sha256": "06a1931002edbea5e53a887ede1d21222cab4ec3a36afbea43cf3f17db8c7a43"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_02b103h._.js",
+      "sha256": "917d545af0782ae4ba27e6508886ee0f4b79fe3a6946eb0a49b4fe8cf43755bd"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_0kzwpq3._.js",
+      "sha256": "5109c7f98c51467a6d2e2fc747216cc8a71f2ef0ca40e3490ac4eddf9a7b5e7d"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_0t19olu._.js",
+      "sha256": "f6415c8d2abf929dae69e7288add22a0bd4f71490253eb9e8f0ae80462b06578"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_next_dist_0nkkbfv._.js",
+      "sha256": "2168acdb336c867b8ace6a94f2323772789a05eb2a9921159d9781731cd44623"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_next_dist_18_d8l1._.js",
+      "sha256": "ef0010fb36ea8ad8e68549f1646be53e401c866737c857b0e55be7f54d3e03c2"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_next_dist_1v8aef8._.js",
+      "sha256": "d90597aff51cb0e15fd013c2b9b5209482b06e7369bd0120fbd9d95e050cd0e5"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_next_dist_client_components_0wpq8j3._.js",
+      "sha256": "01515fe14412df27b82fabd7bf4c1bbac6d35b3b2cba66f344c9c04332d9fccc"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_next_dist_client_components_builtin_forbidden_0symwr9.js",
+      "sha256": "af7a0b3c069d876bfdbc11bb3fc88aa3cb0769688dcf9705debf15c2fd579201"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_next_dist_client_components_builtin_global-error_0q-w892.js",
+      "sha256": "1511d90136b9b0f3a51642aa06f86d39dde4e0843ffde454674acadfa396b942"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/node_modules_next_dist_client_components_builtin_unauthorized_0l_sp0x.js",
+      "sha256": "31c82886e206a4ddfb028d86b19b036491c30eca465089fc6284754717f29f3a"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/src_1htx2y2._.js",
+      "sha256": "56d0c601843ebb01b907983d6b8a3b04b7f69743be6b467e412a91ea41e9f4f6"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/src_components_engine_EngineApp_tsx_0035rfh._.js",
+      "sha256": "cd9e51fd9e1856471a3cc8f7103605921399f7cedd17da8df1408cb2b27ec3c8"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/src_components_project_0epxbam._.js",
+      "sha256": "5d36bf9755c39a3c5a501b2c5592c2b31809b9e85a042be1e89eb1e814077e02"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/src_components_studio_StudioApp_tsx_05-bqce._.js",
+      "sha256": "52d9923c5201c7333235a5a17b0a52744e3852e02c6f0edd27c23e7a35b5b1bc"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/src_content_projects_ts_05szzol._.js",
+      "sha256": "c114755cde7771ff97349c9151fc240fb382c3a88af13b27671f2f77caa3ac82"
+    },
+    {
+      "path": ".next-qa-release/server/chunks/ssr/src_content_projects_ts_0us9q_4._.js",
+      "sha256": "cbe20930934747bb882769b35e515623ebb75904df3d9a062facd8b4af409421"
+    },
+    {
+      "path": ".next-qa-release/server/interception-route-rewrite-manifest.js",
+      "sha256": "fc5133e40acf09e6517b073ddd7b5c0c218d09938848902210f2cc13f08e1c81"
+    },
+    {
+      "path": ".next-qa-release/server/middleware-build-manifest.js",
+      "sha256": "e527d783183d99f97b3d2012f7f81a2d7014d991c40d223ee167e71ca392c591"
+    },
+    {
+      "path": ".next-qa-release/server/middleware.js",
+      "sha256": "1813a2e3db246c4933c21730d7f9e5e778120397d83d297f4caffbda26feaaeb"
+    },
+    {
+      "path": ".next-qa-release/server/next-font-manifest.js",
+      "sha256": "84888ff09ecb6f79b599238e88fe39b78c42d48387da1a8c9995d6359837124d"
+    },
+    {
+      "path": ".next-qa-release/server/server-reference-manifest.js",
+      "sha256": "5670b8a147c2ec210b56bbbfce897971eabc5ee2c9cf9580de76d64f3d24cc2b"
+    }
+  ]
+}

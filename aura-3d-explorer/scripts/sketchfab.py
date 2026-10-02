@@ -88,7 +88,7 @@ def source():
     print(f"Saved {len(models)} candidates to {CATALOG.relative_to(ROOT)}")
 
 
-def download(uid):
+def download(uid, preferred_format=None):
     if not re.fullmatch(r"[a-f0-9]{32}", uid):
         raise RuntimeError("Expected a 32-character Sketchfab model UID")
     token = os.environ.get("SKETCHFAB_ACCESS_TOKEN")
@@ -106,7 +106,8 @@ def download(uid):
     if not current.get("isDownloadable") or license_info.get("slug") not in ALLOWED_LICENSES:
         raise RuntimeError("Model is no longer downloadable under CC BY or CC0; refresh the catalog.")
     response = request_json(f"/models/{uid}/download", token)
-    fmt = next((key for key in ("glb", "gltf") if response.get(key, {}).get("url")), None)
+    formats = (preferred_format,) if preferred_format else ("glb", "gltf")
+    fmt = next((key for key in formats if response.get(key, {}).get("url")), None)
     if not fmt:
         raise RuntimeError("Sketchfab did not provide a GLB or glTF download")
     url = response[fmt]["url"]
@@ -219,13 +220,14 @@ if __name__ == "__main__":
     parser.add_argument("--size", type=float, help="Longest model dimension in metres (install)")
     parser.add_argument("--rotation", type=float, default=0, help="Y rotation in degrees (install)")
     parser.add_argument("--max-mb", type=int, choices=[50, 100], default=50, help="Explicit install size budget; 100 for large city districts")
+    parser.add_argument("--format", choices=["glb", "gltf"], help="Download format; glTF archives may contain higher-resolution textures than GLB")
     args = parser.parse_args()
     try:
         if args.command == "source":
             source()
         elif args.uid:
             if args.command == "download":
-                download(args.uid)
+                download(args.uid, args.format)
             else:
                 install(args.uid, args.size, args.rotation, args.max_mb * 1_000_000)
         else:

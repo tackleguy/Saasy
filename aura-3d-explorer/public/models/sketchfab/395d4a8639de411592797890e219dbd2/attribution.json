@@ -16,5 +16,6 @@
   "path": "/models/sketchfab/395d4a8639de411592797890e219dbd2/model.glb",
   "sizeMeters": 520,
   "rotationY": 0.0,
-  "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  "modifications": "Original district layout preserved. Geometry welded and quantized; full-resolution glTF source textures exported as 2K JPEG (standard) and up to 4K JPEG (High). Uniform backdrop scale; source-space ground alignment. Not geographically registered to the proposal.",
+  "highQualityPath": "/models/sketchfab/395d4a8639de411592797890e219dbd2/model-hq.glb"
 }

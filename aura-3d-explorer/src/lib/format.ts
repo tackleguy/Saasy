@@ -2,7 +2,7 @@
  * Number formatting helpers shared by every financial readout.
  */
 
-/** "$174.0M", "$1.25B", "−$3.2M". Set `compact = false` for "$174,000,000". */
+/** "$174.0M", "$1.25B", "−$3.2M". Set `compact = false` for "$174,000,000.00". */
 export function fmtMoney(n: number, compact = true): string {
   if (!Number.isFinite(n)) return "—";
   const rounded = Math.round(Math.abs(n) * (compact ? 1 : 100)) / (compact ? 1 : 100);

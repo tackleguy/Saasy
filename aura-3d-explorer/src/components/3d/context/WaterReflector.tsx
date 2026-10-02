@@ -14,7 +14,7 @@
  * Use as the water mesh's material, passing that mesh's ref:
  *   <mesh ref={water}><WaterReflector mesh={water} … /></mesh>
  */
-import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, type RefObject } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { MeshReflectorMaterial as ReflectorMaterialImpl } from "@react-three/drei/materials/MeshReflectorMaterial";
@@ -117,8 +117,8 @@ export default function WaterReflector({
   }, [hasBlur, depthScale, distortionMap]);
   useEffect(() => () => material.dispose(), [material]);
 
-  // Plain material values (uniform-backed setters on the impl).
-  useEffect(() => {
+  // Initialize matrix uniforms before the first render, including city remounts.
+  useLayoutEffect(() => {
     const m = material as ReflectorMaterialImpl & Record<string, unknown>;
     Object.assign(m, {
       textureMatrix: tmp.textureMatrix,

@@ -8,6 +8,15 @@ const nextConfig = {
   reactStrictMode: true,
   distDir: process.env.AURA_BUILD_DIR || ".next",
   poweredByHeader: false,
+  async headers() {
+    return [{ source: "/:path*", headers: [
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+      { key: "Strict-Transport-Security", value: "max-age=31536000" },
+    ] }];
+  },
   // `STATIC_EXPORT=1 npm run build` also emits a static site in /out (host anywhere).
   output: process.env.STATIC_EXPORT ? "export" : undefined,
   transpilePackages: ["three"],

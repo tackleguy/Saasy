@@ -1,0 +1,2562 @@
+[
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2561,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_.png",
+    "axe": []
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2468,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_projects.png",
+    "axe": []
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/developers",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2278,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_developers.png",
+    "axe": []
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/studio",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2360,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 411
+    },
+    "screenshot": "chrome-390-_studio.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Meridian\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      },
+      {
+        "id": "heading-order",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              ".panel.p-5:nth-child(1) > .mb-4.items-start > div > h3"
+            ],
+            "summary": "Fix any of the following:\n  Heading order invalid"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/engine",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2297,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_engine.png",
+    "axe": [
+      {
+        "id": "label",
+        "impact": "critical",
+        "nodes": [
+          {
+            "target": [
+              "input"
+            ],
+            "summary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/tour",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2318,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_tour.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              ".bottom-\\[9vh\\]"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".text-2xl"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".mr-3"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".border-white\\/40"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".ml-1"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/meridian-tower",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2537,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_meridian-tower.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Meridian\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/seaform-hotel",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2884,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_seaform-hotel.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Seaform\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/chess-towers",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2367,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_chess-towers.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Tower A\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/infiniti",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2468,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_infiniti.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · I\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/refad-place",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2474,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_refad-place.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · REFAD\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/broadway-bayonne",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2582,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_broadway-bayonne.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Broadway\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/lorenskog-quarter",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2457,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_lorenskog-quarter.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Block 1\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/sports-world",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2555,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_sports-world.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Sports\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/aurelia-tower",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2344,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_aurelia-tower.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Aurelia\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/hexa-gardens",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2500,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_hexa-gardens.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · North\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/projects/lexington-deco",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2947,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 394
+    },
+    "screenshot": "chrome-390-_projects_lexington-deco.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Lexington\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/meridian-tower",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2386,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_meridian-tower.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/seaform-hotel",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2341,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_seaform-hotel.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/chess-towers",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2309,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_chess-towers.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/infiniti",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2315,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_infiniti.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/refad-place",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2387,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_refad-place.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/broadway-bayonne",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2338,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_broadway-bayonne.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/lorenskog-quarter",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2307,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_lorenskog-quarter.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/sports-world",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2344,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_sports-world.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/aurelia-tower",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2496,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_aurelia-tower.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/hexa-gardens",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2258,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_hexa-gardens.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "route": "/render/lexington-deco",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2258,
+    "overflow": {
+      "viewport": 390,
+      "scroll": 390
+    },
+    "screenshot": "chrome-390-_render_lexington-deco.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2347,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 768
+    },
+    "screenshot": "chrome-768-_.png",
+    "axe": []
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2333,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 768
+    },
+    "screenshot": "chrome-768-_projects.png",
+    "axe": []
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/developers",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2471,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 768
+    },
+    "screenshot": "chrome-768-_developers.png",
+    "axe": []
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/studio",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2396,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_studio.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Meridian\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      },
+      {
+        "id": "heading-order",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              ".panel.p-5:nth-child(1) > .mb-4.items-start > div > h3"
+            ],
+            "summary": "Fix any of the following:\n  Heading order invalid"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/engine",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2630,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 768
+    },
+    "screenshot": "chrome-768-_engine.png",
+    "axe": [
+      {
+        "id": "label",
+        "impact": "critical",
+        "nodes": [
+          {
+            "target": [
+              "input"
+            ],
+            "summary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/tour",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2398,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 768
+    },
+    "screenshot": "chrome-768-_tour.png",
+    "axe": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Document does not have a main landmark"
+          }
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "html"
+            ],
+            "summary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              ".bottom-\\[9vh\\]"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".text-2xl"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".mr-3"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".border-white\\/40"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "target": [
+              ".ml-1"
+            ],
+            "summary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/meridian-tower",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2372,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_meridian-tower.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Meridian\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/seaform-hotel",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2483,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_seaform-hotel.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Seaform\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/chess-towers",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2441,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_chess-towers.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Tower A\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/infiniti",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2469,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_infiniti.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · I\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/refad-place",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 3271,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_refad-place.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · REFAD\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/broadway-bayonne",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2378,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_broadway-bayonne.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Broadway\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/lorenskog-quarter",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2350,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_lorenskog-quarter.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Block 1\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/sports-world",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2269,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_sports-world.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Sports\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/aurelia-tower",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2311,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_aurelia-tower.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · Aurelia\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/hexa-gardens",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "status": 200,
+    "elapsedMs": 2517,
+    "overflow": {
+      "viewport": 768,
+      "scroll": 772
+    },
+    "screenshot": "chrome-768-_projects_hexa-gardens.png",
+    "axe": [
+      {
+        "id": "aria-prohibited-attr",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Explosion · North\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Total buildable area\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Podium price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Office price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Residential price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Crown price / sf\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Absorption\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          },
+          {
+            "target": [
+              ".h-5.touch-none[aria-label=\"Traditional sales load\"]"
+            ],
+            "summary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 768,
+    "route": "/projects/lexington-deco",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "failure": "Error: page.waitForTimeout: Target page, context or browser has been closed"
+  }
+]

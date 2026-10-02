@@ -14,12 +14,13 @@ import { Html } from "@react-three/drei";
 import type { Building, FloorData } from "@/types";
 import { crownFloorCount, explodedY, ZONES } from "@/lib/tower";
 import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
+import FacadeDetails from "./environment/FacadeDetails";
 import FloorPlate from "./FloorPlate";
 import CoreShaft from "./CoreShaft";
 import SectionCut from "./SectionCut";
 import FloorAnnotations from "./FloorAnnotations";
 import { useMergedStatics } from "./mergedStatics";
-import { brushedMetalTexture, concreteBump, concreteTexture } from "./textures";
+import { brushedMetalTexture } from "./textures";
 
 interface Props {
   building: Building;
@@ -58,13 +59,10 @@ function RoofCrown({ top, explosion, dimmed, tall }: { top: FloorData; explosion
   return (
     <group ref={group} position={[0, top.baseY + top.height, 0]}>
       <mesh position={[0, spireH / 2, 0]} castShadow raycast={() => null}>
-        <cylinderGeometry args={[0.02, 0.14, spireH, 8]} />
-        <meshStandardMaterial ref={mat} map={brushedMetalTexture("#8B6B44")} metalness={0.72} roughness={0.3} envMapIntensity={0.9} transparent />
+        <cylinderGeometry args={[0.01, 0.3, spireH, 3]} />
+        <meshStandardMaterial ref={mat} map={brushedMetalTexture("#8B6B44")} metalness={0.85} roughness={0.25} envMapIntensity={1.3} emissive="#FFE2B0" emissiveIntensity={0.2} transparent />
       </mesh>
-      <mesh position={[0, 0.12, 0]} rotation={[0, top.rotationY, 0]} raycast={() => null}>
-        <boxGeometry args={[Math.min(top.width, top.depth) * 0.5, 0.24, Math.min(top.width, top.depth) * 0.5]} />
-        <meshStandardMaterial map={concreteTexture()} bumpMap={concreteBump()} bumpScale={0.03} color="#e8e2d6" roughness={0.82} />
-      </mesh>
+
     </group>
   );
 }
@@ -95,7 +93,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
   useMergedStatics(root, building.id, floors, idle, hovered?.buildingId === building.id);
 
   return (
-    <group ref={root} position={[building.position[0], 0, building.position[1]]}>
+    <group ref={root} name={`tower:${building.id}`} userData={{heroBuilding:true}} position={[building.position[0], 0, building.position[1]]}>
       {floors.map((floor) => (
         <FloorPlate
           key={floor.index}
@@ -116,6 +114,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
         />
       ))}
 
+      <FacadeDetails building={building} explosion={explosion} selectedIndex={selectedIndex} hidden={xray||section||walking} />
       <RoofCrown top={top} explosion={explosion} dimmed={selectedIndex !== null && selectedIndex !== top.index} tall={floors.length >= 20} />
       <ActiveRing radius={Math.hypot(podium.width, podium.depth) / 2 + 1.5} active={active} />
 

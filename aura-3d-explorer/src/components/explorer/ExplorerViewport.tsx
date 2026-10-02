@@ -62,6 +62,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
     <ProjectFloorPlansProvider plans={x.floorPlans}>
     <section aria-label={`3D model of ${x.building.name}`} className={clsx("relative overflow-hidden bg-stone", className)}>
       <BuildingScene
+        showPresentationControls={variant === "full"}
         buildings={x.site}
         activeBuildingId={x.activeBuildingId}
         explosion={x.explosion}

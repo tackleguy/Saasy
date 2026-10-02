@@ -215,7 +215,14 @@ function Reel({ project, playing, onDone, shotSkip }: { project: Project; playin
 
 export default function CinematicTour({ projects, startSlug }: { projects: Project[]; startSlug?: string }) {
   const [index, setIndex] = useState(() => Math.max(0, projects.findIndex((p) => p.slug === startSlug)));
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPlaying(!preference.matches);
+    const change = () => { if (preference.matches) setPlaying(false); };
+    preference.addEventListener("change", change);
+    return () => preference.removeEventListener("change", change);
+  }, []);
   const [skip, setSkip] = useState(0);
   const [chrome, setChrome] = useState(true);
   const project = projects[index];

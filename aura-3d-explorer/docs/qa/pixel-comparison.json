@@ -1,0 +1,1090 @@
+[
+  {
+    "route": "/",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        8026
+      ],
+      [
+        390,
+        8024
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 24.866,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        8026
+      ],
+      [
+        390,
+        8023
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 4.844,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        5854
+      ],
+      [
+        390,
+        5851
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.684,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        5854
+      ],
+      [
+        390,
+        5851
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 4.163,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        5594
+      ],
+      [
+        390,
+        5586
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.097,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        5594
+      ],
+      [
+        390,
+        5572
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 5.708,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        4873
+      ],
+      [
+        390,
+        4869
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 16.782,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        4873
+      ],
+      [
+        390,
+        4870
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 9.073,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        3441
+      ],
+      [
+        390,
+        3438
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 4.03,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        3441
+      ],
+      [
+        390,
+        3438
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 5.713,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        900
+      ],
+      [
+        390,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 59.618,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        900
+      ],
+      [
+        390,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.751,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        8759
+      ],
+      [
+        390,
+        8750
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.629,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        8759
+      ],
+      [
+        390,
+        8735
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.685,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 390,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        390,
+        900
+      ],
+      [
+        390,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 66.399,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 390,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        390,
+        900
+      ],
+      [
+        390,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.057,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        6730
+      ],
+      [
+        768,
+        6725
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 20.411,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        6730
+      ],
+      [
+        768,
+        6744
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.289,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        3388
+      ],
+      [
+        768,
+        3388
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.758,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        3388
+      ],
+      [
+        768,
+        3408
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.42,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        4390
+      ],
+      [
+        768,
+        4386
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.128,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        4390
+      ],
+      [
+        768,
+        4410
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 3.473,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        4351
+      ],
+      [
+        768,
+        4351
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 17.574,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        4351
+      ],
+      [
+        768,
+        4371
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 23.17,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        2995
+      ],
+      [
+        768,
+        2996
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 3.392,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        2995
+      ],
+      [
+        768,
+        2995
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 3.764,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        900
+      ],
+      [
+        768,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 55.687,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        900
+      ],
+      [
+        768,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 57.346,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        7918
+      ],
+      [
+        768,
+        7913
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.748,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        7918
+      ],
+      [
+        768,
+        7937
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.147,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 768,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        768,
+        900
+      ],
+      [
+        768,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 61.891,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 768,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        768,
+        900
+      ],
+      [
+        768,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.024,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        5732
+      ],
+      [
+        1280,
+        5728
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 27.121,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        5732
+      ],
+      [
+        1280,
+        5727
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.678,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        2479
+      ],
+      [
+        1280,
+        2479
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 3.194,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        2479
+      ],
+      [
+        1280,
+        2479
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.594,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        3567
+      ],
+      [
+        1280,
+        3563
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.551,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        3567
+      ],
+      [
+        1280,
+        3567
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 3.789,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        1264
+      ],
+      [
+        1280,
+        1264
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 22.919,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        1264
+      ],
+      [
+        1280,
+        1264
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 4.393,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        2192
+      ],
+      [
+        1280,
+        2192
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.544,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        2192
+      ],
+      [
+        1280,
+        2192
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 3.715,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        900
+      ],
+      [
+        1280,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 47.672,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        900
+      ],
+      [
+        1280,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.48,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        4478
+      ],
+      [
+        1280,
+        4474
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.379,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        4478
+      ],
+      [
+        1280,
+        4477
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.725,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 1280,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1280,
+        900
+      ],
+      [
+        1280,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 53.433,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 1280,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1280,
+        900
+      ],
+      [
+        1280,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.39,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        5944
+      ],
+      [
+        1920,
+        5940
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 26.714,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        5944
+      ],
+      [
+        1920,
+        5939
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.259,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        2775
+      ],
+      [
+        1920,
+        2775
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.581,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        2775
+      ],
+      [
+        1920,
+        2775
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.094,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        3526
+      ],
+      [
+        1920,
+        3522
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.927,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/developers",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        3526
+      ],
+      [
+        1920,
+        3526
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.764,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        1264
+      ],
+      [
+        1920,
+        1264
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 27.997,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/studio",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        1264
+      ],
+      [
+        1920,
+        1264
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 3.05,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        2174
+      ],
+      [
+        1920,
+        2175
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 1.516,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/engine",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        2174
+      ],
+      [
+        1920,
+        2174
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 2.536,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        900
+      ],
+      [
+        1920,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 43.142,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/tour",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        900
+      ],
+      [
+        1920,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 55.786,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        4457
+      ],
+      [
+        1920,
+        4452
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.379,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/projects/meridian-tower",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        4457
+      ],
+      [
+        1920,
+        4456
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.633,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 1920,
+    "pair": "chrome/firefox",
+    "fullSizes": [
+      [
+        1920,
+        900
+      ],
+      [
+        1920,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 48.632,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  },
+  {
+    "route": "/render/meridian-tower",
+    "width": 1920,
+    "pair": "chrome/webkit",
+    "fullSizes": [
+      [
+        1920,
+        900
+      ],
+      [
+        1920,
+        900
+      ]
+    ],
+    "topViewportPixelsChangedOver16": 0.044,
+    "note": "Diagnostic pixel difference, not an acceptance tolerance."
+  }
+]

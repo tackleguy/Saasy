@@ -1,0 +1,20 @@
+{
+  "pages": 96,
+  "engines": [
+    "chrome",
+    "firefox",
+    "webkit"
+  ],
+  "httpFailures": 0,
+  "axeViolations": 0,
+  "overflows": 0,
+  "exceptions": [],
+  "consoleWarningPages": 72,
+  "blocked": [
+    {
+      "engine": "edge",
+      "blocked": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge\nRun \"npx playwright install msedge\""
+    }
+  ],
+  "launchApproved": false
+}

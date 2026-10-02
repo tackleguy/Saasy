@@ -1,0 +1,20 @@
+(node:33532) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ QA-002 rejects null, arrays, scalars and malformed JSON without crashing (43.381041ms)
+✔ QA-002 rejects chunked oversized bytes before parsing (2.781417ms)
+✔ QA-006 money handles negative zero, cents and unavailable numbers (86.235458ms)
+✔ QA-003 failed storage writes are observable; valid scenario survives reload (1.418875ms)
+✔ QA-007 malformed saved scenarios are rejected (1.96425ms)
+✔ independent one-floor calculation agrees to the cent (3.3825ms)
+✔ all project floor, zone and site totals reconcile at defaults and slider extremes (69.899459ms)
+✔ zero revenue and costs above revenue remain finite and negative (0.51375ms)
+✔ QA-022 corrupt and oversized CAD files fail before allocating geometry (678.807208ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1728.463375

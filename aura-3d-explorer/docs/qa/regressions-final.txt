@@ -1,0 +1,24 @@
+
+> aura-3d-explorer@1.0.0 test
+> node --import tsx --test scripts/qa/regressions.test.ts
+
+(node:49711) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ QA-002 rejects null, arrays, scalars and malformed JSON without crashing (515.297042ms)
+✔ QA-002 rejects chunked oversized bytes before parsing (9.603416ms)
+✔ QA-006 money handles negative zero, cents and unavailable numbers (244.218166ms)
+✔ QA-003 failed storage writes are observable; valid scenario survives reload (1.517708ms)
+✔ QA-007 malformed saved scenarios are rejected (0.514ms)
+✔ independent one-floor calculation agrees to the cent (4.588791ms)
+✔ all project floor, zone and site totals reconcile at defaults and slider extremes (136.915833ms)
+✔ zero revenue and costs above revenue remain finite and negative (0.660458ms)
+✔ QA-022 corrupt and oversized CAD files fail before allocating geometry (2189.831334ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6108.158667

@@ -279,7 +279,7 @@ export default function EngineViewer({ scene, openings, cutaway, labels, selecte
   return (
     <Canvas
       key={`${b.cx.toFixed(2)}:${b.cz.toFixed(2)}:${b.size.toFixed(2)}`}
-      shadows
+      shadows="percentage"
       dpr={[1, 2]}
       camera={{ position: camPos, fov: 40, near: 0.05, far: b.size * 20 }}
       gl={{ antialias: true, preserveDrawingBuffer: true }}

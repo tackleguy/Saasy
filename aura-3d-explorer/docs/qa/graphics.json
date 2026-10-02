@@ -1,0 +1,50 @@
+[
+  {
+    "firstTelemetryMs": 3923,
+    "note": "First telemetry follows a one-second sampling window; not exact first frame."
+  },
+  {
+    "mode": "idle",
+    "data": "{\"tier\":\"high\",\"fps\":6,\"calls\":3173,\"triangles\":2128508,\"geometries\":755,\"textures\":66,\"programs\":53,\"towerMeshes\":{\"tower:meridian\":28,\"tower:spire\":253,\"tower:lofts\":108,\"tower:pinnacle\":822}}"
+  },
+  {
+    "mode": "idle",
+    "data": "{\"tier\":\"high\",\"fps\":17,\"calls\":1952,\"triangles\":1620396,\"geometries\":764,\"textures\":66,\"programs\":53,\"towerMeshes\":{\"tower:meridian\":28,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":822}}"
+  },
+  {
+    "mode": "idle",
+    "data": "{\"tier\":\"high\",\"fps\":19,\"calls\":888,\"triangles\":1995804,\"geometries\":786,\"textures\":66,\"programs\":53,\"towerMeshes\":{\"tower:meridian\":28,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "idle",
+    "data": "{\"tier\":\"high\",\"fps\":22,\"calls\":278,\"triangles\":2228115,\"geometries\":786,\"textures\":66,\"programs\":53,\"towerMeshes\":{\"tower:meridian\":28,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "idle",
+    "data": "{\"tier\":\"high\",\"fps\":22,\"calls\":278,\"triangles\":2228115,\"geometries\":786,\"textures\":66,\"programs\":53,\"towerMeshes\":{\"tower:meridian\":28,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "orbit",
+    "data": "{\"tier\":\"high\",\"fps\":36,\"calls\":317,\"triangles\":2228115,\"geometries\":787,\"textures\":66,\"programs\":55,\"towerMeshes\":{\"tower:meridian\":47,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "orbit",
+    "data": "{\"tier\":\"high\",\"fps\":32,\"calls\":319,\"triangles\":2228127,\"geometries\":787,\"textures\":66,\"programs\":55,\"towerMeshes\":{\"tower:meridian\":47,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "orbit",
+    "data": "{\"tier\":\"high\",\"fps\":35,\"calls\":323,\"triangles\":2238887,\"geometries\":787,\"textures\":66,\"programs\":55,\"towerMeshes\":{\"tower:meridian\":47,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "orbit",
+    "data": "{\"tier\":\"high\",\"fps\":39,\"calls\":323,\"triangles\":2237811,\"geometries\":787,\"textures\":66,\"programs\":55,\"towerMeshes\":{\"tower:meridian\":47,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "orbit",
+    "data": "{\"tier\":\"high\",\"fps\":31,\"calls\":281,\"triangles\":2228131,\"geometries\":787,\"textures\":66,\"programs\":55,\"towerMeshes\":{\"tower:meridian\":28,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  },
+  {
+    "mode": "4x CPU throttle (not GPU throttle)",
+    "data": "{\"tier\":\"medium\",\"fps\":37,\"calls\":171,\"triangles\":1838934,\"geometries\":787,\"textures\":64,\"programs\":54,\"towerMeshes\":{\"tower:meridian\":28,\"tower:spire\":25,\"tower:lofts\":28,\"tower:pinnacle\":27}}"
+  }
+]

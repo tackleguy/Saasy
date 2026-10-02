@@ -1,0 +1,30 @@
+[
+  {
+    "name": "QA-002 API rejects null and arrays",
+    "pass": true
+  },
+  {
+    "name": "QA-004 headers and fresh nonces block injected scripts",
+    "pass": true
+  },
+  {
+    "name": "QA-005 demo form does not claim delivery",
+    "pass": true
+  },
+  {
+    "name": "QA-003 scenario storage failure retains draft and gives recovery",
+    "pass": true
+  },
+  {
+    "name": "QA-003 scenario persists across reload",
+    "pass": true
+  },
+  {
+    "name": "QA-007 corrupt scenario storage cannot crash drawer",
+    "pass": true
+  },
+  {
+    "name": "QA-014 enquiry radio arrows do not submit form",
+    "pass": true
+  }
+]

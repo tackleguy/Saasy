@@ -48,7 +48,7 @@ interface Baked {
 }
 
 /** Latest bake per building id: { the building data it was baked from, result }. */
-const cache = new Map<string, { source: unknown; baked: Baked }>();
+const cache = new WeakMap<THREE.Object3D, { source: unknown; baked: Baked }>();
 
 const noRaycast = () => {};
 
@@ -219,11 +219,11 @@ function disposeBaked(b: Baked) {
 }
 
 function bakeFor(id: string, source: unknown, root: THREE.Object3D): Baked {
-  const hit = cache.get(id);
+  const hit = cache.get(root);
   if (hit && hit.source === source) return hit.baked;
   if (hit) disposeBaked(hit.baked);
   const baked = bake(root);
-  cache.set(id, { source, baked });
+  cache.set(root, { source, baked });
   return baked;
 }
 
@@ -304,6 +304,10 @@ export function useMergedStatics(root: RefObject<THREE.Group | null>, id: string
   }, [root, id, source, idle]);
 
   // Glass: merged while idle and not hovered (re-merged once the hover tint has faded).
+  useLayoutEffect(() => {
+    const owner = root.current;
+    return () => { if (owner) { const entry=cache.get(owner); if(entry)disposeBaked(entry.baked);cache.delete(owner); } };
+  }, [root]);
   const wasHovering = useRef(false);
   useLayoutEffect(() => {
     if (!baked || !idle || hovering || !root.current) {

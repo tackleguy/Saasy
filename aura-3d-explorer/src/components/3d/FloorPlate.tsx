@@ -72,21 +72,21 @@ import { GLASS_BLEND, setGlass } from "./glassBlend";
 
 // Parts batched per building while it is idle (see ./mergedStatics).
 const TAG = {
-  core: mergeTag("core"),
+  core: mergeTag("structure"),
   doors: mergeTag("doors"),
-  slab: mergeTag("slab"),
+  slab: mergeTag("structure"),
   stone: mergeTag("stone"),
   fins: mergeTag("fins"),
   band: mergeTag("band"),
   balus: mergeTag("balus"),
   ceiling: mergeTag("ceiling"),
-  ceilingGlow: mergeTag("ceiling-glow"),
+  ceilingGlow: mergeTag("ceiling", false, { emissiveIntensity: 0 }),
 };
 // Curtain wall: batched per zone look (+ amenity glow) in the hover group.
 const GLASS_TAG = new Map<string, ReturnType<typeof mergeTag>>();
 const glassTag = (zone: ZoneId, amenity: boolean) => {
-  const key = `glass-${zone}${amenity ? "-amenity" : ""}`;
-  if (!GLASS_TAG.has(key)) GLASS_TAG.set(key, mergeTag(key, true, { emissiveIntensity: amenity ? AMENITY_GLOW : 0 }));
+  const key = "glass-curtain";
+  if (!GLASS_TAG.has(key)) GLASS_TAG.set(key, mergeTag(key, true, { emissiveIntensity: 0 }));
   return GLASS_TAG.get(key)!;
 };
 
@@ -97,7 +97,7 @@ const XRAY_OPACITY = 0.06;
 
 const HIGHLIGHT = new THREE.Color("#9C7A52"); // oak
 const WARM_GLOW = new THREE.Color("#f59e0b"); // crown / amenity interior light
-const BRONZE = "#8B6B44";
+const BRONZE = "#6E5537";
 
 /* ------------------------------------------------------------ zone materials */
 
@@ -112,9 +112,9 @@ interface GlassLook {
 
 const LOOKS: Record<ZoneId, GlassLook> = {
   podium: { color: "#8fa4a7", roughness: 0.18, fin: null, finish: "#f0e9de" },
-  office: { color: "#9fb6ba", roughness: 0.16, fin: { spacing: 1.0, thickness: 0.06, depth: 0.3 }, finish: "#cfcac2" },
-  residential: { color: "#a9bec1", roughness: 0.2, fin: { spacing: 1.0625, thickness: 0.04, depth: 0.06 }, finish: "#ffffff" },
-  crown: { color: "#c6d6d8", roughness: 0.14, fin: { spacing: 0.8125, thickness: 0.035, depth: 0.05 }, finish: "#ffffff" },
+  office: { color: "#9fb6ba", roughness: 0.16, fin: { spacing: 0.84, thickness: 0.034, depth: 0.168 }, finish: "#cfcac2" },
+  residential: { color: "#a9bec1", roughness: 0.2, fin: { spacing: 0.42, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
+  crown: { color: "#c6d6d8", roughness: 0.14, fin: { spacing: 0.42, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
 };
 
 const lerp = THREE.MathUtils.lerp;
@@ -194,7 +194,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
 
   const group = useRef<THREE.Group>(null);
   const glassMat = useRef<THREE.MeshPhysicalMaterial>(null);
-  const glassColor = useMemo(() => new THREE.Color(look.color), [look.color]);
+  const glassColor = useMemo(() => new THREE.Color("#BFD3D8"), [look.color]);
   const slabMat = useRef<THREE.MeshStandardMaterial>(null);
   const slabMesh = useRef<THREE.Mesh>(null);
   const edgeMat = useRef<THREE.LineBasicMaterial>(null);
@@ -223,7 +223,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
     bump.repeat.set(0.5, 0.5);
     map.needsUpdate = true;
     bump.needsUpdate = true;
-    return new THREE.MeshStandardMaterial({ color: "#f7f3ec", map, bumpMap: bump, bumpScale: 0.05, roughness: 0.72 });
+    return new THREE.MeshStandardMaterial({ color: "#B8AEA0", map, bumpMap: bump, bumpScale: 0.035, roughness: 0.8 });
   }, []);
   // Interior floor finish per zone: travertine, polished concrete, oak, marble.
   const finish = useMemo(() => {
@@ -255,7 +255,8 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
     const ry = Math.max(1, (floor.depth - inset) / 4);
     return { map: repeatTexture(plasterTexture("#f3efe8"), rx, ry), bump: repeatTexture(plasterBump("#f3efe8"), rx, ry) };
   }, [floor.width, floor.depth, inset]);
-  useEffect(() => () => stoneMat.dispose(), [stoneMat]);
+  useEffect(() => () => { stoneMat.map?.dispose(); stoneMat.bumpMap?.dispose(); stoneMat.dispose(); }, [stoneMat]);
+  useEffect(() => () => { [finish,coreTex,slabTex,ceilTex].forEach(t=>{t.map.dispose();t.bump.dispose();}); }, [finish,coreTex,slabTex,ceilTex]);
 
   const edges = shaped
     ? shapedEdges(shape, floor.width, floor.depth, -inset / 2, SLAB_THICKNESS, bodyH)
@@ -392,11 +393,16 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
           <meshPhysicalMaterial
             ref={glassMat as RefObject<THREE.MeshPhysicalMaterial>}
             {...GLASS_BLEND}
-            color={look.color}
-            ior={1.5}
-            roughness={look.roughness}
-            metalness={0.25}
-            envMapIntensity={0.65}
+            color="#BFD3D8"
+            transmission={0.85}
+            thickness={0.6}
+            attenuationColor="#9FC2CC"
+            attenuationDistance={5}
+            clearcoat={1}
+            ior={1.52}
+            roughness={0.04}
+            metalness={0}
+            envMapIntensity={1.3}
             specularIntensity={0.65}
             emissive={HIGHLIGHT}
             emissiveIntensity={0}
@@ -427,7 +433,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         {/* Bronze fins / mullions */}
         {fins && (
           <instancedMesh ref={finMesh} args={[UNIT_BOX, undefined, fins.length]} castShadow raycast={() => null} userData={TAG.fins}>
-            <meshStandardMaterial ref={finMat} map={brushedMetalTexture(BRONZE)} metalness={0.62} roughness={0.34} envMapIntensity={0.85} />
+            <meshStandardMaterial ref={finMat} map={brushedMetalTexture(BRONZE)} metalness={0.85} roughness={0.3} envMapIntensity={0.85} />
           </instancedMesh>
         )}
 

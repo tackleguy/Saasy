@@ -85,7 +85,8 @@ export function useCameraTween(goal: CameraGoal, { duration = 1.2, nonce = 0, en
     }
 
     // Opening shot: jump to the intro pose, then dolly out from there.
-    const playIntro = firstRun.current && !!intro;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const playIntro = firstRun.current && !!intro && !reduceMotion;
     if (playIntro) {
       camera.position.set(...intro!.position);
       controls.target.set(...intro!.target);
@@ -101,7 +102,7 @@ export function useCameraTween(goal: CameraGoal, { duration = 1.2, nonce = 0, en
     tween.current?.kill();
     tween.current = gsap.to(proxy, {
       t: 1,
-      duration: playIntro ? intro!.duration : firstRun.current ? 0 : duration,
+      duration: reduceMotion ? 0 : playIntro ? intro!.duration : firstRun.current ? 0 : duration,
       ease: playIntro ? "power2.inOut" : "power3.inOut",
       onUpdate: () => {
         camera.position.lerpVectors(fromCamera, toCamera, proxy.t);
