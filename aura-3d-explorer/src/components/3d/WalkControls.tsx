@@ -139,18 +139,19 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const [bx, bz] = building.position;
   const cos = Math.cos(floor.rotationY);
   const sin = Math.sin(floor.rotationY);
-  const L = useMemo(() => liftDims(building.coreSize, floor.height - SLAB_THICKNESS), [building.coreSize, floor.height]);
+  const coreSize = floor.coreSize ?? building.coreSize;
+  const L = useMemo(() => liftDims(coreSize, floor.height - SLAB_THICKNESS), [coreSize, floor.height]);
   const cabCentreZ = (L.zBack + L.zFront) / 2;
   // Interior walls (door openings stay passable; the lift lobby has no colliders).
   const plans = useProjectFloorPlans();
   const fitted = useMemo(() => designForFloor(plans, floor), [plans, floor]);
-  const walls = useMemo(() => (fitted ? fitted.colliders : wallCollidersFor(floor, building.coreSize, crownFloorCount(building), fit)), [fitted, floor, building, fit]);
+  const walls = useMemo(() => (fitted ? fitted.colliders : wallCollidersFor(floor, coreSize, crownFloorCount(building), fit)), [fitted, floor, coreSize, building, fit]);
   // Core solids (building-local scene units) — the lift doorway is added while the doors are shut.
   const coreSolids = useMemo(() => {
-    const solids = coreColliders(building.coreSize, floor.height, SLAB_THICKNESS, coreServiceOpen(floor.zone));
-    const leaf = { x0: -L.opening / 2, x1: L.opening / 2, z0: L.zFront, z1: building.coreSize / 2 };
+    const solids = coreColliders(coreSize, floor.height, SLAB_THICKNESS, coreServiceOpen(floor.zone));
+    const leaf = { x0: -L.opening / 2, x1: L.opening / 2, z0: L.zFront, z1: coreSize / 2 };
     return { open: solids, shut: [...solids, leaf] };
-  }, [building.coreSize, floor.height, floor.zone, L]);
+  }, [coreSize, floor.height, floor.zone, L]);
 
   /** Plate-local (scene units) → world x/z. */
   const toWorld = useMemo(() => (lx: number, lz: number) => new THREE.Vector2(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos), [bx, bz, cos, sin]);
@@ -164,7 +165,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
    */
   const resolve = useMemo(
     () => (p: THREE.Vector2, normals: Contact[] = []) => {
-      const ch = building.coreSize / 2 + 0.12;
+      const ch = coreSize / 2 + 0.12;
       const m = 0.06;
       const margin = 0.12;
       const scratch: Contact[] = [];
@@ -238,7 +239,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       }
       return p;
     },
-    [bx, bz, cos, sin, building.coreSize, floor.shape, floor.width, floor.depth, L, walls, coreSolids]
+    [bx, bz, cos, sin, coreSize, floor.shape, floor.width, floor.depth, L, walls, coreSolids]
   );
 
   const eyeY = explodedY(floor, explosion) + SLAB_THICKNESS + EYE;
@@ -299,10 +300,10 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     let look: THREE.Vector2;
     if (viewIndex === LIFT_VIEW) {
       // Lift lobby: just outside the doors, facing them.
-      from = new THREE.Vector2(bx, bz + building.coreSize / 2 + 0.32);
+      from = new THREE.Vector2(bx, bz + coreSize / 2 + 0.32);
       look = new THREE.Vector2(bx, bz);
     } else {
-      const views = viewpointsFor(floor, crownFloorCount(building), building.coreSize, fit);
+      const views = viewpointsFor(floor, crownFloorCount(building), coreSize, fit);
       const v = views[Math.min(Math.max(viewIndex, 0), views.length - 1)];
       const s = MODEL_SCALE;
       from = resolve(toWorld(v.from[0] * s, v.from[1] * s));
@@ -448,7 +449,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     const x = camera.position.x - bx;
     const z = camera.position.z - bz;
     const nowInside = Math.abs(x) < L.cabW / 2 && z > L.zBack && z < L.zFront + L.jamb * 0.5;
-    const near = Math.abs(x) < L.cabW && z >= L.zFront && z < building.coreSize / 2 + 1.6 * MODEL_SCALE;
+    const near = Math.abs(x) < L.cabW && z >= L.zFront && z < coreSize / 2 + 1.6 * MODEL_SCALE;
     if (nowInside !== inside.current) {
       inside.current = nowInside;
       liftRef.current.onInside(nowInside);

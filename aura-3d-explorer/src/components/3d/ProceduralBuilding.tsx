@@ -99,7 +99,7 @@ export default function ProceduralBuilding({ building, explosion, active, select
           key={floor.index}
           floor={floor}
           explosion={explosion}
-          coreSize={building.coreSize}
+          coreSize={floor.coreSize ?? building.coreSize}
           facade={building.facade}
           selected={selectedIndex === floor.index}
           dimmed={selectedIndex !== null && selectedIndex !== floor.index}

@@ -131,6 +131,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
           <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-plaster pt-3 text-xs">
             <Row label="Model plate (W×D×H)" value={`${floor.width} × ${floor.depth} × ${floor.height}`} />
             <Row label="Real plate" value={`${toMetres(floor.width).toFixed(0)} × ${toMetres(floor.depth).toFixed(0)} m · ${toMetres(floor.height).toFixed(1)} m f2f`} />
+            <Row label="Core (size · share)" value={`${toMetres(floor.coreSize ?? building.coreSize).toFixed(1)} m · ${(((floor.coreSize ?? building.coreSize) ** 2 / floor.footprintM2) * 100).toFixed(1)}%`} />
             <Row label="Twist (R_y)" value={`${((floor.rotationY * 180) / Math.PI).toFixed(1)}°`} />
             <Row label="Gross area" value={`${fmtNum(floorYield.sqFt)} sf`} />
             {floor.amenity ? (
@@ -162,7 +163,7 @@ export default function FloorInspectorCard({ building, floor, floorYield, onClos
             </div>
           )}
 
-          <FloorPlanMini floor={floor} coreSize={building.coreSize} crownFloors={crownFloorCount(building)} onViewpoint={onViewpoint} fit={fit} />
+          <FloorPlanMini floor={floor} coreSize={floor.coreSize ?? building.coreSize} crownFloors={crownFloorCount(building)} onViewpoint={onViewpoint} fit={fit} />
 
           <button
             onClick={onWalk}

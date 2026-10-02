@@ -383,6 +383,8 @@ export interface ProjectMassing {
   /** Per-zone plan-shape overrides (e.g. an L-shaped podium under a round tower). */
   zoneShapes?: Partial<Record<ZoneId, ShapeInput>>;
   coreSize?: number;
+  /** Share of plate dimension / floor space allocated to the core (0–1). */
+  coreRatio?: number;
   /**
    * Lift cores. Omit for a single prismatic core at the centre (`coreSize`).
    * Extra entries are additional banks; `taper` steps a core in (see CoreInput).
@@ -406,8 +408,9 @@ export function buildingFromMassing(m: ProjectMassing): BuildingSpec {
     next += count;
   }
   const minPlate = Math.min(...ZONE_ORDER.map((z) => Math.min(...m.footprint[z])));
-  // Core ≈ 36% of the smallest plate, capped — keeps corridors around it on slim crowns.
-  const coreSize = m.coreSize ?? Math.min(2.6, +(minPlate * 0.36).toFixed(2));
+  const refPlate = m.footprint.residential ? Math.min(...m.footprint.residential) : minPlate;
+  const coreRatio = m.coreRatio ?? (m.coreSize ? +(m.coreSize / refPlate).toFixed(4) : 0.28);
+  const coreSize = m.coreSize ?? +(refPlate * coreRatio).toFixed(2);
   const cores = resolveCores(m.cores, coreSize, next - 1);
   const primary = cores.find((c) => c.primary) ?? cores[0];
   return {
@@ -419,6 +422,7 @@ export function buildingFromMassing(m: ProjectMassing): BuildingSpec {
     twistDeg: m.twistDeg ?? 0,
     taper: m.taper ?? 1,
     coreSize: primary.size,
+    coreRatio,
     cores,
     profile: { setbacks: m.setbacks ?? [], taperCurve: m.taperCurve ?? "linear", bulge: m.bulge ?? 0 },
     facade: { ...DEFAULT_FACADE, ...m.facade },
@@ -452,8 +456,7 @@ export function generateFloors(spec: BuildingSpec): FloorData[] {
   const profile = spec.profile ?? { setbacks: [], taperCurve: "linear", bulge: 0 };
   const shaftStart = spec.zones.office.floors[0];
   const shaftEnd = spec.zones.residential.floors[1];
-  // Keep-out half-size for the primary core in the plate frame (a twisted plate sees it rotated).
-  const clear = (spec.coreSize / 2) * (spec.twistDeg ? Math.SQRT2 : 1) + 0.25;
+  const ratio = spec.coreRatio ?? (spec.coreSize / (spec.zones.residential?.width ?? spec.zones.podium.width));
   // Extra cores stop on the first floor they leave the plate, and stay stopped.
   const ended = new Set<string>();
   let y = 0;
@@ -486,12 +489,18 @@ export function generateFloors(spec: BuildingSpec): FloorData[] {
       width = Math.min(width, prev.width);
       depth = Math.min(depth, prev.depth);
     }
-    const shape = fitShapeToCore(geo.shape ?? RECT, width, depth, clear);
+    const plateMin = Math.min(width, depth);
+    const clearEst = ((plateMin * ratio) / 2) * (spec.twistDeg ? Math.SQRT2 : 1) + 0.25;
+    const shape = fitShapeToCore(geo.shape ?? RECT, width, depth, clearEst);
+    const footprintM2 = shape.kind === "rect" ? width * depth : +polygonArea(planOutline(shape, width, depth)).toFixed(3);
+    const plateDim = Math.min(plateMin, Math.sqrt(footprintM2));
+    // Core scales with floor space to keep the floor-space-to-core percentage equal throughout
+    const floorCoreSize = Math.max(1.2, Math.min(plateMin * 0.42, +(plateDim * ratio).toFixed(3)));
     const rotationY = (twistIndex * spec.twistDeg * Math.PI) / 180;
     const cores: FloorCore[] = [];
     for (const core of spec.cores) {
       if (ended.has(core.id)) continue;
-      const slice = floorCoreFrom(core, number);
+      const slice = floorCoreFrom(core, number, core.primary ? floorCoreSize : undefined);
       if (!core.primary && !coreInsidePlate(shape, width, depth, slice.offset[0], slice.offset[1], slice.size, rotationY)) {
         ended.add(core.id);
         continue;
@@ -511,7 +520,8 @@ export function generateFloors(spec: BuildingSpec): FloorData[] {
       height: geo.height,
       baseY: y,
       rotationY,
-      footprintM2: shape.kind === "rect" ? width * depth : +polygonArea(planOutline(shape, width, depth)).toFixed(3),
+      footprintM2,
+      coreSize: floorCoreSize,
       cores,
       ...amenityFields(spec, number),
     });

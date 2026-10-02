@@ -206,6 +206,8 @@ export interface BuildingSpec {
    * taper and any extra cores live on `cores` / `FloorData.cores`.
    */
   coreSize: number;
+  /** Share of plate dimension / floor space allocated to the core (0–1). */
+  coreRatio?: number;
   /** Lift & stair cores. The primary is walkable; the rest are extra banks. */
   cores: CoreSpec[];
   /** Setbacks, taper easing and bulge. */
@@ -239,6 +241,8 @@ export interface FloorData {
   rotationY: number;
   /** Plate footprint area, scene units² — the true outline area (≤ width × depth). */
   footprintM2: number;
+  /** Primary core side on this floor, scene units. */
+  coreSize: number;
   /** Shared amenity programme on this floor (not sold; keeps its zone). */
   amenity?: AmenityKind;
   /** Display name of the amenity floor. */

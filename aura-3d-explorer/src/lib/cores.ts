@@ -128,11 +128,12 @@ export function resolveCores(inputs: CoreInput[] | undefined, fallbackSize: numb
 }
 
 /** This floor's slice of one core. */
-export function floorCoreFrom(spec: CoreSpec, floorNumber: number): FloorCore {
+export function floorCoreFrom(spec: CoreSpec, floorNumber: number, floorCoreSize?: number): FloorCore {
   const express = floorNumber >= spec.transferFloor;
-  const size = express ? +(spec.size * spec.taper).toFixed(3) : spec.size;
-  const offset = express ? taperedCentre(spec.offset, spec.size, size) : spec.offset;
-  return { id: spec.id, offset, size, service: express ? "express" : "full", primary: spec.primary, baseSize: spec.size };
+  const baseSize = spec.size;
+  const size = floorCoreSize ?? (express ? +(spec.size * spec.taper).toFixed(3) : spec.size);
+  const offset = express && !floorCoreSize ? taperedCentre(spec.offset, spec.size, size) : spec.offset;
+  return { id: spec.id, offset, size, service: express ? "express" : "full", primary: spec.primary, baseSize };
 }
 
 export function primaryCoreOf(floor: Pick<FloorData, "cores">, fallbackSize = 0): FloorCore {

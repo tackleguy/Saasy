@@ -47,12 +47,15 @@ interface Props {
 export default function CoreShaft({ building, explosion, active, xray, section, focused }: Props) {
   const c = building.coreSize;
   const floors = building.floors;
-  const layout = useMemo(() => bankCoreLayout(c), [c]);
+  const minCore = Math.min(...floors.map((f) => f.coreSize ?? c));
+  const layout = useMemo(() => bankCoreLayout(minCore), [minCore]);
   const carH = Math.min(...floors.map((f) => f.height)) * 0.6;
 
   const root = useRef<THREE.Group>(null);
   const scaled = useRef<THREE.Group>(null);
   const flights = useRef<THREE.InstancedMesh>(null);
+  const shells = useRef<THREE.InstancedMesh>(null);
+  const shellEdges = useRef<THREE.InstancedMesh>(null);
   const cars = useRef<(THREE.Mesh | null)[]>([]);
   const eased = useRef<{ e: number; vis: number; flightE: number; flightFloors: unknown }>({ e: explosion, vis: 0, flightE: 0, flightFloors: null });
 
@@ -60,7 +63,7 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
   const mats = useMemo(
     () => ({
       shell: new THREE.MeshStandardMaterial({ color: CORE_ACCENT, emissive: CORE_ACCENT, emissiveIntensity: 0.25, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, roughness: 0.6 }),
-      edge: new THREE.LineBasicMaterial({ color: CORE_ACCENT, transparent: true, opacity: 0 }),
+      edge: new THREE.MeshBasicMaterial({ color: CORE_ACCENT, transparent: true, opacity: 0, wireframe: true }),
       shaftEdge: new THREE.LineBasicMaterial({ color: CORE_ACCENT, transparent: true, opacity: 0 }),
       car: new THREE.MeshStandardMaterial({ map: brushedMetalTexture("#f4efe6"), color: "#fffaf4", emissive: CORE_ACCENT, emissiveIntensity: 0.55, transparent: true, opacity: 0, roughness: 0.32, metalness: 0.45 }),
       stair: new THREE.MeshStandardMaterial({ map: concreteTexture(), color: "#8a8178", transparent: true, opacity: 0, roughness: 0.86 }),
@@ -108,7 +111,7 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
       car.position.y = carH / 2 + u * Math.max(0, H - carH);
     });
 
-    // Stair flights: one per floor, re-laid only while the explosion is moving.
+    // Stair flights & core shell slices: one per floor, re-laid only while the explosion is moving.
     const fl = flights.current;
     if (fl && (st.flightFloors !== floors || Math.abs(st.flightE - st.e) > 1e-4)) {
       st.flightE = st.e;
@@ -129,9 +132,25 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
         tmp.s.set(len, 0.035, halfZ * 0.85);
         tmp.m.compose(tmp.p, tmp.q, tmp.s);
         fl.setMatrixAt(i, tmp.m);
+
+        const fc = (f.coreSize ?? c) * 1.03;
+        tmp.p.set(0, (y0 + y1) / 2, 0);
+        tmp.q.identity();
+        tmp.s.set(fc, f.height, fc);
+        tmp.m.compose(tmp.p, tmp.q, tmp.s);
+        shells.current?.setMatrixAt(i, tmp.m);
+        shellEdges.current?.setMatrixAt(i, tmp.m);
       });
       fl.instanceMatrix.needsUpdate = true;
       fl.computeBoundingSphere();
+      if (shells.current) {
+        shells.current.instanceMatrix.needsUpdate = true;
+        shells.current.computeBoundingSphere();
+      }
+      if (shellEdges.current) {
+        shellEdges.current.instanceMatrix.needsUpdate = true;
+        shellEdges.current.computeBoundingSphere();
+      }
     }
   });
 
@@ -139,8 +158,6 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
     <group ref={root} visible={false}>
       {/* Height-normalised parts: y ∈ [0, 1], scaled to the (exploded) tower height */}
       <group ref={scaled} scale={[1, 1, 1]}>
-        <mesh geometry={UNIT_BOX} material={mats.shell} position={[0, 0.5, 0]} scale={[c * 1.03, 1, c * 1.03]} raycast={noRaycast} renderOrder={2} />
-        <lineSegments geometry={UNIT_EDGES} material={mats.edge} position={[0, 0.5, 0]} scale={[c * 1.03, 1, c * 1.03]} raycast={noRaycast} />
         {layout.shafts.map((s, i) => (
           <lineSegments key={i} geometry={UNIT_EDGES} material={mats.shaftEdge} position={[s.x, 0.5, s.z]} scale={[s.w, 1, s.d]} raycast={noRaycast} />
         ))}
@@ -158,6 +175,10 @@ export default function CoreShaft({ building, explosion, active, xray, section, 
           <mesh key={i} geometry={UNIT_CYL} material={mats.riser} position={[r.x, 0.5, r.z]} scale={[layout.riserR, 1, layout.riserR]} raycast={noRaycast} />
         ))}
       </group>
+
+      {/* Core shell & wireframe edges — scaled to each floor's coreSize */}
+      <instancedMesh ref={shells} args={[UNIT_BOX, mats.shell, floors.length]} raycast={noRaycast} frustumCulled={false} renderOrder={2} />
+      <instancedMesh ref={shellEdges} args={[UNIT_BOX, mats.edge, floors.length]} raycast={noRaycast} frustumCulled={false} />
 
       {/* Scissor stair — one flight per storey */}
       <instancedMesh ref={flights} args={[UNIT_BOX, mats.stair, floors.length]} raycast={noRaycast} frustumCulled={false} />
