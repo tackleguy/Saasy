@@ -11,6 +11,7 @@ import { ALONG_U, noRaycast, placeUW, rng, uploadInstances } from "./shared";
 import { cityPlan, type CityBuilding } from "./cityPlan";
 import { libraryModel } from "@/lib/modelLibrary";
 import { invalidateShadows } from "../staticShadows";
+import { applyArchitecturalFacade } from "./architecturalContextMaterial";
 
 const SOURCES = [
   { uid: "f943ba2828a64b7d858ee6e4bdacedc6", role: "low" },
@@ -92,7 +93,10 @@ function CityModels({ preset, clearings }: { preset: CityPreset; clearings: UWRe
           const mat = source.clone();
           if (mat instanceof THREE.MeshStandardMaterial) {
             mat.color.multiply(tint);
-            mat.envMapIntensity = 0.65;
+            mat.envMapIntensity = 0.85;
+            if (!mat.map) {
+              applyArchitecturalFacade(mat);
+            }
           }
           return mat;
         };

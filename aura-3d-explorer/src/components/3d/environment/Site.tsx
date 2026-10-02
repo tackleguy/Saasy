@@ -10,6 +10,7 @@ import { ALONG_U, placeUW, rng, uploadInstances, noRaycast } from "../context/sh
 import { waterNormalTexture } from "../textures";
 import { SUN, useCinematic } from "./settings";
 import City from "../context/City";
+import Water from "../context/Water";
 import MappedContext from "../context/MappedContext";
 import { useProjectMap } from "@/hooks/useProjectMap";
 import type { Building } from "@/types";
@@ -50,17 +51,6 @@ function Landscape({edits,preset}:{edits:SiteEdits;preset:CityPreset}) {
     <Batch matrices={data.lamps} color="#34363A"/><Batch matrices={data.bulbs} color="#FFE2B0" emissive/>
   </>;
 }
-function Bay({preset}:{preset:CityPreset}) {
-  const {tier}=useCinematic();
-  const normal=useMemo(()=>{const t=waterNormalTexture().clone();t.repeat.set(120,80);t.needsUpdate=true;return t;},[]);
-  useEffect(()=>()=>normal.dispose(),[normal]);
-  useFrame((_,dt)=>{normal.offset.x+=dt*.008;normal.offset.y+=dt*.003;});
-  const [x,z]=uwToXZ(0,270);
-  return <mesh position={[x,.01,z]} rotation={[-Math.PI/2,0,SITE_ROTATION_Y]} raycast={noRaycast}>
-    <planeGeometry args={[1500,476]}/>
-    {tier==="high"?<MeshReflectorMaterial resolution={512} mirror={.75} blur={[400,100]} mixBlur={.8} mixStrength={1.5} color={preset.water} roughness={.24} metalness={.3} normalMap={normal} normalScale={new THREE.Vector2(.045,.045)}/>:<meshStandardMaterial color={preset.water} roughness={.22} metalness={.65} envMapIntensity={1.3} normalMap={normal} normalScale={new THREE.Vector2(.045,.045)}/>}
-  </mesh>;
-}
 function Traffic() {
   const body=useRef<THREE.InstancedMesh>(null),front=useRef<THREE.InstancedMesh>(null),back=useRef<THREE.InstancedMesh>(null);
   const fm=useRef<THREE.MeshStandardMaterial>(null),bm=useRef<THREE.MeshStandardMaterial>(null);
@@ -92,7 +82,7 @@ export default function CinematicSite({edits,preset,buildings=[]}:{edits:SiteEdi
     <Landscape edits={edits} preset={preset}/>
     {mapSnapshot && <MappedContext snapshot={mapSnapshot} location={location} buildings={buildings} showGround={false} />}
     <City clearings={edits.clearings} preset={preset}/>
-    <Bay preset={preset}/>
+    <Water quality={tier === "high" ? "high" : "low"} color={preset.water} />
     <Traffic/>
     <Clouds/>
     {tier!=="low"&&<ContactShadows position={[0,.002,0]} opacity={.3} scale={150} blur={2.5} far={12} resolution={256} frames={1} color="#090b10"/>}

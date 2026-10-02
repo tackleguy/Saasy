@@ -78,7 +78,7 @@ export const CITY_MODELS: Partial<Record<CityId, CityModel>> = {
     rotation: 0.42,
     offsetU: 160,
     offsetW: 40,
-    textured: false,
+    textured: true,
   },
   // Dubai: Al-Noor Tower in Downtown Dubai on the canal / lake.
   dubai: {
@@ -89,7 +89,7 @@ export const CITY_MODELS: Partial<Record<CityId, CityModel>> = {
     rotation: 0.15,
     offsetU: 0,
     offsetW: -140,
-    textured: false,
+    textured: true,
     landmarks: [
       { uid: "191cf9a66d204ccc941e097bcfe90f27", name: "Burj Khalifa", uw: [10, -135], targetHeight: 232 }
     ]

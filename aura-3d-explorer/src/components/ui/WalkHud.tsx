@@ -171,7 +171,7 @@ export default function WalkHud({ building, floor, viewIndex, onView, onExit, in
         </div>
 
         <p className="overlay hidden items-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] text-ash md:flex">
-          <Move3d size={12} className="text-oak" /> Drag to look · W A S D or arrows to walk · walk into the lift to change floors · Esc to exit
+          <Move3d size={12} className="text-oak" /> Drag to look · W A S D to walk · Space to jump · walk into lift to ride · Esc to exit
         </p>
 
         <button

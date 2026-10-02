@@ -1,6 +1,6 @@
 "use client";
-import { useThree } from "@react-three/fiber";
-import { useCinematic } from "../environment/settings";
+import { useFrame, useThree } from "@react-three/fiber";
+import { SUN, useCinematic } from "../environment/settings";
 import { useEffect, useState } from "react";
 import { setCityModelStatus, useCityModelStatus } from "@/lib/cityModelStatus";
 import * as THREE from "three";
@@ -11,6 +11,7 @@ import { SITE_ROTATION_Y, uwToXZ, type UWRect } from "@/lib/siteLayout";
 import { invalidateShadows } from "../staticShadows";
 import { noRaycast } from "./shared";
 import IllustrativeCity from "./IllustrativeCity";
+import { applyArchitecturalFacade, setFacadeNight } from "./architecturalContextMaterial";
 
 /** Release large district resources when switching cities, including a cancelled load. */
 function disposeCity(root: THREE.Object3D) {
@@ -33,11 +34,16 @@ function disposeCity(root: THREE.Object3D) {
 }
 
 function District({ model }: { model: CityModel }) {
-  const { tier } = useCinematic();
+  const { tier, time } = useCinematic();
   const gl = useThree((state) => state.gl);
   const highTextures = model.textured && tier === "high";
   const [object, setObject] = useState<THREE.Group | null>(null);
   const { attempt } = useCityModelStatus(model.uid);
+
+  useFrame(() => {
+    setFacadeNight(SUN[time].night);
+  });
+
   useEffect(() => {
     const controller = new AbortController();
     let rootGroup: THREE.Group | null = null;
@@ -101,14 +107,18 @@ function District({ model }: { model: CityModel }) {
             if (adapted.has(material)) continue;
             adapted.add(material);
             material.fog = false;
-            if (!model.textured && material instanceof THREE.MeshStandardMaterial) {
-              material.color.multiplyScalar(0.65);
-              material.roughness = 0.9;
-              material.metalness = 0;
-            }
-            for (const value of Object.values(material)) if (value instanceof THREE.Texture) {
-              value.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
-              value.needsUpdate = true;
+            if (material instanceof THREE.MeshStandardMaterial) {
+              if (!material.map) {
+                // Procedural architectural facade texturing for untextured building meshes
+                applyArchitecturalFacade(material, {
+                  defaultColor: "#72808c",
+                });
+              } else {
+                for (const value of Object.values(material)) if (value instanceof THREE.Texture) {
+                  value.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+                  value.needsUpdate = true;
+                }
+              }
             }
           }
         });
@@ -155,6 +165,11 @@ function District({ model }: { model: CityModel }) {
                 node.receiveShadow = false;
                 for (const mat of Array.isArray(node.material) ? node.material : [node.material]) {
                   mat.fog = false;
+                  if (mat instanceof THREE.MeshStandardMaterial && !mat.map) {
+                    applyArchitecturalFacade(mat, {
+                      defaultColor: lm.uid === "191cf9a66d204ccc941e097bcfe90f27" ? "#95b0be" : "#7c8b96",
+                    });
+                  }
                 }
               });
               root.add(lmGroup);

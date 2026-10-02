@@ -34,7 +34,8 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import type { Building, FloorData } from "@/types";
-import { crownFloorCount, explodedY, MODEL_SCALE, planOutline } from "@/lib/tower";
+import { crownFloorCount, explodedY, MODEL_SCALE, planOutline, pointInPolygon } from "@/lib/tower";
+import { LAYOUT, ROOT2, uwToXZ, xzToUW } from "@/lib/siteLayout";
 import { EYE_HEIGHT_M, LIFT_VIEW, viewpointsFor } from "@/lib/viewpoints";
 import { walkInput, resetWalkInput } from "@/lib/walkInput";
 import { liftDims, liftState, resetLiftState } from "@/lib/lift";
@@ -121,6 +122,9 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const bobPhase = useRef(0);
   const gait = useRef(0);
   const eyeSmooth = useRef<number | null>(null);
+  const verticalY = useRef<number | null>(null);
+  const verticalVel = useRef(0);
+  const isGrounded = useRef(true);
   const contacts = useRef<Contact[]>([]);
   const keys = useRef(new Set<string>());
   const tween = useRef<gsap.core.Tween | gsap.core.Timeline | null>(null);
@@ -139,6 +143,50 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const [bx, bz] = building.position;
   const cos = Math.cos(floor.rotationY);
   const sin = Math.sin(floor.rotationY);
+  const isGround = floor.index === 0 || floor.zone === "podium";
+  const outline = useMemo(() => planOutline(floor.shape, floor.width, floor.depth), [floor.shape, floor.width, floor.depth]);
+
+  const isInsideBldg = useMemo(
+    () => (wx: number, wz: number) => {
+      const lx = (wx - bx) * cos - (wz - bz) * sin;
+      const lz = (wx - bx) * sin + (wz - bz) * cos;
+      return pointInPolygon(outline, lx, lz);
+    },
+    [bx, bz, cos, sin, outline]
+  );
+
+  const getGroundSurfaceY = useMemo(
+    () => (worldX: number, worldZ: number, inBldg: boolean) => {
+      const indoorSlab = explodedY(floor, explosion) + SLAB_THICKNESS;
+      if (!isGround || inBldg) return indoorSlab;
+
+      const [u, w] = xzToUW(worldX, worldZ);
+      // 1. Plinth (paved terrace under tower):
+      if (Math.abs(u) <= 52 && w >= -LAYOUT.plinthBackDepth && w <= LAYOUT.plinthHalfDepth) {
+        return 0.025;
+      }
+      // 2. Sidewalks & Promenade:
+      if (
+        (w >= LAYOUT.promenade[0] && w <= LAYOUT.promenade[1]) ||
+        (w >= LAYOUT.sidewalkFar[0] && w <= LAYOUT.sidewalkFar[1]) ||
+        (w >= LAYOUT.sidewalkNear[0] && w <= LAYOUT.sidewalkNear[1])
+      ) {
+        return 0.03;
+      }
+      // 3. Raised curbs:
+      if (Math.abs(w - LAYOUT.road[0]) < 0.25 || Math.abs(w - LAYOUT.road[1]) < 0.25) {
+        return 0.05;
+      }
+      // 4. Street asphalt:
+      if (w > LAYOUT.road[0] && w < LAYOUT.road[1]) {
+        return 0.006;
+      }
+      // 5. Site ground:
+      return 0.0;
+    },
+    [floor, explosion, isGround]
+  );
+
   const coreSize = floor.coreSize ?? building.coreSize;
   const L = useMemo(() => liftDims(coreSize, floor.height - SLAB_THICKNESS), [coreSize, floor.height]);
   const cabCentreZ = (L.zBack + L.zFront) / 2;
@@ -158,10 +206,8 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
 
   /**
    * Keep a world x/z point inside the glass line and outside the core —
-   * except inside the lift cab, which you can enter through open doors.
-   * `normals` receives the unit world-space directions of the surfaces the
-   * point is left resting on (outward), so the walker can shed only the
-   * velocity into them.
+   * except inside the lift cab, which you can enter through open doors,
+   * and on ground floor where you can step outside through the lobby doors onto the plaza & promenade.
    */
   const resolve = useMemo(
     () => (p: THREE.Vector2, normals: Contact[] = []) => {
@@ -170,7 +216,6 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       const margin = 0.12;
       const scratch: Contact[] = [];
       const plateN = (nx: number, nz: number): Contact => ({ x: nx * cos + nz * sin, z: -nx * sin + nz * cos });
-      const outline = planOutline(floor.shape, floor.width, floor.depth);
 
       normals.length = 0;
       for (let pass = 0; pass < 3; pass++) {
@@ -211,8 +256,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
             scratch.push({ x: 0, z: -1 });
           }
         } else if (Math.abs(x) < ch + 0.1 && Math.abs(z) < ch + 0.1) {
-          // Core blocks, shafts and chutes. The passage and service rooms stay open;
-          // the lift doorway is solid only while the doors are shut.
+          // Core blocks, shafts and chutes.
           const boxes = separateFromBoxes(x, z, liftState.open > 0.6 ? coreSolids.open : coreSolids.shut, WALKER_RADIUS_M * MODEL_SCALE);
           x = boxes.p[0];
           z = boxes.p[1];
@@ -226,12 +270,67 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
         lz = sep.p[1] * MODEL_SCALE;
         for (const [nx, nz] of sep.normals) scratch.push(plateN(nx, nz));
 
-        const glass = containInOutline(lx, lz, outline, margin);
-        lx = glass.p[0];
-        lz = glass.p[1];
-        for (const [nx, nz] of glass.normals) scratch.push(plateN(nx, nz));
+        if (!isGround) {
+          const glass = containInOutline(lx, lz, outline, margin);
+          lx = glass.p[0];
+          lz = glass.p[1];
+          for (const [nx, nz] of glass.normals) scratch.push(plateN(nx, nz));
+        } else {
+          // Ground floor: lobby doors at front (+Z, facing plaza and promenade) and rear (-Z)
+          const A = floor.width / 2;
+          const B = floor.depth / 2;
+          const doorHalfW = 1.6;
+          const inDoorway = Math.abs(lx) < doorHalfW && (lz > B - 0.7 || lz < -B + 0.7);
+          const wasInside = pointInPolygon(outline, lx, lz);
 
-        p.set(bx + lx * cos + lz * sin, bz - lx * sin + lz * cos);
+          if (wasInside && !inDoorway) {
+            const glass = containInOutline(lx, lz, outline, margin);
+            lx = glass.p[0];
+            lz = glass.p[1];
+            for (const [nx, nz] of glass.normals) scratch.push(plateN(nx, nz));
+          } else if (!wasInside && !inDoorway) {
+            // Block walking into exterior walls from outside
+            if (Math.abs(lx) < A + margin && Math.abs(lz) < B + margin) {
+              const dx = (A + margin) - Math.abs(lx);
+              const dz = (B + margin) - Math.abs(lz);
+              if (dx < dz) {
+                lx = Math.sign(lx) * (A + margin);
+                scratch.push(plateN(Math.sign(lx), 0));
+              } else {
+                lz = Math.sign(lz) * (B + margin);
+                scratch.push(plateN(0, Math.sign(lz)));
+              }
+            }
+          }
+        }
+
+        let wx = bx + lx * cos + lz * sin;
+        let wz = bz - lx * sin + lz * cos;
+
+        if (isGround) {
+          let [u, w] = xzToUW(wx, wz);
+          // Solid barrier along promenade edge before the water (waterStart = 32)
+          if (w > 31.8) {
+            w = 31.8;
+            scratch.push({ x: -ROOT2, z: -ROOT2 });
+          }
+          if (w < -110) {
+            w = -110;
+            scratch.push({ x: ROOT2, z: ROOT2 });
+          }
+          if (u < -160) {
+            u = -160;
+            scratch.push({ x: ROOT2, z: -ROOT2 });
+          } else if (u > 160) {
+            u = 160;
+            scratch.push({ x: -ROOT2, z: ROOT2 });
+          }
+          const [clampedX, clampedZ] = uwToXZ(u, w);
+          wx = clampedX;
+          wz = clampedZ;
+        }
+
+        p.set(wx, wz);
         if (scratch.length) {
           normals.length = 0;
           for (const n of scratch) normals.push(n);
@@ -239,7 +338,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       }
       return p;
     },
-    [bx, bz, cos, sin, coreSize, floor.shape, floor.width, floor.depth, L, walls, coreSolids]
+    [bx, bz, cos, sin, coreSize, floor.width, floor.depth, L, walls, coreSolids, isGround, outline]
   );
 
   const eyeY = explodedY(floor, explosion) + SLAB_THICKNESS + EYE;
@@ -328,7 +427,12 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
         pos.current.lerpVectors(startPos, from, p.t);
         yaw.current = startYaw + dYaw * p.t;
         pitch.current = THREE.MathUtils.lerp(startPitch, -0.04, p.t);
-        camera.position.set(pos.current.x, THREE.MathUtils.lerp(startY, eyeY, p.t), pos.current.y);
+        const curInBldg = isGround ? isInsideBldg(pos.current.x, pos.current.y) : true;
+        const targetEye = getGroundSurfaceY(pos.current.x, pos.current.y, curInBldg) + EYE;
+        verticalY.current = THREE.MathUtils.lerp(startY, targetEye, p.t);
+        verticalVel.current = 0;
+        isGrounded.current = true;
+        camera.position.set(pos.current.x, verticalY.current, pos.current.y);
         camera.rotation.set(pitch.current, yaw.current, 0);
       },
       onComplete: () => void (tween.current = null),
@@ -426,8 +530,15 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     const down = (e: KeyboardEvent) => {
       if (isTyping(e)) return;
       const k = e.key.toLowerCase();
-      if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(k)) {
+      if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift", " "].includes(k)) {
         keys.current.add(k);
+        if (k === " ") {
+          if (isGrounded.current) {
+            verticalVel.current = 2.4 * MODEL_SCALE;
+            isGrounded.current = false;
+          }
+          e.preventDefault();
+        }
         if (k.startsWith("arrow")) e.preventDefault();
       }
     };
@@ -468,6 +579,9 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       bobPhase.current = 0;
       gait.current = 0;
       eyeSmooth.current = camera.position.y;
+      verticalY.current = camera.position.y;
+      verticalVel.current = 0;
+      isGrounded.current = true;
       camera.position.x = pos.current.x;
       camera.position.z = pos.current.y;
       camera.rotation.set(pitch.current, yaw.current, 0);
@@ -485,6 +599,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
       bobPhase.current = 0;
       gait.current = 0;
       eyeSmooth.current = camera.position.y;
+      verticalY.current = camera.position.y;
       if (!(f || r)) return; // gliding to a viewpoint
       tween.current.kill();
       tween.current = null;
@@ -537,9 +652,34 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
     const sy = Math.sin(yaw.current);
     const cy = Math.cos(yaw.current);
 
-    eyeSmooth.current = approach(eyeSmooth.current ?? eyeY, eyeY, 12, dt);
+    const curInBldg = isGround ? isInsideBldg(pos.current.x, pos.current.y) : true;
+    const surfaceY = getGroundSurfaceY(pos.current.x, pos.current.y, curInBldg);
+    const targetEyeY = surfaceY + EYE;
 
-    camera.position.set(pos.current.x + cy * sway, eyeSmooth.current + bob, pos.current.y - sy * sway);
+    if (verticalY.current === null) {
+      verticalY.current = targetEyeY;
+    }
+
+    // Dynamic vertical physics: jumping, falling, gravity, step climbing
+    const gravity = 18 * MODEL_SCALE;
+    if (!isGrounded.current || verticalY.current > targetEyeY + 0.008) {
+      verticalVel.current -= gravity * dt;
+      verticalY.current += verticalVel.current * dt;
+      if (verticalY.current <= targetEyeY) {
+        verticalY.current = targetEyeY;
+        verticalVel.current = 0;
+        isGrounded.current = true;
+      } else {
+        isGrounded.current = false;
+      }
+    } else {
+      verticalY.current = approach(verticalY.current, targetEyeY, 18, dt);
+    }
+
+    eyeSmooth.current = verticalY.current;
+    const currentBob = isGrounded.current ? bob : 0;
+
+    camera.position.set(pos.current.x + cy * sway, verticalY.current + currentBob, pos.current.y - sy * sway);
     camera.rotation.set(pitch.current, yaw.current, 0);
   });
 

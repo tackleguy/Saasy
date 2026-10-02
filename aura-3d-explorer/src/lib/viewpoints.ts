@@ -211,6 +211,7 @@ export function viewpointsFor(floor: FloorData, crownFloors = 2, coreSize?: numb
         { id: "concierge", label: "Concierge", from: [0, B - 9.2], look: [0, B - 5.2] },
         { id: "lounge", label: "Lobby lounge", from: [A - 7.5, B - 7.5], look: [A - 3.2, B - 3.0] },
         { id: "cafe", label: "Café", from: [2, -(B - 6.2)], look: [-(A / 2), -(B - 1.2)] },
+        { id: "promenade", label: "Plaza & Promenade", from: [0, B + 12], look: [0, B + 35] },
       ];
   }
 }
