@@ -58,7 +58,7 @@ function CinematicLightingEnvironment({ sun, noFog=false, extent=80 }: {quality:
     {!noFog&&<fogExp2 attach="fog" args={[p.haze,0.0032]}/>}
     <Sky ref={sky} distance={4500} sunPosition={[60,80,180]} turbidity={p.turbidity} rayleigh={p.rayleigh} mieCoefficient={0.004} mieDirectionalG={0.85}/>
     <Environment files="/hdri/dusk.hdr" background={false}/>
-    <hemisphereLight ref={hemi} args={["#9EB7D9","#1A1C22",p.fill]}/>
+    <hemisphereLight ref={hemi} args={["#9EB7D9","#14171D",p.fill]}/>
     <directionalLight ref={key} castShadow position={[60,80,180]} color={p.color} intensity={p.intensity}
       shadow-mapSize={[map,map]} shadow-bias={-0.00008} shadow-normalBias={0.025}
       shadow-camera-left={-extent} shadow-camera-right={extent} shadow-camera-top={extent} shadow-camera-bottom={-extent}

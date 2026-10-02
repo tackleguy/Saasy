@@ -6,7 +6,7 @@ import { type UWRect, rectsOverlap } from "@/lib/siteLayout";
 import { ALONG_U, placeUW, rng, uploadInstances, noRaycast } from "../context/shared";
 import { SUN, useCinematic } from "./settings";
 
-/** Three instanced batches, 180 addresses; L wings and setbacks reuse each batch. */
+/** Three instanced batches, 150 addresses; L wings and setbacks reuse each batch. */
 export default function City({clearings=[],seed=83}:{clearings?:UWRect[];seed?:number}) {
   const {tier,time}=useCinematic();
   const materials=useRef<(THREE.MeshStandardMaterial|null)[]>([]);
@@ -20,7 +20,7 @@ export default function City({clearings=[],seed=83}:{clearings?:UWRect[];seed?:n
   useEffect(()=>()=>windows.dispose(),[windows]);
   const rings=useMemo(()=>{
     const random=rng(seed);const groups:THREE.Matrix4[][]=[[],[],[]];
-    for(let i=0;i<180;i++){
+    for(let i=0;i<150;i++){
       const col=i%20,row=Math.floor(i/20),ring=row<3?0:row<6?1:2;
       const u=(col-9.5)*22,w=-65-row*28;
       const width=8+random()*7,depth=8+random()*9;

@@ -22,7 +22,7 @@ function Landscape({edits}:{edits:SiteEdits}) {
   const canopy=useRef<THREE.InstancedMesh>(null);
   const data=useMemo(()=>{
     const random=rng(781);const trunks:THREE.Matrix4[]=[],leaves:THREE.Matrix4[]=[],lamps:THREE.Matrix4[]=[],bulbs:THREE.Matrix4[]=[],marks:THREE.Matrix4[]=[],paving:THREE.Matrix4[]=[];
-    for(let i=0;i<54;i++){
+    for(let i=0;i<40;i++){
       const u=-160+(i%27)*12,w=i<27?30:15;
       if(edits.clearings.some(c=>pointInRect(u,w,c)))continue;
       const h=1.8+random()*.6;

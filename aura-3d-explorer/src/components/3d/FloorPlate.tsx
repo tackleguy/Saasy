@@ -112,9 +112,9 @@ interface GlassLook {
 
 const LOOKS: Record<ZoneId, GlassLook> = {
   podium: { color: "#8fa4a7", roughness: 0.18, fin: null, finish: "#f0e9de" },
-  office: { color: "#9fb6ba", roughness: 0.16, fin: { spacing: 0.84, thickness: 0.034, depth: 0.168 }, finish: "#cfcac2" },
-  residential: { color: "#a9bec1", roughness: 0.2, fin: { spacing: 0.42, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
-  crown: { color: "#c6d6d8", roughness: 0.14, fin: { spacing: 0.42, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
+  office: { color: "#9fb6ba", roughness: 0.16, fin: { spacing: 3, thickness: 0.12, depth: 0.6 }, finish: "#cfcac2" },
+  residential: { color: "#a9bec1", roughness: 0.2, fin: { spacing: 1.5, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
+  crown: { color: "#c6d6d8", roughness: 0.14, fin: { spacing: 1.5, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
 };
 
 const lerp = THREE.MathUtils.lerp;
@@ -183,7 +183,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
   const fin =
     floor.zone === "office" && look.fin
       ? facade.finSpacing > 0
-        ? { ...look.fin, spacing: facade.finSpacing }
+        ? { ...look.fin, spacing: 3 }
         : null
       : floor.zone === "podium" && !arcade
         ? { spacing: 1.2, thickness: 0.06, depth: 0.2 }
@@ -399,8 +399,8 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
             attenuationColor="#9FC2CC"
             attenuationDistance={5}
             clearcoat={1}
-            ior={1.52}
-            roughness={0.04}
+            ior={1.5}
+            roughness={0.05}
             metalness={0}
             envMapIntensity={1.3}
             specularIntensity={0.65}

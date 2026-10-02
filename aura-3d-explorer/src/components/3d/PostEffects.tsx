@@ -54,13 +54,17 @@ interface Props {
 }
 
 export default function PostEffects({ focus }: Props) {
-
+  const gl = useThree((s) => s.gl);
   const target = useMemo(() => (focus ? new THREE.Vector3(...focus) : null), [focus?.[0], focus?.[1], focus?.[2]]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    gl.toneMappingExposure = 1.1;
+  }, [gl]);
 
   return (
     <EffectComposer multisampling={0} enableNormalPass={false}>
       <N8AO />
-      <Bloom luminanceThreshold={0.85} luminanceSmoothing={0.2} intensity={0.35} mipmapBlur />
+      <Bloom luminanceThreshold={0.85} luminanceSmoothing={0.2} intensity={0.3} mipmapBlur />
       {target ? <DepthOfField target={target} focalLength={0.02} bokehScale={2.5} /> : <></>}
       <BrightnessContrast brightness={0} contrast={0.09} />
       <HueSaturation hue={0} saturation={0.1} />

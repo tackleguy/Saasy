@@ -55,6 +55,7 @@ export function useCinematicCamera(goal: CameraGoal, { duration = 1.4, nonce = 0
   const camera = useThree((s) => s.camera);
   const controls = useThree((s) => s.controls) as OrbitControlsImpl | null;
   const tween = useRef<gsap.core.Tween | null>(null);
+  const idleTimer = useRef<number | null>(null);
   const firstRun = useRef(true);
   const lastNonce = useRef(nonce);
 
@@ -118,11 +119,33 @@ export function useCinematicCamera(goal: CameraGoal, { duration = 1.4, nonce = 0
   }, [goalKey, nonce, controls, camera, duration, enabled]);
 
   useEffect(() => {
-    const cancel = () => { tween.current?.kill(); };
+    if (!controls) return;
+    controls.autoRotate = false;
+    controls.autoRotateSpeed = 0.18;
+    const restartIdleOrbit = () => {
+      controls.autoRotate = false;
+      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+      idleTimer.current = null;
+      if (!enabled || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      idleTimer.current = window.setTimeout(() => {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.18;
+        controls.update();
+      }, 20_000);
+    };
+    const interact = () => {
+      tween.current?.kill();
+      restartIdleOrbit();
+    };
+    restartIdleOrbit();
     const events = ["pointerdown", "wheel", "keydown"] as const;
-    events.forEach(e => window.addEventListener(e, cancel, {passive:true}));
-    return () => events.forEach(e => window.removeEventListener(e, cancel));
-  }, []);
+    events.forEach(e => window.addEventListener(e, interact, { passive: true }));
+    return () => {
+      events.forEach(e => window.removeEventListener(e, interact));
+      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+      controls.autoRotate = false;
+    };
+  }, [controls, enabled]);
 
   // Clean up on unmount.
   useEffect(() => () => void tween.current?.kill(), []);

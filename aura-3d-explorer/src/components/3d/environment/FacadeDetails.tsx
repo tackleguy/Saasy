@@ -69,12 +69,33 @@ export default function FacadeDetails({building,explosion,selectedIndex,hidden}:
     if(glow.current)glow.current.emissiveIntensity=THREE.MathUtils.damp(glow.current.emissiveIntensity,SUN[time].night*1.7,3,dt);
     if(windows.current)windows.current.visible=(glow.current?.emissiveIntensity??0)>.01;
   });
+  const crownFloor=building.floors.find(f=>f.zone==="crown");
   return <group>
     <instancedMesh ref={windows} args={[undefined,undefined,data.panels.length]} frustumCulled={false} raycast={()=>null}><boxGeometry/><meshStandardMaterial ref={glow} alphaHash color="#272523" emissive="#FFE2B0" emissiveIntensity={0} roughness={.8}/></instancedMesh>
     <instancedMesh ref={roof} args={[undefined,undefined,data.solids.length]} frustumCulled={false} raycast={()=>null}><boxGeometry/><meshStandardMaterial color="#8A8071" roughness={.72} metalness={.25}/></instancedMesh>
     <instancedMesh ref={plants} args={[undefined,undefined,data.shrubs.length]} frustumCulled={false} raycast={()=>null}><icosahedronGeometry args={[1,1]}/><meshStandardMaterial color="#35412C" roughness={.9}/></instancedMesh>
 
+    {crownFloor&&<CrownBlade floor={crownFloor} explosion={explosion} selectedIndex={selectedIndex} hidden={hidden}/>}
     <AuraSign floor={building.floors[0]} explosion={explosion} dimmed={selectedIndex!==null&&selectedIndex!==0} hidden={hidden}/>
+  </group>;
+}
+function CrownBlade({floor,explosion,selectedIndex,hidden}:{floor:FloorData;explosion:number;selectedIndex:number|null;hidden:boolean}) {
+  const group=useRef<THREE.Group>(null);
+  const material=useRef<THREE.MeshStandardMaterial>(null);
+  const dimmed=selectedIndex!==null&&selectedIndex!==floor.index;
+  useFrame((_,dt)=>{
+    if(group.current)group.current.position.y=THREE.MathUtils.damp(group.current.position.y,explodedY(floor,explosion),7,dt);
+    if(material.current)material.current.opacity=THREE.MathUtils.damp(material.current.opacity,dimmed?.15:1,7,dt);
+  });
+  return <group ref={group} position-y={floor.baseY} rotation-y={floor.rotationY} visible={!hidden}>
+    <mesh position={[0,floor.height+4,0]} castShadow>
+      <cylinderGeometry args={[.035,.36,8,3,1]}/>
+      <meshStandardMaterial ref={material} color="#B8924B" metalness={.85} roughness={.24} emissive="#6f4b18" emissiveIntensity={.35} transparent={dimmed} opacity={dimmed?.15:1}/>
+    </mesh>
+    <mesh position={[0,floor.height+4,.31]}>
+      <boxGeometry args={[.035,7.2,.02]}/>
+      <meshBasicMaterial color="#FFE2B0" toneMapped={false} transparent opacity={dimmed?.15:1}/>
+    </mesh>
   </group>;
 }
 function AuraSign({floor,explosion,dimmed,hidden}:{floor:FloorData;explosion:number;dimmed:boolean;hidden:boolean}) {
