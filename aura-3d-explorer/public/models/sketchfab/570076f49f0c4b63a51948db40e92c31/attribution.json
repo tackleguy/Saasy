@@ -1,0 +1,20 @@
+{
+  "uid": "570076f49f0c4b63a51948db40e92c31",
+  "name": "Miami, Florida, USA",
+  "category": "city-miami",
+  "url": "https://sketchfab.com/3d-models/miami-florida-usa-570076f49f0c4b63a51948db40e92c31",
+  "creator": {
+    "name": "Jack M Simmons",
+    "url": "https://sketchfab.com/jack.simmons"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/570076f49f0c4b63a51948db40e92c31/model.glb",
+  "sizeMeters": 1100,
+  "rotationY": 0.0,
+  "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site. Mesh simplified for browser rendering."
+}

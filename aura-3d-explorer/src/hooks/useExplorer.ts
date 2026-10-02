@@ -35,6 +35,7 @@ interface Options {
 export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY }: Options = {}) {
   // City backdrop for the urban context (New York, Miami, …)
   const [city, setCity] = useState<CityId>(initialCity);
+  const [contextModel, setContextModel] = useState<string | null>(null);
   // Site plan edits: buildings moved on the map, as world [x, z] per building id.
   const [moved, setMoved] = useState<Partial<Record<BuildingId, [number, number]>>>({});
   const [mapOpen, setMapOpen] = useState(false);
@@ -314,6 +315,8 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   }, [keyboard, keyboardPaused, planImportOpen, floorCount, walking]);
 
   return {
+    contextModel,
+    setContextModel,
     site,
     building,
     activeBuildingId,

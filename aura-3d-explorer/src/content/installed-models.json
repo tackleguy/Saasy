@@ -1,0 +1,542 @@
+[
+  {
+    "uid": "f0162201004b4aea8e29b754459d9f75",
+    "name": "Lounge chair",
+    "category": "chairs",
+    "url": "https://sketchfab.com/3d-models/lounge-chair-f0162201004b4aea8e29b754459d9f75",
+    "creator": {
+      "name": "Oldfarmer",
+      "url": "https://sketchfab.com/Oldfarmer"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/f0162201004b4aea8e29b754459d9f75/model.glb",
+    "sizeMeters": 1.1,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "16070c2e6faa405391ab7ada8bb0aed6",
+    "name": "Poliform_Bed",
+    "category": "beds",
+    "url": "https://sketchfab.com/3d-models/poliform-bed-16070c2e6faa405391ab7ada8bb0aed6",
+    "creator": {
+      "name": "Alexis Ramos",
+      "url": "https://sketchfab.com/lex_ram"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/16070c2e6faa405391ab7ada8bb0aed6/model.glb",
+    "sizeMeters": 2.2,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "b00abd35578e4f628f4bcd3625ce5951",
+    "name": "Skyline Cutout - City - large",
+    "category": "skylines",
+    "url": "https://sketchfab.com/3d-models/skyline-cutout-city-large-b00abd35578e4f628f4bcd3625ce5951",
+    "creator": {
+      "name": "MozillaHubs",
+      "url": "https://sketchfab.com/mozillareality"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/b00abd35578e4f628f4bcd3625ce5951/model.glb",
+    "sizeMeters": 600,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "f943ba2828a64b7d858ee6e4bdacedc6",
+    "name": "Low Poly Building",
+    "category": "buildings",
+    "url": "https://sketchfab.com/3d-models/low-poly-building-f943ba2828a64b7d858ee6e4bdacedc6",
+    "creator": {
+      "name": "ROH3D",
+      "url": "https://sketchfab.com/roh3d"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb",
+    "sizeMeters": 30,
+    "rotationY": 0.0,
+    "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+  },
+  {
+    "uid": "9cde1025662e4954b1f803c2d4bb719d",
+    "name": "Pine Tree low poly",
+    "category": "trees",
+    "url": "https://sketchfab.com/3d-models/pine-tree-low-poly-9cde1025662e4954b1f803c2d4bb719d",
+    "creator": {
+      "name": "daniel.2U",
+      "url": "https://sketchfab.com/daniel.2U"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/9cde1025662e4954b1f803c2d4bb719d/model.glb",
+    "sizeMeters": 8,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "2cfe4f4c192f4dd08229bd7460532b09",
+    "name": "Potted Plant",
+    "category": "plants",
+    "url": "https://sketchfab.com/3d-models/potted-plant-2cfe4f4c192f4dd08229bd7460532b09",
+    "creator": {
+      "name": "Blizzy",
+      "url": "https://sketchfab.com/jeffbas"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/2cfe4f4c192f4dd08229bd7460532b09/model.glb",
+    "sizeMeters": 1.1,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "8b60d8c189274a1cac07fa3f4b066e1f",
+    "name": "Park Bench",
+    "category": "street",
+    "url": "https://sketchfab.com/3d-models/park-bench-8b60d8c189274a1cac07fa3f4b066e1f",
+    "creator": {
+      "name": "V\u00edctor Hern\u00e1ndez",
+      "url": "https://sketchfab.com/victorhugohc"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/8b60d8c189274a1cac07fa3f4b066e1f/model.glb",
+    "sizeMeters": 1.8,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "f822f0c500a24ca9ac2af183d2e630b4",
+    "name": "Low poly Car",
+    "category": "vehicles",
+    "url": "https://sketchfab.com/3d-models/low-poly-car-f822f0c500a24ca9ac2af183d2e630b4",
+    "creator": {
+      "name": "reyad.bader",
+      "url": "https://sketchfab.com/reyad.bader"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/f822f0c500a24ca9ac2af183d2e630b4/model.glb",
+    "sizeMeters": 4.5,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "99d83e48af2a4e4cbaf624b742ef4ceb",
+    "name": "Modern Sofa",
+    "category": "sofas",
+    "url": "https://sketchfab.com/3d-models/modern-sofa-99d83e48af2a4e4cbaf624b742ef4ceb",
+    "creator": {
+      "name": "Akshat",
+      "url": "https://sketchfab.com/shooter24994"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/99d83e48af2a4e4cbaf624b742ef4ceb/model.glb",
+    "sizeMeters": 2.4,
+    "rotationY": 1.5707963267948966,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "8dcb87c24b1e48ea9c253f3e37eff413",
+    "name": "Coffee Table",
+    "category": "tables",
+    "url": "https://sketchfab.com/3d-models/coffee-table-8dcb87c24b1e48ea9c253f3e37eff413",
+    "creator": {
+      "name": "NoMoreFeelings",
+      "url": "https://sketchfab.com/NoMoreFeelings"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/8dcb87c24b1e48ea9c253f3e37eff413/model.glb",
+    "sizeMeters": 1.2,
+    "rotationY": 0.0,
+    "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+  },
+  {
+    "uid": "14e3d5743f7546d5bb7f3befc72c9057",
+    "name": "New York styled hi rise apartment building",
+    "category": "buildings",
+    "url": "https://sketchfab.com/3d-models/new-york-styled-hi-rise-apartment-building-14e3d5743f7546d5bb7f3befc72c9057",
+    "creator": {
+      "name": "aitortilla01",
+      "url": "https://sketchfab.com/aitortilla01"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/14e3d5743f7546d5bb7f3befc72c9057/model.glb",
+    "sizeMeters": 40,
+    "rotationY": 0.0,
+    "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+  },
+  {
+    "uid": "9359c41541814b968360fc4f3823892c",
+    "name": "New York style condominium",
+    "category": "buildings",
+    "url": "https://sketchfab.com/3d-models/new-york-style-condominium-9359c41541814b968360fc4f3823892c",
+    "creator": {
+      "name": "aitortilla01",
+      "url": "https://sketchfab.com/aitortilla01"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/9359c41541814b968360fc4f3823892c/model.glb",
+    "sizeMeters": 30,
+    "rotationY": 0.0,
+    "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+  },
+  {
+    "uid": "ff93086fa20345d4b4562ce95095e292",
+    "name": "Citigroup Center",
+    "category": "buildings",
+    "url": "https://sketchfab.com/3d-models/citigroup-center-ff93086fa20345d4b4562ce95095e292",
+    "creator": {
+      "name": "NanoRay",
+      "url": "https://sketchfab.com/NanoRay"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/ff93086fa20345d4b4562ce95095e292/model.glb",
+    "sizeMeters": 280,
+    "rotationY": 0.0,
+    "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+  },
+  {
+    "uid": "fa82b5beb9a9427698dafd2c3867ebf9",
+    "name": "Park Tower, Chicago",
+    "category": "buildings",
+    "url": "https://sketchfab.com/3d-models/park-tower-chicago-fa82b5beb9a9427698dafd2c3867ebf9",
+    "creator": {
+      "name": "aitortilla01",
+      "url": "https://sketchfab.com/aitortilla01"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/fa82b5beb9a9427698dafd2c3867ebf9/model.glb",
+    "sizeMeters": 250,
+    "rotationY": 0.0,
+    "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+  },
+  {
+    "uid": "191cf9a66d204ccc941e097bcfe90f27",
+    "name": "Burj Khalifa Building Model",
+    "category": "buildings",
+    "url": "https://sketchfab.com/3d-models/burj-khalifa-building-model-191cf9a66d204ccc941e097bcfe90f27",
+    "creator": {
+      "name": "Book Dubai Holiday",
+      "url": "https://sketchfab.com/bookdubaiholiday"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/191cf9a66d204ccc941e097bcfe90f27/model.glb",
+    "sizeMeters": 828,
+    "rotationY": 0.0,
+    "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+  },
+  {
+    "uid": "b33e54d616c44c1795fb86f433c0dfc0",
+    "name": "100 Federal St (Boston, MA)",
+    "category": "buildings",
+    "url": "https://sketchfab.com/3d-models/100-federal-st-boston-ma-b33e54d616c44c1795fb86f433c0dfc0",
+    "creator": {
+      "name": "Furrden2",
+      "url": "https://sketchfab.com/Furrden2"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/b33e54d616c44c1795fb86f433c0dfc0/model.glb",
+    "sizeMeters": 180,
+    "rotationY": 0.0,
+    "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+  },
+  {
+    "uid": "50f21b06c6e644e196b2ac828eda97dc",
+    "name": "Ocean model",
+    "category": "water",
+    "url": "https://sketchfab.com/3d-models/ocean-model-50f21b06c6e644e196b2ac828eda97dc",
+    "creator": {
+      "name": "conservationdude",
+      "url": "https://sketchfab.com/conservationdude"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb",
+    "sizeMeters": 100,
+    "rotationY": 0.0,
+    "modifications": "Ocean mesh fitted to AURA waterfront; wave height reduced; animated ripple normals and reflective city-tinted material applied"
+  },
+  {
+    "uid": "372bc495b3a941308f4a3198bc45e17b",
+    "name": "New York City. Manhattan",
+    "category": "city-new-york",
+    "url": "https://sketchfab.com/3d-models/new-york-city-manhattan-372bc495b3a941308f4a3198bc45e17b",
+    "creator": {
+      "name": "truekit",
+      "url": "https://sketchfab.com/truekit"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/372bc495b3a941308f4a3198bc45e17b/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "570076f49f0c4b63a51948db40e92c31",
+    "name": "Miami, Florida, USA",
+    "category": "city-miami",
+    "url": "https://sketchfab.com/3d-models/miami-florida-usa-570076f49f0c4b63a51948db40e92c31",
+    "creator": {
+      "name": "Jack M Simmons",
+      "url": "https://sketchfab.com/jack.simmons"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/570076f49f0c4b63a51948db40e92c31/model.glb",
+    "sizeMeters": 1100,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site. Mesh simplified for browser rendering."
+  },
+  {
+    "uid": "20c73feebd91436ea9c2efebee8a5661",
+    "name": "Los Angeles City",
+    "category": "city-los-angeles",
+    "url": "https://sketchfab.com/3d-models/los-angeles-city-20c73feebd91436ea9c2efebee8a5661",
+    "creator": {
+      "name": "aaelick",
+      "url": "https://sketchfab.com/aaelick"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/20c73feebd91436ea9c2efebee8a5661/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "5910afb517bd4d2cafd8f280dabf37a4",
+    "name": "Chicago City",
+    "category": "city-chicago",
+    "url": "https://sketchfab.com/3d-models/chicago-city-5910afb517bd4d2cafd8f280dabf37a4",
+    "creator": {
+      "name": "aaelick",
+      "url": "https://sketchfab.com/aaelick"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/5910afb517bd4d2cafd8f280dabf37a4/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "a7a5b99638f143af84bc646ae2d270c1",
+    "name": "San Francisco City",
+    "category": "city-san-francisco",
+    "url": "https://sketchfab.com/3d-models/san-francisco-city-a7a5b99638f143af84bc646ae2d270c1",
+    "creator": {
+      "name": "aaelick",
+      "url": "https://sketchfab.com/aaelick"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/a7a5b99638f143af84bc646ae2d270c1/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "1128db3b12bd470eb6b2d1421a70e732",
+    "name": "Seattle City",
+    "category": "city-seattle",
+    "url": "https://sketchfab.com/3d-models/seattle-city-1128db3b12bd470eb6b2d1421a70e732",
+    "creator": {
+      "name": "aaelick",
+      "url": "https://sketchfab.com/aaelick"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/1128db3b12bd470eb6b2d1421a70e732/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "395d4a8639de411592797890e219dbd2",
+    "name": "Boston City",
+    "category": "city-boston",
+    "url": "https://sketchfab.com/3d-models/boston-city-395d4a8639de411592797890e219dbd2",
+    "creator": {
+      "name": "aaelick",
+      "url": "https://sketchfab.com/aaelick"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/395d4a8639de411592797890e219dbd2/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "013c2e21e61c4a598c6d279f05953819",
+    "name": "Toronto City",
+    "category": "city-toronto",
+    "url": "https://sketchfab.com/3d-models/toronto-city-013c2e21e61c4a598c6d279f05953819",
+    "creator": {
+      "name": "aaelick",
+      "url": "https://sketchfab.com/aaelick"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/013c2e21e61c4a598c6d279f05953819/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "74cc9216f2c24efa96fe2554897e5966",
+    "name": "London Financial District",
+    "category": "city-london",
+    "url": "https://sketchfab.com/3d-models/london-financial-district-74cc9216f2c24efa96fe2554897e5966",
+    "creator": {
+      "name": "333DDD",
+      "url": "https://sketchfab.com/333DDD-oficial"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/74cc9216f2c24efa96fe2554897e5966/model.glb",
+    "sizeMeters": 520,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  },
+  {
+    "uid": "0e60e12f253442ee8baffa3d9afb2c3d",
+    "name": "Dubai, UAE",
+    "category": "city-dubai",
+    "url": "https://sketchfab.com/3d-models/dubai-uae-0e60e12f253442ee8baffa3d9afb2c3d",
+    "creator": {
+      "name": "Jack M Simmons",
+      "url": "https://sketchfab.com/jack.simmons"
+    },
+    "license": {
+      "label": "CC Attribution",
+      "slug": "by",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed."
+    },
+    "path": "/models/sketchfab/0e60e12f253442ee8baffa3d9afb2c3d/model.glb",
+    "sizeMeters": 1100,
+    "rotationY": 0.0,
+    "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+  }
+]

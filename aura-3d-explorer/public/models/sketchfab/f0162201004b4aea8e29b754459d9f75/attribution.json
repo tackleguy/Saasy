@@ -1,0 +1,20 @@
+{
+  "uid": "f0162201004b4aea8e29b754459d9f75",
+  "name": "Lounge chair",
+  "category": "chairs",
+  "url": "https://sketchfab.com/3d-models/lounge-chair-f0162201004b4aea8e29b754459d9f75",
+  "creator": {
+    "name": "Oldfarmer",
+    "url": "https://sketchfab.com/Oldfarmer"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/f0162201004b4aea8e29b754459d9f75/model.glb",
+  "sizeMeters": 1.1,
+  "rotationY": 0.0,
+  "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+}

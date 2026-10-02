@@ -1,0 +1,20 @@
+{
+  "uid": "b00abd35578e4f628f4bcd3625ce5951",
+  "name": "Skyline Cutout - City - large",
+  "category": "skylines",
+  "url": "https://sketchfab.com/3d-models/skyline-cutout-city-large-b00abd35578e4f628f4bcd3625ce5951",
+  "creator": {
+    "name": "MozillaHubs",
+    "url": "https://sketchfab.com/mozillareality"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/b00abd35578e4f628f4bcd3625ce5951/model.glb",
+  "sizeMeters": 600,
+  "rotationY": 0.0,
+  "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+}

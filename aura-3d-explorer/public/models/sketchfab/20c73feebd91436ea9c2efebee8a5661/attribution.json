@@ -1,0 +1,20 @@
+{
+  "uid": "20c73feebd91436ea9c2efebee8a5661",
+  "name": "Los Angeles City",
+  "category": "city-los-angeles",
+  "url": "https://sketchfab.com/3d-models/los-angeles-city-20c73feebd91436ea9c2efebee8a5661",
+  "creator": {
+    "name": "aaelick",
+    "url": "https://sketchfab.com/aaelick"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/20c73feebd91436ea9c2efebee8a5661/model.glb",
+  "sizeMeters": 520,
+  "rotationY": 0.0,
+  "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+}

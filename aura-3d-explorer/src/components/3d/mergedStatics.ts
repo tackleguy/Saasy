@@ -200,7 +200,7 @@ function bake(root: THREE.Object3D): Baked {
     m.receiveShadow = src.receiveShadow;
     m.layers.mask = src.layers.mask;
     m.renderOrder = src.renderOrder;
-    m.onBeforeRender = src.onBeforeRender; // glass picks its blend colour per draw
+    m.onBeforeRender = src.onBeforeRender;
     m.raycast = noRaycast; // clicks go to the per-floor glass
     m.matrixAutoUpdate = false;
     m.userData.mergedBatch = true;

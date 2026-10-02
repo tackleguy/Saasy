@@ -139,7 +139,8 @@ p { text-wrap: pretty; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
 /* Recharts: no focus outline on click */
-.recharts-wrapper *:focus { outline: none; }
+.recharts-wrapper *:focus:not(:focus-visible) { outline: none; }
+.recharts-wrapper *:focus-visible { outline: 2px solid rgb(var(--oak)); outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

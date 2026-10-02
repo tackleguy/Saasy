@@ -1,0 +1,1122 @@
+{
+  "source": "Sketchfab Data API v3",
+  "checkedAt": "2026-10-02T02:01:30.803692+00:00",
+  "models": [
+    {
+      "uid": "99d83e48af2a4e4cbaf624b742ef4ceb",
+      "name": "Modern Sofa",
+      "category": "sofas",
+      "query": "modern sofa",
+      "url": "https://sketchfab.com/3d-models/none-99d83e48af2a4e4cbaf624b742ef4ceb",
+      "thumbnail": "https://media.sketchfab.com/models/99d83e48af2a4e4cbaf624b742ef4ceb/thumbnails/93340e1a108541c38bd53dc7fd4e2bed/204f41896a6c41c69d1550b5243e692b.jpeg",
+      "creator": {
+        "name": "Akshat",
+        "url": "https://sketchfab.com/shooter24994"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 46080,
+      "archiveBytes": 3931428,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "26d5d48891684f2093fb48091731bc16",
+      "name": "dlX - Sofa(Velo)",
+      "category": "sofas",
+      "query": "modern sofa",
+      "url": "https://sketchfab.com/3d-models/none-26d5d48891684f2093fb48091731bc16",
+      "thumbnail": "https://media.sketchfab.com/models/26d5d48891684f2093fb48091731bc16/thumbnails/5fa4d8e3bb424d3284ff1383b9a39364/44571227869c45ca876003069fc6fb5b.jpeg",
+      "creator": {
+        "name": "d-luX",
+        "url": "https://sketchfab.com/dluX80"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 10352,
+      "archiveBytes": 9982060,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "60e1b861407547bca760424c9c38ec78",
+      "name": "modern sofa",
+      "category": "sofas",
+      "query": "modern sofa",
+      "url": "https://sketchfab.com/3d-models/none-60e1b861407547bca760424c9c38ec78",
+      "thumbnail": "https://media.sketchfab.com/models/60e1b861407547bca760424c9c38ec78/thumbnails/0d04cf7b98924811aa47f5733b2813b3/36bfae0d16654a64a0c0af8c91d0c52f.jpeg",
+      "creator": {
+        "name": "AM ARCHITECTURE",
+        "url": "https://sketchfab.com/abir_sd"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 64130,
+      "archiveBytes": 10476092,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "ff8cb5a736494a84929199e111bfefd3",
+      "name": "Lounge Chair",
+      "category": "chairs",
+      "query": "lounge chair",
+      "url": "https://sketchfab.com/3d-models/none-ff8cb5a736494a84929199e111bfefd3",
+      "thumbnail": "https://media.sketchfab.com/models/ff8cb5a736494a84929199e111bfefd3/thumbnails/5f1f617d83f8415b901c6d3c6bda1c83/720x405.jpeg",
+      "creator": {
+        "name": "Algirdas Lalys",
+        "url": "https://sketchfab.com/alalys"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 196,
+      "archiveBytes": 22328,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "f0162201004b4aea8e29b754459d9f75",
+      "name": "Lounge chair",
+      "category": "chairs",
+      "query": "lounge chair",
+      "url": "https://sketchfab.com/3d-models/none-f0162201004b4aea8e29b754459d9f75",
+      "thumbnail": "https://media.sketchfab.com/models/f0162201004b4aea8e29b754459d9f75/thumbnails/14c62aa6d8b541099ad3905290c94938/7fb46c50a66d4d74bb699918b0c7e0ab.jpeg",
+      "creator": {
+        "name": "Oldfarmer",
+        "url": "https://sketchfab.com/Oldfarmer"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 1008,
+      "archiveBytes": 218232,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "2ab5992a50404cd6a7bc33ef346a7be4",
+      "name": "Pool Lounge Chair",
+      "category": "chairs",
+      "query": "lounge chair",
+      "url": "https://sketchfab.com/3d-models/none-2ab5992a50404cd6a7bc33ef346a7be4",
+      "thumbnail": "https://media.sketchfab.com/models/2ab5992a50404cd6a7bc33ef346a7be4/thumbnails/bce0bc185c184f0db0dc72d7ee2340a9/14f1875a70c844f3990f9b043ee37622.jpeg",
+      "creator": {
+        "name": "CadmiumCoffee",
+        "url": "https://sketchfab.com/bsishir"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 12082,
+      "archiveBytes": 529296,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "8dcb87c24b1e48ea9c253f3e37eff413",
+      "name": "Coffee Table",
+      "category": "tables",
+      "query": "coffee table",
+      "url": "https://sketchfab.com/3d-models/none-8dcb87c24b1e48ea9c253f3e37eff413",
+      "thumbnail": "https://media.sketchfab.com/models/8dcb87c24b1e48ea9c253f3e37eff413/thumbnails/e64f8709fae340a59d43f6876f2b125a/0e72fe3ebe2842bf93d5fdc0925fddb8.jpeg",
+      "creator": {
+        "name": "NoMoreFeelings",
+        "url": "https://sketchfab.com/NoMoreFeelings"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 280,
+      "archiveBytes": 198424,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "cadbf1ef40e54acfb303ca45c02c2116",
+      "name": "Kumo White Coffee Table",
+      "category": "tables",
+      "query": "coffee table",
+      "url": "https://sketchfab.com/3d-models/none-cadbf1ef40e54acfb303ca45c02c2116",
+      "thumbnail": "https://media.sketchfab.com/models/cadbf1ef40e54acfb303ca45c02c2116/thumbnails/67b8739664e14b61b0376ba89620f187/ce83ed728366419ca563385ae6704f64.jpeg",
+      "creator": {
+        "name": "Blizzy",
+        "url": "https://sketchfab.com/jeffbas"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 4856,
+      "archiveBytes": 865068,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "8f8a3dbd45534152b5771c36cc4742d9",
+      "name": "Noguchi Coffee Table",
+      "category": "tables",
+      "query": "coffee table",
+      "url": "https://sketchfab.com/3d-models/none-8f8a3dbd45534152b5771c36cc4742d9",
+      "thumbnail": "https://media.sketchfab.com/models/8f8a3dbd45534152b5771c36cc4742d9/thumbnails/d2220d243d624f839d6a334474fffeb4/a8b0d3396f4e4366a34ece8e6537da17.jpeg",
+      "creator": {
+        "name": "Deborah Kumagai",
+        "url": "https://sketchfab.com/3dmaedchen"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 30810,
+      "archiveBytes": 986152,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "54325d61e5154117ae3038036487b7a1",
+      "name": "Modern Bed",
+      "category": "beds",
+      "query": "modern bed",
+      "url": "https://sketchfab.com/3d-models/none-54325d61e5154117ae3038036487b7a1",
+      "thumbnail": "https://media.sketchfab.com/models/54325d61e5154117ae3038036487b7a1/thumbnails/848d3561c30d4bbca284e10dc026cab5/9dfe8dd386284af1ac786b123f8ebd6e.jpeg",
+      "creator": {
+        "name": "Akshat",
+        "url": "https://sketchfab.com/shooter24994"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 20964,
+      "archiveBytes": 2147312,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "16070c2e6faa405391ab7ada8bb0aed6",
+      "name": "Poliform_Bed",
+      "category": "beds",
+      "query": "modern bed",
+      "url": "https://sketchfab.com/3d-models/none-16070c2e6faa405391ab7ada8bb0aed6",
+      "thumbnail": "https://media.sketchfab.com/models/16070c2e6faa405391ab7ada8bb0aed6/thumbnails/469fc45ce0a541f184a4f5ec498402b3/c9d61feb324e48e5aebd75c580fd77cf.jpeg",
+      "creator": {
+        "name": "Alexis Ramos",
+        "url": "https://sketchfab.com/lex_ram"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 5325,
+      "archiveBytes": 2644124,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "d63e01ffff924338a52874d88489ab00",
+      "name": "Modern Bed",
+      "category": "beds",
+      "query": "modern bed",
+      "url": "https://sketchfab.com/3d-models/none-d63e01ffff924338a52874d88489ab00",
+      "thumbnail": "https://media.sketchfab.com/models/d63e01ffff924338a52874d88489ab00/thumbnails/e4623db8069543c7904de458068e27f6/75633955e1bc40838178e43051f69bdc.jpeg",
+      "creator": {
+        "name": "Myrtille",
+        "url": "https://sketchfab.com/myrt1lle"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 50000,
+      "archiveBytes": 3498488,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "b00abd35578e4f628f4bcd3625ce5951",
+      "name": "Skyline Cutout - City - large",
+      "category": "skylines",
+      "query": "city skyline",
+      "url": "https://sketchfab.com/3d-models/none-b00abd35578e4f628f4bcd3625ce5951",
+      "thumbnail": "https://media.sketchfab.com/models/b00abd35578e4f628f4bcd3625ce5951/thumbnails/62c2deadfeea46e5bdc036c905799efb/d13dab000f3e4223944632c7c14fd981.jpeg",
+      "creator": {
+        "name": "MozillaHubs",
+        "url": "https://sketchfab.com/mozillareality"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 1462,
+      "archiveBytes": 105676,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "f0722265cf8d4a41ba78ab1587d18ac8",
+      "name": "Low Poly Building",
+      "category": "buildings",
+      "query": "low poly building",
+      "url": "https://sketchfab.com/3d-models/none-f0722265cf8d4a41ba78ab1587d18ac8",
+      "thumbnail": "https://media.sketchfab.com/models/f0722265cf8d4a41ba78ab1587d18ac8/thumbnails/6ec3fd49fa2d4c07b1c18819fadb33cd/d3bc16b7f97443b688f219c216f69f04.jpeg",
+      "creator": {
+        "name": "A.S.D.",
+        "url": "https://sketchfab.com/arvindsudarshan53"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 1680,
+      "archiveBytes": 93636,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "992ee80b8f8c4bdab78e18a93a463371",
+      "name": "Low Poly Building",
+      "category": "buildings",
+      "query": "low poly building",
+      "url": "https://sketchfab.com/3d-models/none-992ee80b8f8c4bdab78e18a93a463371",
+      "thumbnail": "https://media.sketchfab.com/models/992ee80b8f8c4bdab78e18a93a463371/thumbnails/2887781e25a44bdbade4d59c78098b3d/96893296e8df445aad178811678d4618.jpeg",
+      "creator": {
+        "name": "Godheim",
+        "url": "https://sketchfab.com/Godheim"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 1954,
+      "archiveBytes": 108180,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "f943ba2828a64b7d858ee6e4bdacedc6",
+      "name": "Low Poly Building",
+      "category": "buildings",
+      "query": "low poly building",
+      "url": "https://sketchfab.com/3d-models/none-f943ba2828a64b7d858ee6e4bdacedc6",
+      "thumbnail": "https://media.sketchfab.com/models/f943ba2828a64b7d858ee6e4bdacedc6/thumbnails/1265dc934e6f48b888b1fe3543eabf4f/a02f073f9f694a5daa8eb9323bb5c1f2.jpeg",
+      "creator": {
+        "name": "ROH3D",
+        "url": "https://sketchfab.com/roh3d"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 4360,
+      "archiveBytes": 325308,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "6d986e0b24b54d85a5354e5cac6207a1",
+      "name": "Low poly tree",
+      "category": "trees",
+      "query": "low poly tree",
+      "url": "https://sketchfab.com/3d-models/none-6d986e0b24b54d85a5354e5cac6207a1",
+      "thumbnail": "https://media.sketchfab.com/models/6d986e0b24b54d85a5354e5cac6207a1/thumbnails/c2d493b3d39f44e38b8c78fefe5e7838/720x405.jpeg",
+      "creator": {
+        "name": "Kotzuo",
+        "url": "https://sketchfab.com/Kotuzo"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 64,
+      "archiveBytes": 9932,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "e815f8acd6d34528a82feef38d5af880",
+      "name": "Low Poly Tree Concept",
+      "category": "trees",
+      "query": "low poly tree",
+      "url": "https://sketchfab.com/3d-models/none-e815f8acd6d34528a82feef38d5af880",
+      "thumbnail": "https://media.sketchfab.com/models/e815f8acd6d34528a82feef38d5af880/thumbnails/551420270b314876aa6d2f737c2c6514/eb52a5d927ac4adabbc74fbfa1225fab.jpeg",
+      "creator": {
+        "name": "sycoinc",
+        "url": "https://sketchfab.com/sycoinc"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 105,
+      "archiveBytes": 37848,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "9cde1025662e4954b1f803c2d4bb719d",
+      "name": "Pine Tree low poly",
+      "category": "trees",
+      "query": "low poly tree",
+      "url": "https://sketchfab.com/3d-models/none-9cde1025662e4954b1f803c2d4bb719d",
+      "thumbnail": "https://media.sketchfab.com/models/9cde1025662e4954b1f803c2d4bb719d/thumbnails/224de1b9d1dd4f648f48038bc7885044/468768b5ad844e01aed441cca3de8c55.jpeg",
+      "creator": {
+        "name": "daniel.2U",
+        "url": "https://sketchfab.com/daniel.2U"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 596,
+      "archiveBytes": 43600,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "8f8517f5e13e4ff693dc9fc919ef7dda",
+      "name": "Potted Plant",
+      "category": "plants",
+      "query": "potted plant",
+      "url": "https://sketchfab.com/3d-models/none-8f8517f5e13e4ff693dc9fc919ef7dda",
+      "thumbnail": "https://media.sketchfab.com/models/8f8517f5e13e4ff693dc9fc919ef7dda/thumbnails/00ee492678384a0e8adc816ad3d9a47a/2864d80fed2b442b93ab937879f8b9f9.jpeg",
+      "creator": {
+        "name": "NoMoreFeelings",
+        "url": "https://sketchfab.com/NoMoreFeelings"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 262,
+      "archiveBytes": 354668,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "2cfe4f4c192f4dd08229bd7460532b09",
+      "name": "Potted Plant",
+      "category": "plants",
+      "query": "potted plant",
+      "url": "https://sketchfab.com/3d-models/none-2cfe4f4c192f4dd08229bd7460532b09",
+      "thumbnail": "https://media.sketchfab.com/models/2cfe4f4c192f4dd08229bd7460532b09/thumbnails/61cac654135247df93264afbea34fb79/dd088bce234e4b3bb8318f6d3b3ab853.jpeg",
+      "creator": {
+        "name": "Blizzy",
+        "url": "https://sketchfab.com/jeffbas"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 3916,
+      "archiveBytes": 1484944,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "967b4bf23fac4098993776fcfc2d3318",
+      "name": "Optimized Potted Plants",
+      "category": "plants",
+      "query": "potted plant",
+      "url": "https://sketchfab.com/3d-models/none-967b4bf23fac4098993776fcfc2d3318",
+      "thumbnail": "https://media.sketchfab.com/models/967b4bf23fac4098993776fcfc2d3318/thumbnails/052972117af4444396e9bf55a818ba76/5832a996ffdb4129be82be8db45611d4.jpeg",
+      "creator": {
+        "name": "Nicholas-3D",
+        "url": "https://sketchfab.com/Nicholas01"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 1770,
+      "archiveBytes": 2109148,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "8b60d8c189274a1cac07fa3f4b066e1f",
+      "name": "Park Bench",
+      "category": "street",
+      "query": "park bench",
+      "url": "https://sketchfab.com/3d-models/none-8b60d8c189274a1cac07fa3f4b066e1f",
+      "thumbnail": "https://media.sketchfab.com/models/8b60d8c189274a1cac07fa3f4b066e1f/thumbnails/5cdec32c993b41cc99dc54072d1d0aea/0e3ca0ad5fbc49588e3f9e9aea4840a8.jpeg",
+      "creator": {
+        "name": "V\u00edctor Hern\u00e1ndez",
+        "url": "https://sketchfab.com/victorhugohc"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 3088,
+      "archiveBytes": 159740,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "7a0c2a659e2441b6b568a9d2acf8419e",
+      "name": "Park Bench",
+      "category": "street",
+      "query": "park bench",
+      "url": "https://sketchfab.com/3d-models/none-7a0c2a659e2441b6b568a9d2acf8419e",
+      "thumbnail": "https://media.sketchfab.com/models/7a0c2a659e2441b6b568a9d2acf8419e/thumbnails/6396874db2954f5d82a9f2df3f24ff38/a0a072e5ed6d45358e313be75a67ec49.jpeg",
+      "creator": {
+        "name": "Bora \u00d6zakaltun",
+        "url": "https://sketchfab.com/boraozakaltun"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 2272,
+      "archiveBytes": 259120,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "a94e6192075548b68af878e57db2ed38",
+      "name": "Park Bench",
+      "category": "street",
+      "query": "park bench",
+      "url": "https://sketchfab.com/3d-models/none-a94e6192075548b68af878e57db2ed38",
+      "thumbnail": "https://media.sketchfab.com/models/a94e6192075548b68af878e57db2ed38/thumbnails/fc69edb1bb0847a0a2bf67a8eca067cc/acfe6cab43334c18b4f93db2e8d75c81.jpeg",
+      "creator": {
+        "name": "selfie 3D scan",
+        "url": "https://sketchfab.com/bevadek"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 5902,
+      "archiveBytes": 744824,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "28f331c0db9d4eedbd1eeb8320fded4f",
+      "name": "low poly Car",
+      "category": "vehicles",
+      "query": "low poly car",
+      "url": "https://sketchfab.com/3d-models/none-28f331c0db9d4eedbd1eeb8320fded4f",
+      "thumbnail": "https://media.sketchfab.com/models/28f331c0db9d4eedbd1eeb8320fded4f/thumbnails/d5b56c651fcb4060b6471fe26eb53a38/5337b31b5ed141adbb7ba2d04518c216.jpeg",
+      "creator": {
+        "name": "liltoba",
+        "url": "https://sketchfab.com/liltoba"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 272,
+      "archiveBytes": 89272,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "f822f0c500a24ca9ac2af183d2e630b4",
+      "name": "Low poly Car",
+      "category": "vehicles",
+      "query": "low poly car",
+      "url": "https://sketchfab.com/3d-models/none-f822f0c500a24ca9ac2af183d2e630b4",
+      "thumbnail": "https://media.sketchfab.com/models/f822f0c500a24ca9ac2af183d2e630b4/thumbnails/15b044fa68f2483f9c5b4fdc5c71e2f9/93e200689b0043acbb0f658f85dcda6b.jpeg",
+      "creator": {
+        "name": "reyad.bader",
+        "url": "https://sketchfab.com/reyad.bader"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 4846,
+      "archiveBytes": 240720,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "641efc889e5f4543bae51d0922e6f4b3",
+      "name": "Classic Muscle car",
+      "category": "vehicles",
+      "query": "low poly car",
+      "url": "https://sketchfab.com/3d-models/none-641efc889e5f4543bae51d0922e6f4b3",
+      "thumbnail": "https://media.sketchfab.com/models/641efc889e5f4543bae51d0922e6f4b3/thumbnails/3db8280c56ee430fa943c7e1f19d3d4f/59441dfc667842ddbd57756afa46d045.jpeg",
+      "creator": {
+        "name": "Lexyc16",
+        "url": "https://sketchfab.com/Lexyc16"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 5594,
+      "archiveBytes": 258208,
+      "formats": [
+        "glb",
+        "gltf",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "14e3d5743f7546d5bb7f3befc72c9057",
+      "name": "New York styled hi rise apartment building",
+      "category": "buildings",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-14e3d5743f7546d5bb7f3befc72c9057",
+      "creator": {
+        "name": "aitortilla01",
+        "url": "https://sketchfab.com/aitortilla01"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 5591,
+      "archiveBytes": 1819848,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "9359c41541814b968360fc4f3823892c",
+      "name": "New York style condominium",
+      "category": "buildings",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-9359c41541814b968360fc4f3823892c",
+      "creator": {
+        "name": "aitortilla01",
+        "url": "https://sketchfab.com/aitortilla01"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 3709,
+      "archiveBytes": 1806836,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "ff93086fa20345d4b4562ce95095e292",
+      "name": "Citigroup Center",
+      "category": "buildings",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-ff93086fa20345d4b4562ce95095e292",
+      "creator": {
+        "name": "NanoRay",
+        "url": "https://sketchfab.com/NanoRay"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 2248,
+      "archiveBytes": 110956,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "fa82b5beb9a9427698dafd2c3867ebf9",
+      "name": "Park Tower, Chicago",
+      "category": "buildings",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-fa82b5beb9a9427698dafd2c3867ebf9",
+      "creator": {
+        "name": "aitortilla01",
+        "url": "https://sketchfab.com/aitortilla01"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 6049,
+      "archiveBytes": 2127792,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "191cf9a66d204ccc941e097bcfe90f27",
+      "name": "Burj Khalifa Building Model",
+      "category": "buildings",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-191cf9a66d204ccc941e097bcfe90f27",
+      "creator": {
+        "name": "Book Dubai Holiday",
+        "url": "https://sketchfab.com/bookdubaiholiday"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 16692,
+      "archiveBytes": 960392,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "b33e54d616c44c1795fb86f433c0dfc0",
+      "name": "100 Federal St (Boston, MA)",
+      "category": "buildings",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-b33e54d616c44c1795fb86f433c0dfc0",
+      "creator": {
+        "name": "Furrden2",
+        "url": "https://sketchfab.com/Furrden2"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 136,
+      "archiveBytes": 11052,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "770a898896e04799a97f61a4ba7b1690",
+      "name": "Ocean water animated",
+      "category": "water",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-770a898896e04799a97f61a4ba7b1690",
+      "creator": {
+        "name": "Nyilonelycompany",
+        "url": "https://sketchfab.com/Nyilonelycompany"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 4804,
+      "archiveBytes": 7926180,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "50f21b06c6e644e196b2ac828eda97dc",
+      "name": "Ocean model",
+      "category": "water",
+      "query": "environment upgrade",
+      "url": "https://sketchfab.com/3d-models/none-50f21b06c6e644e196b2ac828eda97dc",
+      "creator": {
+        "name": "conservationdude",
+        "url": "https://sketchfab.com/conservationdude"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "faceCount": 4802,
+      "archiveBytes": 139856,
+      "formats": [
+        "glb",
+        "gltf",
+        "source",
+        "usdz"
+      ],
+      "status": "candidate-not-downloaded"
+    },
+    {
+      "uid": "372bc495b3a941308f4a3198bc45e17b",
+      "name": "New York City. Manhattan",
+      "category": "city-new-york",
+      "url": "https://sketchfab.com/3d-models/new-york-city-manhattan-372bc495b3a941308f4a3198bc45e17b",
+      "creator": {
+        "name": "truekit",
+        "url": "https://sketchfab.com/truekit"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "Manhattan often referred to by residents of the New York City area as the City, is the most densely populated of the five boroughs of New York City.\n\ncheck out my other 3D maps https://skfb.ly/oIQ8p"
+    },
+    {
+      "uid": "570076f49f0c4b63a51948db40e92c31",
+      "name": "Miami, Florida, USA",
+      "category": "city-miami",
+      "url": "https://sketchfab.com/3d-models/miami-florida-usa-570076f49f0c4b63a51948db40e92c31",
+      "creator": {
+        "name": "Jack M Simmons",
+        "url": "https://sketchfab.com/jack.simmons"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": ""
+    },
+    {
+      "uid": "20c73feebd91436ea9c2efebee8a5661",
+      "name": "Los Angeles City",
+      "category": "city-los-angeles",
+      "url": "https://sketchfab.com/3d-models/los-angeles-city-20c73feebd91436ea9c2efebee8a5661",
+      "creator": {
+        "name": "aaelick",
+        "url": "https://sketchfab.com/aaelick"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "This is a sample. Please contact me to obtain the full version. Custom 3D city models can also be created upon request."
+    },
+    {
+      "uid": "5910afb517bd4d2cafd8f280dabf37a4",
+      "name": "Chicago City",
+      "category": "city-chicago",
+      "url": "https://sketchfab.com/3d-models/chicago-city-5910afb517bd4d2cafd8f280dabf37a4",
+      "creator": {
+        "name": "aaelick",
+        "url": "https://sketchfab.com/aaelick"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "This is a sample. Please contact me to obtain the full version. Custom 3D city models can also be created upon request."
+    },
+    {
+      "uid": "a7a5b99638f143af84bc646ae2d270c1",
+      "name": "San Francisco City",
+      "category": "city-san-francisco",
+      "url": "https://sketchfab.com/3d-models/san-francisco-city-a7a5b99638f143af84bc646ae2d270c1",
+      "creator": {
+        "name": "aaelick",
+        "url": "https://sketchfab.com/aaelick"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "This is a sample. Please contact me to obtain the full version. Custom 3D city models can also be created upon request."
+    },
+    {
+      "uid": "1128db3b12bd470eb6b2d1421a70e732",
+      "name": "Seattle City",
+      "category": "city-seattle",
+      "url": "https://sketchfab.com/3d-models/seattle-city-1128db3b12bd470eb6b2d1421a70e732",
+      "creator": {
+        "name": "aaelick",
+        "url": "https://sketchfab.com/aaelick"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "This is a sample. Please contact me to obtain the full version. Custom 3D city models can also be created upon request."
+    },
+    {
+      "uid": "395d4a8639de411592797890e219dbd2",
+      "name": "Boston City",
+      "category": "city-boston",
+      "url": "https://sketchfab.com/3d-models/boston-city-395d4a8639de411592797890e219dbd2",
+      "creator": {
+        "name": "aaelick",
+        "url": "https://sketchfab.com/aaelick"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "This is a sample. Please contact me to obtain the full version. Custom 3D city models can also be created upon request."
+    },
+    {
+      "uid": "013c2e21e61c4a598c6d279f05953819",
+      "name": "Toronto City",
+      "category": "city-toronto",
+      "url": "https://sketchfab.com/3d-models/toronto-city-013c2e21e61c4a598c6d279f05953819",
+      "creator": {
+        "name": "aaelick",
+        "url": "https://sketchfab.com/aaelick"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "This is a sample. Please contact me to obtain the full version. Custom 3D city models can also be created upon request."
+    },
+    {
+      "uid": "74cc9216f2c24efa96fe2554897e5966",
+      "name": "London Financial District",
+      "category": "city-london",
+      "url": "https://sketchfab.com/3d-models/london-financial-district-74cc9216f2c24efa96fe2554897e5966",
+      "creator": {
+        "name": "333DDD",
+        "url": "https://sketchfab.com/333DDD-oficial"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": "London primary Financial District night city megalopolis skyline downtown cloudscape panorama\n\nExperimental vr, reconstructed solely from 4K drone footage, 4x8K textures\n\nPlease ko-fi.com/333ddd if you download and enjoy"
+    },
+    {
+      "uid": "0e60e12f253442ee8baffa3d9afb2c3d",
+      "name": "Dubai, UAE",
+      "category": "city-dubai",
+      "url": "https://sketchfab.com/3d-models/dubai-uae-0e60e12f253442ee8baffa3d9afb2c3d",
+      "creator": {
+        "name": "Jack M Simmons",
+        "url": "https://sketchfab.com/jack.simmons"
+      },
+      "license": {
+        "label": "CC Attribution",
+        "slug": "by",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "requirements": "Author must be credited. Commercial use is allowed."
+      },
+      "status": "downloaded-unreviewed",
+      "description": ""
+    }
+  ]
+}

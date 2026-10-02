@@ -1,0 +1,20 @@
+{
+  "uid": "50f21b06c6e644e196b2ac828eda97dc",
+  "name": "Ocean model",
+  "category": "water",
+  "url": "https://sketchfab.com/3d-models/ocean-model-50f21b06c6e644e196b2ac828eda97dc",
+  "creator": {
+    "name": "conservationdude",
+    "url": "https://sketchfab.com/conservationdude"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb",
+  "sizeMeters": 100,
+  "rotationY": 0.0,
+  "modifications": "Ocean mesh fitted to AURA waterfront; wave height reduced; animated ripple normals and reflective city-tinted material applied"
+}

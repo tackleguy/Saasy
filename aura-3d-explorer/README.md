@@ -35,6 +35,82 @@ npm run dev                  # the assistant needs a server: `next dev` or `next
 
 The route is `src/app/api/assistant/route.ts` (`GET` = health, `POST` = streamed reply). The UI and the explorer bridge live in `src/components/assistant/`. A page shares its explorer with one line, `useRegisterExplorer(x, { project, yieldCalc })`. The model controls the scene by writing commands such as `[[action:photo angle=aerial]]` or `[[action:floor n=12]]` on their own line (full list in `protocol.ts`). If no local model is running, or the site is a static export (which has no API routes), the panel shows "Local AI offline" with the commands to copy.
 
+## Sketchfab assets for the local AI
+
+`src/content/sketchfab-models.json` contains API-sourced **candidates**, including
+creator credits, licenses, triangle counts and archive sizes. Twenty-seven downloaded GLBs
+are bundled under `public/models/sketchfab`: sofa, lounge chair, coffee table,
+bed, skyline, seven buildings, ten city/district models, ocean, pine tree, potted plant, bench and car. The assistant only uses
+`src/content/installed-models.json`; it never treats search results as installed assets.
+
+Use Python 3.10+ from this directory:
+
+```bash
+python3 scripts/sketchfab.py source
+# Configure SKETCHFAB_ACCESS_TOKEN in .env.local or your local shell.
+# Set SKETCHFAB_AUTH_TYPE=Token for an API token, or Bearer for OAuth.
+# Do not paste it in chat, commit it, or use a NEXT_PUBLIC_ environment variable.
+python3 scripts/sketchfab.py download <model-uid>
+python3 scripts/sketchfab.py install <model-uid> --size 2.4 --rotation 0
+```
+
+`--size` is the longest model dimension in real metres; `--rotation` is yaw in
+degrees. Download archives and their `attribution.json` stay in ignored
+`model-downloads/<uid>/`. Installation copies a self-contained GLB and credits to
+`public/models/sketchfab/<uid>/` and registers it in the installed manifest.
+For manual Sketchfab downloads, put `model.glb` and matching `attribution.json`
+there first; attribution follows the candidate record's uid/name/category/url/
+creator/license fields. A ZIP containing one GLB is also supported. Convert glTF
+archives or compressed models to a self-contained, uncompressed GLB before installing.
+External buffer and texture URLs are rejected so runtime assets stay local.
+
+Restart/rebuild after installing. Ask AURA **“furnish this apartment”** to use the
+first installed sofa, table, bed and plant automatically, or ask for a named asset.
+The AI uses `[[action:model id=<uid>]]` and only sees installed assets (up to twelve
+in its compact context). `[[action:model id=clear]]` clears library selections from
+the open floor and site context. Selections last for the current explorer session.
+
+Interior models replace whole matching furniture ensembles in the existing
+collision-aware apartment planner, up to twelve replacements per floor. They keep
+their proportions, fit within the ensemble footprint and ceiling, and retain the
+procedural ensemble while loading or on failure. Imported floor-plan scenes are
+not supported yet. Outdoor props occupy one fixed site-context position; optional
+skyline cutouts appear behind the site. These placements need visual review with the actual
+files, including scale, orientation, materials and surrounding geometry.
+
+Credits for installed models appear in the site footer and beside each deployed
+GLB in `attribution.json`. Candidate sourcing currently accepts CC BY and CC0,
+under 150,000 faces and 50 MB per archive; these are screening limits, not measured
+performance guarantees. Check the downloaded asset visually before shipping.
+
+Official API documentation: [Sketchfab downloads](https://sketchfab.com/developers/download-api/downloading-models).
+
+Each named city preset now loads its own Sketchfab city or district GLB, preserving
+the original internal arrangement and proportions. New York defaults to truekit’s
+textured Lower Manhattan. Los Angeles, Chicago, San Francisco, Seattle, Boston and
+Toronto use aaelick’s textured **district samples**. London uses 333DDD’s financial
+district reconstruction. Miami and Dubai use Jack M Simmons’s **untextured city
+models**. The source and coverage are linked directly under the city selector.
+These are creator-authored representations, not certified survey data or complete
+current city coverage. The proposal remains a separate illustrative site in front
+of the model; it is not inserted at a surveyed address.
+
+Only Neutral retains the instanced illustrative buildings. Named cities no longer
+scatter buildings or draw a generated street grid through the downloaded district.
+One city is loaded on demand, with loading/retry feedback, and its GPU resources
+are disposed on switching cities. Districts retain uniform scale with a 70-unit height cap and a setback behind the proposal. Ragged scan skirts are clipped below ground; Manhattan and London use an explicit ground-cut offset. Geometry is welded
+and 16-bit position quantized, textures resized to at most 2048px and compressed.
+Miami geometry is also simplified. Downloads range from approximately 8–57 MB;
+large models can still take time on mobile connections. The installer normally
+limits GLBs to 50 MB; use `--max-mb 100` explicitly for a reviewed large district.
+Every deployed model has a CC BY attribution record and appears in the footer.
+
+The waterfront uses the bundled Sketchfab **Ocean model** mesh, fitted to the
+shoreline with reduced wave height. AURA adds scrolling ripple normals and planar
+reflections in High quality; Low uses environment-lit water. The heavier animated
+ocean candidate stays in ignored downloads and is not shipped. Creator credits
+and geometry/material adaptations are recorded beside each model.
+
 ## Routes
 
 | Route | What it is |

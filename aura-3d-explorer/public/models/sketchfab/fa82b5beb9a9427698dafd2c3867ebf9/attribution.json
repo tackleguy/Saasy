@@ -1,0 +1,20 @@
+{
+  "uid": "fa82b5beb9a9427698dafd2c3867ebf9",
+  "name": "Park Tower, Chicago",
+  "category": "buildings",
+  "url": "https://sketchfab.com/3d-models/park-tower-chicago-fa82b5beb9a9427698dafd2c3867ebf9",
+  "creator": {
+    "name": "aitortilla01",
+    "url": "https://sketchfab.com/aitortilla01"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/fa82b5beb9a9427698dafd2c3867ebf9/model.glb",
+  "sizeMeters": 250,
+  "rotationY": 0.0,
+  "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+}

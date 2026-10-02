@@ -13,8 +13,8 @@ export default function DemoRequestForm() {
     return (
       <div className="panel flex flex-col gap-3 p-6" role="status">
         <CheckCircle2 className="text-positive" size={28} aria-hidden />
-        <p className="font-serif text-2xl text-ink">Thanks — we&apos;ll be in touch.</p>
-        <p className="caption">Demo form: nothing was sent. Connect it to your CRM before launch.</p>
+        <p className="font-serif text-2xl text-ink">Demo complete — no request sent.</p>
+        <p className="caption">This preview does not send demo requests. Your details have not been submitted.</p>
       </div>
     );
   }

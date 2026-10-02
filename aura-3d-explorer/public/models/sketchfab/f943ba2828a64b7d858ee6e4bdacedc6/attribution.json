@@ -1,0 +1,20 @@
+{
+  "uid": "f943ba2828a64b7d858ee6e4bdacedc6",
+  "name": "Low Poly Building",
+  "category": "buildings",
+  "url": "https://sketchfab.com/3d-models/low-poly-building-f943ba2828a64b7d858ee6e4bdacedc6",
+  "creator": {
+    "name": "ROH3D",
+    "url": "https://sketchfab.com/roh3d"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb",
+  "sizeMeters": 30,
+  "rotationY": 0.0,
+  "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+}

@@ -1,0 +1,20 @@
+{
+  "uid": "9359c41541814b968360fc4f3823892c",
+  "name": "New York style condominium",
+  "category": "buildings",
+  "url": "https://sketchfab.com/3d-models/new-york-style-condominium-9359c41541814b968360fc4f3823892c",
+  "creator": {
+    "name": "aitortilla01",
+    "url": "https://sketchfab.com/aitortilla01"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/9359c41541814b968360fc4f3823892c/model.glb",
+  "sizeMeters": 30,
+  "rotationY": 0.0,
+  "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+}

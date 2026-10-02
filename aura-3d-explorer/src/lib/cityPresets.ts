@@ -528,7 +528,7 @@ export const CITY_PRESETS: CityPreset[] = [
   },
 ];
 
-export const DEFAULT_CITY: CityId = "generic";
+export const DEFAULT_CITY: CityId = "new-york";
 
 const BY_ID = new Map(CITY_PRESETS.map((p) => [p.id, p]));
 

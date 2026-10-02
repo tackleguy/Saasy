@@ -18,6 +18,7 @@
  * DXF / JSON never need a model.
  */
 import { NextResponse } from "next/server";
+import { readJsonObject, RequestBodyError } from "@/lib/requestBody";
 import { extractJson, repairScene, runEngine, summaryFacts } from "@/lib/engine";
 import { ENGINE_SYSTEM_PROMPT, engineUserNote } from "@/lib/engine/prompt";
 
@@ -108,9 +109,9 @@ async function askOllama(model: string, fileName: string, data: string): Promise
 export async function POST(req: Request) {
   let body: Record<string, unknown>;
   try {
-    body = (await req.json()) as Record<string, unknown>;
-  } catch {
-    return NextResponse.json({ error: "Send JSON: { fileName, text } or { fileName, mediaType, data }." }, { status: 400 });
+    body = await readJsonObject(req, 24_000_000);
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof RequestBodyError ? error.message : "Could not read the request. Try again." }, { status: error instanceof RequestBodyError ? error.status : 400 });
   }
   const fileName = typeof body.fileName === "string" ? body.fileName.slice(0, 200) : "plan";
 

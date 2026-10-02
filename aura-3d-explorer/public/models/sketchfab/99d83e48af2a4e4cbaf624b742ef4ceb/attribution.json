@@ -1,0 +1,20 @@
+{
+  "uid": "99d83e48af2a4e4cbaf624b742ef4ceb",
+  "name": "Modern Sofa",
+  "category": "sofas",
+  "url": "https://sketchfab.com/3d-models/modern-sofa-99d83e48af2a4e4cbaf624b742ef4ceb",
+  "creator": {
+    "name": "Akshat",
+    "url": "https://sketchfab.com/shooter24994"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/99d83e48af2a4e4cbaf624b742ef4ceb/model.glb",
+  "sizeMeters": 2.4,
+  "rotationY": 1.5707963267948966,
+  "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+}

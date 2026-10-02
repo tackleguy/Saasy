@@ -12,17 +12,8 @@ import { FolderOpen, Trash2, X } from "lucide-react";
 import type { BuildingId, YieldInputs } from "@/types";
 import type { ExplorerState } from "@/hooks/useExplorer";
 
-/** World [x, z] of each building moved on the site map (unmoved buildings are omitted). */
-export type SiteLayout = Partial<Record<BuildingId, [number, number]>>;
-
-export interface Scenario {
-  id: string;
-  name: string;
-  savedAt: string;
-  inputsById: Record<BuildingId, YieldInputs>;
-  /** Absent in scenarios saved before layouts were stored: those load with the original site. */
-  layout?: SiteLayout;
-}
+import { readScenarios, writeScenarios, type Scenario, type SiteLayout } from "@/lib/scenarioStorage";
+export type { Scenario, SiteLayout } from "@/lib/scenarioStorage";
 
 /** The buildings whose position differs from the project's original site. */
 function currentLayout(x: ExplorerState): SiteLayout {
@@ -45,25 +36,6 @@ function applyLayout(x: ExplorerState, layout: SiteLayout | undefined) {
 
 const movedCount = (layout?: SiteLayout) => Object.keys(layout ?? {}).length;
 
-const key = (slug: string) => `aura:scenarios:${slug}`;
-
-function readScenarios(slug: string): Scenario[] {
-  try {
-    const raw = window.localStorage.getItem(key(slug));
-    return raw ? (JSON.parse(raw) as Scenario[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeScenarios(slug: string, list: Scenario[]) {
-  try {
-    window.localStorage.setItem(key(slug), JSON.stringify(list));
-  } catch {
-    /* storage unavailable — keep in memory only */
-  }
-}
-
 interface Props {
   projectSlug: string;
   current: Record<BuildingId, YieldInputs>;
@@ -76,29 +48,41 @@ export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer 
   const [open, setOpen] = useState(false);
   const [list, setList] = useState<Scenario[]>([]);
   const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
-    if (open) setList(readScenarios(projectSlug));
+    if (open) {
+      setError(""); setStatus("");
+      try { setList(readScenarios(window.localStorage, projectSlug)); }
+      catch { setError("Saved scenarios could not be read. Enable browser storage or restore a valid backup, then reopen this panel. Your current work is unchanged."); }
+    }
   }, [open, projectSlug]);
 
   const update = useCallback(
     (next: Scenario[]) => {
-      setList(next);
-      writeScenarios(projectSlug, next);
+      try {
+        writeScenarios(window.localStorage, projectSlug, next);
+        setList(next); setError(""); setStatus("Saved scenarios updated in this browser.");
+        return true;
+      } catch {
+        setError("Changes could not be saved. Enable browser storage or free space, then try again. Keep this page open to retain your current work.");
+        setStatus("");
+        return false;
+      }
     },
     [projectSlug]
   );
 
   const save = () => {
     const s: Scenario = {
-      id: `${Date.now()}`,
+      id: crypto.randomUUID(),
       name: name.trim() || `Scenario ${list.length + 1}`,
       savedAt: new Date().toISOString(),
       inputsById: current,
       ...(explorer ? { layout: currentLayout(explorer) } : {}),
     };
-    update([s, ...list]);
-    setName("");
+    if (update([s, ...list])) setName("");
   };
 
   return (
@@ -137,6 +121,9 @@ export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer 
               Save
             </button>
           </form>
+
+          {error && <p role="alert" className="mt-3 text-sm text-negative">{error}</p>}
+          <p role="status" className="caption mt-2">{status}</p>
 
           <ul className="thin-scroll mt-6 flex-1 space-y-2 overflow-y-auto">
             {list.length === 0 && (

@@ -1,0 +1,20 @@
+{
+  "uid": "2cfe4f4c192f4dd08229bd7460532b09",
+  "name": "Potted Plant",
+  "category": "plants",
+  "url": "https://sketchfab.com/3d-models/potted-plant-2cfe4f4c192f4dd08229bd7460532b09",
+  "creator": {
+    "name": "Blizzy",
+    "url": "https://sketchfab.com/jeffbas"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/2cfe4f4c192f4dd08229bd7460532b09/model.glb",
+  "sizeMeters": 1.1,
+  "rotationY": 0.0,
+  "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+}

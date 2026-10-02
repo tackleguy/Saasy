@@ -44,7 +44,7 @@ export function Panel({ kicker, title, icon, action, children, className, index 
                 {kicker}
               </p>
             )}
-            {title && <h3 className="font-serif text-[22px] leading-tight text-ink">{title}</h3>}
+            {title && <h2 className="font-serif text-[22px] leading-tight text-ink">{title}</h2>}
           </div>
           {action}
         </header>
@@ -89,7 +89,6 @@ export function RangeSlider({ label, value, min, max, step = 1, display, onChang
         max={max}
         step={step}
         onValueChange={([v]) => onChange(v)}
-        aria-label={label}
       >
         <RSlider.Track className="relative h-px grow bg-plaster">
           <RSlider.Range className="absolute h-full bg-ink" />
@@ -130,7 +129,17 @@ export function SegmentedControl<T extends string>({ value, options, onChange, l
         return (
           <button
             key={o.value}
+            type="button"
             role="radio"
+            tabIndex={active ? 0 : -1}
+            onKeyDown={(event) => {
+              const index = options.findIndex(option => option.value === o.value);
+              const next = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 : ["ArrowRight", "ArrowDown"].includes(event.key) ? (index + 1) % options.length : ["ArrowLeft", "ArrowUp"].includes(event.key) ? (index - 1 + options.length) % options.length : null;
+              if (next === null) return;
+              event.preventDefault();
+              onChange(options[next].value);
+              (event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next])?.focus();
+            }}
             aria-checked={active}
             onClick={() => onChange(o.value)}
             className={clsx(

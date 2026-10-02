@@ -1,0 +1,20 @@
+{
+  "uid": "9cde1025662e4954b1f803c2d4bb719d",
+  "name": "Pine Tree low poly",
+  "category": "trees",
+  "url": "https://sketchfab.com/3d-models/pine-tree-low-poly-9cde1025662e4954b1f803c2d4bb719d",
+  "creator": {
+    "name": "daniel.2U",
+    "url": "https://sketchfab.com/daniel.2U"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/9cde1025662e4954b1f803c2d4bb719d/model.glb",
+  "sizeMeters": 8,
+  "rotationY": 0.0,
+  "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+}

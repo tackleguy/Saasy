@@ -19,5 +19,5 @@ export const metadata = { title: "Render", robots: { index: false } };
 export default async function RenderPage({ params }: { params: Promise<{ slug: string }> }) {
   const project = getProject((await params).slug);
   if (!project) notFound();
-  return <RenderView project={project} />;
+  return <main><h1 className="sr-only">{project.name} render</h1><RenderView project={project} /></main>;
 }

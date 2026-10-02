@@ -2,6 +2,7 @@
  * SiteFooter — oversized wordmark, grouped links and the legal disclaimer.
  */
 import Link from "next/link";
+import { MODEL_LIBRARY } from "@/lib/modelLibrary";
 
 const GROUPS = [
   {
@@ -52,6 +53,15 @@ export default function SiteFooter() {
             advice.
           </p>
           <p>Sample projects, names and imagery are placeholders for demonstration.</p>
+          {MODEL_LIBRARY.length > 0 && <details>
+            <summary className="cursor-pointer text-ink">3D model credits · Sketchfab</summary>
+            <ul className="mt-3 space-y-3">{MODEL_LIBRARY.map((model) => <li key={model.uid}>
+              <a className="underline" href={model.url}>{model.name}</a>{" by "}
+              <a className="underline" href={model.creator.url}>{model.creator.name}</a>{" · "}
+              <a className="underline" href={model.license.url}>{model.license.label}</a>.
+              {" "}{model.modifications}.
+            </li>)}</ul>
+          </details>}
         </div>
       </div>
       <div className="border-t border-plaster">

@@ -14,6 +14,8 @@ export const FURNISHED_SETS: readonly FurnitureSet[] = FURNITURE_SETS.filter((s)
 export interface FloorFit {
   scheme: ApartmentScheme;
   furniture: FurnitureSet;
+  /** Installed Sketchfab model IDs, replacing matching planner ensembles. */
+  models?: string[];
 }
 
 export const DEFAULT_FIT: FloorFit = { scheme: "corner", furniture: "none" };

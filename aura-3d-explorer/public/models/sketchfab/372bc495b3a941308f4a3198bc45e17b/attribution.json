@@ -1,0 +1,20 @@
+{
+  "uid": "372bc495b3a941308f4a3198bc45e17b",
+  "name": "New York City. Manhattan",
+  "category": "city-new-york",
+  "url": "https://sketchfab.com/3d-models/new-york-city-manhattan-372bc495b3a941308f4a3198bc45e17b",
+  "creator": {
+    "name": "truekit",
+    "url": "https://sketchfab.com/truekit"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/372bc495b3a941308f4a3198bc45e17b/model.glb",
+  "sizeMeters": 520,
+  "rotationY": 0.0,
+  "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+}

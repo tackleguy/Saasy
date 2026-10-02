@@ -1,0 +1,20 @@
+{
+  "uid": "8b60d8c189274a1cac07fa3f4b066e1f",
+  "name": "Park Bench",
+  "category": "street",
+  "url": "https://sketchfab.com/3d-models/park-bench-8b60d8c189274a1cac07fa3f4b066e1f",
+  "creator": {
+    "name": "V\u00edctor Hern\u00e1ndez",
+    "url": "https://sketchfab.com/victorhugohc"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/8b60d8c189274a1cac07fa3f4b066e1f/model.glb",
+  "sizeMeters": 1.8,
+  "rotationY": 0.0,
+  "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+}

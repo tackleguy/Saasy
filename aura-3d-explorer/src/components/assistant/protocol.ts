@@ -24,6 +24,7 @@
  */
 
 export type AssistantAction =
+  | { type: "model"; id: string }
   | { type: "photo"; angle: string }
   | { type: "floor"; n: number; building?: string }
   | { type: "building"; id: string }
@@ -50,6 +51,8 @@ export function toAction(verb: string, rawArgs: string): AssistantAction | null 
   const a = parseArgs(rawArgs);
   const v = verb.toLowerCase();
   switch (v) {
+    case "model":
+      return a.id ? { type: "model", id: a.id.toLowerCase() } : null;
     case "photo":
     case "view":
     case "camera":

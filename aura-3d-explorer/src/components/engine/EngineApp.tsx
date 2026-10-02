@@ -203,6 +203,7 @@ export default function EngineApp() {
               <input
                 ref={fileInput}
                 type="file"
+                aria-label="Floor plan file"
                 className="hidden"
                 accept=".dxf,.dwg,.json,.geojson,.txt,.png,.jpg,.jpeg,.webp,.gif,.pdf"
                 onChange={(e) => {

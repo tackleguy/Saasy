@@ -9,5 +9,5 @@ export const metadata = { title: "Live reel" };
 
 export default function TourPage() {
   const ordered = [FLAGSHIP, ...PROJECTS.filter((p) => p.slug !== FLAGSHIP.slug)];
-  return <CinematicTour projects={ordered} startSlug={FLAGSHIP.slug} />;
+  return <main><h1 className="sr-only">AURA project tour</h1><CinematicTour projects={ordered} startSlug={FLAGSHIP.slug} /></main>;
 }

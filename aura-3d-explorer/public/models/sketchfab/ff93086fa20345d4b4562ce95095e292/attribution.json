@@ -1,0 +1,20 @@
+{
+  "uid": "ff93086fa20345d4b4562ce95095e292",
+  "name": "Citigroup Center",
+  "category": "buildings",
+  "url": "https://sketchfab.com/3d-models/citigroup-center-ff93086fa20345d4b4562ce95095e292",
+  "creator": {
+    "name": "NanoRay",
+    "url": "https://sketchfab.com/NanoRay"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/ff93086fa20345d4b4562ce95095e292/model.glb",
+  "sizeMeters": 280,
+  "rotationY": 0.0,
+  "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+}

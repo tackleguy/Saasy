@@ -4,9 +4,11 @@
 
 /** "$174.0M", "$1.25B", "−$3.2M". Set `compact = false` for "$174,000,000". */
 export function fmtMoney(n: number, compact = true): string {
-  const sign = n < 0 ? "−" : "";
+  if (!Number.isFinite(n)) return "—";
+  const rounded = Math.round(Math.abs(n) * (compact ? 1 : 100)) / (compact ? 1 : 100);
+  const sign = n < 0 && rounded > 0 ? "−" : "";
   const v = Math.abs(n);
-  if (!compact) return `${sign}$${Math.round(v).toLocaleString("en-US")}`;
+  if (!compact) return `${sign}$${rounded.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   if (v >= 1e9) return `${sign}$${(v / 1e9).toFixed(2)}B`;
   if (v >= 1e6) return `${sign}$${(v / 1e6).toFixed(1)}M`;
   if (v >= 1e3) return `${sign}$${(v / 1e3).toFixed(0)}K`;

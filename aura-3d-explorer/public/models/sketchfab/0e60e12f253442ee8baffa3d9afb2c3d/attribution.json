@@ -1,0 +1,20 @@
+{
+  "uid": "0e60e12f253442ee8baffa3d9afb2c3d",
+  "name": "Dubai, UAE",
+  "category": "city-dubai",
+  "url": "https://sketchfab.com/3d-models/dubai-uae-0e60e12f253442ee8baffa3d9afb2c3d",
+  "creator": {
+    "name": "Jack M Simmons",
+    "url": "https://sketchfab.com/jack.simmons"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/0e60e12f253442ee8baffa3d9afb2c3d/model.glb",
+  "sizeMeters": 1100,
+  "rotationY": 0.0,
+  "modifications": "Original district layout preserved; geometry welded and quantized, textures resized to 2048px and JPEG-compressed; uniformly scaled and positioned as a backdrop. Not georeferenced to the proposal site."
+}

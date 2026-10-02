@@ -1,0 +1,20 @@
+{
+  "uid": "b33e54d616c44c1795fb86f433c0dfc0",
+  "name": "100 Federal St (Boston, MA)",
+  "category": "buildings",
+  "url": "https://sketchfab.com/3d-models/100-federal-st-boston-ma-b33e54d616c44c1795fb86f433c0dfc0",
+  "creator": {
+    "name": "Furrden2",
+    "url": "https://sketchfab.com/Furrden2"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/b33e54d616c44c1795fb86f433c0dfc0/model.glb",
+  "sizeMeters": 180,
+  "rotationY": 0.0,
+  "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+}

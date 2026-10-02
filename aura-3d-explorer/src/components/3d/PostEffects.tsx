@@ -11,8 +11,6 @@
  *   4. Grade    — a touch of contrast and saturation, like a camera profile.
  *   5. Vignette — 0.25, a photographic fall-off.
  *   6. ACES tone mapping, exposure 1.05.
- *   7. Grain    — very faint film grain after tone mapping, which breaks up
- *                 banding in the sky gradient and fog.
  *
  * With a composer, three.js only tone-maps when rendering to the screen, so
  * the renderer's tone mapping is effectively bypassed and the ToneMapping
@@ -20,8 +18,8 @@
  */
 import { useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
-import { Bloom, BrightnessContrast, DepthOfField, EffectComposer, HueSaturation, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
-import { BlendFunction, ToneMappingMode } from "postprocessing";
+import { Bloom, BrightnessContrast, DepthOfField, EffectComposer, HueSaturation, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { ToneMappingMode } from "postprocessing";
 import { N8AOPostPass } from "n8ao";
 import * as THREE from "three";
 
@@ -34,9 +32,9 @@ function N8AO() {
 
   useEffect(() => {
     const c = pass.configuration;
-    c.aoRadius = 1.4;
+    c.aoRadius = 0.45;
     c.distanceFalloff = 0.6;
-    c.intensity = 2.6;
+    c.intensity = 1.15;
     c.color = new THREE.Color("#3a3128");
     c.halfRes = true;
     c.depthAwareUpsampling = true;
@@ -67,7 +65,6 @@ export default function PostEffects({ focus }: Props) {
       <HueSaturation hue={0} saturation={0.1} />
       <Vignette offset={0.3} darkness={0.28} />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-      {FX.includes("nonoise") ? <></> : <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.18} />}
     </EffectComposer>
   );
 }

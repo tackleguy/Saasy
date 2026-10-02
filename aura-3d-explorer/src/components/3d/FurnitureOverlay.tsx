@@ -22,6 +22,23 @@ import { getGeometries, getMaterials, PIECES, type GeoKey, type MatKey, type Par
 import { layoutFloor } from "./furniture/layouts";
 import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { place } from "./furniture/kit";
+import LibraryModel from "./LibraryModel";
+import { libraryModel, MODEL_SLOTS } from "@/lib/modelLibrary";
+
+function modelPlacements(placements: ReturnType<typeof layoutFloor>, fit: FloorFit) {
+  const models = (fit.models ?? []).map(libraryModel).filter((model) => model !== undefined);
+  // Bound additional draw calls on a large floor; other ensembles remain instanced.
+  return placements.flatMap((placement, index) => {
+    const model = models.find((asset) => MODEL_SLOTS[asset.category]?.includes(placement.piece));
+    return model ? [{ placement, index, model }] : [];
+  }).slice(0, 12);
+}
+
+function ProceduralFallback({ piece }: { piece: keyof typeof PIECES }) {
+  return <group>{PIECES[piece].build().map((part, index) => <mesh key={index}
+    geometry={getGeometries()[part.g]} material={getMaterials()[part.m]}
+    position={part.p} scale={part.s} rotation={[0, part.r ?? 0, 0]} castShadow receiveShadow />)}</group>;
+}
 
 /** Thickness of the structural slab under each floor (shared with FloorPlate). */
 export const SLAB_THICKNESS = 0.08;
@@ -42,12 +59,13 @@ function batchesFor(floor: FloorData, coreSize: number, crownFloors: number, fit
   const coreHalfM = coreSize / 2 / MODEL_SCALE;
   const coreAngle = -floor.rotationY;
   const zoneIndex = floor.zone === "crown" ? floor.zoneIndex : 0;
-  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), coreAngle.toFixed(3), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? "", fit.scheme, fit.furniture].join(":");
+  const key = [floor.zone, floor.width, floor.depth, coreHalfM.toFixed(2), coreAngle.toFixed(3), zoneIndex, crownFloors, floor.shape?.kind, floor.shape?.amount, floor.amenity ?? "", fit.scheme, fit.furniture, ...(fit.models ?? [])].join(":");
   const hit = batchCache.get(key);
   if (hit) return hit;
 
   const placements = layoutFloor(floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE, coreHalfM, coreAngle, zoneIndex, crownFloors, floor.shape, floor.amenity, fit);
-  const parts: Part[] = placements.flatMap((pl) => place(PIECES[pl.piece].build(), pl.x, pl.z, pl.rot));
+  const replaced = new Set(modelPlacements(placements, fit).map((item) => item.index));
+  const parts: Part[] = placements.flatMap((pl, index) => replaced.has(index) ? [] : place(PIECES[pl.piece].build(), pl.x, pl.z, pl.rot));
 
   const map = new Map<string, Batch>();
   const q = new THREE.Quaternion();
@@ -102,6 +120,11 @@ export default function FurnitureOverlay({ floor, coreSize, crownFloors, fit = D
   const empty = fit.furniture === "none" && (floor.zone === "residential" || floor.zone === "crown") && !floor.amenity;
   const batches = useMemo(() => (empty ? [] : batchesFor(floor, coreSize, crownFloors, fit)), [empty, floor, coreSize, crownFloors, fit]);
   const group = useRef<THREE.Group>(null);
+  const assets = useMemo(() => empty ? [] : modelPlacements(layoutFloor(
+    floor.zone, floor.width / MODEL_SCALE, floor.depth / MODEL_SCALE,
+    coreSize / 2 / MODEL_SCALE, -floor.rotationY, floor.zone === "crown" ? floor.zoneIndex : 0,
+    crownFloors, floor.shape, floor.amenity, fit,
+  ), fit), [empty, floor, coreSize, crownFloors, fit]);
 
   // Grow up from the slab on mount.
   useFrame((_, dt) => {
@@ -116,6 +139,10 @@ export default function FurnitureOverlay({ floor, coreSize, crownFloors, fit = D
       {batches.map((b) => (
         <BatchMesh key={`${b.key}:${b.matrices.length}`} batch={b} />
       ))}
+      {assets.map(({ placement: pl, index, model }) => <group key={`${index}:${model.uid}`} position={[pl.x, 0, pl.z]} rotation={[0, pl.rot, 0]}>
+        <LibraryModel model={model} maxWidth={PIECES[pl.piece].w} maxDepth={PIECES[pl.piece].d} maxHeight={Math.max(0.1, (floor.height - SLAB_THICKNESS - 0.1) / MODEL_SCALE)}
+          fallback={<ProceduralFallback piece={pl.piece} />} />
+      </group>)}
     </group>
   );
 }

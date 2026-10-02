@@ -86,6 +86,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         architect={architect}
         importedModel={x.showImported ? x.importedModel : null}
         fit={x.selectedFit}
+        contextModel={x.contextModel}
       />
 
       {variant === "bare" ? null : variant === "hero" ? (

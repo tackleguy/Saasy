@@ -29,6 +29,9 @@ import SiteContext, { type SiteEdits } from "./SiteContext";
 import PostEffects from "./PostEffects";
 import WalkControls, { type LiftLink } from "./WalkControls";
 import ImportedModel from "./ImportedModel";
+import LibraryModel from "./LibraryModel";
+import { libraryModel } from "@/lib/modelLibrary";
+import { MODEL_SCALE } from "@/lib/tower";
 import ArchitectLayer from "./ArchitectLayer";
 import type { ArchitectSceneState } from "@/lib/architecture";
 import { consumeShadowUpdate, invalidateShadows, SHADOW_SETTLE_MS } from "./staticShadows";
@@ -73,6 +76,7 @@ function photoPose(angle: PhotoAngle, b: Building, explosion: number, siteH: num
 }
 
 interface Props {
+  contextModel?: string | null;
   buildings: Building[];
   activeBuildingId: BuildingId;
   explosion: number;
@@ -308,7 +312,9 @@ export default function BuildingScene({
   importedModel = null,
   architect,
   fit = DEFAULT_FIT,
+  contextModel,
 }: Props) {
+  const asset = contextModel ? libraryModel(contextModel) : undefined;
   const [hovered, setHovered] = useState<FloorData | null>(null);
   // Ignore frame-rate dips during the first seconds (shader compile, HDR decode).
   const mountedAt = useRef(0);
@@ -344,9 +350,10 @@ export default function BuildingScene({
   return (
     <Canvas
       shadows="percentage"
-      dpr={high ? [1, 1.5] : 1}
+      dpr={high ? [1, 2] : [1, 1.5]}
       camera={{ position: [70, 22, 70], fov: 38, near: 0.1, far: 5000 }}
       gl={{
+        localClippingEnabled: true,
         antialias: !high, // the composer does its own multisampling
         preserveDrawingBuffer: true, // lets "Capture render" read the last frame
         toneMapping: THREE.ACESFilmicToneMapping,
@@ -365,6 +372,9 @@ export default function BuildingScene({
 
       <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} />
       <SiteContext quality={quality} preset={preset} edits={siteEdits} />
+      {asset && <group position={asset.category === "skylines" ? [0, 0, -180] : [30, 0, -30]} scale={MODEL_SCALE}>
+        <LibraryModel model={asset} />
+      </group>}
       {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} />}
       {buildings.map((b) => {
         const active = b.id === activeBuildingId;

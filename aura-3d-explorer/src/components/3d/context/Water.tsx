@@ -1,7 +1,7 @@
 "use client";
 /**
- * Water — a planar-reflection surface with a scrolling procedural normal map
- * (ripples), plus a few motor boats that bob gently.
+ * Water — a local Sketchfab ocean mesh, fitted to the waterfront, with animated
+ * ripple normals and planar reflections. Boats remain independently animated.
  *
  * High quality uses a planar reflection (./WaterReflector: drei's
  * MeshReflectorMaterial shader, re-rendered from a mirrored camera into a
@@ -9,16 +9,45 @@
  * Low uses a glossy standard material with the same normal map, which still
  * catches the HDR sky.
  */
-import { useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { LAYOUT, SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
 import { waterNormalTexture } from "../textures";
 import { ALONG_U, noRaycast, placeUW, rng, uploadInstances } from "./shared";
 import WaterReflector from "./WaterReflector";
+import { libraryModel } from "@/lib/modelLibrary";
+
+const OCEAN = libraryModel("50f21b06c6e644e196b2ac828eda97dc")!;
 
 function Surface({ quality, color }: { quality: "high" | "low"; color: string }) {
   const depth = 460;
+  const { scene } = useGLTF(OCEAN.path);
+  const geometry = useMemo(() => {
+    scene.updateMatrixWorld(true);
+    let source: THREE.Mesh | undefined;
+    scene.traverse((node) => { if (!source && node instanceof THREE.Mesh) source = node; });
+    if (!source) throw new Error("Sketchfab ocean has no surface mesh");
+    const geo = source.geometry.clone().applyMatrix4(source.matrixWorld);
+    geo.computeBoundingBox();
+    const box = geo.boundingBox!;
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const positions = geo.getAttribute("position");
+    // WaterReflector expects a local XY surface with its normal along +Z.
+    // Retain the downloaded wave topology, compressing swell for a calm harbour.
+    for (let i = 0; i < positions.count; i++) {
+      const x = positions.getX(i), y = positions.getY(i), z = positions.getZ(i);
+      positions.setXYZ(i, (x - center.x) / size.x * 1100,
+        -(z - center.z) / size.z * depth, (y - center.y) / Math.max(size.y, 0.001) * 0.16);
+    }
+    positions.needsUpdate = true;
+    geo.computeVertexNormals();
+    geo.computeBoundingSphere();
+    return geo;
+  }, [scene]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
   const [x, z] = uwToXZ(0, LAYOUT.waterStart + depth / 2);
   const normal = useMemo(() => {
     const t = waterNormalTexture().clone();
@@ -26,6 +55,7 @@ function Surface({ quality, color }: { quality: "high" | "low"; color: string })
     t.needsUpdate = true;
     return t;
   }, []);
+  useEffect(() => () => normal.dispose(), [normal]);
   const mesh = useRef<THREE.Mesh>(null);
   const reflectorNormalScale = useMemo(() => new THREE.Vector2(0.22, 0.22), []);
   // Scroll the ripples slowly; two speeds would need two maps, one is enough at this scale.
@@ -35,9 +65,7 @@ function Surface({ quality, color }: { quality: "high" | "low"; color: string })
   });
 
   return (
-    <mesh ref={mesh} position={[x, 0.008, z]} rotation={[-Math.PI / 2, 0, SITE_ROTATION_Y]} raycast={noRaycast}>
-      {/* Wide enough (u ±550) that bridges at the ends of the street stand on water. */}
-      <planeGeometry args={[1100, depth]} />
+    <mesh ref={mesh} geometry={geometry} position={[x, 0.008, z]} rotation={[-Math.PI / 2, 0, SITE_ROTATION_Y]} raycast={noRaycast}>
       {quality === "high" ? (
         <WaterReflector
           mesh={mesh}
@@ -111,7 +139,7 @@ function Boats() {
 export default function Water({ quality, color }: { quality: "high" | "low"; color: string }) {
   return (
     <group>
-      <Surface quality={quality} color={color} />
+      <Suspense fallback={null}><Surface quality={quality} color={color} /></Suspense>
       <Boats />
     </group>
   );

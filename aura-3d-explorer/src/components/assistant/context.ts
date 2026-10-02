@@ -6,6 +6,7 @@
  * tokens of context. Money is rounded to $M, percentages to one decimal.
  */
 import type { AssistantRegistration } from "./AssistantBridge";
+import { MODEL_LIBRARY } from "@/lib/modelLibrary";
 import { PROJECTS, projectSite, type Project } from "@/content/projects";
 import { computeSite, computeYield, DEFAULT_INPUTS } from "@/lib/finance";
 import { PHOTO_ANGLES } from "@/lib/explorer";
@@ -44,6 +45,9 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
   const x = reg.explorer ?? null;
   const project = reg.project ?? null;
   const ctx: Record<string, unknown> = { page: pathname };
+  const representatives = MODEL_LIBRARY.filter((model, index) => !model.category.startsWith("city-") && MODEL_LIBRARY.findIndex((other) => other.category === model.category) === index);
+  ctx.localModels = representatives.slice(0, 12).map(({ uid, name, category }) => ({ id: uid, name: name.slice(0, 60), category, categoryCommand: category }));
+  ctx.modelLibraryStatus = MODEL_LIBRARY.length ? "Installed local assets" : "No model files installed; Sketchfab candidates need downloading first";
 
   if (!project) {
     ctx.portfolio = PROJECTS.map((p) => ({ slug: p.slug, name: p.name, city: p.city, status: p.status }));
@@ -91,6 +95,7 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
       walking: x.walking,
       photoAngle: x.photoAngle ?? null,
       city: x.city,
+      environment: "Named city presets load their own authored Sketchfab city/district models with original building arrangements. Several are district samples; Miami and Dubai are untextured. The proposal site and water placement remain illustrative, not geographically registered. Use city actions to switch cities.",
       floorPlan: x.floorPlanFor?.(x.building.id)
         ? {
             file: x.floorPlanFor(x.building.id)!.fileName,
@@ -108,5 +113,7 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
   } else {
     ctx.explorer = null;
   }
-  return ctx;
+  // Keep scene controls and the installed library ahead of optional financial detail.
+  return { page: ctx.page, explorer: ctx.explorer, localModels: ctx.localModels,
+    modelLibraryStatus: ctx.modelLibraryStatus, options: ctx.options, ...ctx };
 }

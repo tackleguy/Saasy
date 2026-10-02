@@ -17,12 +17,8 @@
  *   • Interior — floor finish, warm indirect light and real furniture,
  *                mounted only when the floor is isolated.
  *
- * Glass looks like a transmissive MeshPhysicalMaterial (tinted see-through
- * with env reflections) but is drawn with a constant-colour blend instead of
- * three's transmission pass, which re-rendered every opaque object into a
- * buffer each frame (see ./glassBlend). When a floor is dimmed, isolated or
- * in X-ray, the transmission is eased to 0 and plain opacity takes over so
- * the glass can fade.
+ * Exterior glass uses ordinary reflective, depth-writing surfaces. Isolation,
+ * walk-through and X-ray switch it to standard alpha fading (see ./glassBlend).
  *
  * Crown and amenity floors glow warm through an emissive ceiling (not a point
  * light each: every light is evaluated in every fragment shader on site).
@@ -72,7 +68,7 @@ import { brushedMetalTexture, concreteBump, concreteTexture, marbleBump, marbleT
 import { DETAIL } from "./layers";
 import { SETTLE_MS } from "./staticShadows";
 import { mergeTag } from "./mergedStatics";
-import { GLASS_BLEND, glassOnBeforeRender, setGlass } from "./glassBlend";
+import { GLASS_BLEND, setGlass } from "./glassBlend";
 
 // Parts batched per building while it is idle (see ./mergedStatics).
 const TAG = {
@@ -108,7 +104,6 @@ const BRONZE = "#8B6B44";
 interface GlassLook {
   color: string;
   roughness: number;
-  transmission: number;
   /** Mullion / fin spacing, thickness and projection (scene units). */
   fin: { spacing: number; thickness: number; depth: number } | null;
   /** Interior floor finish shown when the floor is isolated. */
@@ -116,10 +111,10 @@ interface GlassLook {
 }
 
 const LOOKS: Record<ZoneId, GlassLook> = {
-  podium: { color: "#8fa4a7", roughness: 0.06, transmission: 0.85, fin: null, finish: "#f0e9de" },
-  office: { color: "#9fb6ba", roughness: 0.05, transmission: 0.9, fin: { spacing: 1.0, thickness: 0.06, depth: 0.3 }, finish: "#cfcac2" },
-  residential: { color: "#a9bec1", roughness: 0.08, transmission: 0.9, fin: { spacing: 1.0625, thickness: 0.04, depth: 0.06 }, finish: "#ffffff" },
-  crown: { color: "#c6d6d8", roughness: 0.03, transmission: 0.95, fin: { spacing: 0.8125, thickness: 0.035, depth: 0.05 }, finish: "#ffffff" },
+  podium: { color: "#8fa4a7", roughness: 0.18, fin: null, finish: "#f0e9de" },
+  office: { color: "#9fb6ba", roughness: 0.16, fin: { spacing: 1.0, thickness: 0.06, depth: 0.3 }, finish: "#cfcac2" },
+  residential: { color: "#a9bec1", roughness: 0.2, fin: { spacing: 1.0625, thickness: 0.04, depth: 0.06 }, finish: "#ffffff" },
+  crown: { color: "#c6d6d8", roughness: 0.14, fin: { spacing: 0.8125, thickness: 0.035, depth: 0.05 }, finish: "#ffffff" },
 };
 
 const lerp = THREE.MathUtils.lerp;
@@ -200,7 +195,6 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
   const group = useRef<THREE.Group>(null);
   const glassMat = useRef<THREE.MeshPhysicalMaterial>(null);
   const glassColor = useMemo(() => new THREE.Color(look.color), [look.color]);
-  const glassT = useRef(look.transmission); // eased transmission (see ./glassBlend)
   const slabMat = useRef<THREE.MeshStandardMaterial>(null);
   const slabMesh = useRef<THREE.Mesh>(null);
   const edgeMat = useRef<THREE.LineBasicMaterial>(null);
@@ -302,13 +296,11 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
 
     const fade = dimmed ? DIMMED_OPACITY : 1;
 
-    // Glass: clear transmission at rest; plain fading opacity otherwise.
+    // Reflective exterior at rest; transparent only for inspection modes.
     const glass = glassMat.current;
     if (glass) {
-      const faded = dimmed || selected || walking || xray;
-      glassT.current = lerp(glassT.current, faded ? 0 : look.transmission, k);
       const target = dimmed ? DIMMED_OPACITY * 0.6 : walking ? 0.08 : selected ? 0.1 : xray ? XRAY_OPACITY : 1;
-      setGlass(glass, glassColor, glassT.current, lerp(glass.opacity, target, k));
+      setGlass(glass, glassColor, lerp(glass.opacity, target, k));
       // Amenity floors keep a faint warm glow (lit shared spaces) so they read from outside.
       glass.emissiveIntensity = lerp(glass.emissiveIntensity, hovered && !selected ? 0.18 : floor.amenity && !dimmed && !xray ? AMENITY_GLOW : 0, k);
     }
@@ -394,7 +386,6 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
           geometry={shaped ? plateSolid(shape, w, d, -inset / 2, bodyH) : undefined}
           position={[0, shaped ? SLAB_THICKNESS : SLAB_THICKNESS + bodyH / 2, 0]}
           receiveShadow
-          onBeforeRender={glassOnBeforeRender}
           userData={glassTag(floor.zone, !!floor.amenity)}
         >
           {!shaped && <boxGeometry args={[w - inset, bodyH, d - inset]} />}
@@ -404,13 +395,11 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
             color={look.color}
             ior={1.5}
             roughness={look.roughness}
-            metalness={0}
-            envMapIntensity={1.2}
-            specularIntensity={1}
+            metalness={0.25}
+            envMapIntensity={0.65}
+            specularIntensity={0.65}
             emissive={HIGHLIGHT}
             emissiveIntensity={0}
-            transparent
-            depthWrite={false}
           />
         </mesh>
 

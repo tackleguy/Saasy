@@ -1,0 +1,20 @@
+{
+  "uid": "f822f0c500a24ca9ac2af183d2e630b4",
+  "name": "Low poly Car",
+  "category": "vehicles",
+  "url": "https://sketchfab.com/3d-models/low-poly-car-f822f0c500a24ca9ac2af183d2e630b4",
+  "creator": {
+    "name": "reyad.bader",
+    "url": "https://sketchfab.com/reyad.bader"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/f822f0c500a24ca9ac2af183d2e630b4/model.glb",
+  "sizeMeters": 4.5,
+  "rotationY": 0.0,
+  "modifications": "Centered, grounded, uniformly scaled and rotated for AURA"
+}

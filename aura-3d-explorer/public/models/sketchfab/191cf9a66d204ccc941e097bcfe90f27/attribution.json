@@ -1,0 +1,20 @@
+{
+  "uid": "191cf9a66d204ccc941e097bcfe90f27",
+  "name": "Burj Khalifa Building Model",
+  "category": "buildings",
+  "url": "https://sketchfab.com/3d-models/burj-khalifa-building-model-191cf9a66d204ccc941e097bcfe90f27",
+  "creator": {
+    "name": "Book Dubai Holiday",
+    "url": "https://sketchfab.com/bookdubaiholiday"
+  },
+  "license": {
+    "label": "CC Attribution",
+    "slug": "by",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "requirements": "Author must be credited. Commercial use is allowed."
+  },
+  "path": "/models/sketchfab/191cf9a66d204ccc941e097bcfe90f27/model.glb",
+  "sizeMeters": 828,
+  "rotationY": 0.0,
+  "modifications": "Centered and grounded; instanced, scaled and tinted to fit AURA city lots"
+}

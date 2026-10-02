@@ -10,10 +10,8 @@
  *
  *   • Ground     — textured plinth, sidewalks, main road with kerbs and zebra
  *                  crossings, promenade, and the city's secondary street grid
- *   • City       — neighbouring blocks in four facade kinds with city tints,
- *                  setbacks, rooftop plant and (NYC) water tanks
- *   • Landmarks  — generic skyline silhouettes and bridges for the city
- *   • Water      — rippled planar reflection + motor boats
+ *   • City       — authored Sketchfab city districts, preserving original layouts
+ *   • Water      — local Sketchfab ocean mesh, rippled reflections + motor boats
  *   • Trees      — three broadleaf species plus palms, per-tree colour
  *   • Traffic    — cars, taxis and buses, moving and parked
  *   • People     — walking and standing pedestrians
@@ -21,9 +19,9 @@
  *
  * Everything is non-interactive (raycast disabled). See ./context/*.
  */
+import { CITY_MODELS } from "@/lib/cityModels";
 import Ground from "./context/Ground";
 import City from "./context/City";
-import Landmarks from "./context/Landmarks";
 import Water from "./context/Water";
 import Trees from "./context/Trees";
 import Traffic from "./context/Traffic";
@@ -42,16 +40,18 @@ export interface SiteEdits {
 const NO_EDITS: SiteEdits = { clearings: [], pads: [] };
 
 export default function SiteContext({ quality, preset, edits = NO_EDITS }: { quality: "high" | "low"; preset: CityPreset; edits?: SiteEdits }) {
+  const clearings = CITY_MODELS[preset.id]
+    ? [...edits.clearings, { u0: -10000, u1: 10000, w0: -10000, w1: -40 }]
+    : edits.clearings;
   // Keyed by city so instanced meshes are rebuilt with the new counts.
   return (
     <group key={preset.id}>
       <Ground preset={preset} pads={edits.pads} />
       <City preset={preset} clearings={edits.clearings} />
-      <Landmarks preset={preset} />
       <Water quality={quality} color={preset.water} />
-      <Trees preset={preset} clearings={edits.clearings} />
+      <Trees preset={preset} clearings={clearings} />
       <Traffic preset={preset} />
-      <People preset={preset} clearings={edits.clearings} />
+      <People preset={preset} clearings={clearings} />
       <StreetFurniture />
     </group>
   );

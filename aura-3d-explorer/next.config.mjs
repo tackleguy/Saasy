@@ -6,6 +6,8 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  distDir: process.env.AURA_BUILD_DIR || ".next",
+  poweredByHeader: false,
   // `STATIC_EXPORT=1 npm run build` also emits a static site in /out (host anywhere).
   output: process.env.STATIC_EXPORT ? "export" : undefined,
   transpilePackages: ["three"],

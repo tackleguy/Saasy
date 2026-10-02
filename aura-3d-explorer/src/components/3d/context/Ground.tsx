@@ -104,7 +104,7 @@ export default function Ground({ preset, pads = [] }: { preset: CityPreset; pads
       ))}
 
       {/* Secondary street grid */}
-      {cityPlan(preset).streets.map((s, i) => (
+      {preset.id === "generic" && cityPlan(preset).streets.map((s, i) => (
         <Slab key={i} u0={s.u0} u1={s.u1} w0={s.w0} w1={s.w1} y={0.005} map={asphalt} bump={asphaltRelief} tile={6} roughness={0.96} bumpScale={0.04} />
       ))}
     </group>

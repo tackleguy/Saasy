@@ -4,6 +4,7 @@
  * sloppy command from a small model can never throw.
  */
 import { intentFromText, type AssistantAction } from "./protocol";
+import { libraryModel, INTERIOR_CATEGORIES, MODEL_LIBRARY, MODEL_SLOTS } from "@/lib/modelLibrary";
 import type { AssistantRegistration } from "./AssistantBridge";
 import { PHOTO_ANGLES, type PhotoAngle } from "@/lib/explorer";
 import { CITY_PRESETS, type CityId } from "@/lib/cityPresets";
@@ -49,6 +50,47 @@ export function runAction(a: AssistantAction, reg: AssistantRegistration, userTe
   if (!x) return NO_EXPLORER;
 
   switch (a.type) {
+    case "model": {
+      if (a.id === "clear") {
+        x.setContextModel(null);
+        if (x.selectedFloor) x.setFloorFit(x.selectedFloor.buildingId, x.selectedFloor.index, { models: [] });
+        return { label: "Cleared library models from the open floor and site context", ok: true };
+      }
+      const model = libraryModel(a.id);
+      if (!model) return { label: MODEL_LIBRARY.length
+        ? "That model is not installed in AURA's local library"
+        : "No Sketchfab models are installed yet. Download and install model files first.", ok: false };
+      if (model.category.startsWith("city-")) {
+        const city = CITY_PRESETS.find((item) => item.id === model.category.slice(5));
+        if (!city) return { label: "Unknown city model", ok: false };
+        x.setCity(city.id);
+        x.setContextModel(null);
+        return { label: `Selected the Sketchfab model of ${city.label}`, ok: true };
+      }
+      if (model.category === "water") {
+        x.choosePhotoAngle("waterfront");
+        return { label: "Showing the Sketchfab ocean surface already used by every city", ok: true };
+      }
+      if (!INTERIOR_CATEGORIES.includes(model.category)) {
+        x.setContextModel(model.uid);
+        x.choosePhotoAngle("aerial");
+        return { label: `Selected ${model.name} for the site context`, ok: true };
+      }
+      const floor = apartmentFloor(x.building, x.selectedFloor);
+      if (!floor) return { label: "Select a building with apartment floors first", ok: false };
+      if (x.floorPlanFor(x.building.id)) return { label: "Library furniture currently uses AURA's generated apartment plans", ok: false };
+      const fit = x.floorFitOf(floor.buildingId, floor.index);
+      const models = (fit.models ?? []).filter((id) => {
+        const existing = libraryModel(id);
+        return existing && !MODEL_SLOTS[existing.category]?.some((slot) => MODEL_SLOTS[model.category]?.includes(slot));
+      });
+      x.setFloorFit(floor.buildingId, floor.index, {
+        furniture: model.category === "chairs" ? "lounge" : fit.furniture === "none" ? "standard" : fit.furniture,
+        models: [...models, model.uid],
+      });
+      x.selectFloor(floor);
+      return { label: `Selected ${model.name} for matching furniture positions on floor ${floor.number}`, ok: true };
+    }
     case "photo": {
       const angle = PHOTO_ANGLES.find((p) => p.id === a.angle);
       if (!angle) return { label: `Unknown view “${a.angle}”`, ok: false };
@@ -156,7 +198,9 @@ function furnish(a: Extract<AssistantAction, { type: "furnish" }>, x: NonNullabl
   if (!a.set && furniture === "none" && /\b(furnish|furniture|furnished|stage|staging|sofa|bed|table)\b/i.test(userText)) furniture = "standard";
   if (!a.scheme && !a.set && furniture === cur.furniture) scheme = nextScheme(cur.scheme);
   x.selectFloor?.(floor);
-  x.setFloorFit?.(b.id, floor.index, { scheme, furniture });
+  const models = cur.models ?? ["sofas", "tables", "beds", "plants"]
+    .flatMap((category) => MODEL_LIBRARY.find((model) => model.category === category)?.uid ?? []);
+  x.setFloorFit?.(b.id, floor.index, { scheme, furniture, models });
   return { label: `Floor ${floor.number} · ${SCHEME_COPY[scheme].label} · ${FURNITURE_COPY[furniture].label}`, ok: true };
 }
 

@@ -33,13 +33,13 @@ export default function EnquiryForm({ projectName, unitCode }: Props) {
     return (
       <div className="panel flex flex-col items-start gap-3 p-6" role="status">
         <CheckCircle2 className="text-positive" size={28} aria-hidden />
-        <p className="font-serif text-2xl text-ink">Thank you — request received.</p>
+        <p className="font-serif text-2xl text-ink">Demo complete — no request sent.</p>
         <p className="caption">
           This is a demo form: nothing was sent. In production your {intent === "proforma" ? "pro forma pack" : "viewing request"} for {projectName} would go to the
           sales team.
         </p>
         <button className="btn-secondary mt-2" onClick={() => setSent(false)}>
-          Send another
+          Return to form
         </button>
       </div>
     );
