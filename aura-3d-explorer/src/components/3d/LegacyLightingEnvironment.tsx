@@ -15,7 +15,8 @@
  *                  recede gradually while the skyline stays legible.
  */
 import { useEffect } from "react";
-import { Environment, Sky } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
+import Sky from "./OwnedSky";
 import * as THREE from "three";
 import type { CityPreset } from "@/lib/cityPresets";
 import { invalidateShadows } from "./staticShadows";

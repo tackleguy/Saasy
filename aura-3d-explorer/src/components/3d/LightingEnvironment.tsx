@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef } from "react";
-import { Environment, Sky } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
+import Sky from "./OwnedSky";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import gsap from "gsap";
