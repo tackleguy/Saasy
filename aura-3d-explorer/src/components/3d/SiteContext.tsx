@@ -43,7 +43,7 @@ const NO_EDITS: SiteEdits = { clearings: [], pads: [] };
 
 export default function SiteContext({ quality, preset, edits = NO_EDITS }: { quality: "high" | "low"; preset: CityPreset; edits?: SiteEdits }) {
   const {legacy} = useCinematic();
-  if (!legacy) return <CinematicSite edits={edits} seed={83 + [...preset.id].reduce((n,c)=>n+c.charCodeAt(0),0)} />;
+  if (!legacy) return <CinematicSite edits={edits} preset={preset} />;
   const clearings = CITY_MODELS[preset.id]
     ? [...edits.clearings, { u0: -10000, u1: 10000, w0: -10000, w1: -40 }]
     : edits.clearings;

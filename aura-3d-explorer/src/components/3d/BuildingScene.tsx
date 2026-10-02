@@ -33,6 +33,7 @@ import PostEffects from "./PostEffects";
 import WalkControls, { type LiftLink } from "./WalkControls";
 import ImportedModel from "./ImportedModel";
 import LibraryModel from "./LibraryModel";
+import SketchfabCityCredits from "./SketchfabCityCredits";
 import { libraryModel } from "@/lib/modelLibrary";
 import { MODEL_SCALE } from "@/lib/tower";
 import ArchitectLayer from "./ArchitectLayer";
@@ -504,6 +505,7 @@ export default function BuildingScene({
       <label>Context <select aria-label="Site context" value={legacy?"existing":"cinematic"} onChange={e=>setLegacy(e.target.value==="existing")} style={{background:"#111620",color:"#E8DCC6",border:0,padding:5}}><option value="cinematic">Cinematic</option><option value="existing">Existing city</option></select></label>
       <label>Photo <select aria-label="Photo angle" value={localAngle??""} onChange={e=>{onSelect(null);setLocalAngle(e.target.value as PhotoAngle|"crown");setLocalNonce(n=>n+1);}} style={{background:"#111620",color:"#E8DCC6",border:0,padding:5}}><option value="" disabled>Choose angle</option>{["street","waterfront","aerial","podium","crown"].map(a=><option key={a} value={a}>{a[0].toUpperCase()+a.slice(1)}</option>)}</select></label>
       {captureRef&&<button onClick={()=>void captureRef.current?.()} style={{color:"#D6B87C",padding:5}} aria-label="Capture cinematic PNG">Capture</button>}
+      {!legacy&&<SketchfabCityCredits/>}
     </div></Dock>}
     </CinematicContext.Provider>
   );

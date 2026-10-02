@@ -21,6 +21,7 @@ const SOURCES = [
   { uid: "b33e54d616c44c1795fb86f433c0dfc0", role: "low" },
   { uid: "191cf9a66d204ccc941e097bcfe90f27", role: "tower" },
 ] as const;
+export const SKETCHFAB_CITY_SOURCE_UIDS = SOURCES.map(({ uid }) => uid);
 const URLS = SOURCES.map(({ uid }) => libraryModel(uid)!.path);
 // Only the active scene requests these seven local files; no global preloads.
 
