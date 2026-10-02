@@ -27,11 +27,11 @@ import ImportedModelHud from "@/components/ui/ImportedModelHud";
 import CityPicker from "@/components/ui/CityPicker";
 import StackingBar from "@/components/ui/StackingBar";
 import { PHOTO_ANGLES } from "@/lib/explorer";
+import { MapPin } from "lucide-react";
 import { ProjectFloorPlansProvider } from "@/components/3d/floorPlanContext";
 import FloorPlanImportModal from "@/components/ui/FloorPlanImportModal";
 
-// The site map reads the 3D city plan, so it loads only when first opened.
-const SiteMap = dynamic(() => import("./SiteMap"), { ssr: false });
+const MappedSiteMap = dynamic(() => import("./MappedSiteMap"), { ssr: false });
 
 const BuildingScene = dynamic(() => import("@/components/3d/BuildingScene"), {
   ssr: false,
@@ -93,7 +93,21 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
       {variant === "bare" ? null : variant === "hero" ? (
         // Minimal chrome for the landing hero: the city backdrop and photo-angle presets.
         <>
-        <CityPicker value={x.city} onChange={x.setCity} showBlurb className="absolute left-3 top-3 z-10 sm:left-4 sm:top-4" />
+        <div className="absolute left-3 top-3 z-10 flex flex-wrap items-center gap-2 sm:left-4 sm:top-4">
+          <CityPicker value={x.city} onChange={x.setCity} showBlurb />
+          <button
+            type="button"
+            onClick={() => x.setMapOpen(!x.mapOpen)}
+            aria-pressed={x.mapOpen}
+            className={clsx(
+              "inline-flex items-center gap-1.5 rounded border px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40",
+              x.mapOpen ? "border-ink bg-ink text-paper" : "border-plaster bg-paper/90 text-ink hover:bg-paper"
+            )}
+          >
+            <MapPin size={13} className={x.mapOpen ? "text-paper" : "text-oak"} />
+            <span>{x.mapOpen ? "Close Map" : "Site Map & Address"}</span>
+          </button>
+        </div>
         <div className="absolute bottom-3 left-3 z-10 flex gap-1 sm:bottom-4 sm:left-4" role="group" aria-label="Photo angles">
           {PHOTO_ANGLES.map((a) => (
             <button
@@ -109,6 +123,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             </button>
           ))}
         </div>
+        {x.mapOpen && <MappedSiteMap explorer={x} onClose={() => x.setMapOpen(false)} />}
         </>
       ) : x.walking && x.selectedFloor ? (
         <WalkHud building={x.building} floor={x.selectedFloor} viewIndex={x.viewIndex} onView={x.goToView} onExit={x.stopWalk} inLift={x.inLift} liftFloor={x.liftFloor} onRide={x.rideTo} fit={x.selectedFit} />
@@ -147,21 +162,7 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
             />
           )}
           {x.mapOpen && (
-            <SiteMap
-              site={x.site}
-              baseSite={x.baseSite}
-              activeBuildingId={x.activeBuildingId}
-              city={x.city}
-              clearings={x.siteEdits.clearings}
-              pads={x.siteEdits.pads}
-              layoutEdited={x.layoutEdited}
-              onSelectBuilding={x.selectBuilding}
-              onMove={x.moveBuilding}
-              onDragChange={x.setDragging}
-              onReset={x.resetLayout}
-              onClose={() => x.setMapOpen(false)}
-              className="absolute right-3 top-3 z-20 w-[min(360px,calc(100%-1.5rem))] sm:right-4 sm:top-4"
-            />
+            <MappedSiteMap explorer={x} onClose={() => x.setMapOpen(false)} />
           )}
           {x.importedModel && x.selectedIndex === null && (
             <ImportedModelHud

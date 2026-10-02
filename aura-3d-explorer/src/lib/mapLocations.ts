@@ -69,3 +69,87 @@ export function parseMapPin(value: string): Pick<ProjectLocation,"latitude"|"lon
   return isProjectLocation(location) ? { latitude: location.latitude, longitude: location.longitude } : null;
 }
 export const openStreetMapUrl=(location:ProjectLocation)=>`https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}#map=17/${location.latitude}/${location.longitude}`;
+
+/**
+ * Geocode an address string, landmark name, coordinate pair, or map link into a ProjectLocation.
+ */
+export async function geocodeAddress(input: string): Promise<ProjectLocation | null> {
+  if (typeof input !== "string" || !input.trim()) return null;
+  const trimmed = input.trim();
+
+  // 1. Direct coordinates or map URL
+  const direct = parseMapPin(trimmed);
+  if (direct) {
+    return {
+      latitude: direct.latitude,
+      longitude: direct.longitude,
+      label: "Custom pin",
+      example: false,
+    };
+  }
+
+  // 2. Instant local lookup in catalog sites & sample addresses
+  const lower = trimmed.toLowerCase();
+  for (const site of sites) {
+    if (
+      site.id.toLowerCase() === lower ||
+      site.city.toLowerCase() === lower ||
+      site.label.toLowerCase().includes(lower)
+    ) {
+      return {
+        latitude: site.latitude,
+        longitude: site.longitude,
+        label: site.label.replace(" — example site", ""),
+        example: false,
+      };
+    }
+  }
+
+  const sampleEntries = Object.entries(
+    sampleAddresses as Record<string, { lat: number; lon: number; label: string }>
+  );
+  for (const [key, addr] of sampleEntries) {
+    if (key.toLowerCase() === lower || addr.label.toLowerCase().includes(lower)) {
+      return {
+        latitude: addr.lat,
+        longitude: addr.lon,
+        label: addr.label,
+        example: false,
+      };
+    }
+  }
+
+  // 3. Fallback to OpenStreetMap Nominatim for real-world street addresses
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4500);
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(trimmed)}&limit=1`,
+      {
+        signal: controller.signal,
+        headers: { "User-Agent": "Aura3DExplorer/1.0" },
+      }
+    );
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0 && data[0].lat && data[0].lon) {
+      const lat = parseFloat(data[0].lat);
+      const lon = parseFloat(data[0].lon);
+      const labelParts = (data[0].display_name as string).split(",");
+      const cleanLabel = labelParts.slice(0, 3).join(",").trim();
+      const loc = {
+        latitude: lat,
+        longitude: lon,
+        label: cleanLabel || trimmed,
+        example: false,
+      };
+      return isProjectLocation(loc) ? loc : null;
+    }
+  } catch {
+    // Network or abort error, gracefully return null
+  }
+
+  return null;
+}
+

@@ -51,7 +51,8 @@ export const CITY_MODELS: Partial<Record<CityId, CityModel>> = {
     textured: true,
     landmarks: [
       { uid: "ff93086fa20345d4b4562ce95095e292", name: "Citigroup Center", uw: [390, 210], targetHeight: 78, rotationY: 0.5 },
-      { uid: "14e3d5743f7546d5bb7f3befc72c9057", name: "New York High-Rise", uw: [370, 260], targetHeight: 62, rotationY: -0.2 }
+      { uid: "14e3d5743f7546d5bb7f3befc72c9057", name: "New York High-Rise", uw: [370, 260], targetHeight: 62, rotationY: -0.2 },
+      { uid: "9359c41541814b968360fc4f3823892c", name: "New York Condominium", uw: [350, 280], targetHeight: 48, rotationY: 0.3 }
     ]
   },
   // Chicago: The Bourse on the Chicago lakefront / river. Loop street grid aligned north-south.

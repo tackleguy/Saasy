@@ -1,0 +1,9 @@
+{
+  "id": "madrid",
+  "label": "Madrid — example site",
+  "bounds": [-3.707, 40.42, -3.677, 40.441],
+  "capturedAt": "2026-10-02T00:00:00Z",
+  "attribution": "© OpenStreetMap contributors, Overture Maps Foundation",
+  "sourceUrl": "https://overturemaps.org",
+  "features": []
+}

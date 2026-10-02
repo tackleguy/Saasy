@@ -137,8 +137,8 @@ function District({ model }: { model: CityModel }) {
               const pos: [number, number, number] = lm.position
                 ? lm.position
                 : lm.uw
-                ? [uwToXZ(lm.uw[0], lm.uw[1])[0], 0, uwToXZ(lm.uw[0], lm.uw[1])[1]]
-                : [0, 0, 0];
+                ? [uwToXZ(lm.uw[0], lm.uw[1])[0], 0.04, uwToXZ(lm.uw[0], lm.uw[1])[1]]
+                : [0, 0.04, 0];
               lmGroup.position.set(pos[0], pos[1], pos[2]);
 
               const lmScale = lm.targetHeight ? (lm.targetHeight / Math.max(lmSize.y, 0.001)) : (lm.scale ?? 1);
