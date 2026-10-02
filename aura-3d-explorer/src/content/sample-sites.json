@@ -1,0 +1,90 @@
+{
+  "meridian-tower": {
+    "label": "200 Hudson Street, Jersey City, New Jersey",
+    "lat": 40.7183594,
+    "lon": -74.0338841,
+    "osmType": "node",
+    "osmId": 7613531294,
+    "sample": true
+  },
+  "seaform-hotel": {
+    "label": "1700 Convention Center Drive, Miami Beach, Florida",
+    "lat": 25.7927683,
+    "lon": -80.1353862,
+    "osmType": "way",
+    "osmId": 296949744,
+    "sample": true
+  },
+  "chess-towers": {
+    "label": "121 North LaSalle Street, Chicago, Illinois",
+    "lat": 41.8838293,
+    "lon": -87.6319503,
+    "osmType": "way",
+    "osmId": 108240964,
+    "sample": true
+  },
+  "infiniti": {
+    "label": "1 Sheikh Mohammed bin Rashid Boulevard, Dubai, UAE",
+    "lat": 25.1970336,
+    "lon": 55.2741329,
+    "osmType": "way",
+    "osmId": 446646206,
+    "sample": true
+  },
+  "refad-place": {
+    "label": "100 Queen Street West, Toronto, Canada",
+    "lat": 43.6536032,
+    "lon": -79.3840055,
+    "osmType": "way",
+    "osmId": 198500761,
+    "sample": true
+  },
+  "broadway-bayonne": {
+    "label": "630 Avenue C, Bayonne, New Jersey",
+    "lat": 40.668925,
+    "lon": -74.117198,
+    "osmType": "way",
+    "osmId": 957843119,
+    "sample": true
+  },
+  "sports-world": {
+    "label": "Plaza de Cibeles 1, Madrid, Spain",
+    "lat": 40.4189657,
+    "lon": -3.6920892,
+    "osmType": "node",
+    "osmId": 4402846589,
+    "sample": true
+  },
+  "aurelia-tower": {
+    "label": "Guildhall, Gresham Street, London, United Kingdom",
+    "lat": 51.5159067,
+    "lon": -0.0920239,
+    "osmType": "way",
+    "osmId": 539320743,
+    "sample": true
+  },
+  "hexa-gardens": {
+    "label": "600 4th Avenue, Seattle, Washington",
+    "lat": 47.6038904,
+    "lon": -122.3300986,
+    "osmType": "way",
+    "osmId": 111557287,
+    "sample": true
+  },
+  "lexington-deco": {
+    "label": "405 Lexington Avenue, New York, New York",
+    "lat": 40.7519148,
+    "lon": -73.97553,
+    "osmType": "node",
+    "osmId": 2714805284,
+    "sample": true
+  },
+  "lorenskog-quarter": {
+    "label": "Lørenskog hus, Kulturhusgata, Lørenskog, Norway",
+    "lat": 59.927849,
+    "lon": 10.9619276,
+    "osmType": "way",
+    "osmId": 173698813,
+    "sample": true
+  }
+}

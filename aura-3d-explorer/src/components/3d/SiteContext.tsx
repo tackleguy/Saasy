@@ -32,6 +32,8 @@ import StreetFurniture from "./context/StreetFurniture";
 import type { CityPreset } from "@/lib/cityPresets";
 import type { UWRect } from "@/lib/siteLayout";
 
+import type { Building } from "@/types";
+
 export interface SiteEdits {
   /** Areas where moved buildings stand: neighbouring blocks, trees and people inside are removed. */
   clearings: UWRect[];
@@ -41,9 +43,9 @@ export interface SiteEdits {
 
 const NO_EDITS: SiteEdits = { clearings: [], pads: [] };
 
-export default function SiteContext({ quality, preset, edits = NO_EDITS }: { quality: "high" | "low"; preset: CityPreset; edits?: SiteEdits }) {
+export default function SiteContext({ quality, preset, edits = NO_EDITS, buildings = [] }: { quality: "high" | "low"; preset: CityPreset; edits?: SiteEdits; buildings?: Building[] }) {
   const {legacy} = useCinematic();
-  if (!legacy) return <CinematicSite edits={edits} preset={preset} />;
+  if (!legacy) return <CinematicSite edits={edits} preset={preset} buildings={buildings} />;
   const clearings = CITY_MODELS[preset.id]
     ? [...edits.clearings, { u0: -10000, u1: 10000, w0: -10000, w1: -40 }]
     : edits.clearings;

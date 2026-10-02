@@ -443,7 +443,7 @@ export default function BuildingScene({
       />
 
       <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} extent={Math.max(45,...buildings.map(b=>buildingHeight(b,explosion)+Math.hypot(...b.position)))} />
-      <SiteContext quality={quality} preset={preset} edits={siteEdits} />
+      <SiteContext quality={quality} preset={preset} edits={siteEdits} buildings={buildings} />
       {asset && <group position={asset.category === "skylines" ? [0, 0, -180] : [30, 0, -30]} scale={MODEL_SCALE}>
         <LibraryModel model={asset} />
       </group>}

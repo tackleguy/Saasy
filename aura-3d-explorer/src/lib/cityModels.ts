@@ -1,5 +1,15 @@
 import type { CityId } from "./cityPresets";
 
+export interface CityLandmarkPlacement {
+  uid: string;
+  name: string;
+  position?: [number, number, number]; // [x, y, z] in world coordinates
+  uw?: [number, number]; // [u, w] screen-frame coordinates (aligned with district offsetU/offsetW)
+  targetHeight?: number; // Physical height in scene units (1 unit ≈ 3.57m)
+  scale?: number;
+  rotationY?: number;
+}
+
 export interface CityModel {
   uid: string;
   coverage: string;
@@ -9,18 +19,148 @@ export interface CityModel {
   /** Source-space ground elevation, measured from broad horizontal ground faces.
    * Underground skirts are intentionally allowed below the site plane. */
   groundY: number;
+  /** Screen-frame offsets (u across, w towards viewer). Default is u=0, w=-55-depth/2. */
+  offsetU?: number;
+  offsetW?: number;
+  /** Explicit world position [x, y, z]. If set, overrides (offsetU, offsetW). */
+  worldPosition?: [number, number, number];
+  /** Landmark models anchored into this city's skyline at real-world coordinates. */
+  landmarks?: CityLandmarkPlacement[];
 }
 
-/** One authored city/district per preset; never scatter or substitute buildings. */
+/**
+ * Authored Sketchfab city & district backdrops georeferenced to project sites.
+ *
+ * Orientation notes:
+ *  - Scene world +X is East, +Z is South, -Z is North, -X is West.
+ *  - Screen frame: u is along (+X, -Z)/√2; w is along (+X, +Z)/√2 (water at +w, city at -w).
+ *  - Rotations align the model's actual streets and water shorelines to true map bearings.
+ */
 export const CITY_MODELS: Partial<Record<CityId, CityModel>> = {
-  "new-york": { groundY: -1.187324, uid: "372bc495b3a941308f4a3198bc45e17b", coverage: "Lower Manhattan", width: 520, rotation: 0, textured: true },
-  miami: { groundY: 0.022081, uid: "570076f49f0c4b63a51948db40e92c31", coverage: "Miami · untextured city model", width: 1100, rotation: 0, textured: false },
-  "los-angeles": { groundY: 0.048136, uid: "20c73feebd91436ea9c2efebee8a5661", coverage: "Los Angeles · City Hall district sample", width: 320, rotation: 0, textured: true },
-  chicago: { groundY: 0.05665, uid: "5910afb517bd4d2cafd8f280dabf37a4", coverage: "Chicago · downtown district sample", width: 320, rotation: 0, textured: true },
-  "san-francisco": { groundY: 0.085604, uid: "a7a5b99638f143af84bc646ae2d270c1", coverage: "San Francisco · downtown district sample", width: 360, rotation: 0, textured: true },
-  seattle: { groundY: 0.296427, uid: "1128db3b12bd470eb6b2d1421a70e732", coverage: "Seattle · downtown district sample", width: 300, rotation: 0, textured: true },
-  boston: { groundY: 0.063456, uid: "395d4a8639de411592797890e219dbd2", coverage: "Boston · downtown district sample", width: 320, rotation: 0, textured: true },
-  toronto: { groundY: 0.047631, uid: "013c2e21e61c4a598c6d279f05953819", coverage: "Toronto · City Hall district sample", width: 340, rotation: 0, textured: true },
-  london: { groundY: -1.913676, uid: "74cc9216f2c24efa96fe2554897e5966", coverage: "London · financial district reconstruction", width: 420, rotation: 0, textured: true },
-  dubai: { groundY: -0.065989, uid: "0e60e12f253442ee8baffa3d9afb2c3d", coverage: "Dubai · untextured city model", width: 1100, rotation: 0, textured: false },
+  // New York / Jersey City: The Meridian Tower is on the Jersey City Hudson River waterfront.
+  // Lower Manhattan (1 WTC, Wall St) is East across the Hudson River (x~450, z~-80; u~375, w~260).
+  // Avenue grid angle ~29° NE. Rotating model aligns West Street along the river facing Jersey City.
+  "new-york": {
+    groundY: -1.187324,
+    uid: "372bc495b3a941308f4a3198bc45e17b",
+    coverage: "Lower Manhattan · Financial District & World Trade Center",
+    width: 680,
+    rotation: -1.06,
+    offsetU: 380,
+    offsetW: 240,
+    textured: true,
+    landmarks: [
+      { uid: "ff93086fa20345d4b4562ce95095e292", name: "Citigroup Center", uw: [390, 210], targetHeight: 78, rotationY: 0.5 },
+      { uid: "14e3d5743f7546d5bb7f3befc72c9057", name: "New York High-Rise", uw: [370, 260], targetHeight: 62, rotationY: -0.2 }
+    ]
+  },
+  // Chicago: The Bourse on the Chicago lakefront / river. Loop street grid aligned north-south.
+  chicago: {
+    groundY: 0.05665,
+    uid: "5910afb517bd4d2cafd8f280dabf37a4",
+    coverage: "Chicago · Downtown Loop & Michigan Ave",
+    width: 480,
+    rotation: 0,
+    offsetU: 40,
+    offsetW: -160,
+    textured: true,
+    landmarks: [
+      { uid: "fa82b5beb9a9427698dafd2c3867ebf9", name: "Park Tower", uw: [35, -150], targetHeight: 72 }
+    ]
+  },
+  // Miami: Solstice Residences on Biscayne Bay. Downtown / Brickell facing the bay.
+  miami: {
+    groundY: 0.022081,
+    uid: "570076f49f0c4b63a51948db40e92c31",
+    coverage: "Miami · Biscayne Bay & Brickell Waterfront",
+    width: 1100,
+    rotation: 0.42,
+    offsetU: 160,
+    offsetW: 40,
+    textured: false,
+  },
+  // Dubai: Al-Noor Tower in Downtown Dubai on the canal / lake.
+  dubai: {
+    groundY: -0.065989,
+    uid: "0e60e12f253442ee8baffa3d9afb2c3d",
+    coverage: "Downtown Dubai & Sheikh Zayed Rd",
+    width: 1100,
+    rotation: 0.15,
+    offsetU: 0,
+    offsetW: -140,
+    textured: false,
+    landmarks: [
+      { uid: "191cf9a66d204ccc941e097bcfe90f27", name: "Burj Khalifa", uw: [10, -135], targetHeight: 232 }
+    ]
+  },
+  // London: The Ironworks on the south bank facing north across the River Thames to City of London.
+  london: {
+    groundY: -1.913676,
+    uid: "74cc9216f2c24efa96fe2554897e5966",
+    coverage: "City of London · Thames North Bank Financial District",
+    width: 580,
+    rotation: 1.57,
+    offsetU: -30,
+    offsetW: -180,
+    textured: true,
+  },
+  // Boston: Seaport / Waterfront facing Boston Harbor & downtown.
+  boston: {
+    groundY: 0.063456,
+    uid: "395d4a8639de411592797890e219dbd2",
+    coverage: "Boston · Financial District & Harbor",
+    width: 440,
+    rotation: -0.3,
+    offsetU: -20,
+    offsetW: -170,
+    textured: true,
+    landmarks: [
+      { uid: "b33e54d616c44c1795fb86f433c0dfc0", name: "100 Federal St", uw: [-15, -165], targetHeight: 49 }
+    ]
+  },
+  // Seattle: The Rainier on Elliott Bay waterfront looking toward downtown.
+  seattle: {
+    groundY: 0.296427,
+    uid: "1128db3b12bd470eb6b2d1421a70e732",
+    coverage: "Seattle · Downtown & Elliott Bay Waterfront",
+    width: 460,
+    rotation: 0.4,
+    offsetU: 50,
+    offsetW: -160,
+    textured: true,
+  },
+  // San Francisco: Downtown & Embarcadero waterfront.
+  "san-francisco": {
+    groundY: 0.085604,
+    uid: "a7a5b99638f143af84bc646ae2d270c1",
+    coverage: "San Francisco · Downtown & Embarcadero",
+    width: 500,
+    rotation: 0.78,
+    offsetU: -30,
+    offsetW: -180,
+    textured: true,
+  },
+  // Toronto: Harbourfront looking toward downtown.
+  toronto: {
+    groundY: 0.047631,
+    uid: "013c2e21e61c4a598c6d279f05953819",
+    coverage: "Toronto · Downtown & Harbourfront",
+    width: 480,
+    rotation: 0.1,
+    offsetU: 0,
+    offsetW: -170,
+    textured: true,
+  },
+  // Los Angeles: Downtown district sample.
+  "los-angeles": {
+    groundY: 0.048136,
+    uid: "20c73feebd91436ea9c2efebee8a5661",
+    coverage: "Los Angeles · Downtown District",
+    width: 460,
+    rotation: 0.65,
+    offsetU: 20,
+    offsetW: -180,
+    textured: true,
+  },
 };
+

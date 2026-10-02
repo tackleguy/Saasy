@@ -109,7 +109,7 @@ const GEOMETRY = (() => {
 
 /* --------------------------------------------------------------- layout */
 
-function layout(preset: CityPreset): Person[] {
+function layout(preset: CityPreset, anchors?: [number, number][]): Person[] {
   const r = rng(83);
   const out: Person[] = [];
   const P = preset.people;
@@ -129,6 +129,10 @@ function layout(preset: CityPreset): Person[] {
       skin: new THREE.Color(pick(SKINS)),
       hair: new THREE.Color(pick(HAIRS)),
     });
+  if (anchors) {
+    for (const [x,z] of anchors) add((x-z)*Math.SQRT1_2,(x+z)*Math.SQRT1_2,false);
+    return out;
+  }
   const n = (k: number) => Math.round(k * P.density);
   // Promenade — the busiest
   for (let i = 0; i < n(46); i++) add(-HALF + r() * HALF * 2, LAYOUT.promenade[0] + 0.4 + r() * 2.2, r() < 0.6);
@@ -156,11 +160,11 @@ function layout(preset: CityPreset): Person[] {
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 
-export default function People({ preset, clearings = [] }: { preset: CityPreset; clearings?: UWRect[] }) {
+export default function People({ preset, clearings = [], anchors }: { preset: CityPreset; clearings?: UWRect[]; anchors?: [number, number][] }) {
   const crowds = useMemo(() => {
-    const all = layout(preset);
+    const all = layout(preset, anchors);
     return { standing: all.filter((p) => p.dir === 0), walking: all.filter((p) => p.dir !== 0) };
-  }, [preset]);
+  }, [preset, anchors]);
   return (
     <group>
       <Crowd people={crowds.standing} clearings={clearings} shadow />

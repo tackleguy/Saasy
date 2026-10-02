@@ -40,7 +40,7 @@ function District({ model }: { model: CityModel }) {
   const { attempt } = useCityModelStatus(model.uid);
   useEffect(() => {
     const controller = new AbortController();
-    let loaded: THREE.Group | null = null;
+    let rootGroup: THREE.Group | null = null;
     setObject(null);
     setCityModelStatus(model.uid, "loading");
     async function load() {
@@ -48,23 +48,38 @@ function District({ model }: { model: CityModel }) {
         const response = await fetch(`/models/sketchfab/${model.uid}/${highTextures ? "model-hq.glb" : "model.glb"}`, { signal: controller.signal });
         if (!response.ok) throw new Error("City model unavailable");
         const gltf = await new GLTFLoader().parseAsync(await response.arrayBuffer(), "");
-        loaded = gltf.scene;
-        if (controller.signal.aborted) { disposeCity(loaded); loaded = null; return; }
+        const loaded = gltf.scene;
+        if (controller.signal.aborted) { disposeCity(loaded); return; }
+
         const root = new THREE.Group();
-        root.add(loaded);
+        rootGroup = root;
+
+        const district = new THREE.Group();
+        district.add(loaded);
         loaded.rotation.y += model.rotation;
-        root.updateMatrixWorld(true);
-        const bounds = new THREE.Box3().setFromObject(root, true);
+        district.updateMatrixWorld(true);
+
+        const bounds = new THREE.Box3().setFromObject(district, true);
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
         const scale = model.width / Math.max(size.x, size.z, 0.001);
+
         // Align the modelled ground surface, not the lowest underground vertex.
         loaded.position.sub(new THREE.Vector3(center.x, model.groundY, center.z));
-        root.scale.setScalar(scale);
-        // Keep the author's entire layout intact, behind the separate proposal site.
-        const [x, z] = uwToXZ(0, -55 - size.z * scale / 2);
-        root.position.set(x, 0.04, z);
-        root.rotation.y = SITE_ROTATION_Y;
+        district.scale.setScalar(scale);
+
+        // Georeferenced positioning:
+        if (model.worldPosition) {
+          district.position.set(model.worldPosition[0], model.worldPosition[1], model.worldPosition[2]);
+        } else {
+          const offsetU = model.offsetU ?? 0;
+          const offsetW = model.offsetW ?? (-55 - size.z * scale / 2);
+          const [x, z] = uwToXZ(offsetU, offsetW);
+          district.position.set(x, 0.04, z);
+        }
+        district.rotation.y = SITE_ROTATION_Y;
+        root.add(district);
+
         const adapted = new Set<THREE.Material>();
         loaded.traverse((node) => {
           if (!(node instanceof THREE.Mesh)) return;
@@ -97,6 +112,58 @@ function District({ model }: { model: CityModel }) {
             }
           }
         });
+
+        // Load authored Sketchfab landmark models anchored into this city's skyline
+        if (model.landmarks && model.landmarks.length > 0) {
+          for (const lm of model.landmarks) {
+            if (controller.signal.aborted) break;
+            try {
+              const lmRes = await fetch(`/models/sketchfab/${lm.uid}/model.glb`, { signal: controller.signal });
+              if (!lmRes.ok) continue;
+              const lmGltf = await new GLTFLoader().parseAsync(await lmRes.arrayBuffer(), "");
+              if (controller.signal.aborted) {
+                disposeCity(lmGltf.scene);
+                break;
+              }
+              const lmScene = lmGltf.scene;
+              const lmBounds = new THREE.Box3().setFromObject(lmScene);
+              const lmCenter = lmBounds.getCenter(new THREE.Vector3());
+              const lmSize = lmBounds.getSize(new THREE.Vector3());
+              lmScene.position.set(-lmCenter.x, -lmBounds.min.y, -lmCenter.z);
+
+              const lmGroup = new THREE.Group();
+              lmGroup.add(lmScene);
+
+              const pos: [number, number, number] = lm.position
+                ? lm.position
+                : lm.uw
+                ? [uwToXZ(lm.uw[0], lm.uw[1])[0], 0, uwToXZ(lm.uw[0], lm.uw[1])[1]]
+                : [0, 0, 0];
+              lmGroup.position.set(pos[0], pos[1], pos[2]);
+
+              const lmScale = lm.targetHeight ? (lm.targetHeight / Math.max(lmSize.y, 0.001)) : (lm.scale ?? 1);
+              lmGroup.scale.setScalar(lmScale);
+
+              if (lm.rotationY !== undefined) {
+                lmGroup.rotation.y = lm.rotationY;
+              }
+
+              lmScene.traverse((node) => {
+                if (!(node instanceof THREE.Mesh)) return;
+                node.raycast = noRaycast;
+                node.castShadow = true;
+                node.receiveShadow = false;
+                for (const mat of Array.isArray(node.material) ? node.material : [node.material]) {
+                  mat.fog = false;
+                }
+              });
+              root.add(lmGroup);
+            } catch (err) {
+              console.warn(`Landmark ${lm.name} could not load:`, err);
+            }
+          }
+        }
+
         setObject(root);
         setCityModelStatus(model.uid, "ready");
         invalidateShadows();
@@ -105,7 +172,11 @@ function District({ model }: { model: CityModel }) {
       }
     }
     void load();
-    return () => { controller.abort(); if (loaded) disposeCity(loaded); invalidateShadows(); };
+    return () => {
+      controller.abort();
+      if (rootGroup) disposeCity(rootGroup);
+      invalidateShadows();
+    };
   }, [model, attempt, highTextures, gl]);
   if (!object) return null;
   return <primitive object={object} dispose={null} />;

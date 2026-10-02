@@ -13,6 +13,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Building, BuildingId, FloorData, ViewMode, ZoneId } from "@/types";
 import type { PhotoAngle, Quality } from "@/lib/explorer";
 import type { Object3D } from "three";
+import { defaultMapLocation } from "@/lib/mapLocations";
+import { useProjectMap } from "./useProjectMap";
 import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
 import { buildingClearing, PLINTH, type UWRect } from "@/lib/siteLayout";
 import { APARTMENT_SCHEMES, DEFAULT_FIT, FURNISHED_SETS, fitKey, type FloorFit } from "@/lib/apartmentFit";
@@ -30,11 +32,17 @@ interface Options {
   lockQuality?: boolean;
   /** Initial city backdrop (usually the project's own city). */
   city?: CityId;
+  projectSlug?: string;
 }
 
-export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY }: Options = {}) {
+export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY, projectSlug }: Options = {}) {
   // City backdrop for the urban context (New York, Miami, …)
-  const [city, setCity] = useState<CityId>(initialCity);
+  const geographic = useProjectMap(initialCity, projectSlug);
+  const city = (geographic.mapCoverage?.city ?? initialCity) as CityId;
+  const setLocation = geographic.setLocation;
+  const setCity = useCallback((next: CityId) => {
+    setLocation(defaultMapLocation(next));
+  }, [setLocation]);
   const [contextModel, setContextModel] = useState<string | null>(null);
   // Site plan edits: buildings moved on the map, as world [x, z] per building id.
   const [moved, setMoved] = useState<Partial<Record<BuildingId, [number, number]>>>({});
@@ -260,7 +268,10 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
    */
   const setImportedModel = useCallback(
     (obj: Object3D | null) => {
-      if (obj) obj.userData.buildingId = activeBuildingId;
+      if (obj) {
+        obj.userData.buildingId = activeBuildingId;
+        setMoved(m => ({ ...m, [activeBuildingId]: [0, 0] }));
+      }
       setImportedModelState((prev) => {
         if (prev && prev !== obj) {
           prev.traverse((o) => {
@@ -315,6 +326,8 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   }, [keyboard, keyboardPaused, planImportOpen, floorCount, walking]);
 
   return {
+    ...geographic,
+    setLocation,
     contextModel,
     setContextModel,
     site,

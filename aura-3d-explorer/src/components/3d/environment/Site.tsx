@@ -9,7 +9,10 @@ import type { SiteEdits } from "../SiteContext";
 import { ALONG_U, placeUW, rng, uploadInstances, noRaycast } from "../context/shared";
 import { waterNormalTexture } from "../textures";
 import { SUN, useCinematic } from "./settings";
-import City from "../context/IllustrativeCity";
+import City from "../context/City";
+import MappedContext from "../context/MappedContext";
+import { useProjectMap } from "@/hooks/useProjectMap";
+import type { Building } from "@/types";
 
 function Batch({matrices,color,emissive=false,round=false}:{matrices:THREE.Matrix4[];color:string;emissive?:boolean;round?:boolean}) {
   const mat=useRef<THREE.MeshStandardMaterial>(null);const {time}=useCinematic();
@@ -82,7 +85,16 @@ function Clouds() {
   useFrame(({clock})=>{if(group.current)group.current.position.x=Math.sin(clock.elapsedTime*.007)*18;});
   return <group ref={group} visible={time==="dawn"||time==="golden"}>{[-130,0,160].map((x,i)=><sprite key={x} position={[x,100+i*12,-290]} scale={[150,30,1]} raycast={noRaycast}><spriteMaterial map={texture} transparent opacity={.3} depthWrite={false}/></sprite>)}</group>;
 }
-export default function CinematicSite({edits,preset}:{edits:SiteEdits;preset:CityPreset}) {
+export default function CinematicSite({edits,preset,buildings=[]}:{edits:SiteEdits;preset:CityPreset;buildings?:Building[]}) {
   const {tier}=useCinematic();
-  return <group><Landscape edits={edits} preset={preset}/><City clearings={edits.clearings} preset={preset}/><Bay preset={preset}/><Traffic/><Clouds/>{tier!=="low"&&<ContactShadows position={[0,.002,0]} opacity={.3} scale={150} blur={2.5} far={12} resolution={256} frames={1} color="#090b10"/>}</group>;
+  const {mapSnapshot,location}=useProjectMap(preset.id);
+  return <group>
+    <Landscape edits={edits} preset={preset}/>
+    {mapSnapshot && <MappedContext snapshot={mapSnapshot} location={location} buildings={buildings} showGround={false} />}
+    <City clearings={edits.clearings} preset={preset}/>
+    <Bay preset={preset}/>
+    <Traffic/>
+    <Clouds/>
+    {tier!=="low"&&<ContactShadows position={[0,.002,0]} opacity={.3} scale={150} blur={2.5} far={12} resolution={256} frames={1} color="#090b10"/>}
+  </group>;
 }
