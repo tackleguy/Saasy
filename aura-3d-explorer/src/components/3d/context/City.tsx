@@ -11,6 +11,7 @@ import { SITE_ROTATION_Y, uwToXZ, type UWRect } from "@/lib/siteLayout";
 import { invalidateShadows } from "../staticShadows";
 import { noRaycast } from "./shared";
 import IllustrativeCity from "./IllustrativeCity";
+import CleanGeometricSkyline from "./CleanGeometricSkyline";
 import { applyArchitecturalFacade, setFacadeNight } from "./architecturalContextMaterial";
 
 /** Release large district resources when switching cities, including a cancelled load. */
@@ -65,6 +66,21 @@ function District({ model }: { model: CityModel }) {
         loaded.rotation.y += model.rotation;
         district.updateMatrixWorld(true);
 
+        // Filter out flat GIS ground / terrain meshes (e.g. ESRI export satellite ground planes)
+        loaded.traverse((node) => {
+          if (!(node instanceof THREE.Mesh)) return;
+          const nameLower = node.name.toLowerCase();
+          if (
+            nameLower.includes("export_esri") ||
+            nameLower.includes("rastmat") ||
+            nameLower.includes("topo") ||
+            nameLower.includes("ground") ||
+            nameLower.includes("terrain")
+          ) {
+            node.visible = false;
+          }
+        });
+
         const bounds = new THREE.Box3().setFromObject(district, true);
         const size = bounds.getSize(new THREE.Vector3());
         const center = bounds.getCenter(new THREE.Vector3());
@@ -89,6 +105,7 @@ function District({ model }: { model: CityModel }) {
         const adapted = new Set<THREE.Material>();
         loaded.traverse((node) => {
           if (!(node instanceof THREE.Mesh)) return;
+          if (!node.visible) return;
           node.raycast = noRaycast;
           // Photogrammetry already contains lighting. Avoid re-shadowing its baked surfaces.
           node.castShadow = false;
@@ -111,7 +128,7 @@ function District({ model }: { model: CityModel }) {
               if (!material.map) {
                 // Procedural architectural facade texturing for untextured building meshes
                 applyArchitecturalFacade(material, {
-                  defaultColor: "#72808c",
+                  defaultColor: model.uid === "570076f49f0c4b63a51948db40e92c31" ? "#889fae" : "#72808c",
                 });
               } else {
                 for (const value of Object.values(material)) if (value instanceof THREE.Texture) {
@@ -199,5 +216,9 @@ function District({ model }: { model: CityModel }) {
 
 export default function City({ preset, clearings = [] }: { preset: CityPreset; clearings?: UWRect[] }) {
   const model = CITY_MODELS[preset.id];
-  return model ? <District key={model.uid} model={model} /> : <IllustrativeCity preset={preset} clearings={clearings} />;
+  return model ? (
+    <District key={model.uid} model={model} />
+  ) : (
+    <CleanGeometricSkyline preset={preset} clearings={clearings} />
+  );
 }

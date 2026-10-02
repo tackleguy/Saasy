@@ -69,17 +69,6 @@ export const CITY_MODELS: Partial<Record<CityId, CityModel>> = {
       { uid: "fa82b5beb9a9427698dafd2c3867ebf9", name: "Park Tower", uw: [35, -150], targetHeight: 72 }
     ]
   },
-  // Miami: Solstice Residences on Biscayne Bay. Downtown / Brickell facing the bay.
-  miami: {
-    groundY: 0.022081,
-    uid: "570076f49f0c4b63a51948db40e92c31",
-    coverage: "Miami · Biscayne Bay & Brickell Waterfront",
-    width: 1100,
-    rotation: 0.42,
-    offsetU: 160,
-    offsetW: 40,
-    textured: true,
-  },
   // Dubai: Al-Noor Tower in Downtown Dubai on the canal / lake.
   dubai: {
     groundY: -0.065989,
@@ -119,49 +108,7 @@ export const CITY_MODELS: Partial<Record<CityId, CityModel>> = {
       { uid: "b33e54d616c44c1795fb86f433c0dfc0", name: "100 Federal St", uw: [-15, -165], targetHeight: 49 }
     ]
   },
-  // Seattle: The Rainier on Elliott Bay waterfront looking toward downtown.
-  seattle: {
-    groundY: 0.296427,
-    uid: "1128db3b12bd470eb6b2d1421a70e732",
-    coverage: "Seattle · Downtown & Elliott Bay Waterfront",
-    width: 460,
-    rotation: 0.4,
-    offsetU: 50,
-    offsetW: -160,
-    textured: true,
-  },
-  // San Francisco: Downtown & Embarcadero waterfront.
-  "san-francisco": {
-    groundY: 0.085604,
-    uid: "a7a5b99638f143af84bc646ae2d270c1",
-    coverage: "San Francisco · Downtown & Embarcadero",
-    width: 500,
-    rotation: 0.78,
-    offsetU: -30,
-    offsetW: -180,
-    textured: true,
-  },
-  // Toronto: Harbourfront looking toward downtown.
-  toronto: {
-    groundY: 0.047631,
-    uid: "013c2e21e61c4a598c6d279f05953819",
-    coverage: "Toronto · Downtown & Harbourfront",
-    width: 480,
-    rotation: 0.1,
-    offsetU: 0,
-    offsetW: -170,
-    textured: true,
-  },
-  // Los Angeles: Downtown district sample.
-  "los-angeles": {
-    groundY: 0.048136,
-    uid: "20c73feebd91436ea9c2efebee8a5661",
-    coverage: "Los Angeles · Downtown District",
-    width: 460,
-    rotation: 0.65,
-    offsetU: 20,
-    offsetW: -180,
-    textured: true,
-  },
 };
+
+
 
