@@ -2,7 +2,7 @@
 
 The scene keeps the project's existing floor data, selection, furnishing, CAD import, financial calculations and exterior controls. The checkout uses Next.js 16.3.8, React 19 and Three.js r186; its actual graphics folder is `src/components/3d`, rather than the older paths in the brief. No application version downgrade is needed.
 
-The scene opens with **Context → Cinematic**, using the seeded city, dark Sky, local HDR and tiered bay described below. Choose **Context → Existing city** to return to the authored lighting and landscape. The new presentation controls join the existing bottom dock when its host is present; the bare render route uses a compact top-right fallback.
+The scene opens with **Context → Cinematic**, using the seeded city, dark Sky, local HDR and tiered bay described below. Choose **Context → Existing city** to return to the authored lighting and landscape. The new presentation controls join the existing bottom dock when its host is present; the bare render route uses a compact top-right fallback. During floor inspection, they collapse into a bottom-right Sun disclosure that stays clear of the inspector.
 
 ## Light and atmosphere
 
@@ -36,7 +36,7 @@ The optional **Context → Existing city** retains the previous imported city, w
 
 The opening move lasts four seconds, from a low waterfront position to the overview. Pointer, wheel or keyboard input cancels the move. Street, Waterfront, Aerial, Podium and Crown photo angles move camera, target and field of view together over 1.4 seconds with power3.inOut. Existing Skyline and Drone controls remain supported. Waterfront and Aerial distances scale with tower height. Floor selection still wins over a photo angle and drives depth of field.
 
-After 20 seconds without input the camera slowly orbits. Dragging, walking, selecting a floor, drawing views and reduced-motion preference prevent automatic orbiting. Capture temporarily doubles the pixel ratio, capped at 4, copies the current post-processed frame to a PNG, adds a small gold AURA watermark, triggers download and restores resolution in a finally block.
+After 20 seconds without input the camera slowly orbits. Dragging, walking, selecting a floor, drawing views and reduced-motion preference prevent automatic orbiting. Capture temporarily doubles the pixel ratio, capped at 4, copies the current post-processed frame to a PNG, adds a small gold AURA watermark, triggers download and restores resolution in a finally block. A capture already in progress ignores repeated clicks.
 
 ## Quality tiers
 
@@ -70,6 +70,8 @@ Bloom threshold is 0.85, smoothing 0.2, intensity 0.35. DoF uses bokeh scale 2.5
 - The local urban HDR is an overcast daytime capture used for reflections. The dusk appearance comes from the scene's lighting and grading, not a dusk-source HDR.
 - The full-frame draw-call target remains unmet. Batching reduces visible tower meshes, but transmission, planar reflections and post-processing render additional passes. Do not report the mesh count as a passed draw-call budget.
 - Reduced motion disables the opening move and idle orbit and makes camera/lighting transitions immediate. Traffic, water ripples, canopy sway and clouds still animate.
+- Focused night views use alpha hashing to fade occupied-window panels per instance. This preserves interior visibility but leaves visible grain on surrounding floors.
+- The HDR is below 1.5 MiB but exceeds a strict decimal 1.5 MB limit by 40,678 bytes.
 
 ## Verification
 
@@ -78,6 +80,7 @@ Run the app, then:
 ```sh
 GRAPHICS_URL=http://localhost:3100 node docs/capture-graphics.mjs
 GRAPHICS_URL=http://localhost:3100 GRAPHICS_SOAK=1 node docs/capture-graphics.mjs
+GRAPHICS_URL=http://localhost:3100 node docs/check-graphics.mjs
 ```
 
 For cinematic verification, explicitly select **Context → Cinematic** before recording captures and telemetry, even though it is the default. Record Existing city results separately because it uses a different lighting and context path.
@@ -86,12 +89,27 @@ The Playwright script uses installed Chrome, takes 1600 × 1000 screenshots of a
 
 `Telemetry.tsx` disables automatic renderer counter resets and samples complete frames, including transmission, water reflection and post-processing passes. Therefore its `calls` value must not be compared with a count of visible meshes as if those were equivalent. `towerMeshes` counts scene meshes on camera layers, not multiplied offscreen render passes. Hardware targets need physical-device tests; viewport emulation does not establish iPhone GPU performance.
 
-### Final validation — pending
+### Production validation — October 1, 2026
 
-Fill this section after the production capture run and ten-minute soak. No final success or performance claim is made here yet.
+The screenshots and orbit measurements use the isolated Webpack production build in `.next-qa-phase1`, served on port 3147, with the scene from commit `75cb338`. Later edits by other tasks in this shared checkout are outside that capture's evidence.
 
-- Production build and regression checks: [pending]
-- Capture artifacts, tested context and visual review: [pending]
-- Complete-frame calls, triangles and measured frame rate by tier: [pending]
-- Ten-minute soak duration, browser errors and memory-counter changes: [pending]
-- Remaining brief targets and physical-device validation: [pending]
+- `npm run lint` passes. All nine existing regression tests pass, including project finance reconciliation and corrupt/oversized CAD input handling. The Node test runner emits a Three.js CommonJS deprecation warning.
+- `AURA_BUILD_DIR=.next-qa-phase1 npm run build -- --webpack` passes. Plain `npm run build` is blocked by this environment's Turbopack subprocess/port-binding restriction; the default build is not claimed as passed.
+- [The gallery](screens/GALLERY.md) contains all four sun presets and five photo angles at 1600 × 1000, plus tier and mobile evidence. The captures were visually inspected.
+- `docs/check-graphics.mjs` passes map access, night floor focus, focused presentation controls, explosion, mobile overflow and capture serialization checks. Three rapid capture clicks produce one download and restore the original 1124 × 740 drawing buffer. [Interaction evidence](screens/interaction-results.json).
+- The bounded design review closed dock/map overlap, project-specific fin-spacing regression, concurrent capture handling and opaque night panels during floor inspection. Alpha-hash grain remains visible in focused night views.
+
+These are host Chrome observations, not measurements on an M1 MacBook Air or physical iPhone 12. Capture runs briefly shared the GPU with interaction checks; their frame rates are observations rather than isolated benchmarks. Medium and Low were sampled from the Crown angle left by the capture sequence. [Raw capture measurements](screens/results.json).
+
+| Capture | FPS observed | Complete-frame calls | Triangles per frame |
+| --- | --- | --- | --- |
+| High, nine sun/angle views | 24–44 | 101–133 | 524,723–1,526,975 |
+| Medium, Crown | 23 | 83 | 1,412,668 |
+| Low, Crown | 60 | 54 | 1,410,792 |
+| Low, mobile viewport | 60 | 49 | 979,316 |
+
+The visible tower has 23 meshes by day and 24 at dusk/night. This is **not** proof of fewer than 25 tower draw calls, because extra passes redraw those meshes. Low is below 60 full-frame calls in the tested views; Medium and High exceed that budget. High's 60 FPS idle target and both physical-device targets remain unverified.
+
+The browser reports no application exceptions or WebGL shader errors in these checks. React Three Fiber's use of `THREE.Clock` emits an upstream deprecation warning, so the brief's zero-warning requirement is not met. The warning is retained in the evidence rather than suppressed.
+
+The fresh High-quality automatic-orbit run completed ten minutes, with eleven samples at one-minute intervals after a 30-second warm-up. FPS ranged from 43–60; complete-frame calls ranged from 129–135. Geometry count stayed at 346, textures at 61 and shader programs at 43 in every sample. There was no growth in these renderer resource counters; this is not a browser heap or GPU-byte allocation measurement. The only browser warning was the same upstream Clock deprecation. [Full ten-minute evidence](screens/soak.json).

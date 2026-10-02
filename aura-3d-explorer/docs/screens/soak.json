@@ -2,12 +2,12 @@
   {
     "minute": 0,
     "tier": "high",
-    "fps": 43,
-    "calls": 103,
-    "triangles": 1004581,
-    "geometries": 348,
-    "textures": 68,
-    "programs": 55,
+    "fps": 45,
+    "calls": 133,
+    "triangles": 1240039,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
     "towerMeshes": {
       "tower:aurelia": 23
     }
@@ -15,12 +15,129 @@
   {
     "minute": 1,
     "tier": "high",
-    "fps": 42,
-    "calls": 105,
-    "triangles": 1004585,
-    "geometries": 348,
-    "textures": 68,
-    "programs": 55,
+    "fps": 43,
+    "calls": 135,
+    "triangles": 1240043,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 2,
+    "tier": "high",
+    "fps": 56,
+    "calls": 135,
+    "triangles": 1240043,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 3,
+    "tier": "high",
+    "fps": 51,
+    "calls": 133,
+    "triangles": 1240039,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 4,
+    "tier": "high",
+    "fps": 60,
+    "calls": 129,
+    "triangles": 1240031,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 5,
+    "tier": "high",
+    "fps": 60,
+    "calls": 129,
+    "triangles": 1240031,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 6,
+    "tier": "high",
+    "fps": 60,
+    "calls": 129,
+    "triangles": 1240031,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 7,
+    "tier": "high",
+    "fps": 60,
+    "calls": 129,
+    "triangles": 1240031,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 8,
+    "tier": "high",
+    "fps": 60,
+    "calls": 130,
+    "triangles": 1240033,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 9,
+    "tier": "high",
+    "fps": 60,
+    "calls": 133,
+    "triangles": 1240039,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
+    "towerMeshes": {
+      "tower:aurelia": 23
+    }
+  },
+  {
+    "minute": 10,
+    "tier": "high",
+    "fps": 60,
+    "calls": 135,
+    "triangles": 1240043,
+    "geometries": 346,
+    "textures": 61,
+    "programs": 43,
     "towerMeshes": {
       "tower:aurelia": 23
     }

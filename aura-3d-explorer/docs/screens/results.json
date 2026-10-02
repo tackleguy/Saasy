@@ -3,12 +3,12 @@
     {
       "name": "sun-dawn",
       "tier": "high",
-      "fps": 24,
+      "fps": 31,
       "calls": 133,
       "triangles": 1240039,
       "geometries": 346,
       "textures": 61,
-      "programs": 43,
+      "programs": 44,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -16,12 +16,12 @@
     {
       "name": "sun-golden",
       "tier": "high",
-      "fps": 32,
+      "fps": 35,
       "calls": 133,
       "triangles": 1240039,
       "geometries": 346,
       "textures": 61,
-      "programs": 43,
+      "programs": 44,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -29,12 +29,12 @@
     {
       "name": "sun-dusk",
       "tier": "high",
-      "fps": 26,
+      "fps": 30,
       "calls": 133,
       "triangles": 1526975,
       "geometries": 346,
       "textures": 61,
-      "programs": 44,
+      "programs": 45,
       "towerMeshes": {
         "tower:aurelia": 24
       }
@@ -42,12 +42,12 @@
     {
       "name": "sun-night",
       "tier": "high",
-      "fps": 29,
+      "fps": 28,
       "calls": 129,
       "triangles": 1526927,
       "geometries": 346,
       "textures": 61,
-      "programs": 44,
+      "programs": 45,
       "towerMeshes": {
         "tower:aurelia": 24
       }
@@ -55,12 +55,12 @@
     {
       "name": "angle-street",
       "tier": "high",
-      "fps": 22,
-      "calls": 106,
-      "triangles": 1004967,
+      "fps": 25,
+      "calls": 108,
+      "triangles": 1115330,
       "geometries": 346,
       "textures": 61,
-      "programs": 44,
+      "programs": 45,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -68,12 +68,12 @@
     {
       "name": "angle-waterfront",
       "tier": "high",
-      "fps": 26,
+      "fps": 29,
       "calls": 133,
       "triangles": 1240039,
       "geometries": 346,
       "textures": 61,
-      "programs": 44,
+      "programs": 45,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -81,12 +81,12 @@
     {
       "name": "angle-aerial",
       "tier": "high",
-      "fps": 23,
+      "fps": 24,
       "calls": 133,
       "triangles": 1240049,
       "geometries": 346,
       "textures": 61,
-      "programs": 44,
+      "programs": 45,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -94,12 +94,12 @@
     {
       "name": "angle-podium",
       "tier": "high",
-      "fps": 25,
+      "fps": 31,
       "calls": 121,
       "triangles": 524723,
       "geometries": 346,
       "textures": 61,
-      "programs": 44,
+      "programs": 45,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -107,12 +107,12 @@
     {
       "name": "angle-crown",
       "tier": "high",
-      "fps": 45,
+      "fps": 44,
       "calls": 101,
       "triangles": 1004577,
       "geometries": 346,
       "textures": 61,
-      "programs": 44,
+      "programs": 45,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -120,12 +120,12 @@
     {
       "name": "quality-medium",
       "tier": "medium",
-      "fps": 22,
+      "fps": 23,
       "calls": 83,
-      "triangles": 1393908,
+      "triangles": 1412668,
       "geometries": 346,
       "textures": 61,
-      "programs": 43,
+      "programs": 44,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -134,11 +134,11 @@
       "name": "quality-low",
       "tier": "low",
       "fps": 60,
-      "calls": 51,
-      "triangles": 1170297,
+      "calls": 54,
+      "triangles": 1410792,
       "geometries": 344,
       "textures": 28,
-      "programs": 49,
+      "programs": 50,
       "towerMeshes": {
         "tower:aurelia": 23
       }
@@ -151,13 +151,14 @@
       "triangles": 979316,
       "geometries": 344,
       "textures": 28,
-      "programs": 49,
+      "programs": 50,
       "towerMeshes": {
         "tower:aurelia": 23
       }
     }
   ],
   "errors": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
     "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
 }
