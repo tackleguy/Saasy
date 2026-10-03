@@ -1,0 +1,170 @@
+{
+  "results": [
+    {
+      "city": "generic",
+      "graphics": {
+        "tier": "medium",
+        "fps": 46,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "new-york",
+      "graphics": {
+        "tier": "medium",
+        "fps": 60,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "miami",
+      "graphics": {
+        "tier": "medium",
+        "fps": 52,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "los-angeles",
+      "graphics": {
+        "tier": "medium",
+        "fps": 54,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "chicago",
+      "graphics": {
+        "tier": "medium",
+        "fps": 57,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "san-francisco",
+      "graphics": {
+        "tier": "medium",
+        "fps": 57,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "seattle",
+      "graphics": {
+        "tier": "medium",
+        "fps": 57,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "boston",
+      "graphics": {
+        "tier": "medium",
+        "fps": 60,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "toronto",
+      "graphics": {
+        "tier": "medium",
+        "fps": 59,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "london",
+      "graphics": {
+        "tier": "medium",
+        "fps": 49,
+        "calls": 87,
+        "triangles": 882530,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    },
+    {
+      "city": "dubai",
+      "graphics": {
+        "tier": "medium",
+        "fps": 57,
+        "calls": 85,
+        "triangles": 874930,
+        "geometries": 348,
+        "textures": 61,
+        "programs": 42,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      }
+    }
+  ],
+  "errors": []
+}

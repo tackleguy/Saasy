@@ -1,7 +1,7 @@
 "use client";
 /** Sketchfab-only city context. All mesh parts retain their authored transforms and
  * materials, then share instanced draws across the existing collision-aware lots. */
-import { Suspense, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
@@ -11,6 +11,7 @@ import { ALONG_U, noRaycast, placeUW, rng, uploadInstances } from "./shared";
 import { cityPlan, type CityBuilding } from "./cityPlan";
 import { libraryModel } from "@/lib/modelLibrary";
 import { invalidateShadows } from "../staticShadows";
+import { RecoverableContextModel } from "../ContextModelRecovery";
 
 const SOURCES = [
   { uid: "f943ba2828a64b7d858ee6e4bdacedc6", role: "low" },
@@ -187,5 +188,9 @@ function CityModels({ preset, clearings }: { preset: CityPreset; clearings: UWRe
 }
 
 export default function City({ preset, clearings = [] }: { preset: CityPreset; clearings?: UWRect[] }) {
-  return <Suspense fallback={null}><CityModels preset={preset} clearings={clearings} /></Suspense>;
+  return (
+    <RecoverableContextModel label="Surrounding buildings" resource={URLS}>
+      <CityModels preset={preset} clearings={clearings} />
+    </RecoverableContextModel>
+  );
 }

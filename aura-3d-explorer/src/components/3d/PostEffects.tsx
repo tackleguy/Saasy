@@ -32,9 +32,10 @@ function N8AO() {
 
   useEffect(() => {
     const c = pass.configuration;
+    c.gammaCorrection = false; // Final composer output owns the only display conversion.
     c.aoRadius = 0.45;
     c.distanceFalloff = 0.6;
-    c.intensity = 1.15;
+    c.intensity = 1.0;
     c.color = new THREE.Color("#3a3128");
     c.halfRes = true;
     c.depthAwareUpsampling = true;
@@ -58,17 +59,17 @@ export default function PostEffects({ focus }: Props) {
   const target = useMemo(() => (focus ? new THREE.Vector3(...focus) : null), [focus?.[0], focus?.[1], focus?.[2]]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    gl.toneMappingExposure = 1.1;
+    gl.toneMappingExposure = .95;
   }, [gl]);
 
   return (
     <EffectComposer multisampling={0} enableNormalPass={false}>
       <N8AO />
-      <Bloom luminanceThreshold={0.85} luminanceSmoothing={0.2} intensity={0.3} mipmapBlur />
+      <Bloom luminanceThreshold={0.85} luminanceSmoothing={0.2} intensity={0.14} mipmapBlur />
       {target ? <DepthOfField target={target} focalLength={0.02} bokehScale={2.5} /> : <></>}
-      <BrightnessContrast brightness={0} contrast={0.09} />
-      <HueSaturation hue={0} saturation={0.1} />
-      <Vignette offset={0.3} darkness={0.3} />
+      <BrightnessContrast brightness={0} contrast={0.08} />
+      <HueSaturation hue={0} saturation={0.08} />
+      <Vignette offset={0.3} darkness={0.16} />
       <SMAA />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
     </EffectComposer>

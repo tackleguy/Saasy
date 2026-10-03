@@ -45,7 +45,7 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
   const x = reg.explorer ?? null;
   const project = reg.project ?? null;
   const ctx: Record<string, unknown> = { page: pathname };
-  const representatives = MODEL_LIBRARY.filter((model, index) => !model.category.startsWith("city-") && MODEL_LIBRARY.findIndex((other) => other.category === model.category) === index);
+  const representatives = MODEL_LIBRARY.filter((model, index) => !model.category.startsWith("city-") && model.category !== "skylines" && model.category !== "water" && MODEL_LIBRARY.findIndex((other) => other.category === model.category) === index);
   ctx.localModels = representatives.slice(0, 12).map(({ uid, name, category }) => ({ id: uid, name: name.slice(0, 60), category, categoryCommand: category }));
   ctx.modelLibraryStatus = MODEL_LIBRARY.length ? "Installed local assets" : "No model files installed; Sketchfab candidates need downloading first";
 
@@ -95,7 +95,9 @@ export function buildAssistantContext(reg: AssistantRegistration, pathname: stri
       walking: x.walking,
       photoAngle: x.photoAngle ?? null,
       city: x.city,
-      environment: "Named city presets load their own authored Sketchfab city/district models with original building arrangements. Several are district samples; Miami and Dubai are untextured. The proposal site and water placement remain illustrative, not geographically registered. Use city actions to switch cities.",
+      location: x.location,
+      mapSource: x.mapSnapshot?.id ?? null,
+      environment: "Geographically positioned Overture building footprints/parts, mapped streets and water use the saved project pin. Example pins are not real project addresses. Missing heights are flat footprints, floor-count heights are estimates, terrain is flat, facades and roofs are not reconstructed. Coverage is limited to downloaded areas. Use Map to set coordinates or a coordinate-bearing map link. City actions select an example pin and replace the current project pin.",
       floorPlan: x.floorPlanFor?.(x.building.id)
         ? {
             file: x.floorPlanFor(x.building.id)!.fileName,

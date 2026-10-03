@@ -17,9 +17,10 @@ interface Props {
 }
 
 export default function EnquiryForm({ projectName, unitCode }: Props) {
-  const [intent, setIntent] = useState<Intent>("proforma");
+  const [intent, setIntent] = useState<Intent>("viewing");
   const [sent, setSent] = useState(false);
   const [unit, setUnit] = useState(unitCode ?? "");
+  const [company, setCompany] = useState("");
 
   useEffect(() => {
     if (unitCode) {
@@ -59,8 +60,8 @@ export default function EnquiryForm({ projectName, unitCode }: Props) {
         value={intent}
         onChange={setIntent}
         options={[
-          { value: "proforma", label: "Request Pro Forma" },
           { value: "viewing", label: "Book Viewing" },
+          { value: "proforma", label: "Request Pro Forma" },
         ]}
       />
       <div className="grid gap-3 sm:grid-cols-2">
@@ -69,13 +70,13 @@ export default function EnquiryForm({ projectName, unitCode }: Props) {
           <input required name="name" autoComplete="name" className="field mt-1" />
         </label>
         <label className="block">
-          <span className="caption">Work email</span>
+          <span className="caption">Email</span>
           <input required type="email" name="email" autoComplete="email" className="field mt-1" />
         </label>
-        <label className="block">
+        {intent === "proforma" && <label className="block">
           <span className="caption">Company</span>
-          <input name="company" autoComplete="organization" className="field mt-1" />
-        </label>
+          <input name="company" value={company} onChange={(e) => setCompany(e.target.value)} autoComplete="organization" className="field mt-1" />
+        </label>}
         <label className="block">
           <span className="caption">{intent === "viewing" ? "Unit (optional)" : "Role"}</span>
           {intent === "viewing" ? (

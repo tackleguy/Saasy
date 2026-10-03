@@ -1,7 +1,9 @@
 "use client";
 import { useSyncExternalStore } from "react";
 
-type Status = "idle" | "loading" | "ready" | "failed";
+import type { DistrictLoadStatus } from "./districtLoadController";
+
+type Status = DistrictLoadStatus;
 const states = new Map<string, string>();
 const listeners = new Set<() => void>();
 const subscribe = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; };

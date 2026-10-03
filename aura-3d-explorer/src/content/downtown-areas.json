@@ -1,0 +1,16 @@
+[
+  {"id":"jersey-city","sourceId":"hudson-manhattan","label":"Jersey City, Lower Manhattan and Midtown","bounds":[-74.075,40.686,-73.947,40.791],"coverage":"Jersey City and Hoboken waterfront, Lower Manhattan, Midtown and the surrounding river shores"},
+  {"id":"new-york","sourceId":"hudson-manhattan","label":"Manhattan and the Hudson waterfront","bounds":[-74.075,40.686,-73.947,40.791],"coverage":"Lower Manhattan through Midtown and Central Park South, with the Hudson and East River waterfronts"},
+  {"id":"miami-beach","label":"Downtown Miami, Brickell and Miami Beach","bounds":[-80.222,25.744,-80.105,25.832],"coverage":"Downtown Miami, Brickell, Biscayne Bay and South/Mid Beach"},
+  {"id":"chicago","label":"Downtown Chicago and the lakefront","bounds":[-87.665,41.851,-87.588,41.927],"coverage":"The Loop, West Loop, River North, Streeterville, South Loop and adjoining lakefront"},
+  {"id":"dubai","label":"Downtown Dubai, DIFC and Business Bay","bounds":[55.23,25.15,55.329,25.245],"coverage":"Downtown Dubai, Business Bay and the DIFC/SZ Road skyline"},
+  {"id":"toronto","label":"Downtown Toronto and the waterfront","bounds":[-79.438,43.62,-79.332,43.685],"coverage":"Downtown Toronto from the Exhibition waterfront to the Don River and north to Bloor Street"},
+  {"id":"bayonne","label":"Bayonne and the Upper Bay waterfront","bounds":[-74.163,40.624,-74.055,40.716],"coverage":"The Bayonne peninsula, Broadway downtown, Newark Bay and Upper Bay waterfront"},
+  {"id":"lorenskog","label":"Lørenskog town centre and surrounding neighbourhoods","bounds":[10.903,59.894,11.013,59.962],"coverage":"Lørenskog centre, Solheim, Skårer, Lørenskog station and the neighbouring town fabric"},
+  {"id":"madrid","label":"Central Madrid","bounds":[-3.742,40.392,-3.652,40.481],"coverage":"Madrid's historic centre, Retiro, Chamberí and the Castellana business corridor"},
+  {"id":"london","label":"Central London and Canary Wharf","bounds":[-0.174,51.478,0.019,51.538],"coverage":"Westminster, West End, the City, South Bank, London Bridge and Canary Wharf"},
+  {"id":"seattle","label":"Downtown Seattle and the central waterfront","bounds":[-122.379,47.579,-122.306,47.643],"coverage":"Downtown, Pioneer Square, Belltown, Seattle Center, South Lake Union and the waterfront"},
+  {"id":"los-angeles","label":"Downtown Los Angeles","bounds":[-118.29,34.012,-118.205,34.091],"coverage":"Downtown LA, Bunker Hill, Civic Center, Arts District, South Park and Chinatown"},
+  {"id":"san-francisco","label":"Downtown San Francisco and the northeast waterfront","bounds":[-122.455,37.749,-122.353,37.819],"coverage":"Financial District, Union Square, SoMa, Mission Bay, North Beach and the northern waterfront"},
+  {"id":"boston","label":"Downtown Boston, Back Bay and the harbour","bounds":[-71.12,42.321,-70.998,42.384],"coverage":"Downtown, Back Bay, North End, Charlestown, Seaport and the inner harbour"}
+]

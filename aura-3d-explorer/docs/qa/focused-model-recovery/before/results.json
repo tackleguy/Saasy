@@ -1,0 +1,29 @@
+[
+  {
+    "name": "water-404",
+    "blocked": 1,
+    "canvasCount": 0,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3160/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3160/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+    ],
+    "body": "This page couldn’t load\n\nReload to try again, or go back.\n\nReload\nBack"
+  },
+  {
+    "name": "generic-building-404",
+    "blocked": 1,
+    "canvasCount": 0,
+    "errors": [
+      "Error: Could not load /models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb: fetch for \"http://127.0.0.1:3160/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb: fetch for \"http://127.0.0.1:3160/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb\" responded with 404: Not Found"
+    ],
+    "body": "This page couldn’t load\n\nReload to try again, or go back.\n\nReload\nBack"
+  },
+  {
+    "name": "district-404",
+    "blocked": 2,
+    "canvasCount": 1,
+    "errors": [],
+    "body": "Aurelia Tower render\nSun \nDawn\nGolden Hour\nDusk\nNight\nQuality \nAuto · low\nHigh\nMedium\nLow\nContext \nCinematic\nExisting city\nPhoto \nChoose angle\nStreet\nWaterfront\nAerial\nPodium\nCrown\nCapture"
+  }
+]

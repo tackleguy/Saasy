@@ -1,0 +1,634 @@
+{
+  "results": [
+    {
+      "id": "jersey-city",
+      "passed": true,
+      "state": {
+        "sourceId": "jersey-city",
+        "featureCount": 7205,
+        "buildingPolygons": 5507,
+        "hiddenBuildingPolygons": 5,
+        "unknownHeightFootprints": 279,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 267858,
+        "vertices": 267858,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 92,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 34,
+          "calls": 450,
+          "triangles": 3250545,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          139.84006258233114,
+          72.48701564558276,
+          139.84006258233117
+        ]
+      }
+    },
+    {
+      "id": "miami-beach",
+      "passed": true,
+      "state": {
+        "sourceId": "miami-beach",
+        "featureCount": 3331,
+        "buildingPolygons": 2176,
+        "hiddenBuildingPolygons": 8,
+        "unknownHeightFootprints": 286,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 82218,
+        "vertices": 82218,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 64,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 58,
+          "calls": 605,
+          "triangles": 3722477,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          -51.185015371938896,
+          72.48701564558274,
+          191.02507795427007
+        ]
+      }
+    },
+    {
+      "id": "chicago",
+      "passed": true,
+      "state": {
+        "sourceId": "chicago",
+        "featureCount": 4147,
+        "buildingPolygons": 2333,
+        "hiddenBuildingPolygons": 7,
+        "unknownHeightFootprints": 543,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 120294,
+        "vertices": 120294,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 52,
+          "units": 118,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 56,
+          "calls": 355,
+          "triangles": 2925709,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          45.2415893307945,
+          136.4088565335175,
+          -168.84390999769153
+        ]
+      }
+    },
+    {
+      "id": "dubai",
+      "passed": true,
+      "state": {
+        "sourceId": "dubai",
+        "featureCount": 4090,
+        "buildingPolygons": 1818,
+        "hiddenBuildingPolygons": 9,
+        "unknownHeightFootprints": 1155,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 62172,
+        "vertices": 62172,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 41,
+          "units": 112,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 56,
+          "calls": 611,
+          "triangles": 3754176,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          133.88666666666657,
+          104.47033333333326,
+          133.88666666666657
+        ]
+      }
+    },
+    {
+      "id": "toronto",
+      "passed": true,
+      "state": {
+        "sourceId": "toronto",
+        "featureCount": 5878,
+        "buildingPolygons": 4169,
+        "hiddenBuildingPolygons": 11,
+        "unknownHeightFootprints": 820,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 197214,
+        "vertices": 197214,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 27,
+          "units": 76,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 58,
+          "calls": 300,
+          "triangles": 2766106,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          -168.8439099976915,
+          136.4088565335175,
+          45.24158933079464
+        ]
+      }
+    },
+    {
+      "id": "bayonne",
+      "passed": true,
+      "state": {
+        "sourceId": "bayonne",
+        "featureCount": 7154,
+        "buildingPolygons": 6047,
+        "hiddenBuildingPolygons": 1,
+        "unknownHeightFootprints": 1839,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 137712,
+        "vertices": 137712,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 92,
+          "units": 110,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 55,
+          "calls": 551,
+          "triangles": 3691014,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          139.84006258233114,
+          72.48701564558276,
+          139.84006258233117
+        ]
+      }
+    },
+    {
+      "id": "lorenskog",
+      "passed": true,
+      "state": {
+        "sourceId": "lorenskog",
+        "featureCount": 7296,
+        "buildingPolygons": 5756,
+        "hiddenBuildingPolygons": 7,
+        "unknownHeightFootprints": 2412,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 158643,
+        "vertices": 158643,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 57,
+          "units": 121,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 59,
+          "calls": 288,
+          "triangles": 2690596,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          139.84006258233114,
+          72.48701564558276,
+          139.84006258233117
+        ]
+      }
+    },
+    {
+      "id": "madrid",
+      "passed": true,
+      "state": {
+        "sourceId": "madrid",
+        "featureCount": 9389,
+        "buildingPolygons": 7425,
+        "hiddenBuildingPolygons": 11,
+        "unknownHeightFootprints": 4850,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 173373,
+        "vertices": 173373,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 16,
+          "units": 35,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 56,
+          "calls": 520,
+          "triangles": 3722870,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          139.84006258233114,
+          72.48701564558276,
+          139.84006258233117
+        ]
+      }
+    },
+    {
+      "id": "london",
+      "passed": true,
+      "state": {
+        "sourceId": "london",
+        "featureCount": 9308,
+        "buildingPolygons": 6783,
+        "hiddenBuildingPolygons": 15,
+        "unknownHeightFootprints": 2155,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 277755,
+        "vertices": 277755,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 73,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 60,
+          "calls": 173,
+          "triangles": 2233463,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          -191.02507795427005,
+          72.48701564558274,
+          51.18501537193897
+        ]
+      }
+    },
+    {
+      "id": "seattle",
+      "passed": true,
+      "state": {
+        "sourceId": "seattle",
+        "featureCount": 3888,
+        "buildingPolygons": 2225,
+        "hiddenBuildingPolygons": 4,
+        "unknownHeightFootprints": 328,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 145488,
+        "vertices": 145488,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 58,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 58,
+          "calls": 461,
+          "triangles": 3316207,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          139.84006258233114,
+          72.48701564558276,
+          139.84006258233117
+        ]
+      }
+    },
+    {
+      "id": "new-york",
+      "passed": true,
+      "state": {
+        "sourceId": "new-york",
+        "featureCount": 8692,
+        "buildingPolygons": 7703,
+        "hiddenBuildingPolygons": 32,
+        "unknownHeightFootprints": 103,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 372681,
+        "vertices": 372681,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 80,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 48,
+          "calls": 589,
+          "triangles": 4008849,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          45.2415893307945,
+          136.4088565335175,
+          -168.84390999769153
+        ]
+      }
+    },
+    {
+      "id": "los-angeles",
+      "passed": true,
+      "state": {
+        "sourceId": "los-angeles",
+        "featureCount": 6273,
+        "buildingPolygons": 3574,
+        "hiddenBuildingPolygons": 10,
+        "unknownHeightFootprints": 118,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 268125,
+        "vertices": 268125,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 54,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 59,
+          "calls": 280,
+          "triangles": 2766717,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          191.0250779542701,
+          72.48701564558276,
+          51.18501537193884
+        ]
+      }
+    },
+    {
+      "id": "san-francisco",
+      "passed": true,
+      "state": {
+        "sourceId": "san-francisco",
+        "featureCount": 9632,
+        "buildingPolygons": 7511,
+        "hiddenBuildingPolygons": 8,
+        "unknownHeightFootprints": 451,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 485448,
+        "vertices": 485448,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 65,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 55,
+          "calls": 359,
+          "triangles": 3271687,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          123.60232066689692,
+          136.4088565335175,
+          123.60232066689689
+        ]
+      }
+    },
+    {
+      "id": "boston",
+      "passed": true,
+      "state": {
+        "sourceId": "boston",
+        "featureCount": 5096,
+        "buildingPolygons": 3320,
+        "hiddenBuildingPolygons": 7,
+        "unknownHeightFootprints": 175,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 152469,
+        "vertices": 152469,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 23,
+          "units": 58,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 56,
+          "calls": 580,
+          "triangles": 3700543,
+          "geometries": 807,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          51.1850153719388,
+          72.48701564558276,
+          -191.0250779542701
+        ]
+      }
+    },
+    {
+      "id": "dusk",
+      "passed": true
+    },
+    {
+      "id": "viewport-768",
+      "passed": true
+    },
+    {
+      "id": "viewport-1280",
+      "passed": true
+    },
+    {
+      "id": "viewport-1920",
+      "passed": true
+    },
+    {
+      "id": "phone",
+      "passed": true
+    },
+    {
+      "id": "phone-low",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
+}

@@ -111,7 +111,7 @@ const SHOTS: Shot[] = [
 /** One project's reel. Remounted (key) per project so each gets a fresh scene. */
 function Reel({ project, playing, onDone, shotSkip }: { project: Project; playing: boolean; onDone: () => void; shotSkip: number }) {
   const site = useMemo(() => projectSite(project), [project]);
-  const x = useExplorer(site, { city: project.backdrop });
+  const x = useExplorer(site, { city: project.backdrop, projectSlug: project.slug });
   // Shot index and time into it change together, so a new shot never inherits the old clock.
   const [{ shot, elapsed }, setClock] = useState({ shot: 0, elapsed: 0 });
   const xRef = useRef(x);

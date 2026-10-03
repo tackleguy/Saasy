@@ -9,7 +9,7 @@
  * Low uses a glossy standard material with the same normal map, which still
  * catches the HDR sky.
  */
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
@@ -18,6 +18,7 @@ import { waterNormalTexture } from "../textures";
 import { ALONG_U, noRaycast, placeUW, rng, uploadInstances } from "./shared";
 import WaterReflector from "./WaterReflector";
 import { libraryModel } from "@/lib/modelLibrary";
+import { RecoverableContextModel } from "../ContextModelRecovery";
 
 const OCEAN = libraryModel("50f21b06c6e644e196b2ac828eda97dc")!;
 
@@ -139,7 +140,9 @@ function Boats() {
 export default function Water({ quality, color }: { quality: "high" | "low"; color: string }) {
   return (
     <group>
-      <Suspense fallback={null}><Surface quality={quality} color={color} /></Suspense>
+      <RecoverableContextModel label="Water model" resource={OCEAN.path}>
+        <Surface quality={quality} color={color} />
+      </RecoverableContextModel>
       <Boats />
     </group>
   );

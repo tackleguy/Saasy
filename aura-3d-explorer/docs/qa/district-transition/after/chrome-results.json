@@ -1,0 +1,52 @@
+[
+  {
+    "name": "atomic-upgrade-and-retry",
+    "passed": true,
+    "errors": [],
+    "frames": 130,
+    "standardRequests": 1,
+    "original": "42d7fdc7-3ab9-4344-b794-1022fa3b8e40",
+    "final": "802a29cf-e4e1-42ea-8a7d-44dc669442e0",
+    "disposedResources": 29,
+    "axe": []
+  },
+  {
+    "name": "initial-hq-404",
+    "passed": true,
+    "errors": [],
+    "standardRequests": 1
+  },
+  {
+    "name": "initial-hq-corrupt",
+    "passed": true,
+    "errors": [],
+    "standardRequests": 1
+  },
+  {
+    "name": "initial-hq-network",
+    "passed": true,
+    "errors": [],
+    "standardRequests": 1
+  },
+  {
+    "name": "both-fail-then-retry",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "failed-downgrade-retains-hq",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "cancel-obsolete-upgrade",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "city-change-cancels-upgrade",
+    "passed": true,
+    "errors": [],
+    "newCity": "013c2e21e61c4a598c6d279f05953819"
+  }
+]

@@ -40,7 +40,7 @@ function readParams(): RenderParams {
 export default function RenderView({ project }: { project: Project }) {
   const [params] = useState<RenderParams>(() => (typeof window === "undefined" ? { angle: "waterfront", walk: false, view: 0 } : readParams()));
   const site = projectSite(project);
-  const x = useExplorer(site, { lockQuality: true, city: params.city ?? project.backdrop });
+  const x = useExplorer(site, { lockQuality: true, city: params.city ?? project.backdrop, projectSlug: params.city && params.city !== project.backdrop ? undefined : project.slug });
   const building = site.find((b) => b.id === params.building) ?? site[0];
 
   useEffect(() => {

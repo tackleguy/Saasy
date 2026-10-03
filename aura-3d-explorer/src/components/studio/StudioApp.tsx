@@ -53,7 +53,7 @@ export default function StudioApp({ project }: { project: Project }) {
   const siteBuildings = projectSite(project);
   const [cadOpen, setCadOpen] = useState(false);
   const yieldCalc = useYieldCalculator(siteBuildings, project.finance);
-  const x = useExplorer(siteBuildings, { keyboard: true, keyboardPaused: cadOpen, city: project.backdrop });
+  const x = useExplorer(siteBuildings, { keyboard: true, keyboardPaused: cadOpen, city: project.backdrop, projectSlug: project.slug });
   useRegisterExplorer(x, { project, yieldCalc }); // lets the AURA assistant see + drive this explorer
 
   // Developer / Architect mode, mirrored in the URL (?mode=architect) so a mode can be linked.
@@ -162,6 +162,8 @@ export default function StudioApp({ project }: { project: Project }) {
           onOpenChange={setCadOpen}
           inputs={inputs}
           building={building}
+          location={x.location}
+          onLocation={x.setLocation}
           onComplete={(model) => {
             setCadOpen(false);
             if (model) {

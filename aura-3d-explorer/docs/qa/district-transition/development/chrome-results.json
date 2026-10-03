@@ -1,0 +1,45 @@
+[
+  {
+    "name": "atomic-upgrade-and-retry",
+    "passed": true,
+    "errors": [],
+    "frames": 128,
+    "standardRequests": 2,
+    "original": "43d0fe3b-1cf2-4855-9f17-723b66fa67ae",
+    "final": "aeee1e81-f462-48e9-b3ab-8d402891eddb",
+    "axe": []
+  },
+  {
+    "name": "initial-hq-404",
+    "passed": true,
+    "errors": [],
+    "standardRequests": 1
+  },
+  {
+    "name": "initial-hq-corrupt",
+    "passed": true,
+    "errors": [],
+    "standardRequests": 1
+  },
+  {
+    "name": "initial-hq-network",
+    "passed": true,
+    "errors": [],
+    "standardRequests": 1
+  },
+  {
+    "name": "both-fail-then-retry",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "failed-downgrade-retains-hq",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "cancel-obsolete-upgrade",
+    "passed": true,
+    "errors": []
+  }
+]

@@ -1,0 +1,289 @@
+[
+  {
+    "name": "real-geography-initial",
+    "passed": true,
+    "scene": {
+      "sourceId": "jersey-city",
+      "featureCount": 7205,
+      "buildingPolygons": 5510,
+      "hiddenBuildingPolygons": 2,
+      "unknownHeightFootprints": 279,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 174,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "pin-persistence-and-coverage",
+    "passed": true,
+    "axe": []
+  },
+  {
+    "name": "chicago",
+    "passed": true,
+    "scene": {
+      "sourceId": "chicago",
+      "featureCount": 4147,
+      "buildingPolygons": 2333,
+      "hiddenBuildingPolygons": 7,
+      "unknownHeightFootprints": 543,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "dubai",
+    "passed": true,
+    "scene": {
+      "sourceId": "dubai",
+      "featureCount": 4090,
+      "buildingPolygons": 1818,
+      "hiddenBuildingPolygons": 9,
+      "unknownHeightFootprints": 1155,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "toronto",
+    "passed": true,
+    "scene": {
+      "sourceId": "toronto",
+      "featureCount": 5878,
+      "buildingPolygons": 4169,
+      "hiddenBuildingPolygons": 11,
+      "unknownHeightFootprints": 820,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "bayonne",
+    "passed": true,
+    "scene": {
+      "sourceId": "bayonne",
+      "featureCount": 7154,
+      "buildingPolygons": 6047,
+      "hiddenBuildingPolygons": 1,
+      "unknownHeightFootprints": 1839,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "lorenskog",
+    "passed": true,
+    "scene": {
+      "sourceId": "lorenskog",
+      "featureCount": 7296,
+      "buildingPolygons": 5756,
+      "hiddenBuildingPolygons": 7,
+      "unknownHeightFootprints": 2412,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "madrid",
+    "passed": true,
+    "scene": {
+      "sourceId": "madrid",
+      "featureCount": 9389,
+      "buildingPolygons": 7425,
+      "hiddenBuildingPolygons": 11,
+      "unknownHeightFootprints": 4850,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "london",
+    "passed": true,
+    "scene": {
+      "sourceId": "london",
+      "featureCount": 9308,
+      "buildingPolygons": 6783,
+      "hiddenBuildingPolygons": 15,
+      "unknownHeightFootprints": 2155,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "seattle",
+    "passed": true,
+    "scene": {
+      "sourceId": "seattle",
+      "featureCount": 3888,
+      "buildingPolygons": 2225,
+      "hiddenBuildingPolygons": 4,
+      "unknownHeightFootprints": 328,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "new-york",
+    "passed": true,
+    "scene": {
+      "sourceId": "new-york",
+      "featureCount": 8692,
+      "buildingPolygons": 7703,
+      "hiddenBuildingPolygons": 32,
+      "unknownHeightFootprints": 103,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "los-angeles",
+    "passed": true,
+    "scene": {
+      "sourceId": "los-angeles",
+      "featureCount": 6273,
+      "buildingPolygons": 3574,
+      "hiddenBuildingPolygons": 10,
+      "unknownHeightFootprints": 118,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "san-francisco",
+    "passed": true,
+    "scene": {
+      "sourceId": "san-francisco",
+      "featureCount": 9632,
+      "buildingPolygons": 7511,
+      "hiddenBuildingPolygons": 8,
+      "unknownHeightFootprints": 451,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "boston",
+    "passed": true,
+    "scene": {
+      "sourceId": "boston",
+      "featureCount": 5096,
+      "buildingPolygons": 3320,
+      "hiddenBuildingPolygons": 7,
+      "unknownHeightFootprints": 175,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 210,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "browser-and-phone",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "network-failure-retry",
+    "passed": true
+  }
+]

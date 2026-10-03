@@ -8,4 +8,4 @@ next-env.d.ts
 model-downloads/
 __pycache__/
 
-.next-qa*
+.next-*/

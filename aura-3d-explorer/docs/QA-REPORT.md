@@ -173,3 +173,166 @@ Tour after — unobstructed navigation and paused reduced-motion state:
 7. **P1:** Concurrent source changes require a fresh full audit of the eventual release commit. Evidence here is limited to the recorded compiled snapshots.
 
 The loop cannot truthfully reach zero within the current no-new-features scope and available device/browser configuration. The launch checklist is deliberately incomplete. Reproduction instructions: `scripts/qa/README.md`.
+
+## Skyline presentation audit — 2026-10-02 (before changes)
+
+Scope: shared cinematic skyline, all eleven presets, following the customer's Zillow / Homes.com new-construction reference and target of a customer price one-quarter of a comparable alternative.
+
+- **High — City selection does not control the cinematic skyline.** `SiteContext` passes only a seed; grid, height clusters, facade palette and landmark silhouettes in the existing city presets are ignored. Ten named cities appear as slight variations of the same box skyline.
+- **High — Golden-hour presentation reads as night.** Sky grading suppresses daylight to 5.5%, then mixes 78% dark haze. Black window atlases multiply already dark building colors, erasing city detail. Baseline: `qa/skyline/before/new-york.png`.
+- **Medium — Facades stretch with building dimensions.** One fixed 8×16 window atlas covers every building, regardless of height; window/storey scale changes between neighbors. Rooftops carry the same window material as walls.
+- **Medium — Low quality removes the distant skyline.** Dropping a whole ring changes the city silhouette between devices rather than reducing detail.
+- **Medium — Source labeling is ambiguous.** Named city coverage points to an authored district even when the cinematic backdrop is illustrative. The two context modes must be distinguished.
+- **Unverified business target — 4× better / 4× cheaper.** Customer pricing requires comparable deliverables, revision allowance, hosting term and a real competitor quote. Do not publish a quantitative quality or savings claim based on renderer metrics. The implementation should avoid per-project manual city production and new paid rendering services.
+
+Visual direction: preserve AURA's architecture and warm metal accents; restore readable daylight, city-specific skylines, correctly scaled facades, natural depth and quiet contextual detail. Procedural surroundings are illustrative, not a geographic survey or a replacement for uploaded project geometry.
+
+### Additional finding during skyline verification (before repair)
+
+- **High — Context switching can render with a missing shadow texture.** Chrome's production verification logs `GL_INVALID_OPERATION` / texture-sampler mismatches after changing between Existing city and Cinematic. The static-shadow scheduler only initializes maps on a main-camera draw, but water reflection can draw the newly mounted light first. Evidence: `qa/skyline/verification/results.json` (initial verification). Repair must allocate missing maps before any draw, while preserving the pending main-camera refresh. This is separate from the pre-existing Three.Clock deprecation warning.
+
+### Skyline verification result — 2026-10-02
+
+- **Fixed:** ignored city presets, dark daylight grading, stretched windows, window-textured district roofs, loss of the distant skyline on Low, and ambiguous source-city labels. Before/after images cover all eleven presets, plus phone and night views: [comparison](qa/skyline/comparison.jpg), [all-city gallery](qa/skyline/contact-sheet.png). Geometry tests prove unique/deterministic city meshes, fixed storey scale, finite geometry, roof separation, retained Low-quality bounds and site clearing behavior.
+- **Fixed:** missing shadow-map initialization during context changes. Maps now initialize even if a reflection draws a newly mounted light first; the main-camera refresh remains pending. The production Chrome context-switch regression asserts no `GL_INVALID_OPERATION` or sampler mismatch. Initial failing warnings are preserved in `qa/skyline/verification/before-shadow-fix.json`; the passing run is in `qa/skyline/verification/results.json`.
+- **Passed:** all 12 automated tests; TypeScript; production webpack build; source design scan on the changed picker/skyline/lighting files; `git diff --check`.
+- **Passed within tested scope:** Chrome, Firefox and WebKit production captures at 390, 768, 1280 and 1920 pixels, with zero uncaught page exceptions and no city-model downloads in Cinematic mode. Chrome also verifies the source-city / illustrative labels through both context transitions. [Studio](qa/skyline/verification/studio.png).
+- **Performance limitation:** final complete-scene Medium samples at 390 / 768 / 1280 / 1920: Chrome 59 / 59 / 60 / 41 fps; Firefox 58 / 46 / 56 / 34 fps; WebKit 56 / 60 / 49 / 34 fps. These are local headless samples, not certified target-device or GPU-throttle benchmarks. No universal 60 fps claim. District geometry uses at most six material batches; landmarks add draws. No 4× rendering-speed claim.
+- **Remaining warnings / coverage:** upstream Three.Clock deprecation and Firefox WebGL/font-preload warnings remain. WebKit is not native Safari or a physical iPhone. Edge/native Safari/physical Android and 2017-phone verification remain uncompleted as recorded in the launch checklist. No assertion that the earlier full-product audit is now green.
+- **Commercial target remains unverified:** no price changed. Customer cost ≤25% of a comparable alternative needs an actual quote and matched deliverables. See [scope and pricing validation](SKYLINE-QUALITY.md).
+
+Result: skyline-specific fixes have regression and screenshot evidence; **not a zero-finding full-product launch approval**. Existing launch blockers remain unticked.
+
+
+## Focused model recovery — 2026-10-02
+
+High-severity optional-scenery crash reproduced and recorded before editing; fixed with isolated model boundaries and keyboard-accessible retry. Production Chrome, Firefox and WebKit pass all 18 recovery cases. Studio preserves edited explosion state and the canvas; scoped recovery-panel axe reports zero violations. Full findings, file-level changes, limitations and before/after evidence: [focused skyline and Sketchfab review](FOCUSED-MODEL-REVIEW.md). Existing launch blockers remain open.
+
+
+## Authored district continuity — 2026-10-02
+
+- **High, fixed:** `context/City:District` discarded usable scenery during quality changes and left it absent when HQ failed. Replacement is now atomic, failed HQ uses the same source district’s standard model, and stale requests cannot replace newer choices. Clear retry/detail feedback remains usable at 390px.
+- **Passed:** 24 final production cases across Chrome/Firefox/WebKit; all ten installed city mappings; 21 default automated tests and six installer tests; TypeScript and production build. Before/after captures, scoped accessibility and actual resource-disposal evidence are in [the district review](DISTRICT-LOADING-REVIEW.md).
+- **Medium, open:** repeated quality changes increase whole-renderer geometry counts by two per cycle. The old production build reproduces the identical increase; the new district retains one model and stable texture counts. The resource-stability diagnostic remains failed and its raw result is preserved.
+
+This pass does not close the existing full-product launch blockers or establish either four-times product target.
+
+
+## Geographic context audit — 2026-10-02 (before integration)
+
+- **High:** the active Cinematic city repeats illustrative models without geographic registration. Switching a city label does not make their placement correct.
+- **High:** all authored district GLBs lack a map origin, CRS and usable north/control points. A city-name match cannot establish accurate placement.
+- **High:** sample project records provide city names only, without real addresses or coordinates. AURA must not present an invented project address as fact.
+- **Medium:** the existing site map is generated scenery, so it cannot verify a building position against real streets.
+
+Decision: replace active city scenery with local Overture map snapshots; project/map/render coordinates share a metre-based projection. Example pins remain explicit. Missing source heights stay flat; floor-count estimates remain disclosed. Detailed source provenance and coverage are recorded in MAP-DATA-SOURCES.md. Verification follows after integration.
+
+
+### Mapped context: additional visual findings before correction
+
+- **High:** the original Jersey City example pin put the four proposal buildings in mapped water; Seattle and Boston also intersected water. Moved only the explicit example anchors, then tested every actual proposal floor outline against mapped water polygons including holes (all14 pass). [Before Jersey](qa/mapped-context/chrome-map.png).
+- **Medium:** the original low overview aimed at the selected tower height, clipping the taller proposal and letting dense mapped neighbors block the initial view. Updated overview height to include the tallest proposal, respond to viewport aspect, and use an elevated overview direction. Photo-angle presets remain available.
+- **Medium:** the parallel import presentation button covered the map-area selector on phones. Moved it above the control dock.
+- **High, disabled pending authorization:** the parallel import work added live lookups that transmit exact coordinates to Overpass. Automatic approval review rejected enabling that data transfer without explicit consent. The route now returns503, and the explorer makes no live coordinate request: uncovered pins stay local with a clear unavailable-data message.
+
+## Architectural sales presentation — 2026-10-02
+
+The initial sales-presentation findings and direction were recorded before edits in [SALES-PRESENTATION.md](SALES-PRESENTATION.md): high-contrast fabricated facade detail competes with the proposal; dense controls cover the model; product explanation precedes architecture; finance precedes unit discovery; full-screen controls lack the existing restrained design language.
+
+Integrated review, before its correction batch:
+
+- **High:** visible depth artifacts break mapped water and ground into triangles, with stippling on the proposal facade. Desktop/day/dusk and phone evidence: [desktop](qa/sales-gallery/chrome-1440-presentation.png), [dusk](qa/sales-gallery/chrome-1440-dusk.png), [phone](qa/sales-gallery/chrome-390-presentation.png).
+- **Medium:** Escape closes presentation without restoring focus to its trigger. Both Chrome viewport runs reproduce the failure: [results](qa/sales-gallery/chrome-results.json).
+- **Evidence correction:** replaced two premature presentation captures after verifying canvas dimensions match the viewport; no persistent blank region remains after resize settles.
+
+Final verification follows the correction batch; this is not a new full-product launch certification.
+
+Fresh sales finish review additionally found four medium issues before correction: appraisal precedes enquiry with developer-oriented form defaults; phone photo angles are compressed; unit cells lack visible identifiers and adequate mobile targets; the mobile assistant launcher overlaps controls. The bounded correction batch is documented in [SALES-PRESENTATION.md](SALES-PRESENTATION.md).
+
+### Geographic context verification closure
+
+Fourteen local snapshots retain footprint/road/water provenance and source-height status; all fourteen example proposal anchors pass the water-intersection regression. Prior production map runs verify saved pins, coverage changes, phone layout and network-failure retry: [Chrome](qa/mapped-context/final/chrome-results.json), [Firefox](qa/mapped-context/ship/firefox-results.json), [WebKit](qa/mapped-context/ship/webkit-results.json). Firefox/WebKit also verify that uncovered custom pins remain local. These are recorded build-specific results, not a new every-city pixel comparison of the sales build. The final sales build reruns all data/geometry/anchor tests. Live coordinate lookup remains disabled; available map areas and example pins remain explicit.
+
+### Sales presentation verification closure
+
+- **Fixed, demonstrated:** map ground/water depth artifacts, presentation focus restoration, mobile photo-control compression and assistant overlap, anonymous/undersized unit cells, and the finance-first enquiry sequence. [Before/after evidence and detailed scope](SALES-PRESENTATION.md#verification-and-verdict--2026-10-02).
+- **Passed:** 80 automated tests, TypeScript, production build, diff check. Production Chrome desktop/phone, Firefox desktop and WebKit desktop regressions pass; 27 final captures inspected. Presentation-only axe has zero violations, with zero uncaught page exceptions or shader/sampler errors in these runs.
+- **Fresh review:** `ship` for the four scored buyer-experience corrections, all resolved. No whole-product approval inferred.
+- **Evidence repaired:** WebKit dusk originally preceded the renderer's state change. The replacement verifies actual light intensity/background before capture; no application lighting defect reproduced in the settled check.
+- **Still open:** existing Three.Clock and Firefox warnings, native/physical-browser coverage, benchmark targets, complete original launch checklist, globally available mapped context, real enquiry delivery and proven commercial uplift. No all-ticked launch checklist issued.
+
+## Skyline detail redesign — 2026-10-02, user-rejected baseline
+
+The user rejected the previous schematic skyline as insufficiently detailed. This overrides the previous scoped visual acceptance. Findings recorded before implementation:
+
+- **High:** nearly every mapped building is a blank gray extrusion. One mineral material and position/normal-only geometry prevent building-specific facade scale, glazing, material identity and night occupancy.
+- **High:** the default lighting and low material contrast flatten the city into a pale model. Detail on the proposal reads as noise against empty surroundings.
+- **Medium:** roof planes have no architectural equipment or edge depth; close and elevated views have no believable secondary scale.
+- **Medium:** water is a flat polygon without reflection/ripple detail, while ground and streets have little surface hierarchy.
+- **Medium:** prior claims limited the city to schematic massing. The authorized redesign should retain accurate mapped envelopes while explicitly labeling facade/roof/street detail illustrative.
+
+Direction: detailed architectural visualization with measured map footprints/heights, building-local facades (brick/stone/glass), restrained night occupancy, bounded roof detail, textured water and stronger lighting depth. No invented survey accuracy, relocated landmarks or paid services. Preserve geographic placement, unknown-height disclosure, batching, low-detail fallback, keyboard controls and existing buyer flow. Baseline: `qa/sales-gallery/final/chrome-1440-presentation.png`, `chrome-1440-dusk.png`, `chrome-390-presentation.png`.
+
+### Skyline detail: first integrated review, before corrections
+
+All 17 captures are loaded and show the named map area; 14 recorded map runs pass with no uncaught exceptions or shader failures. Independent visual inspection found:
+
+- **High:** dense-city foreground buildings obscure proposal podiums and companion buildings (New York, Chicago, Toronto, Dubai, Boston; partial in Miami, San Francisco and London). Correct camera composition while retaining every mapped envelope.
+- **Medium:** the new water normals create implausibly large, blurry stripes. Reduce ripple scale and amplitude, with distance filtering across all wave frequencies.
+- **Medium:** the sky and distant ground have mismatched horizon colors, producing a hard horizontal band. Make atmospheric shading converge to the fog color near the horizon.
+- **Medium:** the `graphics=1` scene-settings dock remains visible over full-screen presentation. Hide the editing dock while presenting, including debug mode.
+
+Evidence: [Jersey City](qa/skyline-detail/first/chrome-jersey-city.png), [New York](qa/skyline-detail/first/chrome-new-york.png), [dusk](qa/skyline-detail/first/chrome-dusk.png), [phone](qa/skyline-detail/first/chrome-phone.png). Frame-rate snapshots do not establish sustained performance; one initial Jersey City sample was 25 FPS, others 51–59. Existing Three.Clock warning remains open.
+
+The fresh reviewer confirmed these four issues and added a fifth medium finding: glass reads as flat dark grids, with excessive clustered lit windows at dusk. The correction raises broad environment reflections, gives glazing a restrained height gradient and reduces clustered occupancy. Reviewer disposition before corrections: **revise**; no approval inferred from the improved detail alone.
+
+### Reflection verification correction
+
+The first corrected captures resolved the hard horizon and extra control dock, but showed weak material differentiation. Source inspection found Three.js overrides material `envMapIntensity` with `scene.environmentIntensity` when no material-specific environment is bound. Bind the same shared environment explicitly to facade, roof, water and proposal glass materials, scale their individual responses by current time-of-day intensity, and retain external texture ownership. This additional correction addresses the fresh reviewer's existing material-depth finding; the earlier corrected capture set is retained as `qa/skyline-detail/correction-check`. Final captures follow.
+
+Dusk additionally uses a blue atmospheric horizon (`#465669`) instead of the near-black night haze. The reviewed continuous transition was technically smooth but still produced a dark visual band against the illuminated ground; dusk capture synchronization now checks the revised rendered background.
+
+### Camera budget regression under concurrent load
+
+A full test run concurrent with browser capture failed one timing assertion: Dubai overview preparation took 101.1 ms against its 100 ms budget; the other 102 tests passed. The earlier isolated 103-test run passed. Retained failure log: `qa/skyline-detail/concurrent-tests-failed.log`. Keep the budget unchanged and exclude distant obstacle boxes that cannot intersect any candidate sightline. Also sample near-ground proposal geometry and permit a steeper fallback where dense neighbors still mask podiums.
+
+The optimized 105-test suite also exceeded the unchanged budget during initial Chrome shader compilation: Jersey City 109.9 ms, with the remaining 104 tests passing. This contention-sensitive timing finding remains **open**; saved as `qa/skyline-detail/optimized-concurrent-tests-failed.log`. Do not infer a sustained performance or resilience pass from the isolated baseline or screenshots.
+
+### Final visual review: low-tier horizon correction
+
+Fresh review of all 24 captures accepted water, controls, standard day/dusk atmosphere, camera composition and material depth, with one remaining medium defect: the Low phone renderer retained a horizontal horizon seam near y226. Root cause: Three applies direct-rendered ground fog after tone mapping in output color space, while sky haze was tone mapped. Apply the horizon blend after output conversion only for Low; the composer path remains unchanged. Preserve the failing capture as `qa/skyline-detail/low-before.png`; verify a matched phone day/dusk capture and a pixel-row continuity assertion.
+
+The wall-clock assertion also exceeded 100 ms with no browser running (Jersey City 122.3 ms) while Node ran all fixture-heavy test files concurrently. The standard test runner now executes test files serially so this benchmark measures its own workload; the 100 ms threshold and every test remain unchanged. This is measurement isolation, **not** resolution of the recorded contention-sensitive timing finding, which stays open. The failing parallel-suite log is retained as `qa/skyline-detail/parallel-suite-timing-failed.log`.
+
+### Skyline detail verification closure — 2026-10-02
+
+- **Visual issues closed:** dimension-based facade detail, bounded roof and street details, water pattern, day/dusk and Low-tier horizon, full-screen control overlap, clearer site-aware composition and differentiated material response. Fresh reviewer verdict after the Low correction: **ship** for this skyline improvement; no full-launch approval inferred.
+- **Evidence:** 25 final images across Chrome/Firefox/WebKit; Chrome covers all 14 mapped areas plus 390/768/1280/1920 widths. The 27 main browser cases and three Low-horizon checks pass. Zero uncaught page exceptions or shader failures; zero presentation-only axe violations. Actual reflection binding and site-dependent camera changes are asserted. [Full before/after and scope](SKYLINE-DETAIL.md#final-verification--2026-10-02).
+- **Regression proof:** Low horizon adjacent-row color jump improves from 18 to 1 in day and dusk, below the 3-level bound; failing capture preserved.
+- **Build/tests:** production build, TypeScript, diff check and 105 serially executed tests pass. [Build](qa/skyline-detail/build-final.log), [tests](qa/skyline-detail/tests-final.log).
+- **Open:** contention-sensitive 100ms camera preparation budget, prior warnings, sustained performance/device targets, physical/native browser coverage and original full-product launch blockers. No all-ticked launch checklist or four-times quality/cost claim issued.
+
+## Full downtown coverage — 2026-10-02, before implementation
+
+The user rejected the neighborhood cutout and requested the whole downtown.
+
+- **High:** existing map extracts terminate roughly 1–2km from example pins. Buildings and water end on rectangular boundaries, so wider and skyline views present only a fragment of the urban core.
+- **High:** the single-snapshot 12,000-feature limit previously caused source areas to be narrowed. Expanding one monolithic file would either fail validation or create a large blocking build.
+- **Medium:** the exterior orbit distance is capped at320 scene units, preventing a useful downtown-wide view even if more geography is present.
+
+Decision: preserve the detailed project-area snapshot and add geographically exact outer downtown tiles. Keep each tile within the existing feature/vertex limits, share materials, build geometry incrementally, and cull off-screen tile batches. Use indexed distant geometry and no distant decorative equipment. All existing mapped heights/footprints, source attribution, example-pin labels and local-only project coordinates remain intact. Coverage describes explicit broad downtown viewing envelopes, not official administrative boundaries. Baseline: `qa/skyline-detail/final/chrome-jersey-city.png` and `chrome-new-york.png`.
+
+### Downtown integrated first pass — 2026-10-02
+
+- **Medium — city-scale horizon seam:** the former camera far plane cuts the enlarged ground before fog fully blends into the sky. Visible in `qa/downtown/first/chrome-jersey-city-whole.png` and `chrome-390.png`. Correction: extend the city-scale far plane and ground together; preserve the established near-view atmosphere.
+- **Medium — whole-area phone composition too shallow:** all mapped tiles fit, but the low oblique angle flattens the entire downtown into a narrow strip. Correction: raise only the whole-downtown camera angle; retain all eight-corner framing constraints and the near-project view.
+- **Streaming review fixed before browser pass:** ready tiles no longer wait350ms to become visible again; obsolete tile jobs cancel without blocking new views; failed manifest refreshes retry the manifest; an absent map ID no longer dereferences a null error. Dedicated tests cover cancellation, retry routing and proposal changes beyond the near-area boundary.
+- First browser probe confirms Jersey City's entire47-tile envelope loads. One initial QA assertion incorrectly required even isolated road segments to be indexed; the intended geometry algorithm leaves them unindexed when that uses less memory. The probe now checks indexed building walls, preserving the existing geometry-size optimization rather than changing production buffers to satisfy an incorrect test.
+- Complete automated suite:131 tests pass. Production build passes. Browser verification continues after the two observed visual corrections; no performance or launch certification is claimed.
+
+### Downtown visual confirmation — 2026-10-02
+
+All14 areas load every manifest tile in Chrome; captured near and whole views show no obvious internal tile gaps. The horizon correction passes visual review and the raised city-view angle makes the phone footprint legible. Forced HTTP503 recovery keeps existing tile object identities and reloads the missing area; rapid city changes leave only the selected city's tiles. Presentation axe check finds zero WCAG2A/AA/2.1AA violations.
+
+- **Medium — controls obscure the full-area boundary on desktop:** the independent review of all14 overview screenshots and four responsive sizes confirms that a raw viewport fit lets the lower corner sit behind the presentation bar at1280/1440/1920 widths. Evidence retained in `qa/downtown/before-safe-area`. Targeted correction: calculate the city fit using presentation-safe vertical space, with projected-bounds tests; no unrelated styling changes. Phone390 and tablet768 views already clear the controls.
+- This is a functional coverage-visibility correction found during confirmation, not a new visual redesign. Final screenshots will confirm the corrected safe-area fit.

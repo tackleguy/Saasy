@@ -1,0 +1,210 @@
+[
+  {
+    "city": "new-york",
+    "uid": "372bc495b3a941308f4a3198bc45e17b",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/372bc495b3a941308f4a3198bc45e17b/model-hq.glb",
+      "/models/sketchfab/372bc495b3a941308f4a3198bc45e17b/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "0e825bb4-e750-41ef-b14a-6f12f9d264a7",
+    "models": [
+      {
+        "name": "city-model:372bc495b3a941308f4a3198bc45e17b:standard",
+        "uuid": "c4c9c902-5c38-47fb-be18-4a160380573d"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3924
+  },
+  {
+    "city": "miami",
+    "uid": "570076f49f0c4b63a51948db40e92c31",
+    "textured": false,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/570076f49f0c4b63a51948db40e92c31/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "0e48e158-2f05-4d21-aee8-3a80d097b1c6",
+    "models": [
+      {
+        "name": "city-model:570076f49f0c4b63a51948db40e92c31:standard",
+        "uuid": "8676106b-966d-43f8-9252-364975d339fd"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 5867
+  },
+  {
+    "city": "los-angeles",
+    "uid": "20c73feebd91436ea9c2efebee8a5661",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/20c73feebd91436ea9c2efebee8a5661/model-hq.glb",
+      "/models/sketchfab/20c73feebd91436ea9c2efebee8a5661/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "106057a9-8899-4bf5-8207-4944d338cd11",
+    "models": [
+      {
+        "name": "city-model:20c73feebd91436ea9c2efebee8a5661:standard",
+        "uuid": "4d78eff9-eab3-400c-99d4-34fcf467b422"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3465
+  },
+  {
+    "city": "chicago",
+    "uid": "5910afb517bd4d2cafd8f280dabf37a4",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/5910afb517bd4d2cafd8f280dabf37a4/model-hq.glb",
+      "/models/sketchfab/5910afb517bd4d2cafd8f280dabf37a4/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "276332f8-9d5a-41c0-9823-a633225acdc3",
+    "models": [
+      {
+        "name": "city-model:5910afb517bd4d2cafd8f280dabf37a4:standard",
+        "uuid": "b791ebce-1173-45e3-bdac-6170f0529822"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3564
+  },
+  {
+    "city": "san-francisco",
+    "uid": "a7a5b99638f143af84bc646ae2d270c1",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/a7a5b99638f143af84bc646ae2d270c1/model-hq.glb",
+      "/models/sketchfab/a7a5b99638f143af84bc646ae2d270c1/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "85b58545-e0d8-4f53-b819-8fcb68d22208",
+    "models": [
+      {
+        "name": "city-model:a7a5b99638f143af84bc646ae2d270c1:standard",
+        "uuid": "86539a48-1826-48a8-8a9e-029c5a6d0eef"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3161
+  },
+  {
+    "city": "seattle",
+    "uid": "1128db3b12bd470eb6b2d1421a70e732",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/1128db3b12bd470eb6b2d1421a70e732/model-hq.glb",
+      "/models/sketchfab/1128db3b12bd470eb6b2d1421a70e732/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "c0e95174-a631-41ad-9bb7-4a5993b3dc85",
+    "models": [
+      {
+        "name": "city-model:1128db3b12bd470eb6b2d1421a70e732:standard",
+        "uuid": "fd180a80-3d76-478f-b4cb-9791562a44df"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3715
+  },
+  {
+    "city": "boston",
+    "uid": "395d4a8639de411592797890e219dbd2",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/395d4a8639de411592797890e219dbd2/model-hq.glb",
+      "/models/sketchfab/395d4a8639de411592797890e219dbd2/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "5579e772-7c74-4e2f-8685-507271a0b704",
+    "models": [
+      {
+        "name": "city-model:395d4a8639de411592797890e219dbd2:standard",
+        "uuid": "492111e5-fd19-4b92-9835-51e6e4973653"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3765
+  },
+  {
+    "city": "toronto",
+    "uid": "013c2e21e61c4a598c6d279f05953819",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/013c2e21e61c4a598c6d279f05953819/model-hq.glb",
+      "/models/sketchfab/013c2e21e61c4a598c6d279f05953819/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "d77c7a16-0ab1-4a71-b281-ade734c606f1",
+    "models": [
+      {
+        "name": "city-model:013c2e21e61c4a598c6d279f05953819:standard",
+        "uuid": "f5810e38-a588-498a-b4a5-973f225e9560"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3561
+  },
+  {
+    "city": "london",
+    "uid": "74cc9216f2c24efa96fe2554897e5966",
+    "textured": true,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/74cc9216f2c24efa96fe2554897e5966/model-hq.glb",
+      "/models/sketchfab/74cc9216f2c24efa96fe2554897e5966/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "e1704660-e558-4de9-ac2a-fdd97e7f9c61",
+    "models": [
+      {
+        "name": "city-model:74cc9216f2c24efa96fe2554897e5966:standard",
+        "uuid": "f39c1030-d388-4fdd-b2d9-b7370bd43dc0"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 4041
+  },
+  {
+    "city": "dubai",
+    "uid": "0e60e12f253442ee8baffa3d9afb2c3d",
+    "textured": false,
+    "passed": true,
+    "requests": [
+      "/models/sketchfab/0e60e12f253442ee8baffa3d9afb2c3d/model.glb"
+    ],
+    "canvasPreserved": true,
+    "scene": "949dddee-4180-4d2c-9a42-80d28f324dc8",
+    "models": [
+      {
+        "name": "city-model:0e60e12f253442ee8baffa3d9afb2c3d:standard",
+        "uuid": "34db0844-56b0-4220-b560-608668b05339"
+      }
+    ],
+    "errors": [],
+    "external": [],
+    "elapsedMs": 3811
+  }
+]

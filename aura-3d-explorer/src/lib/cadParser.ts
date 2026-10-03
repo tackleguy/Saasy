@@ -239,14 +239,17 @@ export async function parseCadFile(file: File): Promise<CadReport> {
           : `Could not read the GLB: ${e instanceof Error ? e.message : String(e)}`
       );
     }
-    return { ...base, format: "GLTF", model: gltf.scene, upHint: "y", facts: meshFacts(gltf.scene) };
+    return { ...base, format: "GLTF", model: gltf.scene, upHint: "y", metresPerUnit: 1, facts: meshFacts(gltf.scene) };
   }
 
   if (ext === "fbx") {
     const { FBXLoader } = await import("three/examples/jsm/loaders/FBXLoader.js");
-    // Silence texture 404s: materials are replaced by the archviz set anyway.
+    // Preserve embedded textures. A single-file import cannot resolve sibling assets.
     const manager = new THREE.LoadingManager();
-    manager.setURLModifier(() => "data:,");
+    manager.setURLModifier(url => {
+      if (!url.startsWith("data:") && !url.startsWith("blob:")) throw new Error("This FBX uses external textures. Embed its media or export a self-contained GLB.");
+      return url;
+    });
     const group = new FBXLoader(manager).parse(buf, "");
     const usf = group.userData.unitScaleFactor as number | undefined; // centimetres per unit
     return {

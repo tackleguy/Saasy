@@ -1,0 +1,234 @@
+[
+  {
+    "id": "jersey-city",
+    "city": "new-york",
+    "label": "Jersey City waterfront \u2014 example site",
+    "latitude": 40.71210050881596,
+    "longitude": -74.03849346085599,
+    "example": true,
+    "bounds": [
+      -74.045,
+      40.7,
+      -74.001,
+      40.727
+    ],
+    "projects": [
+      "meridian-tower"
+    ]
+  },
+  {
+    "id": "miami-beach",
+    "city": "miami",
+    "label": "Miami Beach \u2014 example site",
+    "latitude": 25.7878,
+    "longitude": -80.13,
+    "example": true,
+    "bounds": [
+      -80.145,
+      25.777,
+      -80.115,
+      25.799
+    ],
+    "projects": [
+      "seaform-hotel"
+    ]
+  },
+  {
+    "id": "chicago",
+    "city": "chicago",
+    "label": "Chicago lakefront \u2014 example site",
+    "latitude": 41.887,
+    "longitude": -87.618,
+    "example": true,
+    "bounds": [
+      -87.638,
+      41.876,
+      -87.609,
+      41.899
+    ],
+    "projects": [
+      "chess-towers"
+    ]
+  },
+  {
+    "id": "dubai",
+    "city": "dubai",
+    "label": "Downtown Dubai \u2014 example site",
+    "latitude": 25.191,
+    "longitude": 55.278,
+    "example": true,
+    "bounds": [
+      55.262,
+      25.18,
+      55.292,
+      25.204
+    ],
+    "projects": [
+      "infiniti"
+    ]
+  },
+  {
+    "id": "toronto",
+    "city": "toronto",
+    "label": "Toronto waterfront \u2014 example site",
+    "latitude": 43.643,
+    "longitude": -79.377,
+    "example": true,
+    "bounds": [
+      -79.397,
+      43.632,
+      -79.36,
+      43.657
+    ],
+    "projects": [
+      "refad-place"
+    ]
+  },
+  {
+    "id": "bayonne",
+    "city": "new-york",
+    "label": "Bayonne waterfront \u2014 example site",
+    "latitude": 40.665,
+    "longitude": -74.108,
+    "example": true,
+    "bounds": [
+      -74.125,
+      40.653,
+      -74.092,
+      40.677
+    ],
+    "projects": [
+      "broadway-bayonne"
+    ]
+  },
+  {
+    "id": "lorenskog",
+    "city": "generic",
+    "label": "L\u00f8renskog \u2014 example site",
+    "latitude": 59.921,
+    "longitude": 10.953,
+    "example": true,
+    "bounds": [
+      10.929,
+      59.912,
+      10.978,
+      59.932
+    ],
+    "projects": [
+      "lorenskog-quarter"
+    ]
+  },
+  {
+    "id": "madrid",
+    "city": "generic",
+    "label": "Madrid \u2014 example site",
+    "latitude": 40.43,
+    "longitude": -3.69,
+    "example": true,
+    "bounds": [
+      -3.707,
+      40.42,
+      -3.677,
+      40.441
+    ],
+    "projects": [
+      "sports-world"
+    ]
+  },
+  {
+    "id": "london",
+    "city": "london",
+    "label": "London Bridge \u2014 example site",
+    "latitude": 51.505,
+    "longitude": -0.086,
+    "example": true,
+    "bounds": [
+      -0.103,
+      51.496,
+      -0.067,
+      51.518
+    ],
+    "projects": [
+      "aurelia-tower"
+    ]
+  },
+  {
+    "id": "seattle",
+    "city": "seattle",
+    "label": "Seattle waterfront \u2014 example site",
+    "latitude": 47.61012959422927,
+    "longitude": -122.34493598303618,
+    "example": true,
+    "bounds": [
+      -122.365,
+      47.598,
+      -122.327,
+      47.622
+    ],
+    "projects": [
+      "hexa-gardens"
+    ]
+  },
+  {
+    "id": "new-york",
+    "city": "new-york",
+    "label": "Midtown Manhattan \u2014 example site",
+    "latitude": 40.75,
+    "longitude": -73.974,
+    "example": true,
+    "bounds": [
+      -73.991,
+      40.741,
+      -73.962,
+      40.76
+    ],
+    "projects": [
+      "lexington-deco"
+    ]
+  },
+  {
+    "id": "los-angeles",
+    "city": "los-angeles",
+    "label": "Downtown Los Angeles \u2014 example site",
+    "latitude": 34.051,
+    "longitude": -118.247,
+    "example": true,
+    "bounds": [
+      -118.266,
+      34.039,
+      -118.232,
+      34.065
+    ],
+    "projects": []
+  },
+  {
+    "id": "san-francisco",
+    "city": "san-francisco",
+    "label": "San Francisco waterfront \u2014 example site",
+    "latitude": 37.791,
+    "longitude": -122.394,
+    "example": true,
+    "bounds": [
+      -122.417,
+      37.779,
+      -122.38,
+      37.808
+    ],
+    "projects": []
+  },
+  {
+    "id": "boston",
+    "city": "boston",
+    "label": "Boston waterfront \u2014 example site",
+    "latitude": 42.35390997492443,
+    "longitude": -71.046,
+    "example": true,
+    "bounds": [
+      -71.064,
+      42.343,
+      -71.027,
+      42.366
+    ],
+    "projects": []
+  }
+]

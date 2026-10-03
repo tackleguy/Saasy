@@ -1,7 +1,6 @@
 /**
  * Apartment fit — which room plan and furniture set a floor is showing.
- * Stored per floor in the explorer. Apartments start unfurnished (corner
- * rooms, no pieces); the inspector or AURA adds a furniture set.
+ * Stored per floor in the explorer. Sample apartments start furnished; the inspector can select an empty fit.
  */
 export const APARTMENT_SCHEMES = ["corner", "living-out", "gallery", "studio"] as const;
 export type ApartmentScheme = (typeof APARTMENT_SCHEMES)[number];
@@ -18,7 +17,7 @@ export interface FloorFit {
   models?: string[];
 }
 
-export const DEFAULT_FIT: FloorFit = { scheme: "corner", furniture: "none" };
+export const DEFAULT_FIT: FloorFit = { scheme: "corner", furniture: "standard", models: ["16070c2e6faa405391ab7ada8bb0aed6", "2cfe4f4c192f4dd08229bd7460532b09"] };
 
 /** The fit the room planner lays out: an unfurnished floor gets the standard rooms. */
 export function layoutFit(fit: FloorFit): FloorFit {

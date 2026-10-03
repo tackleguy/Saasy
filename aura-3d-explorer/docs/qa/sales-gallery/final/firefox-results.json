@@ -1,0 +1,30 @@
+[
+  {
+    "width": 1440,
+    "passed": true,
+    "focusRestored": true,
+    "axe": [],
+    "pageErrors": [],
+    "console": [
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: texSubImage: Alpha-premult and y-flip are deprecated for non-DOM-Element uploads.\"]",
+      "[JavaScript Warning: \"WebGL warning: drawElementsInstanced: Depth texture comparison requests (e.g. `LINEAR`) Filtering, but behavior is implementation-defined, and so on some systems will sometimes behave as `NEAREST`. (warns once)\"]",
+      "[JavaScript Warning: \"The resource at “http://127.0.0.1:3170/_next/static/media/6c596dfcddeca1e9-s.p.woff2” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:3170/\" line: 0}]",
+      "[JavaScript Warning: \"The resource at “http://127.0.0.1:3170/_next/static/media/7cb8e1b9ab81be17-s.p.woff2” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:3170/\" line: 0}]",
+      "[JavaScript Warning: \"The resource at “http://127.0.0.1:3170/_next/static/media/e872e3f251959e82-s.p.woff2” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:3170/\" line: 0}]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: texSubImage: Alpha-premult and y-flip are deprecated for non-DOM-Element uploads.\"]",
+      "[JavaScript Warning: \"WebGL warning: drawElementsInstanced: Depth texture comparison requests (e.g. `LINEAR`) Filtering, but behavior is implementation-defined, and so on some systems will sometimes behave as `NEAREST`. (warns once)\"]",
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: texSubImage: Alpha-premult and y-flip are deprecated for non-DOM-Element uploads.\"]",
+      "[JavaScript Warning: \"WebGL warning: drawElementsInstanced: Depth texture comparison requests (e.g. `LINEAR`) Filtering, but behavior is implementation-defined, and so on some systems will sometimes behave as `NEAREST`. (warns once)\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]"
+    ]
+  }
+]

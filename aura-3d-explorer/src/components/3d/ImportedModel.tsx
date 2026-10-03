@@ -1,34 +1,29 @@
 "use client";
-/**
- * ImportedModel — an imported, normalised CAD / 3D model standing on a site plot.
- * -----------------------------------------------------------------------------
- * `object` comes from lib/importNormalize (Y-up, scene units, centred, base
- * at y = 0, archviz materials). It is placed at the building's ground
- * position [x, z] and rises in over ~1.6 s (scale-Y 0 → 1, ease-out) each
- * time it mounts. BuildingScene renders it in place of the procedural tower.
- */
-import { useRef } from "react";
+import { useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
-
-const RISE_S = 1.6;
-
-export default function ImportedModel({ object, position }: { object: THREE.Object3D; position: [x: number, z: number] }) {
-  const group = useRef<THREE.Group>(null);
-  const t = useRef(0);
-
-  useFrame((_, dt) => {
-    const g = group.current;
-    if (!g || t.current >= RISE_S) return;
-    t.current = Math.min(RISE_S, t.current + Math.min(dt, 0.05));
-    const k = t.current / RISE_S;
-    const eased = 1 - Math.pow(1 - k, 3);
-    g.scale.set(1, Math.max(eased, 0.001), 1);
-  });
-
-  return (
-    <group ref={group} position={[position[0], 0, position[1]]} scale={[1, 0.001, 1]}>
-      <primitive object={object} />
-    </group>
-  );
+import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
+import type { ModelCut } from "./presentationContext";
+import { invalidateShadows } from "./staticShadows";
+export default function ImportedModel({ object, position, cut }: { object: THREE.Object3D; position: [number, number]; cut?: ModelCut }) {
+  const prepared = useMemo(() => {
+    const copy = clone(object);
+    const materials = new Map<THREE.Material, THREE.Material>();
+    copy.traverse(node => {
+      const mesh = node as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const get = (m: THREE.Material) => { if (!materials.has(m)) materials.set(m, m.clone()); return materials.get(m)!; };
+      mesh.material = Array.isArray(mesh.material) ? mesh.material.map(get) : get(mesh.material);
+    });
+    return { copy, materials: [...materials.values()] };
+  }, [object]);
+  useEffect(() => () => prepared.materials.forEach(m => m.dispose()), [prepared]);
+  useEffect(() => {
+    const height = Number(object.userData.heightUnits) || 1;
+    const planes = !cut || cut.mode === "exterior" ? [] : [cut.mode === "floor"
+      ? new THREE.Plane(new THREE.Vector3(0, -1, 0), height * cut.fraction)
+      : new THREE.Plane(new THREE.Vector3(0, 0, -1), position[1])];
+    for (const material of prepared.materials) { material.clippingPlanes = planes; material.clipShadows = true; material.needsUpdate = true; }
+    invalidateShadows();
+  }, [prepared, cut?.mode, cut?.fraction, object, position]);
+  return <group position={[position[0], 0, position[1]]}><primitive object={prepared.copy} dispose={null}/></group>;
 }

@@ -14,7 +14,6 @@
  */
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
 import type { FacadeSpec, FloorData } from "@/types";
 import { MODEL_SCALE } from "@/lib/tower";
 import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
@@ -67,14 +66,8 @@ function FloorPatches({ plan }: { plan: RoomPlan }) {
 function Rooms({ floor, coreSize, crownFloors, fit }: { floor: FloorData; coreSize: number; crownFloors: number; fit: FloorFit }) {
   const plan = useMemo(() => interiorPlanFor(floor, coreSize, crownFloors, fit), [floor, coreSize, crownFloors, fit]);
   const group = useRef<THREE.Group>(null);
-  useFrame((_, dt) => {
-    const g = group.current;
-    if (!g || g.scale.y >= MODEL_SCALE - 1e-4) return;
-    const k = 1 - Math.pow(0.002, dt);
-    g.scale.y = Math.min(MODEL_SCALE, THREE.MathUtils.lerp(g.scale.y, MODEL_SCALE, k) + 1e-4);
-  });
   return (
-    <group ref={group} position={[0, SLAB_THICKNESS + 0.034, 0]} scale={[MODEL_SCALE, 0.001, MODEL_SCALE]}>
+    <group ref={group} position={[0, SLAB_THICKNESS + 0.034, 0]} scale={MODEL_SCALE}>
       <FloorPatches plan={plan} />
       <Walls plan={plan} />
       <Doors doors={plan.doors} />

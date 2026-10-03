@@ -300,7 +300,7 @@ export default function AssistantPanel() {
             onClick={() => setOpen(true)}
             aria-haspopup="dialog"
             aria-expanded={open}
-            className="overlay fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 px-4 py-2.5 text-sm text-ink transition-colors hover:border-ink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50"
+            className="overlay fixed right-16 top-2.5 z-40 inline-flex min-h-11 sm:bottom-5 sm:right-5 sm:top-auto items-center gap-2 px-4 py-2.5 text-sm text-ink transition-colors hover:border-ink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50"
           >
             <Sparkles className="h-4 w-4 text-oak" aria-hidden />
             <span className="font-serif text-[17px] leading-none">Ask AURA</span>

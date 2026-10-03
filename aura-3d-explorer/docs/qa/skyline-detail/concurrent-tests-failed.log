@@ -1,0 +1,153 @@
+
+> aura-3d-explorer@1.0.0 test
+> node --import tsx --test scripts/qa/*.test.ts
+
+(node:43628) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ detailed city materials share programs while preserving district families and independently owned uniforms (1.793833ms)
+✔ facade shader retains PBR lighting, physical local scale and distance filtering (0.278667ms)
+✔ water adds surface normals without displacing the measured shoreline or restoring depth fighting (0.184ms)
+✔ a pending quality upgrade keeps the district and atomically replaces it before disposal (1.026792ms)
+✔ initial unavailable or corrupt HQ falls back to the same district's standard model (4.299375ms)
+✔ a failed HQ upgrade retains an active standard district without downloading it again (0.157542ms)
+✔ both variants failing leaves an actionable failed state and a later retry can recover (0.806167ms)
+✔ a failed downgrade retains its existing HQ district (0.163541ms)
+✔ reversing to active detail cancels an obsolete upgrade without refetching or blanking (0.122666ms)
+✔ an older initial load cannot replace a newer choice or trigger a stale fallback (0.104ms)
+✔ unmount detaches active scenery and disposes late parse completion without callbacks (0.12375ms)
+✔ a stale fallback completion is released when a newer request wins (0.895292ms)
+✔ WGS84 100-metre east/north displacements use the architectural scale and correct axes (0.690666ms)
+✔ nearby WGS84 coordinates round-trip for London, New York and Dubai without axis reversal (0.261083ms)
+✔ longitude wrap uses the local antimeridian direction without spanning the globe (0.082334ms)
+✔ project locations require finite coordinates, an explicit example flag and a bounded label (0.269584ms)
+✔ snapshot coverage is inclusive and rejects invalid or wrapped bounds (0.137708ms)
+✔ snapshot validation accepts all supported geometry shapes and preserves height provenance (0.683125ms)
+✔ malformed, nonfinite and impossible map data is rejected before geometry generation (3.469459ms)
+✔ untrusted text remains text and extra executable-looking fields are not copied (1.32375ms)
+✔ snapshot feature and aggregate vertex budgets stop oversized map inputs (149.503ms)
+✔ live coordinates accept only finite in-range decimal strings (1.734958ms)
+✔ live coordinate query rejects missing, blank and duplicate parameters (1.32425ms)
+✔ recorded heights accept metres or explicit feet with exact conversion (0.484583ms)
+✔ ambiguous or unsupported heights remain unknown instead of numeric prefixes or clamping (0.100583ms)
+✔ bounded map JSON accepts an exact byte limit and UTF-8 split between chunks (112.208459ms)
+✔ declared oversized map responses are rejected and cancelled before reading (0.879625ms)
+✔ chunked and understated map responses stop at the aggregate byte limit (0.433208ms)
+✔ malformed JSON, invalid UTF-8 and interrupted bodies cannot become snapshots (2.779792ms)
+(node:43632) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ jersey-city: example proposal footprints do not intersect recorded water (957.905208ms)
+✔ miami-beach: example proposal footprints do not intersect recorded water (11.812666ms)
+✔ chicago: example proposal footprints do not intersect recorded water (65.549833ms)
+✔ dubai: example proposal footprints do not intersect recorded water (2478.253333ms)
+✔ toronto: example proposal footprints do not intersect recorded water (40.163417ms)
+✔ bayonne: example proposal footprints do not intersect recorded water (14.07ms)
+✔ lorenskog: example proposal footprints do not intersect recorded water (17.96375ms)
+✔ madrid: example proposal footprints do not intersect recorded water (24.2095ms)
+✔ london: example proposal footprints do not intersect recorded water (456.844041ms)
+✔ seattle: example proposal footprints do not intersect recorded water (88.634833ms)
+✔ new-york: example proposal footprints do not intersect recorded water (19.92625ms)
+✔ los-angeles: example proposal footprints do not intersect recorded water (16.466416ms)
+✔ san-francisco: example proposal footprints do not intersect recorded water (269.455667ms)
+✔ boston: example proposal footprints do not intersect recorded water (692.863833ms)
+✔ decimal coordinate pairs accept signs, spacing, zero and geographic limits (1.208417ms)
+✔ Google Maps view-centre and explicit coordinate-query links preserve latitude/longitude order (0.539417ms)
+✔ OpenStreetMap marker and map-centre links parse without network requests (0.269042ms)
+✔ non-coordinate, shortened, ambiguous and unsafe links are rejected without guessing an address (0.235625ms)
+✔ all accepted formats reject nonfinite and out-of-range coordinates (0.218ms)
+✔ project examples distinguish Jersey City, Bayonne and Manhattan within the New York preset (0.276166ms)
+✔ generic project defaults keep Madrid and Lørenskog in their actual separate map regions (0.128ms)
+✔ coverage includes its exact boundary and never chooses an uncovered nearest city (0.0995ms)
+✔ overlapping coverage is selected by local ground distance, not raw degree distance (0.186291ms)
+(node:43634) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ rotated outer and courtyard walls have edge-local metre coordinates and constant face identity (42.499209ms)
+✔ roof coordinates stay local in metres and underside caps cannot acquire a window pattern (1.421208ms)
+✔ building appearance remains stable when features reorder, preparation yields, or the pin moves (4.367709ms)
+✔ multipart buildings share identity while unknown heights and landscape add no facade attributes or batches (0.598166ms)
+✔ repeated source vertices do not create invalid facade coordinates (0.243ms)
+(node:43635) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ mapped roofs preserve geographic position, metres, polygon holes and upward normals (32.937375ms)
+✔ outer and courtyard wall normals face away from the building mass (8.578416ms)
+✔ unknown heights stay flat even if a contradictory height value is supplied (12.857833ms)
+✔ proposal clearing removes intersections only, preserves unrelated buildings and courtyard holes (2.348459ms)
+✔ a rotated proposal does not clear merely overlapping axis-aligned bounds (3.856917ms)
+✔ multipolygons preserve detached parts and clear only the part intersecting a proposal (2.745708ms)
+✔ water, parks and road centerlines retain map coordinates without a site rotation (6.88775ms)
+✔ large snapshots stay in at most six batches and owned geometry disposes once (95.701125ms)
+✔ empty map data adds no synthetic buildings, parks, roads or water (0.403125ms)
+✔ missing, unknown-height and below-sightline context keep the exact canonical view (5.497583ms)
+✔ a dense foreground blocker causes a deterministic clearer azimuth without raising an already clear view (0.694292ms)
+✔ source polygons removed beneath proposals do not steer the camera; courtyard envelopes remain obstacles (0.668667ms)
+✔ similar context views favour separating proposal companions instead of hiding one behind another (0.665583ms)
+✖ all bundled snapshot camera choices finish within 100ms without mutating source data (595.734792ms)
+✔ roof equipment is deterministic by feature ID and independent of input feature order (3.77475ms)
+✔ all pads remain inside a concave footprint and outside its courtyard (2.475708ms)
+✔ no equipment appears under a higher overlapping building part (8.297875ms)
+✔ a small enclosed hole and a thin crossing upper part cannot slip between pad corners (23.0225ms)
+✔ estimated, unknown and distant roofs receive no invented equipment (0.9565ms)
+✔ intersecting proposal removes details from the whole hidden context roof (0.425625ms)
+✔ quality budgets are bounded to three shared batches and every part stays within 300 metres (25.540959ms)
+✔ street objects reject full footprint overlaps with buildings and water, not just their centres (2.129917ms)
+✔ courtyards and islands are clear only when the whole detail stays inside the polygon hole (1.513041ms)
+✔ rotated proposal outlines and multipolygon parts are respected without a circular exclusion zone (1.129209ms)
+✔ reserved details do not overlap one another or alter source-map clearance (0.548375ms)
+✔ placement is deterministic and quality tiers keep cars sparse and low quality free of car draws (9.908875ms)
+✔ project pins restore independently and missing records clear the previous pin (2.653875ms)
+✔ valid custom pins restore while corrupt, invalid and inaccessible pins show a fallback message (0.733875ms)
+✔ map requests accept only validated data with the requested source identity (157.241125ms)
+✔ a stalled response times out and aborts its network request (10.697625ms)
+✔ switching projects cancels pending JSON parsing and rejects late stale completion (3.022542ms)
+(node:43658) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ QA-002 rejects null, arrays, scalars and malformed JSON without crashing (66.545167ms)
+✔ QA-002 rejects chunked oversized bytes before parsing (0.658458ms)
+✔ QA-006 money handles negative zero, cents and unavailable numbers (29.848542ms)
+✔ QA-003 failed storage writes are observable; valid scenario survives reload (6.637209ms)
+✔ QA-007 malformed saved scenarios are rejected (0.268834ms)
+✔ independent one-floor calculation agrees to the cent (3.180458ms)
+✔ all project floor, zone and site totals reconcile at defaults and slider extremes (36.799ms)
+✔ zero revenue and costs above revenue remain finite and negative (0.208791ms)
+✔ QA-022 corrupt and oversized CAD files fail before allocating geometry (13.648833ms)
+✔ skyline: all cities have distinct, deterministic geometry within six material batches (566.785292ms)
+✔ skyline: windows maintain a 0.9-unit storey on every facade; roofs are separate (178.194875ms)
+✔ skyline: quality reduction preserves district bounds and site edits remove geometry (347.035375ms)
+(node:43659) [THREE_CJS_DEPRECATED] DeprecationWarning: `require("three")` is deprecated and will be removed.
+Replace `const THREE = require("three")` with `import * as THREE from "three"`.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ exterior camera separates close facade surfaces across the full overview orbit range (45.919125ms)
+✔ near-plane precision remains conservative at street level and minimum zoom (0.195083ms)
+✔ map ground decals remain deterministic even when all surface depths round to the same value (0.299166ms)
+ℹ tests 103
+ℹ suites 0
+ℹ pass 102
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5851.048375
+
+✖ failing tests:
+
+test at scripts/qa/mapped-overview.test.ts:2:5077
+✖ all bundled snapshot camera choices finish within 100ms without mutating source data (595.734792ms)
+  AssertionError [ERR_ASSERTION]: dubai: 101.1ms
+      at TestContext.<anonymous> (/Users/maxr/Documents/ChatGPT/Aura 3d/Saasy/aura-3d-explorer/scripts/qa/mapped-overview.test.ts:64:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

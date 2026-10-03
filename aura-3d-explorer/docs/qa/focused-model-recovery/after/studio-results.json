@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "explosionBeforeAndAfter": "0.1",
+  "canvasPreserved": true,
+  "keyboardRetry": true,
+  "pendingFeedback": true,
+  "recoveryAxeViolations": [],
+  "errors": [
+    "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3163/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+  ]
+}

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit",
-    "test": "node --import tsx --test scripts/qa/regressions.test.ts",
+    "test": "node --import tsx --test --test-concurrency=1 scripts/qa/*.test.ts",
     "qa:browser": "node scripts/qa/browser-audit.mjs",
     "qa:flows": "node scripts/qa/ui-regressions.mjs",
     "qa:lighthouse": "node scripts/qa/lighthouse.mjs"
