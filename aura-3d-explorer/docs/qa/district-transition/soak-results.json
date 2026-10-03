@@ -1,0 +1,496 @@
+{
+  "started": "2026-10-02T07:20:51.549Z",
+  "url": "http://127.0.0.1:3162",
+  "scope": "Five high-to-low district replacement cycles. Concurrent browser tests share the GPU. Counts are renderer resources, not heap bytes, GPU bytes or an FPS benchmark.",
+  "passed": false,
+  "samples": [
+    {
+      "cycle": 0,
+      "tier": "high",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "2d4ff5c2-90d2-411b-ac56-68e795c86a94",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:high"
+        }
+      ],
+      "graphics": {
+        "tier": "high",
+        "fps": 36,
+        "calls": 390,
+        "triangles": 3040137,
+        "geometries": 391,
+        "textures": 87,
+        "programs": 82,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 391,
+        "textures": 87,
+        "programs": 82
+      }
+    },
+    {
+      "cycle": 0,
+      "tier": "low",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "403118b9-7010-4258-bd20-963ee0f8aa1e",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:standard"
+        }
+      ],
+      "graphics": {
+        "tier": "low",
+        "fps": 56,
+        "calls": 271,
+        "triangles": 3027059,
+        "geometries": 391,
+        "textures": 54,
+        "programs": 76,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 391,
+        "textures": 54,
+        "programs": 76
+      }
+    },
+    {
+      "cycle": 1,
+      "tier": "high",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "e45227b2-af65-46fd-a336-4ae07280bb4a",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:high"
+        }
+      ],
+      "graphics": {
+        "tier": "high",
+        "fps": 31,
+        "calls": 292,
+        "triangles": 2989213,
+        "geometries": 393,
+        "textures": 87,
+        "programs": 82,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 393,
+        "textures": 87,
+        "programs": 82
+      }
+    },
+    {
+      "cycle": 1,
+      "tier": "low",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "c52d8134-fef8-47d9-9e3d-357f51063725",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:standard"
+        }
+      ],
+      "graphics": {
+        "tier": "low",
+        "fps": 43,
+        "calls": 286,
+        "triangles": 3443994,
+        "geometries": 393,
+        "textures": 54,
+        "programs": 76,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 393,
+        "textures": 54,
+        "programs": 76
+      }
+    },
+    {
+      "cycle": 2,
+      "tier": "high",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "30e9e570-d09b-4761-a504-1f99db317021",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:high"
+        }
+      ],
+      "graphics": {
+        "tier": "high",
+        "fps": 37,
+        "calls": 296,
+        "triangles": 3027083,
+        "geometries": 395,
+        "textures": 87,
+        "programs": 82,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 395,
+        "textures": 87,
+        "programs": 82
+      }
+    },
+    {
+      "cycle": 2,
+      "tier": "low",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "d626dada-92ce-4528-915f-6af1f5503b72",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:standard"
+        }
+      ],
+      "graphics": {
+        "tier": "low",
+        "fps": 43,
+        "calls": 276,
+        "triangles": 3186526,
+        "geometries": 395,
+        "textures": 54,
+        "programs": 76,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 395,
+        "textures": 54,
+        "programs": 76
+      }
+    },
+    {
+      "cycle": 3,
+      "tier": "high",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "06fd64db-2e54-4bab-b963-3d53e792350f",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:high"
+        }
+      ],
+      "graphics": {
+        "tier": "high",
+        "fps": 35,
+        "calls": 296,
+        "triangles": 3027824,
+        "geometries": 397,
+        "textures": 87,
+        "programs": 82,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 397,
+        "textures": 87,
+        "programs": 82
+      }
+    },
+    {
+      "cycle": 3,
+      "tier": "low",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "91b87024-d544-4671-8923-f221cc55f105",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:standard"
+        }
+      ],
+      "graphics": {
+        "tier": "low",
+        "fps": 44,
+        "calls": 281,
+        "triangles": 3313252,
+        "geometries": 397,
+        "textures": 54,
+        "programs": 76,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 397,
+        "textures": 54,
+        "programs": 76
+      }
+    },
+    {
+      "cycle": 4,
+      "tier": "high",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "1b1967e3-3eb6-45c9-927d-c0d6f6936e6c",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:high"
+        }
+      ],
+      "graphics": {
+        "tier": "high",
+        "fps": 40,
+        "calls": 309,
+        "triangles": 3329015,
+        "geometries": 399,
+        "textures": 87,
+        "programs": 82,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 399,
+        "textures": 87,
+        "programs": 82
+      }
+    },
+    {
+      "cycle": 4,
+      "tier": "low",
+      "sameCanvas": true,
+      "hosts": 1,
+      "models": [
+        {
+          "uuid": "941de3b6-72a8-4f00-85a7-ed7d146d2c48",
+          "name": "city-model:372bc495b3a941308f4a3198bc45e17b:standard"
+        }
+      ],
+      "graphics": {
+        "tier": "low",
+        "fps": 46,
+        "calls": 288,
+        "triangles": 3504442,
+        "geometries": 399,
+        "textures": 54,
+        "programs": 76,
+        "towerMeshes": {
+          "tower:aurelia": 25
+        }
+      },
+      "resources": {
+        "geometries": 399,
+        "textures": 54,
+        "programs": 76
+      }
+    }
+  ],
+  "pageErrors": [],
+  "consoleWarnings": [
+    {
+      "type": "warning",
+      "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+    }
+  ],
+  "monitor": {
+    "running": false,
+    "frames": 1361,
+    "invalid": []
+  },
+  "failure": "AssertionError [ERR_ASSERTION]: high resource counts changed after warm-up\n+ actual - expected\n\n  {\n+   geometries: 395,\n-   geometries: 393,\n    textures: 87\n  }\n",
+  "finished": "2026-10-02T07:21:28.532Z",
+  "baseline": {
+    "started": "2026-10-02T07:22:59.561Z",
+    "url": "http://127.0.0.1:3161",
+    "samples": [
+      {
+        "cycle": 0,
+        "tier": "high",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "high",
+          "fps": 59,
+          "calls": 295,
+          "triangles": 3013744,
+          "geometries": 391,
+          "textures": 89,
+          "programs": 80,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 0,
+        "tier": "low",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "low",
+          "fps": 60,
+          "calls": 270,
+          "triangles": 3026184,
+          "geometries": 391,
+          "textures": 56,
+          "programs": 74,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 1,
+        "tier": "high",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "high",
+          "fps": 46,
+          "calls": 297,
+          "triangles": 3057822,
+          "geometries": 393,
+          "textures": 89,
+          "programs": 80,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 1,
+        "tier": "low",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "low",
+          "fps": 60,
+          "calls": 276,
+          "triangles": 3208999,
+          "geometries": 393,
+          "textures": 56,
+          "programs": 74,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 2,
+        "tier": "high",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "high",
+          "fps": 51,
+          "calls": 293,
+          "triangles": 2998833,
+          "geometries": 395,
+          "textures": 89,
+          "programs": 80,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 2,
+        "tier": "low",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "low",
+          "fps": 60,
+          "calls": 275,
+          "triangles": 3142523,
+          "geometries": 395,
+          "textures": 56,
+          "programs": 74,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 3,
+        "tier": "high",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "high",
+          "fps": 58,
+          "calls": 296,
+          "triangles": 3026633,
+          "geometries": 397,
+          "textures": 89,
+          "programs": 80,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 3,
+        "tier": "low",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "low",
+          "fps": 60,
+          "calls": 269,
+          "triangles": 3013718,
+          "geometries": 397,
+          "textures": 56,
+          "programs": 74,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 4,
+        "tier": "high",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "high",
+          "fps": 51,
+          "calls": 295,
+          "triangles": 3013744,
+          "geometries": 399,
+          "textures": 89,
+          "programs": 80,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "cycle": 4,
+        "tier": "low",
+        "sameCanvas": true,
+        "graphics": {
+          "tier": "low",
+          "fps": 60,
+          "calls": 273,
+          "triangles": 3125900,
+          "geometries": 399,
+          "textures": 56,
+          "programs": 74,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      }
+    ],
+    "pageErrors": [],
+    "consoleWarnings": [
+      {
+        "type": "warning",
+        "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      }
+    ],
+    "finished": "2026-10-02T07:23:38.796Z"
+  }
+}

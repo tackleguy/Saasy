@@ -15,8 +15,14 @@ import { AMENITY_ACCENT, amenityFloors, amenityName } from "@/lib/amenities";
 import { PHOTO_ANGLES, type PhotoAngle } from "@/lib/explorer";
 import type { CityId } from "@/lib/cityPresets";
 import CityPicker from "./CityPicker";
+import type { ProjectLocation } from "@/lib/geographicContext";
 
 interface Props {
+  location: ProjectLocation;
+  onLocationChange: (location: ProjectLocation) => boolean;
+  onLocationOpen: () => void;
+  mapLoading: boolean;
+  mapError: string;
   /** Every building on the project site (for the building tabs). */
   site: Building[];
   building: Building;
@@ -42,6 +48,7 @@ interface Props {
   capturing: boolean;
   /** City backdrop for the urban context. */
   city: CityId;
+  existingCity?: boolean;
   onCityChange: (id: CityId) => void;
   /** Site map (move buildings) — open state and toggle. */
   mapOpen: boolean;
@@ -49,6 +56,7 @@ interface Props {
 }
 
 export default function ViewportHud({
+  location, onLocationChange, onLocationOpen, mapLoading, mapError,
   site,
   building,
   onBuildingChange,
@@ -69,6 +77,7 @@ export default function ViewportHud({
   capturing,
   city,
   onCityChange,
+  existingCity,
   mapOpen,
   onMapToggle,
 }: Props) {
@@ -224,11 +233,11 @@ export default function ViewportHud({
         </div>
 
         {/* Photo angles + capture */}
-        <div className="flex items-center gap-2 border-t border-plaster pt-2.5">
+        <div className="flex flex-wrap items-center gap-2 border-t border-plaster pt-2.5">
           {/* City backdrop lives in the dock so it never collides with the building tabs */}
-          <CityPicker value={city} onChange={onCityChange} className="shrink-0" />
+          <CityPicker location={location} onLocationChange={onLocationChange} onLocationOpen={onLocationOpen} mapLoading={mapLoading} mapError={mapError} existingCity={existingCity} value={city} onChange={onCityChange} className="mr-auto shrink-0 sm:mr-0" />
           <span className="caption hidden shrink-0 sm:inline">Photo angle</span>
-          <div className="no-scrollbar flex min-w-0 flex-1 gap-1 overflow-x-auto" role="group" aria-label="Photo angles">
+          <div className="no-scrollbar order-last flex w-full min-w-0 gap-1 overflow-x-auto sm:order-none sm:w-auto sm:flex-1" role="group" aria-label="Photo angles">
             {PHOTO_ANGLES.map((a) => (
               <button
                 key={a.id}

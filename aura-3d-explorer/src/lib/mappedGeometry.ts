@@ -16,9 +16,20 @@ export interface MappedGeometry {
 }
 type Bounds = { minX: number; minZ: number; maxX: number; maxZ: number };
 type Footprint = { ring: PlanPoint[]; bounds: Bounds };
+type SurfaceAttributes = { facade: number[]; building: number[] };
+type SurfaceIdentity = { seed: number; height: number };
+type CapAttributes = SurfaceIdentity & { target: SurfaceAttributes; bounds: Bounds; width: number };
 const EPSILON = 1e-8;
 const boundsOf = (ring: PlanPoint[]): Bounds => ring.reduce((b, [x, z]) => ({ minX: Math.min(b.minX, x), minZ: Math.min(b.minZ, z), maxX: Math.max(b.maxX, x), maxZ: Math.max(b.maxZ, z) }), { minX: Infinity, minZ: Infinity, maxX: -Infinity, maxZ: -Infinity });
 const overlaps = (a: Bounds, b: Bounds) => a.minX <= b.maxX && a.maxX >= b.minX && a.minZ <= b.maxZ && a.maxZ >= b.minZ;
+
+/** Feature identity is independent of traversal order, chunk size and project
+ * pin. Use 24 bits so Float32 attributes never round the seed up to 1. */
+function buildingSeed(id: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < id.length; i++) hash = Math.imul(hash ^ id.charCodeAt(i), 16777619);
+  return (hash >>> 8) / 16777216;
+}
 
 /** Use the actual floor outlines, including twist and non-rectangular plans.
  * An enclosing rectangle would erase unrelated buildings beside an L-shaped site. */
@@ -65,7 +76,7 @@ function worldRings(coordinates: LonLat[][], origin: ProjectLocation): PlanPoint
   });
 }
 
-function cap(target: number[], rings: PlanPoint[][], y: number, up = true): void {
+function cap(target: number[], rings: PlanPoint[][], y: number, up = true, attributes?: CapAttributes): void {
   const vectors = rings.map(ring => ring.map(([x, z]) => new THREE.Vector2(x, z)));
   const points = rings.flat();
   const triangles = THREE.ShapeUtils.triangulateShape(vectors[0], vectors.slice(1));
@@ -74,14 +85,26 @@ function cap(target: number[], rings: PlanPoint[][], y: number, up = true): void
     // A positive 2D cross in X/Z points down in the Y-up world.
     const normalY = (b[1] - a[1]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[1] - a[1]);
     const ordered = (normalY > 0) === up ? [a, b, c] : [a, c, b];
-    for (const point of ordered) target.push(point[0], y, point[1]);
+    for (const point of ordered) {
+      target.push(point[0], y, point[1]);
+      if (attributes) {
+        attributes.target.facade.push((point[0] - attributes.bounds.minX) / MODEL_SCALE, (point[1] - attributes.bounds.minZ) / MODEL_SCALE);
+        attributes.target.building.push(attributes.seed, attributes.height, attributes.width);
+      }
+    }
   }
 }
 
-function walls(target: number[], rings: PlanPoint[][], bottom: number, top: number): void {
+function walls(target: number[], rings: PlanPoint[][], bottom: number, top: number, attributes: SurfaceAttributes, identity: SurfaceIdentity): void {
   for (const ring of rings) for (let i = 0; i < ring.length; i++) {
     const a = ring[i], b = ring[(i + 1) % ring.length];
     target.push(a[0], bottom, a[1], a[0], top, a[1], b[0], top, b[1], a[0], bottom, a[1], b[0], top, b[1], b[0], bottom, b[1]);
+    const width = Math.hypot(b[0] - a[0], b[1] - a[1]) / MODEL_SCALE;
+    const low = bottom / MODEL_SCALE, high = top / MODEL_SCALE;
+    // Edge-local metres let the shader fit complete facade bays to a real wall
+    // without stretching a texture or depending on world-axis orientation.
+    attributes.facade.push(0, low, 0, high, width, high, 0, low, width, high, width, low);
+    for (let vertex = 0; vertex < 6; vertex++) attributes.building.push(identity.seed, identity.height, width);
   }
 }
 
@@ -90,6 +113,7 @@ function walls(target: number[], rings: PlanPoint[][], bottom: number, top: numb
 export function createMappedGeometryBuilder(snapshot: MapSnapshot, origin: ProjectLocation, buildings: Building[]) {
   const proposals = proposalFootprints(buildings);
   const positions: Record<MapBatchKind, number[]> = { walls: [], roofs: [], footprints: [], water: [], parks: [], roads: [] };
+  const attributes: Record<"walls" | "roofs", SurfaceAttributes> = { walls: { facade: [], building: [] }, roofs: { facade: [], building: [] } };
   let index = 0, buildingPolygons = 0, hiddenBuildingPolygons = 0, unknownHeightFootprints = 0;
 
   function add(feature: MapFeature) {
@@ -118,9 +142,14 @@ export function createMappedGeometryBuilder(snapshot: MapSnapshot, origin: Proje
         continue;
       }
       const bottom = minimum * MODEL_SCALE, top = feature.height! * MODEL_SCALE;
-      walls(positions.walls, rings, bottom, top);
-      cap(positions.roofs, rings, top);
-      if (bottom > 0) cap(positions.walls, rings, bottom, false);
+      const identity = { seed: buildingSeed(feature.id), height: feature.height! };
+      const bounds = boundsOf(rings[0]);
+      const width = Math.max(bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ) / MODEL_SCALE;
+      walls(positions.walls, rings, bottom, top, attributes.walls, identity);
+      cap(positions.roofs, rings, top, true, { ...identity, target: attributes.roofs, bounds, width });
+      // Elevated parts need a closed underside, but must not receive a vertical
+      // facade treatment. Width zero identifies these faces in the wall batch.
+      if (bottom > 0) cap(positions.walls, rings, bottom, false, { ...identity, target: attributes.walls, bounds, width: 0 });
     }
   }
 
@@ -136,6 +165,12 @@ export function createMappedGeometryBuilder(snapshot: MapSnapshot, origin: Proje
         if (!positions[kind].length) return [];
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions[kind], 3));
+        if (kind === "walls" || kind === "roofs") {
+          geometry.setAttribute("auraFacade", new THREE.Float32BufferAttribute(attributes[kind].facade, 2));
+          geometry.setAttribute("auraBuilding", new THREE.Float32BufferAttribute(attributes[kind].building, 3));
+          attributes[kind].facade = [];
+          attributes[kind].building = [];
+        }
         if (kind !== "roads") geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();

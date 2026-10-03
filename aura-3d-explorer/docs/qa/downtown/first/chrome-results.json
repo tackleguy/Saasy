@@ -1,0 +1,1239 @@
+{
+  "results": [
+    {
+      "id": "jersey-city",
+      "elapsedMs": 7652,
+      "state": {
+        "near": {
+          "sourceId": "jersey-city",
+          "featureCount": 7205,
+          "buildingPolygons": 5507,
+          "hiddenBuildingPolygons": 5,
+          "unknownHeightFootprints": 279
+        },
+        "downtown": {
+          "sourceId": "jersey-city",
+          "bounds": [
+            -74.075,
+            40.686,
+            -73.947,
+            40.791
+          ],
+          "totalTiles": 47,
+          "loadedTiles": 47,
+          "visibleTiles": 47,
+          "pendingTiles": 0,
+          "failedTiles": 0,
+          "renderedFeatures": 125445,
+          "geometryBytes": 163081943
+        },
+        "indexed": 233,
+        "draws": 234,
+        "visible": 47,
+        "outerBuildings": 4466226,
+        "unindexedWalls": 0,
+        "tiles": [
+          {
+            "name": "jersey-city-downtown-2-2",
+            "uuid": "74da1bf9-94fd-4f29-a585-326bdb328757"
+          },
+          {
+            "name": "jersey-city-downtown-1-1",
+            "uuid": "e37fbefd-3dc8-4fda-a44d-2cd8a682b39c"
+          },
+          {
+            "name": "jersey-city-downtown-1-2",
+            "uuid": "c69a833d-818b-469a-a0e0-bbe7fbb8551c"
+          },
+          {
+            "name": "jersey-city-downtown-0-2",
+            "uuid": "835edb6e-72d3-4937-b56b-c6566232e4d7"
+          },
+          {
+            "name": "jersey-city-downtown-2-3",
+            "uuid": "d49740d4-c635-42b0-83c9-18d241672cd5"
+          },
+          {
+            "name": "jersey-city-downtown-1-3",
+            "uuid": "ea470528-2471-4d64-8052-cf1566fd3846"
+          },
+          {
+            "name": "jersey-city-downtown-0-3",
+            "uuid": "d3ab6294-2cfa-464f-a8ee-0a52a66aca37"
+          },
+          {
+            "name": "jersey-city-downtown-2-4",
+            "uuid": "55aca65d-1976-4165-a32c-351fca4ebfee"
+          },
+          {
+            "name": "jersey-city-downtown-0-4",
+            "uuid": "33c4f348-6368-452d-80cb-1eafa52f08af"
+          },
+          {
+            "name": "jersey-city-downtown-1-4",
+            "uuid": "2e0a6aea-fb9e-4efa-9a09-54e8072c3470"
+          },
+          {
+            "name": "jersey-city-downtown-1-5",
+            "uuid": "8d9a386d-bc17-47bf-aedc-6d899a2b91e6"
+          },
+          {
+            "name": "jersey-city-downtown-3-5",
+            "uuid": "4dc88776-1842-48ea-aefe-965f3412c567"
+          },
+          {
+            "name": "jersey-city-downtown-0-5",
+            "uuid": "a4f8f6bf-3443-481a-897d-dbee28f09076"
+          },
+          {
+            "name": "jersey-city-downtown-2-5",
+            "uuid": "e8a5d481-6733-46b8-886a-f5d13c5ca9c5"
+          },
+          {
+            "name": "jersey-city-downtown-1-6",
+            "uuid": "25faba4d-da66-4616-b05e-96b1afd08aa9"
+          },
+          {
+            "name": "jersey-city-downtown-2-6",
+            "uuid": "aa868a9d-a8b6-494e-8d52-df75ee4a43d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-6",
+            "uuid": "cd7fd5b0-c541-4e11-9c3a-f9795d1ffa94"
+          },
+          {
+            "name": "jersey-city-downtown-3-6",
+            "uuid": "e8896ee0-5e0b-4a29-b6dd-80fdcf522f21"
+          },
+          {
+            "name": "jersey-city-downtown-5-0",
+            "uuid": "95660c46-f506-4467-b921-d5a7d262f6b5"
+          },
+          {
+            "name": "jersey-city-downtown-6-0",
+            "uuid": "d499e68b-b846-4f3e-8d2f-42c8968c152d"
+          },
+          {
+            "name": "jersey-city-downtown-5-1",
+            "uuid": "8427fe2f-c6ef-4729-b483-37b31110926c"
+          },
+          {
+            "name": "jersey-city-downtown-6-1",
+            "uuid": "98b618e9-169a-4fe7-86c7-108ffd91e99b"
+          },
+          {
+            "name": "jersey-city-downtown-4-0",
+            "uuid": "355dab61-2735-4498-bfdb-c6cd7184bac8"
+          },
+          {
+            "name": "jersey-city-downtown-4-1",
+            "uuid": "3a4baab2-1416-447f-ad41-0e3ae3e29fc4"
+          },
+          {
+            "name": "jersey-city-downtown-6-2",
+            "uuid": "c51bcc61-6f61-4e28-868a-97a48d0e2e14"
+          },
+          {
+            "name": "jersey-city-downtown-3-0",
+            "uuid": "fce64b3b-fe84-4fef-b13d-26339d2ba4c3"
+          },
+          {
+            "name": "jersey-city-downtown-5-2",
+            "uuid": "8a9461c6-73c6-447b-a9e0-8a6a6a263229"
+          },
+          {
+            "name": "jersey-city-downtown-6-3",
+            "uuid": "9580b71e-4ae1-424b-8916-0d6ba26c4b84"
+          },
+          {
+            "name": "jersey-city-downtown-5-3",
+            "uuid": "53fc8a53-51c4-47f7-b41d-2dd6336e0f52"
+          },
+          {
+            "name": "jersey-city-downtown-2-0",
+            "uuid": "f7d6b29a-c923-4de9-97b5-12d3fa1183c5"
+          },
+          {
+            "name": "jersey-city-downtown-6-4",
+            "uuid": "74f911bb-9dce-45f8-934e-c9836e44243e"
+          },
+          {
+            "name": "jersey-city-downtown-3-2",
+            "uuid": "be522d22-fa51-4d4e-a818-ca8b0c37eb36"
+          },
+          {
+            "name": "jersey-city-downtown-4-2",
+            "uuid": "f0d4e568-b0c4-4b88-941a-949739e47c65"
+          },
+          {
+            "name": "jersey-city-downtown-4-3",
+            "uuid": "4d2445c7-37eb-4701-a034-d6141ea0cecf"
+          },
+          {
+            "name": "jersey-city-downtown-1-0",
+            "uuid": "885f5c24-b0bb-435e-945c-a3efc34d23b8"
+          },
+          {
+            "name": "jersey-city-downtown-5-4",
+            "uuid": "a83ffaaf-756a-4397-bfc1-081379ceaf39"
+          },
+          {
+            "name": "jersey-city-downtown-3-3",
+            "uuid": "edd67bbe-1823-455e-9fbf-2ef45d316612"
+          },
+          {
+            "name": "jersey-city-downtown-6-5",
+            "uuid": "07772421-f3c1-4f24-a02e-8687c3103278"
+          },
+          {
+            "name": "jersey-city-downtown-5-5",
+            "uuid": "8c6941be-186b-4531-9b1d-933a800ec473"
+          },
+          {
+            "name": "jersey-city-downtown-4-4",
+            "uuid": "f8568c94-822e-43d2-87ca-1ebd74f01a31"
+          },
+          {
+            "name": "jersey-city-downtown-0-0",
+            "uuid": "9dba0f77-404f-49ba-ac41-cfda440851bf"
+          },
+          {
+            "name": "jersey-city-downtown-3-4",
+            "uuid": "bc2ecf61-f067-4e7e-8705-17bb1528ca43"
+          },
+          {
+            "name": "jersey-city-downtown-4-5",
+            "uuid": "fe1a7e29-fc20-4b83-b1db-33d81ae8d7d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-1",
+            "uuid": "f42d467f-dd89-4746-9c98-d3c113410b0c"
+          },
+          {
+            "name": "jersey-city-downtown-6-6",
+            "uuid": "b7842033-4b60-43b2-be34-eb6297589dce"
+          },
+          {
+            "name": "jersey-city-downtown-4-6",
+            "uuid": "69aace2a-b751-4516-abf4-88266b73cda7"
+          },
+          {
+            "name": "jersey-city-downtown-5-6",
+            "uuid": "cedceecf-03e9-4c81-821f-004ab69a754a"
+          }
+        ],
+        "stats": {
+          "tier": "high",
+          "fps": 36,
+          "calls": 949,
+          "triangles": 6820059,
+          "geometries": 1041,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "camera": [
+          4199.204072269711,
+          1574.4570044111645,
+          2727.8535917560052
+        ],
+        "far": 14588.188139171034
+      },
+      "passed": true
+    },
+    {
+      "id": "viewport-390",
+      "state": {
+        "near": {
+          "sourceId": "jersey-city",
+          "featureCount": 7205,
+          "buildingPolygons": 5507,
+          "hiddenBuildingPolygons": 5,
+          "unknownHeightFootprints": 279
+        },
+        "downtown": {
+          "sourceId": "jersey-city",
+          "bounds": [
+            -74.075,
+            40.686,
+            -73.947,
+            40.791
+          ],
+          "totalTiles": 47,
+          "loadedTiles": 47,
+          "visibleTiles": 47,
+          "pendingTiles": 0,
+          "failedTiles": 0,
+          "renderedFeatures": 125445,
+          "geometryBytes": 163081943
+        },
+        "indexed": 233,
+        "draws": 234,
+        "visible": 47,
+        "outerBuildings": 4466226,
+        "unindexedWalls": 0,
+        "tiles": [
+          {
+            "name": "jersey-city-downtown-2-2",
+            "uuid": "74da1bf9-94fd-4f29-a585-326bdb328757"
+          },
+          {
+            "name": "jersey-city-downtown-1-1",
+            "uuid": "e37fbefd-3dc8-4fda-a44d-2cd8a682b39c"
+          },
+          {
+            "name": "jersey-city-downtown-1-2",
+            "uuid": "c69a833d-818b-469a-a0e0-bbe7fbb8551c"
+          },
+          {
+            "name": "jersey-city-downtown-0-2",
+            "uuid": "835edb6e-72d3-4937-b56b-c6566232e4d7"
+          },
+          {
+            "name": "jersey-city-downtown-2-3",
+            "uuid": "d49740d4-c635-42b0-83c9-18d241672cd5"
+          },
+          {
+            "name": "jersey-city-downtown-1-3",
+            "uuid": "ea470528-2471-4d64-8052-cf1566fd3846"
+          },
+          {
+            "name": "jersey-city-downtown-0-3",
+            "uuid": "d3ab6294-2cfa-464f-a8ee-0a52a66aca37"
+          },
+          {
+            "name": "jersey-city-downtown-2-4",
+            "uuid": "55aca65d-1976-4165-a32c-351fca4ebfee"
+          },
+          {
+            "name": "jersey-city-downtown-0-4",
+            "uuid": "33c4f348-6368-452d-80cb-1eafa52f08af"
+          },
+          {
+            "name": "jersey-city-downtown-1-4",
+            "uuid": "2e0a6aea-fb9e-4efa-9a09-54e8072c3470"
+          },
+          {
+            "name": "jersey-city-downtown-1-5",
+            "uuid": "8d9a386d-bc17-47bf-aedc-6d899a2b91e6"
+          },
+          {
+            "name": "jersey-city-downtown-3-5",
+            "uuid": "4dc88776-1842-48ea-aefe-965f3412c567"
+          },
+          {
+            "name": "jersey-city-downtown-0-5",
+            "uuid": "a4f8f6bf-3443-481a-897d-dbee28f09076"
+          },
+          {
+            "name": "jersey-city-downtown-2-5",
+            "uuid": "e8a5d481-6733-46b8-886a-f5d13c5ca9c5"
+          },
+          {
+            "name": "jersey-city-downtown-1-6",
+            "uuid": "25faba4d-da66-4616-b05e-96b1afd08aa9"
+          },
+          {
+            "name": "jersey-city-downtown-2-6",
+            "uuid": "aa868a9d-a8b6-494e-8d52-df75ee4a43d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-6",
+            "uuid": "cd7fd5b0-c541-4e11-9c3a-f9795d1ffa94"
+          },
+          {
+            "name": "jersey-city-downtown-3-6",
+            "uuid": "e8896ee0-5e0b-4a29-b6dd-80fdcf522f21"
+          },
+          {
+            "name": "jersey-city-downtown-5-0",
+            "uuid": "95660c46-f506-4467-b921-d5a7d262f6b5"
+          },
+          {
+            "name": "jersey-city-downtown-6-0",
+            "uuid": "d499e68b-b846-4f3e-8d2f-42c8968c152d"
+          },
+          {
+            "name": "jersey-city-downtown-5-1",
+            "uuid": "8427fe2f-c6ef-4729-b483-37b31110926c"
+          },
+          {
+            "name": "jersey-city-downtown-6-1",
+            "uuid": "98b618e9-169a-4fe7-86c7-108ffd91e99b"
+          },
+          {
+            "name": "jersey-city-downtown-4-0",
+            "uuid": "355dab61-2735-4498-bfdb-c6cd7184bac8"
+          },
+          {
+            "name": "jersey-city-downtown-4-1",
+            "uuid": "3a4baab2-1416-447f-ad41-0e3ae3e29fc4"
+          },
+          {
+            "name": "jersey-city-downtown-6-2",
+            "uuid": "c51bcc61-6f61-4e28-868a-97a48d0e2e14"
+          },
+          {
+            "name": "jersey-city-downtown-3-0",
+            "uuid": "fce64b3b-fe84-4fef-b13d-26339d2ba4c3"
+          },
+          {
+            "name": "jersey-city-downtown-5-2",
+            "uuid": "8a9461c6-73c6-447b-a9e0-8a6a6a263229"
+          },
+          {
+            "name": "jersey-city-downtown-6-3",
+            "uuid": "9580b71e-4ae1-424b-8916-0d6ba26c4b84"
+          },
+          {
+            "name": "jersey-city-downtown-5-3",
+            "uuid": "53fc8a53-51c4-47f7-b41d-2dd6336e0f52"
+          },
+          {
+            "name": "jersey-city-downtown-2-0",
+            "uuid": "f7d6b29a-c923-4de9-97b5-12d3fa1183c5"
+          },
+          {
+            "name": "jersey-city-downtown-6-4",
+            "uuid": "74f911bb-9dce-45f8-934e-c9836e44243e"
+          },
+          {
+            "name": "jersey-city-downtown-3-2",
+            "uuid": "be522d22-fa51-4d4e-a818-ca8b0c37eb36"
+          },
+          {
+            "name": "jersey-city-downtown-4-2",
+            "uuid": "f0d4e568-b0c4-4b88-941a-949739e47c65"
+          },
+          {
+            "name": "jersey-city-downtown-4-3",
+            "uuid": "4d2445c7-37eb-4701-a034-d6141ea0cecf"
+          },
+          {
+            "name": "jersey-city-downtown-1-0",
+            "uuid": "885f5c24-b0bb-435e-945c-a3efc34d23b8"
+          },
+          {
+            "name": "jersey-city-downtown-5-4",
+            "uuid": "a83ffaaf-756a-4397-bfc1-081379ceaf39"
+          },
+          {
+            "name": "jersey-city-downtown-3-3",
+            "uuid": "edd67bbe-1823-455e-9fbf-2ef45d316612"
+          },
+          {
+            "name": "jersey-city-downtown-6-5",
+            "uuid": "07772421-f3c1-4f24-a02e-8687c3103278"
+          },
+          {
+            "name": "jersey-city-downtown-5-5",
+            "uuid": "8c6941be-186b-4531-9b1d-933a800ec473"
+          },
+          {
+            "name": "jersey-city-downtown-4-4",
+            "uuid": "f8568c94-822e-43d2-87ca-1ebd74f01a31"
+          },
+          {
+            "name": "jersey-city-downtown-0-0",
+            "uuid": "9dba0f77-404f-49ba-ac41-cfda440851bf"
+          },
+          {
+            "name": "jersey-city-downtown-3-4",
+            "uuid": "bc2ecf61-f067-4e7e-8705-17bb1528ca43"
+          },
+          {
+            "name": "jersey-city-downtown-4-5",
+            "uuid": "fe1a7e29-fc20-4b83-b1db-33d81ae8d7d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-1",
+            "uuid": "f42d467f-dd89-4746-9c98-d3c113410b0c"
+          },
+          {
+            "name": "jersey-city-downtown-6-6",
+            "uuid": "b7842033-4b60-43b2-be34-eb6297589dce"
+          },
+          {
+            "name": "jersey-city-downtown-4-6",
+            "uuid": "69aace2a-b751-4516-abf4-88266b73cda7"
+          },
+          {
+            "name": "jersey-city-downtown-5-6",
+            "uuid": "cedceecf-03e9-4c81-821f-004ab69a754a"
+          }
+        ],
+        "stats": {
+          "tier": "high",
+          "fps": 48,
+          "calls": 1163,
+          "triangles": 8451186,
+          "geometries": 1041,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "camera": [
+          11514.409039594904,
+          4646.843090687746,
+          10043.0585590812
+        ],
+        "far": 41567.810506235444
+      },
+      "passed": true
+    },
+    {
+      "id": "viewport-768",
+      "state": {
+        "near": {
+          "sourceId": "jersey-city",
+          "featureCount": 7205,
+          "buildingPolygons": 5507,
+          "hiddenBuildingPolygons": 5,
+          "unknownHeightFootprints": 279
+        },
+        "downtown": {
+          "sourceId": "jersey-city",
+          "bounds": [
+            -74.075,
+            40.686,
+            -73.947,
+            40.791
+          ],
+          "totalTiles": 47,
+          "loadedTiles": 47,
+          "visibleTiles": 47,
+          "pendingTiles": 0,
+          "failedTiles": 0,
+          "renderedFeatures": 125445,
+          "geometryBytes": 163081943
+        },
+        "indexed": 233,
+        "draws": 234,
+        "visible": 47,
+        "outerBuildings": 4466226,
+        "unindexedWalls": 0,
+        "tiles": [
+          {
+            "name": "jersey-city-downtown-2-2",
+            "uuid": "74da1bf9-94fd-4f29-a585-326bdb328757"
+          },
+          {
+            "name": "jersey-city-downtown-1-1",
+            "uuid": "e37fbefd-3dc8-4fda-a44d-2cd8a682b39c"
+          },
+          {
+            "name": "jersey-city-downtown-1-2",
+            "uuid": "c69a833d-818b-469a-a0e0-bbe7fbb8551c"
+          },
+          {
+            "name": "jersey-city-downtown-0-2",
+            "uuid": "835edb6e-72d3-4937-b56b-c6566232e4d7"
+          },
+          {
+            "name": "jersey-city-downtown-2-3",
+            "uuid": "d49740d4-c635-42b0-83c9-18d241672cd5"
+          },
+          {
+            "name": "jersey-city-downtown-1-3",
+            "uuid": "ea470528-2471-4d64-8052-cf1566fd3846"
+          },
+          {
+            "name": "jersey-city-downtown-0-3",
+            "uuid": "d3ab6294-2cfa-464f-a8ee-0a52a66aca37"
+          },
+          {
+            "name": "jersey-city-downtown-2-4",
+            "uuid": "55aca65d-1976-4165-a32c-351fca4ebfee"
+          },
+          {
+            "name": "jersey-city-downtown-0-4",
+            "uuid": "33c4f348-6368-452d-80cb-1eafa52f08af"
+          },
+          {
+            "name": "jersey-city-downtown-1-4",
+            "uuid": "2e0a6aea-fb9e-4efa-9a09-54e8072c3470"
+          },
+          {
+            "name": "jersey-city-downtown-1-5",
+            "uuid": "8d9a386d-bc17-47bf-aedc-6d899a2b91e6"
+          },
+          {
+            "name": "jersey-city-downtown-3-5",
+            "uuid": "4dc88776-1842-48ea-aefe-965f3412c567"
+          },
+          {
+            "name": "jersey-city-downtown-0-5",
+            "uuid": "a4f8f6bf-3443-481a-897d-dbee28f09076"
+          },
+          {
+            "name": "jersey-city-downtown-2-5",
+            "uuid": "e8a5d481-6733-46b8-886a-f5d13c5ca9c5"
+          },
+          {
+            "name": "jersey-city-downtown-1-6",
+            "uuid": "25faba4d-da66-4616-b05e-96b1afd08aa9"
+          },
+          {
+            "name": "jersey-city-downtown-2-6",
+            "uuid": "aa868a9d-a8b6-494e-8d52-df75ee4a43d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-6",
+            "uuid": "cd7fd5b0-c541-4e11-9c3a-f9795d1ffa94"
+          },
+          {
+            "name": "jersey-city-downtown-3-6",
+            "uuid": "e8896ee0-5e0b-4a29-b6dd-80fdcf522f21"
+          },
+          {
+            "name": "jersey-city-downtown-5-0",
+            "uuid": "95660c46-f506-4467-b921-d5a7d262f6b5"
+          },
+          {
+            "name": "jersey-city-downtown-6-0",
+            "uuid": "d499e68b-b846-4f3e-8d2f-42c8968c152d"
+          },
+          {
+            "name": "jersey-city-downtown-5-1",
+            "uuid": "8427fe2f-c6ef-4729-b483-37b31110926c"
+          },
+          {
+            "name": "jersey-city-downtown-6-1",
+            "uuid": "98b618e9-169a-4fe7-86c7-108ffd91e99b"
+          },
+          {
+            "name": "jersey-city-downtown-4-0",
+            "uuid": "355dab61-2735-4498-bfdb-c6cd7184bac8"
+          },
+          {
+            "name": "jersey-city-downtown-4-1",
+            "uuid": "3a4baab2-1416-447f-ad41-0e3ae3e29fc4"
+          },
+          {
+            "name": "jersey-city-downtown-6-2",
+            "uuid": "c51bcc61-6f61-4e28-868a-97a48d0e2e14"
+          },
+          {
+            "name": "jersey-city-downtown-3-0",
+            "uuid": "fce64b3b-fe84-4fef-b13d-26339d2ba4c3"
+          },
+          {
+            "name": "jersey-city-downtown-5-2",
+            "uuid": "8a9461c6-73c6-447b-a9e0-8a6a6a263229"
+          },
+          {
+            "name": "jersey-city-downtown-6-3",
+            "uuid": "9580b71e-4ae1-424b-8916-0d6ba26c4b84"
+          },
+          {
+            "name": "jersey-city-downtown-5-3",
+            "uuid": "53fc8a53-51c4-47f7-b41d-2dd6336e0f52"
+          },
+          {
+            "name": "jersey-city-downtown-2-0",
+            "uuid": "f7d6b29a-c923-4de9-97b5-12d3fa1183c5"
+          },
+          {
+            "name": "jersey-city-downtown-6-4",
+            "uuid": "74f911bb-9dce-45f8-934e-c9836e44243e"
+          },
+          {
+            "name": "jersey-city-downtown-3-2",
+            "uuid": "be522d22-fa51-4d4e-a818-ca8b0c37eb36"
+          },
+          {
+            "name": "jersey-city-downtown-4-2",
+            "uuid": "f0d4e568-b0c4-4b88-941a-949739e47c65"
+          },
+          {
+            "name": "jersey-city-downtown-4-3",
+            "uuid": "4d2445c7-37eb-4701-a034-d6141ea0cecf"
+          },
+          {
+            "name": "jersey-city-downtown-1-0",
+            "uuid": "885f5c24-b0bb-435e-945c-a3efc34d23b8"
+          },
+          {
+            "name": "jersey-city-downtown-5-4",
+            "uuid": "a83ffaaf-756a-4397-bfc1-081379ceaf39"
+          },
+          {
+            "name": "jersey-city-downtown-3-3",
+            "uuid": "edd67bbe-1823-455e-9fbf-2ef45d316612"
+          },
+          {
+            "name": "jersey-city-downtown-6-5",
+            "uuid": "07772421-f3c1-4f24-a02e-8687c3103278"
+          },
+          {
+            "name": "jersey-city-downtown-5-5",
+            "uuid": "8c6941be-186b-4531-9b1d-933a800ec473"
+          },
+          {
+            "name": "jersey-city-downtown-4-4",
+            "uuid": "f8568c94-822e-43d2-87ca-1ebd74f01a31"
+          },
+          {
+            "name": "jersey-city-downtown-0-0",
+            "uuid": "9dba0f77-404f-49ba-ac41-cfda440851bf"
+          },
+          {
+            "name": "jersey-city-downtown-3-4",
+            "uuid": "bc2ecf61-f067-4e7e-8705-17bb1528ca43"
+          },
+          {
+            "name": "jersey-city-downtown-4-5",
+            "uuid": "fe1a7e29-fc20-4b83-b1db-33d81ae8d7d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-1",
+            "uuid": "f42d467f-dd89-4746-9c98-d3c113410b0c"
+          },
+          {
+            "name": "jersey-city-downtown-6-6",
+            "uuid": "b7842033-4b60-43b2-be34-eb6297589dce"
+          },
+          {
+            "name": "jersey-city-downtown-4-6",
+            "uuid": "69aace2a-b751-4516-abf4-88266b73cda7"
+          },
+          {
+            "name": "jersey-city-downtown-5-6",
+            "uuid": "cedceecf-03e9-4c81-821f-004ab69a754a"
+          }
+        ],
+        "stats": {
+          "tier": "high",
+          "fps": 47,
+          "calls": 1006,
+          "triangles": 7330612,
+          "geometries": 1041,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "camera": [
+          7379.265551231956,
+          2910.082825575307,
+          5907.915070718251
+        ],
+        "far": 26316.753256577627
+      },
+      "passed": true
+    },
+    {
+      "id": "viewport-1280",
+      "state": {
+        "near": {
+          "sourceId": "jersey-city",
+          "featureCount": 7205,
+          "buildingPolygons": 5507,
+          "hiddenBuildingPolygons": 5,
+          "unknownHeightFootprints": 279
+        },
+        "downtown": {
+          "sourceId": "jersey-city",
+          "bounds": [
+            -74.075,
+            40.686,
+            -73.947,
+            40.791
+          ],
+          "totalTiles": 47,
+          "loadedTiles": 47,
+          "visibleTiles": 47,
+          "pendingTiles": 0,
+          "failedTiles": 0,
+          "renderedFeatures": 125445,
+          "geometryBytes": 163081943
+        },
+        "indexed": 233,
+        "draws": 234,
+        "visible": 47,
+        "outerBuildings": 4466226,
+        "unindexedWalls": 0,
+        "tiles": [
+          {
+            "name": "jersey-city-downtown-2-2",
+            "uuid": "74da1bf9-94fd-4f29-a585-326bdb328757"
+          },
+          {
+            "name": "jersey-city-downtown-1-1",
+            "uuid": "e37fbefd-3dc8-4fda-a44d-2cd8a682b39c"
+          },
+          {
+            "name": "jersey-city-downtown-1-2",
+            "uuid": "c69a833d-818b-469a-a0e0-bbe7fbb8551c"
+          },
+          {
+            "name": "jersey-city-downtown-0-2",
+            "uuid": "835edb6e-72d3-4937-b56b-c6566232e4d7"
+          },
+          {
+            "name": "jersey-city-downtown-2-3",
+            "uuid": "d49740d4-c635-42b0-83c9-18d241672cd5"
+          },
+          {
+            "name": "jersey-city-downtown-1-3",
+            "uuid": "ea470528-2471-4d64-8052-cf1566fd3846"
+          },
+          {
+            "name": "jersey-city-downtown-0-3",
+            "uuid": "d3ab6294-2cfa-464f-a8ee-0a52a66aca37"
+          },
+          {
+            "name": "jersey-city-downtown-2-4",
+            "uuid": "55aca65d-1976-4165-a32c-351fca4ebfee"
+          },
+          {
+            "name": "jersey-city-downtown-0-4",
+            "uuid": "33c4f348-6368-452d-80cb-1eafa52f08af"
+          },
+          {
+            "name": "jersey-city-downtown-1-4",
+            "uuid": "2e0a6aea-fb9e-4efa-9a09-54e8072c3470"
+          },
+          {
+            "name": "jersey-city-downtown-1-5",
+            "uuid": "8d9a386d-bc17-47bf-aedc-6d899a2b91e6"
+          },
+          {
+            "name": "jersey-city-downtown-3-5",
+            "uuid": "4dc88776-1842-48ea-aefe-965f3412c567"
+          },
+          {
+            "name": "jersey-city-downtown-0-5",
+            "uuid": "a4f8f6bf-3443-481a-897d-dbee28f09076"
+          },
+          {
+            "name": "jersey-city-downtown-2-5",
+            "uuid": "e8a5d481-6733-46b8-886a-f5d13c5ca9c5"
+          },
+          {
+            "name": "jersey-city-downtown-1-6",
+            "uuid": "25faba4d-da66-4616-b05e-96b1afd08aa9"
+          },
+          {
+            "name": "jersey-city-downtown-2-6",
+            "uuid": "aa868a9d-a8b6-494e-8d52-df75ee4a43d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-6",
+            "uuid": "cd7fd5b0-c541-4e11-9c3a-f9795d1ffa94"
+          },
+          {
+            "name": "jersey-city-downtown-3-6",
+            "uuid": "e8896ee0-5e0b-4a29-b6dd-80fdcf522f21"
+          },
+          {
+            "name": "jersey-city-downtown-5-0",
+            "uuid": "95660c46-f506-4467-b921-d5a7d262f6b5"
+          },
+          {
+            "name": "jersey-city-downtown-6-0",
+            "uuid": "d499e68b-b846-4f3e-8d2f-42c8968c152d"
+          },
+          {
+            "name": "jersey-city-downtown-5-1",
+            "uuid": "8427fe2f-c6ef-4729-b483-37b31110926c"
+          },
+          {
+            "name": "jersey-city-downtown-6-1",
+            "uuid": "98b618e9-169a-4fe7-86c7-108ffd91e99b"
+          },
+          {
+            "name": "jersey-city-downtown-4-0",
+            "uuid": "355dab61-2735-4498-bfdb-c6cd7184bac8"
+          },
+          {
+            "name": "jersey-city-downtown-4-1",
+            "uuid": "3a4baab2-1416-447f-ad41-0e3ae3e29fc4"
+          },
+          {
+            "name": "jersey-city-downtown-6-2",
+            "uuid": "c51bcc61-6f61-4e28-868a-97a48d0e2e14"
+          },
+          {
+            "name": "jersey-city-downtown-3-0",
+            "uuid": "fce64b3b-fe84-4fef-b13d-26339d2ba4c3"
+          },
+          {
+            "name": "jersey-city-downtown-5-2",
+            "uuid": "8a9461c6-73c6-447b-a9e0-8a6a6a263229"
+          },
+          {
+            "name": "jersey-city-downtown-6-3",
+            "uuid": "9580b71e-4ae1-424b-8916-0d6ba26c4b84"
+          },
+          {
+            "name": "jersey-city-downtown-5-3",
+            "uuid": "53fc8a53-51c4-47f7-b41d-2dd6336e0f52"
+          },
+          {
+            "name": "jersey-city-downtown-2-0",
+            "uuid": "f7d6b29a-c923-4de9-97b5-12d3fa1183c5"
+          },
+          {
+            "name": "jersey-city-downtown-6-4",
+            "uuid": "74f911bb-9dce-45f8-934e-c9836e44243e"
+          },
+          {
+            "name": "jersey-city-downtown-3-2",
+            "uuid": "be522d22-fa51-4d4e-a818-ca8b0c37eb36"
+          },
+          {
+            "name": "jersey-city-downtown-4-2",
+            "uuid": "f0d4e568-b0c4-4b88-941a-949739e47c65"
+          },
+          {
+            "name": "jersey-city-downtown-4-3",
+            "uuid": "4d2445c7-37eb-4701-a034-d6141ea0cecf"
+          },
+          {
+            "name": "jersey-city-downtown-1-0",
+            "uuid": "885f5c24-b0bb-435e-945c-a3efc34d23b8"
+          },
+          {
+            "name": "jersey-city-downtown-5-4",
+            "uuid": "a83ffaaf-756a-4397-bfc1-081379ceaf39"
+          },
+          {
+            "name": "jersey-city-downtown-3-3",
+            "uuid": "edd67bbe-1823-455e-9fbf-2ef45d316612"
+          },
+          {
+            "name": "jersey-city-downtown-6-5",
+            "uuid": "07772421-f3c1-4f24-a02e-8687c3103278"
+          },
+          {
+            "name": "jersey-city-downtown-5-5",
+            "uuid": "8c6941be-186b-4531-9b1d-933a800ec473"
+          },
+          {
+            "name": "jersey-city-downtown-4-4",
+            "uuid": "f8568c94-822e-43d2-87ca-1ebd74f01a31"
+          },
+          {
+            "name": "jersey-city-downtown-0-0",
+            "uuid": "9dba0f77-404f-49ba-ac41-cfda440851bf"
+          },
+          {
+            "name": "jersey-city-downtown-3-4",
+            "uuid": "bc2ecf61-f067-4e7e-8705-17bb1528ca43"
+          },
+          {
+            "name": "jersey-city-downtown-4-5",
+            "uuid": "fe1a7e29-fc20-4b83-b1db-33d81ae8d7d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-1",
+            "uuid": "f42d467f-dd89-4746-9c98-d3c113410b0c"
+          },
+          {
+            "name": "jersey-city-downtown-6-6",
+            "uuid": "b7842033-4b60-43b2-be34-eb6297589dce"
+          },
+          {
+            "name": "jersey-city-downtown-4-6",
+            "uuid": "69aace2a-b751-4516-abf4-88266b73cda7"
+          },
+          {
+            "name": "jersey-city-downtown-5-6",
+            "uuid": "cedceecf-03e9-4c81-821f-004ab69a754a"
+          }
+        ],
+        "stats": {
+          "tier": "high",
+          "fps": 38,
+          "calls": 1006,
+          "triangles": 7330612,
+          "geometries": 1041,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "camera": [
+          4242.411429320828,
+          1592.6040943726334,
+          2771.060948807122
+        ],
+        "far": 14747.543643483621
+      },
+      "passed": true
+    },
+    {
+      "id": "viewport-1920",
+      "state": {
+        "near": {
+          "sourceId": "jersey-city",
+          "featureCount": 7205,
+          "buildingPolygons": 5507,
+          "hiddenBuildingPolygons": 5,
+          "unknownHeightFootprints": 279
+        },
+        "downtown": {
+          "sourceId": "jersey-city",
+          "bounds": [
+            -74.075,
+            40.686,
+            -73.947,
+            40.791
+          ],
+          "totalTiles": 47,
+          "loadedTiles": 47,
+          "visibleTiles": 47,
+          "pendingTiles": 0,
+          "failedTiles": 0,
+          "renderedFeatures": 125445,
+          "geometryBytes": 163081943
+        },
+        "indexed": 233,
+        "draws": 234,
+        "visible": 47,
+        "outerBuildings": 4466226,
+        "unindexedWalls": 0,
+        "tiles": [
+          {
+            "name": "jersey-city-downtown-2-2",
+            "uuid": "74da1bf9-94fd-4f29-a585-326bdb328757"
+          },
+          {
+            "name": "jersey-city-downtown-1-1",
+            "uuid": "e37fbefd-3dc8-4fda-a44d-2cd8a682b39c"
+          },
+          {
+            "name": "jersey-city-downtown-1-2",
+            "uuid": "c69a833d-818b-469a-a0e0-bbe7fbb8551c"
+          },
+          {
+            "name": "jersey-city-downtown-0-2",
+            "uuid": "835edb6e-72d3-4937-b56b-c6566232e4d7"
+          },
+          {
+            "name": "jersey-city-downtown-2-3",
+            "uuid": "d49740d4-c635-42b0-83c9-18d241672cd5"
+          },
+          {
+            "name": "jersey-city-downtown-1-3",
+            "uuid": "ea470528-2471-4d64-8052-cf1566fd3846"
+          },
+          {
+            "name": "jersey-city-downtown-0-3",
+            "uuid": "d3ab6294-2cfa-464f-a8ee-0a52a66aca37"
+          },
+          {
+            "name": "jersey-city-downtown-2-4",
+            "uuid": "55aca65d-1976-4165-a32c-351fca4ebfee"
+          },
+          {
+            "name": "jersey-city-downtown-0-4",
+            "uuid": "33c4f348-6368-452d-80cb-1eafa52f08af"
+          },
+          {
+            "name": "jersey-city-downtown-1-4",
+            "uuid": "2e0a6aea-fb9e-4efa-9a09-54e8072c3470"
+          },
+          {
+            "name": "jersey-city-downtown-1-5",
+            "uuid": "8d9a386d-bc17-47bf-aedc-6d899a2b91e6"
+          },
+          {
+            "name": "jersey-city-downtown-3-5",
+            "uuid": "4dc88776-1842-48ea-aefe-965f3412c567"
+          },
+          {
+            "name": "jersey-city-downtown-0-5",
+            "uuid": "a4f8f6bf-3443-481a-897d-dbee28f09076"
+          },
+          {
+            "name": "jersey-city-downtown-2-5",
+            "uuid": "e8a5d481-6733-46b8-886a-f5d13c5ca9c5"
+          },
+          {
+            "name": "jersey-city-downtown-1-6",
+            "uuid": "25faba4d-da66-4616-b05e-96b1afd08aa9"
+          },
+          {
+            "name": "jersey-city-downtown-2-6",
+            "uuid": "aa868a9d-a8b6-494e-8d52-df75ee4a43d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-6",
+            "uuid": "cd7fd5b0-c541-4e11-9c3a-f9795d1ffa94"
+          },
+          {
+            "name": "jersey-city-downtown-3-6",
+            "uuid": "e8896ee0-5e0b-4a29-b6dd-80fdcf522f21"
+          },
+          {
+            "name": "jersey-city-downtown-5-0",
+            "uuid": "95660c46-f506-4467-b921-d5a7d262f6b5"
+          },
+          {
+            "name": "jersey-city-downtown-6-0",
+            "uuid": "d499e68b-b846-4f3e-8d2f-42c8968c152d"
+          },
+          {
+            "name": "jersey-city-downtown-5-1",
+            "uuid": "8427fe2f-c6ef-4729-b483-37b31110926c"
+          },
+          {
+            "name": "jersey-city-downtown-6-1",
+            "uuid": "98b618e9-169a-4fe7-86c7-108ffd91e99b"
+          },
+          {
+            "name": "jersey-city-downtown-4-0",
+            "uuid": "355dab61-2735-4498-bfdb-c6cd7184bac8"
+          },
+          {
+            "name": "jersey-city-downtown-4-1",
+            "uuid": "3a4baab2-1416-447f-ad41-0e3ae3e29fc4"
+          },
+          {
+            "name": "jersey-city-downtown-6-2",
+            "uuid": "c51bcc61-6f61-4e28-868a-97a48d0e2e14"
+          },
+          {
+            "name": "jersey-city-downtown-3-0",
+            "uuid": "fce64b3b-fe84-4fef-b13d-26339d2ba4c3"
+          },
+          {
+            "name": "jersey-city-downtown-5-2",
+            "uuid": "8a9461c6-73c6-447b-a9e0-8a6a6a263229"
+          },
+          {
+            "name": "jersey-city-downtown-6-3",
+            "uuid": "9580b71e-4ae1-424b-8916-0d6ba26c4b84"
+          },
+          {
+            "name": "jersey-city-downtown-5-3",
+            "uuid": "53fc8a53-51c4-47f7-b41d-2dd6336e0f52"
+          },
+          {
+            "name": "jersey-city-downtown-2-0",
+            "uuid": "f7d6b29a-c923-4de9-97b5-12d3fa1183c5"
+          },
+          {
+            "name": "jersey-city-downtown-6-4",
+            "uuid": "74f911bb-9dce-45f8-934e-c9836e44243e"
+          },
+          {
+            "name": "jersey-city-downtown-3-2",
+            "uuid": "be522d22-fa51-4d4e-a818-ca8b0c37eb36"
+          },
+          {
+            "name": "jersey-city-downtown-4-2",
+            "uuid": "f0d4e568-b0c4-4b88-941a-949739e47c65"
+          },
+          {
+            "name": "jersey-city-downtown-4-3",
+            "uuid": "4d2445c7-37eb-4701-a034-d6141ea0cecf"
+          },
+          {
+            "name": "jersey-city-downtown-1-0",
+            "uuid": "885f5c24-b0bb-435e-945c-a3efc34d23b8"
+          },
+          {
+            "name": "jersey-city-downtown-5-4",
+            "uuid": "a83ffaaf-756a-4397-bfc1-081379ceaf39"
+          },
+          {
+            "name": "jersey-city-downtown-3-3",
+            "uuid": "edd67bbe-1823-455e-9fbf-2ef45d316612"
+          },
+          {
+            "name": "jersey-city-downtown-6-5",
+            "uuid": "07772421-f3c1-4f24-a02e-8687c3103278"
+          },
+          {
+            "name": "jersey-city-downtown-5-5",
+            "uuid": "8c6941be-186b-4531-9b1d-933a800ec473"
+          },
+          {
+            "name": "jersey-city-downtown-4-4",
+            "uuid": "f8568c94-822e-43d2-87ca-1ebd74f01a31"
+          },
+          {
+            "name": "jersey-city-downtown-0-0",
+            "uuid": "9dba0f77-404f-49ba-ac41-cfda440851bf"
+          },
+          {
+            "name": "jersey-city-downtown-3-4",
+            "uuid": "bc2ecf61-f067-4e7e-8705-17bb1528ca43"
+          },
+          {
+            "name": "jersey-city-downtown-4-5",
+            "uuid": "fe1a7e29-fc20-4b83-b1db-33d81ae8d7d3"
+          },
+          {
+            "name": "jersey-city-downtown-0-1",
+            "uuid": "f42d467f-dd89-4746-9c98-d3c113410b0c"
+          },
+          {
+            "name": "jersey-city-downtown-6-6",
+            "uuid": "b7842033-4b60-43b2-be34-eb6297589dce"
+          },
+          {
+            "name": "jersey-city-downtown-4-6",
+            "uuid": "69aace2a-b751-4516-abf4-88266b73cda7"
+          },
+          {
+            "name": "jersey-city-downtown-5-6",
+            "uuid": "cedceecf-03e9-4c81-821f-004ab69a754a"
+          }
+        ],
+        "stats": {
+          "tier": "high",
+          "fps": 30,
+          "calls": 1006,
+          "triangles": 7330612,
+          "geometries": 1041,
+          "textures": 88,
+          "programs": 60,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "camera": [
+          3677.296066464261,
+          1355.2556419728753,
+          2205.9455859505547
+        ],
+        "far": 12663.309619720965
+      },
+      "passed": true
+    },
+    {
+      "id": "presentation-accessibility",
+      "violations": [],
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
+}

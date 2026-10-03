@@ -1,0 +1,48 @@
+{
+  "before": {
+    "tier": "low",
+    "fps": 33,
+    "calls": 2472,
+    "triangles": 3270616,
+    "geometries": 686,
+    "textures": 59,
+    "programs": 73,
+    "towerMeshes": {
+      "tower:meridian": 190,
+      "tower:spire": 254,
+      "tower:lofts": 109,
+      "tower:pinnacle": 823
+    }
+  },
+  "during": {
+    "tier": "high",
+    "fps": 44,
+    "calls": 1966,
+    "triangles": 3093621,
+    "geometries": 703,
+    "textures": 91,
+    "programs": 79,
+    "towerMeshes": {
+      "tower:meridian": 28,
+      "tower:spire": 25,
+      "tower:lofts": 28,
+      "tower:pinnacle": 823
+    }
+  },
+  "failed": {
+    "tier": "high",
+    "fps": 51,
+    "calls": 489,
+    "triangles": 3094417,
+    "geometries": 712,
+    "textures": 91,
+    "programs": 79,
+    "towerMeshes": {
+      "tower:meridian": 28,
+      "tower:spire": 25,
+      "tower:lofts": 28,
+      "tower:pinnacle": 27
+    }
+  },
+  "errors": []
+}

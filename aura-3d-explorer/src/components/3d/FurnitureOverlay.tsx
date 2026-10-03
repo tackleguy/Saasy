@@ -15,7 +15,6 @@
  */
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
 import type { FloorData } from "@/types";
 import { MODEL_SCALE } from "@/lib/tower";
 import { getGeometries, getMaterials, PIECES, type GeoKey, type MatKey, type Part } from "./furniture/kit";
@@ -126,16 +125,8 @@ export default function FurnitureOverlay({ floor, coreSize, crownFloors, fit = D
     crownFloors, floor.shape, floor.amenity, fit,
   ), fit), [empty, floor, coreSize, crownFloors, fit]);
 
-  // Grow up from the slab on mount.
-  useFrame((_, dt) => {
-    const g = group.current;
-    if (!g || g.scale.y >= MODEL_SCALE - 1e-4) return;
-    const k = 1 - Math.pow(0.002, dt);
-    g.scale.y = Math.min(MODEL_SCALE, THREE.MathUtils.lerp(g.scale.y, MODEL_SCALE, k) + 1e-4);
-  });
-
   return (
-    <group ref={group} position={[0, SLAB_THICKNESS + 0.036, 0]} scale={[MODEL_SCALE, 0.001, MODEL_SCALE]}>
+    <group ref={group} position={[0, SLAB_THICKNESS + 0.036, 0]} scale={MODEL_SCALE}>
       {batches.map((b) => (
         <BatchMesh key={`${b.key}:${b.matrices.length}`} batch={b} />
       ))}

@@ -1,0 +1,123 @@
+[
+  {
+    "name": "water-404",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 3
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 17,
+      "calls": 271,
+      "triangles": 2319282,
+      "geometries": 389,
+      "textures": 56,
+      "programs": 69,
+      "towerMeshes": {
+        "tower:aurelia": 25
+      }
+    }
+  },
+  {
+    "name": "generic-building-404",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb\" responded with 404: Not Found"
+    ],
+    "requests": {
+      "f943ba2828a64b7d858ee6e4bdacedc6": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 55,
+      "calls": 325,
+      "triangles": 6379280,
+      "geometries": 410,
+      "textures": 60,
+      "programs": 79,
+      "towerMeshes": {
+        "tower:aurelia": 25
+      }
+    }
+  },
+  {
+    "name": "water-corrupt",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: JSON Parse error: Unexpected identifier \"Not\""
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 45,
+      "calls": 789,
+      "triangles": 3012580,
+      "geometries": 389,
+      "textures": 56,
+      "programs": 70,
+      "towerMeshes": {
+        "tower:aurelia": 25
+      }
+    }
+  },
+  {
+    "name": "water-network-failure",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: Load failed"
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 42,
+      "calls": 1521,
+      "triangles": 3157756,
+      "geometries": 381,
+      "textures": 56,
+      "programs": 69,
+      "towerMeshes": {
+        "tower:aurelia": 584
+      }
+    }
+  },
+  {
+    "name": "simultaneous-failures",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 2,
+      "f943ba2828a64b7d858ee6e4bdacedc6": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 54,
+      "calls": 321,
+      "triangles": 6311245,
+      "geometries": 410,
+      "textures": 60,
+      "programs": 75,
+      "towerMeshes": {
+        "tower:aurelia": 25
+      }
+    }
+  },
+  {
+    "name": "switch-away-cleans-failure-state",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+    ]
+  }
+]

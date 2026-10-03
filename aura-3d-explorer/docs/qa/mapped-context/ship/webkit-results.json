@@ -1,0 +1,41 @@
+[
+  {
+    "name": "real-geography-initial",
+    "passed": true,
+    "scene": {
+      "sourceId": "jersey-city",
+      "featureCount": 7205,
+      "buildingPolygons": 5510,
+      "hiddenBuildingPolygons": 2,
+      "unknownHeightFootprints": 279,
+      "children": [
+        "mapped-ground",
+        "mapped-walls",
+        "mapped-roofs",
+        "mapped-footprints",
+        "mapped-water",
+        "mapped-roads"
+      ],
+      "draws": 174,
+      "geometries": 793
+    }
+  },
+  {
+    "name": "pin-persistence-and-coverage",
+    "passed": true,
+    "axe": []
+  },
+  {
+    "name": "browser-and-phone",
+    "passed": true,
+    "errors": []
+  },
+  {
+    "name": "network-failure-retry",
+    "passed": true
+  },
+  {
+    "name": "custom-pin-stays-local",
+    "passed": true
+  }
+]

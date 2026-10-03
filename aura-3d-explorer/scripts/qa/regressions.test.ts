@@ -74,3 +74,55 @@ test('QA-022 corrupt and oversized CAD files fail before allocating geometry',as
  await assert.rejects(()=>parseCadFile(huge),/50 MB/);assert.equal(read,false);
  await assert.rejects(()=>parseCadFile(new File(['not an STL'],'corrupt.stl')));
 });
+
+import { CITY_PRESETS } from '../../src/lib/cityPresets';
+import { buildSkyline } from '../../src/components/3d/environment/skylineGeometry';
+import { createHash } from 'node:crypto';
+
+test('skyline: all cities have distinct, deterministic geometry within six material batches',()=>{
+ const hashes=new Set<string>();
+ for(const city of CITY_PRESETS){
+  const a=buildSkyline(city), b=buildSkyline(city);
+  assert.ok(a.length>0 && a.length<=6,city.id);
+  const hash=(batches:ReturnType<typeof buildSkyline>)=>{
+   const h=createHash('sha256');
+   for(const batch of batches) h.update(Buffer.from(batch.geometry.getAttribute('position').array.buffer));
+   return h.digest('hex');
+  };
+  assert.equal(hash(a),hash(b));hashes.add(hash(a));
+  for(const batch of a){
+   for(const name of ['position','normal','uv','color'])assert.ok([...batch.geometry.getAttribute(name).array].every(Number.isFinite),`${city.id}: ${name}`);
+   assert.ok(batch.geometry.getAttribute('position').count<100000);
+  }
+  [...a,...b].forEach(b=>b.geometry.dispose());
+ }
+ assert.equal(hashes.size,CITY_PRESETS.length);
+});
+test('skyline: windows maintain a 0.9-unit storey on every facade; roofs are separate',()=>{
+ for(const city of CITY_PRESETS){
+  const batches=buildSkyline(city);
+  assert.ok(batches.some(b=>b.finish==='roof'));
+  for(const b of batches){
+   if(b.finish!=='roof'){
+    const p=b.geometry.getAttribute('position'),uv=b.geometry.getAttribute('uv'),n=b.geometry.getAttribute('normal');
+    for(let i=0;i<p.count;i++){
+     assert.ok(Math.abs(uv.getY(i)-p.getY(i)/.9)<.00003);
+     assert.ok(Math.abs(n.getY(i))<=.8,'roof cannot use a window material');
+    }
+   }
+   b.geometry.dispose();
+  }
+ }
+});
+test('skyline: quality reduction preserves district bounds and site edits remove geometry',()=>{
+ for(const city of CITY_PRESETS){
+  const high=buildSkyline(city),low=buildSkyline(city,[],true);
+  const bounds=(batches:ReturnType<typeof buildSkyline>)=>{
+   const points=batches.filter(b=>b.finish!=='roof').flatMap(b=>[...b.geometry.getAttribute('position').array]);
+   return Array.from({length:3},(_,axis)=>{const p=points.filter((_,i)=>i%3===axis);return [Math.min(...p),Math.max(...p)];});
+  };
+  assert.deepEqual(bounds(high),bounds(low),city.id);
+  assert.equal(buildSkyline(city,[{u0:-1000,u1:1000,w0:-1000,w1:1000}]).length,0);
+  [...high,...low].forEach(b=>b.geometry.dispose());
+ }
+});

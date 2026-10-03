@@ -1,0 +1,60 @@
+{
+  "results": [
+    {
+      "id": "jersey-city",
+      "passed": true,
+      "state": {
+        "sourceId": "jersey-city",
+        "featureCount": 7205,
+        "buildingPolygons": 5507,
+        "hiddenBuildingPolygons": 5,
+        "unknownHeightFootprints": 279,
+        "facade": "mapped-architectural-facades",
+        "reflectionBound": true,
+        "reflectionRatio": 1.8000000000000003,
+        "facadeVertices": 267858,
+        "vertices": 267858,
+        "roofDetail": {
+          "illustrative": true,
+          "roofs": 92,
+          "units": 140,
+          "batches": 3
+        },
+        "stats": {
+          "tier": "high",
+          "fps": 14,
+          "calls": 273,
+          "triangles": 2453695,
+          "geometries": 805,
+          "textures": 86,
+          "programs": 57,
+          "towerMeshes": {
+            "tower:meridian": 75,
+            "tower:spire": 63,
+            "tower:lofts": 75,
+            "tower:pinnacle": 71
+          }
+        },
+        "near": 2,
+        "camera": [
+          51.185015371938974,
+          72.48701564558279,
+          191.02507795427005
+        ]
+      }
+    },
+    {
+      "id": "dusk",
+      "passed": true
+    },
+    {
+      "id": "presentation-accessibility",
+      "passed": true,
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
+}

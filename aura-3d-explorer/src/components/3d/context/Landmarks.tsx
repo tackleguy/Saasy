@@ -10,11 +10,11 @@
  * Each landmark is one merged geometry with world-space UVs, so the shared
  * facade textures tile at a real storey height on any shape.
  */
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { CityPreset, Landmark } from "@/lib/cityPresets";
-import { SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
+import { SITE_ROTATION_Y, uwToXZ, rectsOverlap, type UWRect } from "@/lib/siteLayout";
 import { facadeTexture } from "../textures";
 import { noRaycast } from "./shared";
 
@@ -182,6 +182,7 @@ function bridge(H: number): THREE.BufferGeometry[] {
 /** Planar UVs in world units (u across the face, v = height), so facade tiles keep a storey height. */
 function worldUV(g: THREE.BufferGeometry) {
   const geo = g.index ? g.toNonIndexed() : g;
+  if (geo !== g) g.dispose();
   geo.computeVertexNormals();
   const p = geo.getAttribute("position");
   const n = geo.getAttribute("normal");
@@ -219,14 +220,15 @@ function LandmarkMesh({ l }: { l: Landmark }) {
     });
   }, [finish, l.color]);
 
+  useEffect(() => () => { geometry.dispose(); material.dispose(); }, [geometry, material]);
   const [x, z] = uwToXZ(l.u, l.w);
   return <mesh geometry={geometry} material={material} position={[x, 0, z]} rotation-y={SITE_ROTATION_Y} raycast={noRaycast} />;
 }
 
-export default function Landmarks({ preset }: { preset: CityPreset }) {
+export default function Landmarks({ preset, clearings = [] }: { preset: CityPreset; clearings?: UWRect[] }) {
   return (
     <group>
-      {preset.landmarks.map((l, i) => (
+      {preset.landmarks.filter(l => !clearings.some(c => rectsOverlap(c, {u0:l.u-Math.max(14,l.h*.2),u1:l.u+Math.max(14,l.h*.2),w0:l.w-Math.max(14,l.h*.2),w1:l.w+Math.max(14,l.h*.2)}))).map((l, i) => (
         <LandmarkMesh key={`${preset.id}:${i}`} l={l} />
       ))}
     </group>

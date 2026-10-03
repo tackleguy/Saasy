@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {chromium} from 'playwright-core';
+const base=process.env.QA_URL||'http://127.0.0.1:3161';
+const out='docs/qa/focused-model-recovery/after';
+const browser=await chromium.launch({channel:'chrome',headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'});
+ const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+ const uid='50f21b06c6e644e196b2ac828eda97dc';let fail=true,release;
+ const gate=new Promise(resolve=>{release=resolve;});
+ await page.route(`**/models/sketchfab/${uid}/*.glb`,async r=>{if(fail)return r.fulfill({status:404,body:'Unavailable'});await gate;return r.continue();});
+ await page.goto(base+'/studio?graphics=1',{waitUntil:'domcontentloaded'});
+ await page.waitForSelector('canvas[data-graphics]',{timeout:120000});
+ const canvas=await page.locator('canvas').elementHandle();
+ const slider=page.getByRole('slider',{name:/Explosion/});
+ await slider.focus();await slider.press('ArrowRight');await slider.press('ArrowRight');
+ const value=await slider.getAttribute('aria-valuenow');assert.notEqual(Number(value),0);
+ await page.getByLabel('Scene quality',{exact:true}).selectOption('low');
+ await page.getByLabel('Site context',{exact:true}).selectOption('existing');
+ const retry=page.getByRole('button',{name:'Retry water model',exact:true});await retry.waitFor({timeout:60000});
+ assert.equal(await slider.getAttribute('aria-valuenow'),value);
+ await page.evaluate(await fs.readFile('node_modules/axe-core/axe.min.js','utf8'));
+ const violations=await page.evaluate(async()=>{const r=await axe.run(document.querySelector('[aria-label="Background model recovery"]'));return r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.failureSummary)}));});
+ assert.deepEqual(violations,[]);
+ await retry.focus();await page.screenshot({path:out+'/chrome-studio-keyboard-error.png'});
+ fail=false;await retry.press('Enter');
+ await page.getByText('Loading water model…',{exact:true}).waitFor();
+ assert.equal(await retry.isDisabled(),true);assert.equal(await retry.innerText(),'Retrying…');
+ await page.screenshot({path:out+'/chrome-studio-retrying.png'});
+ release();await retry.waitFor({state:'detached',timeout:90000});
+ assert.equal(await slider.getAttribute('aria-valuenow'),value);
+ assert.equal(await canvas.evaluate(c=>c===document.querySelector('canvas')),true);
+ assert.deepEqual(errors.filter(e=>!(e.includes(uid)&&e.includes('Could not load'))),[]);
+ await page.screenshot({path:out+'/chrome-studio-recovered.png'});
+ const result={passed:true,explosionBeforeAndAfter:value,canvasPreserved:true,keyboardRetry:true,pendingFeedback:true,recoveryAxeViolations:violations,errors};
+ await fs.writeFile(out+'/studio-results.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+}finally{await browser.close();}

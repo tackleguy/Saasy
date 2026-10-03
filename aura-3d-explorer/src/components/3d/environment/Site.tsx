@@ -80,7 +80,7 @@ export default function CinematicSite({edits,preset,buildings=[]}:{edits:SiteEdi
   const {mapSnapshot,location}=useProjectMap(preset.id);
   return <group>
     <Landscape edits={edits} preset={preset}/>
-    {mapSnapshot && <MappedContext snapshot={mapSnapshot} location={location} buildings={buildings} showGround={false} />}
+    {mapSnapshot && <MappedContext snapshot={mapSnapshot} location={location} buildings={buildings} preset={preset} showGround={false} />}
     <City clearings={edits.clearings} preset={preset}/>
     <Water quality={tier === "high" ? "high" : "low"} color={preset.water} />
     <Traffic/>

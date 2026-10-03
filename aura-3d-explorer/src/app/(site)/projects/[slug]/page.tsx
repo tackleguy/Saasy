@@ -66,7 +66,7 @@ export default async function ProjectPage({ params }: Params) {
             ))}
           </ul>
           <a href="#enquire" className="btn-primary ml-auto hidden shrink-0 py-2 text-[13px] sm:inline-flex">
-            Request pro forma
+            Enquire about a residence
           </a>
         </div>
       </nav>

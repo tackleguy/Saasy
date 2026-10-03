@@ -109,9 +109,11 @@ interface Props {
   viewNonce: number;
   lift: LiftLink;
   fit?: FloorFit;
+  /** Synthetic outdoor collision boundaries do not apply to geographic maps. */
+  siteContext?: "mapped" | "synthetic";
 }
 
-export default function WalkControls({ building, floor, explosion, viewIndex, viewNonce, lift, fit = DEFAULT_FIT }: Props) {
+export default function WalkControls({ building, floor, explosion, viewIndex, viewNonce, lift, fit = DEFAULT_FIT, siteContext = "synthetic" }: Props) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const gl = useThree((s) => s.gl);
 
@@ -143,7 +145,7 @@ export default function WalkControls({ building, floor, explosion, viewIndex, vi
   const [bx, bz] = building.position;
   const cos = Math.cos(floor.rotationY);
   const sin = Math.sin(floor.rotationY);
-  const isGround = floor.index === 0 || floor.zone === "podium";
+  const isGround = siteContext === "synthetic" && floor.index === 0;
   const outline = useMemo(() => planOutline(floor.shape, floor.width, floor.depth), [floor.shape, floor.width, floor.depth]);
 
   const isInsideBldg = useMemo(

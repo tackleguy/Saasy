@@ -10,8 +10,8 @@ const CAPABILITIES = [
   { title: "Live 3D site", body: "Every building on the plot, orbitable in the browser. No plugin, no download, any device.", where: "Studio", href: "/studio" },
   { title: "Exploded stack & core", body: "Pull the tower apart floor by floor, then x-ray through the facade to the core and lifts.", where: "Studio", href: "/studio" },
   { title: "Walk-throughs", body: "Isolate a floor and step inside: furnished interiors, walked in first person.", where: "Studio", href: "/studio" },
-  { title: "City backdrops", body: "Stage the scheme against the skyline of the market you are selling into, one click per city.", where: "Home", href: "/#hero" },
-  { title: "CAD import", body: "Drop STL, DXF or DWG massing and see it placed on site, next to the procedural model.", where: "Studio", href: "/studio" },
+  { title: "Mapped surroundings", body: "See streets, water and surrounding building shapes positioned from map data. Example sites and missing heights are clearly identified.", where: "Home", href: "/#hero" },
+  { title: "CAD import", body: "Review a supported building model, confirm its scale and materials, then position it at a project pin.", where: "Studio", href: "/studio" },
   { title: "Pro-forma yield", body: "Costs, financing, IRR, residual land value and sensitivities, recalculated as you drag.", where: "Studio", href: "/studio" },
   { title: "Cinematic reel", body: "An auto-directed camera reel of the live model, made for launch events and lobby screens.", where: "Live reel", href: "/tour" },
   { title: "AI assistant", body: "Ask about a scheme, a floor or a figure and get an answer in context, from an assistant that runs locally.", where: "Everywhere", href: null },
@@ -30,8 +30,8 @@ export default function Home() {
     <>
       {/* Hero — statement, then the live model as the plate */}
       <section id="hero" aria-labelledby="hero-title" className="scroll-mt-16">
-        <div className="shell grid gap-8 pb-10 pt-10 sm:pb-14 sm:pt-16 lg:grid-cols-12 lg:items-end">
-          <h1 id="hero-title" className="font-serif text-display-xl text-ink lg:col-span-8">
+        <div className="shell grid gap-5 py-7 sm:py-9 lg:grid-cols-12 lg:items-end">
+          <h1 id="hero-title" className="font-serif text-[42px] leading-[0.98] text-ink sm:text-[64px] lg:col-span-7">
             <span className="rise-line">
               <span>Walk the building</span>
             </span>
@@ -41,23 +41,41 @@ export default function Home() {
               </span>
             </span>
           </h1>
-          <div className="fade-in lg:col-span-4 lg:pb-2" style={{ animationDelay: "250ms" }}>
-            <p className="max-w-md text-[17px] leading-relaxed text-ink/80">
-              AURA turns a development into a live 3D model with the pro forma attached. Developers use it to underwrite, investors to decide, and
-              buyers to choose their floor.
+          <div className="fade-in lg:col-span-5 lg:pb-1" style={{ animationDelay: "250ms" }}>
+            <p className="max-w-md text-[15px] leading-relaxed text-ash">
+              Explore the architecture, step inside a residence, and understand its place in the city. A live model gives buyers more to discover.
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Link href="/tour" className="btn-primary btn-lg">
-                Watch the live reel
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href={`/projects/${FLAGSHIP.slug}`} className="btn-primary">
+                Explore the project
                 <ArrowRight size={16} aria-hidden />
               </Link>
-              <Link href="/studio" className="btn-secondary btn-lg">
-                Open the Studio
+              <Link href="/tour" className="btn-secondary">
+                Watch the live reel
               </Link>
             </div>
           </div>
         </div>
         <HeroExplorer project={FLAGSHIP} />
+      </section>
+
+      {/* Selected projects */}
+      <section aria-labelledby="portfolio" className="shell pb-20 sm:pb-28">
+        <SectionHeading
+          id="portfolio"
+          title="Selected projects"
+          action={
+            <Link href="/projects" className="btn-secondary">
+              All {PROJECTS.length} projects
+              <ArrowRight size={16} aria-hidden />
+            </Link>
+          }
+        >
+          Hover a project to scrub through its renders. Each one opens into its own live model, stacking plan and enquiry desk.
+        </SectionHeading>
+        <div className="mt-12 sm:mt-16">
+          <ProjectGrid projects={featured} priorityCount={0} layout="feature" />
+        </div>
       </section>
 
       {/* Capabilities — an index, not a card grid */}
@@ -93,25 +111,6 @@ export default function Home() {
             );
           })}
         </ul>
-      </section>
-
-      {/* Selected projects */}
-      <section aria-labelledby="portfolio" className="shell pb-20 sm:pb-28">
-        <SectionHeading
-          id="portfolio"
-          title="Selected projects"
-          action={
-            <Link href="/projects" className="btn-secondary">
-              All {PROJECTS.length} projects
-              <ArrowRight size={16} aria-hidden />
-            </Link>
-          }
-        >
-          Hover a project to scrub through its renders. Each one opens into its own live model, stacking plan and enquiry desk.
-        </SectionHeading>
-        <div className="mt-12 sm:mt-16">
-          <ProjectGrid projects={featured} priorityCount={0} layout="feature" />
-        </div>
       </section>
 
       {/* For developers */}

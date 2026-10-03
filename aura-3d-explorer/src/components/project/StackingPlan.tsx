@@ -8,7 +8,7 @@
  * weighted by the project's sales status. Clicking a cell opens a unit sheet;
  * clicking a floor label isolates that floor in the 3D explorer.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import clsx from "clsx";
@@ -113,9 +113,9 @@ export function buildUnits(slug: string, status: ProjectStatus, building: Buildi
 }
 
 const CELL: Record<UnitStatus, string> = {
-  Available: "border-ink/40 bg-paper hover:bg-stone",
-  Reserved: "border-brass bg-brass/40 hover:bg-brass/60",
-  Sold: "border-ink bg-ink/80 hover:bg-ink",
+  Available: "border-ink/40 bg-paper text-ink hover:bg-stone",
+  Reserved: "border-brass bg-brass/40 text-ink hover:bg-brass/60",
+  Sold: "border-ink bg-ink/80 text-paper hover:bg-ink",
 };
 
 interface Props {
@@ -160,10 +160,12 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
             {rows.map((row, i) => ({ row, f: building.floors[i] })).reverse().map(({ row, f }) => {
               return (
                 <tr key={f.index} className="border-b border-plaster/60 last:border-0">
-                  <th scope="row" className="w-24 py-1 pr-3 text-left font-normal">
+                  <th scope="row" className="w-14 py-1 pr-2 text-left font-normal sm:w-24 sm:pr-3">
                     <button
+                      type="button"
                       onClick={() => onShowFloor(f.index)}
-                      className="flex items-center gap-2 text-ash transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40"
+                      aria-label={`Show floor ${f.number} in 3D`}
+                      className="flex min-h-11 min-w-11 items-center gap-2 text-ash transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/40"
                       title={`Show floor ${f.number} in 3D`}
                     >
                       <span className="h-1.5 w-1.5 rounded-full" style={{ background: f.amenity ? AMENITY_ACCENT : ZONES[f.zone].accent }} aria-hidden />
@@ -173,8 +175,9 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                   <td className="py-1">
                     {f.amenity ? (
                       <button
+                        type="button"
                         onClick={() => onShowFloor(f.index)}
-                        className="flex h-7 w-full items-center gap-2 border px-2 text-left text-[11px] text-ink transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50"
+                        className="flex min-h-11 w-full items-center gap-2 border px-2 text-left text-[11px] text-ink transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50"
                         style={{ borderColor: `${AMENITY_ACCENT}66`, background: `${AMENITY_ACCENT}14` }}
                         title={`Show ${amenityName(f)} in 3D`}
                       >
@@ -185,15 +188,22 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                         </span>
                       </button>
                     ) : (
-                    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${MAX_PER_ROW}, minmax(0, 1fr))` }}>
+                    <div
+                      className="grid grid-cols-[repeat(var(--mobile-unit-columns),minmax(0,1fr))] gap-1 sm:grid-cols-[repeat(var(--unit-columns),minmax(0,1fr))]"
+                      style={{ "--mobile-unit-columns": Math.min(row.length, 4), "--unit-columns": row.length } as CSSProperties}
+                    >
                       {row.map((u) => (
                         <button
                           key={u.code}
+                          type="button"
                           onClick={() => setUnit(u)}
                           aria-label={`Unit ${u.code}, ${u.status}, ${fmtNum(u.sqFt)} square feet`}
-                          className={clsx("h-7 border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50", CELL[u.status])}
-                          style={{ gridColumn: `span ${Math.max(1, Math.floor(MAX_PER_ROW / row.length))}` }}
-                        />
+                          title={`Unit ${u.code} · ${u.status}`}
+                          className={clsx("flex min-h-11 min-w-11 flex-col items-center justify-center gap-0.5 border px-1 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oak/50", CELL[u.status])}
+                        >
+                          <span className="text-[11px] font-medium leading-tight tabular-nums">{u.code.slice(u.code.lastIndexOf("-") + 1)}</span>
+                          <span className="text-[10px] leading-tight">{u.status === "Available" ? "Avail." : u.status === "Reserved" ? "Res." : "Sold"}</span>
+                        </button>
                       ))}
                     </div>
                     )}
@@ -219,7 +229,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                     </p>
                     <Dialog.Title className="font-serif text-4xl leading-tight text-ink">Unit {unit.code}</Dialog.Title>
                   </div>
-                  <Dialog.Close className="btn-ghost" aria-label="Close unit sheet">
+                  <Dialog.Close className="btn-ghost min-h-11 min-w-11 justify-center" aria-label="Close unit sheet">
                     <X size={18} />
                   </Dialog.Close>
                 </div>
@@ -242,7 +252,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                 </dl>
                 <div className="mt-5 flex gap-2">
                   <button
-                    className="btn-secondary flex-1"
+                    className="btn-secondary min-h-11 flex-1"
                     onClick={() => {
                       onShowFloor(unit.floorIndex);
                       setUnit(null);
@@ -251,7 +261,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                     Show in 3D
                   </button>
                   <button
-                    className="btn-primary flex-1"
+                    className="btn-primary min-h-11 flex-1"
                     disabled={unit.status === "Sold"}
                     onClick={() => {
                       onEnquire(unit);

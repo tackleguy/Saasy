@@ -1,0 +1,124 @@
+[
+  {
+    "name": "water-404",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 3
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 40,
+      "calls": 1011,
+      "triangles": 3008280,
+      "geometries": 389,
+      "textures": 56,
+      "programs": 70,
+      "towerMeshes": {
+        "tower:aurelia": 25
+      }
+    }
+  },
+  {
+    "name": "generic-building-404",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb\" responded with 404: Not Found"
+    ],
+    "requests": {
+      "f943ba2828a64b7d858ee6e4bdacedc6": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 44,
+      "calls": 1460,
+      "triangles": 6317731,
+      "geometries": 402,
+      "textures": 60,
+      "programs": 77,
+      "towerMeshes": {
+        "tower:aurelia": 584
+      }
+    }
+  },
+  {
+    "name": "water-corrupt",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: JSON.parse: unexpected character at line 1 column 1 of the JSON data"
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 46,
+      "calls": 1466,
+      "triangles": 3088061,
+      "geometries": 381,
+      "textures": 56,
+      "programs": 68,
+      "towerMeshes": {
+        "tower:aurelia": 584
+      }
+    }
+  },
+  {
+    "name": "water-network-failure",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: NetworkError when attempting to fetch resource."
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 45,
+      "calls": 1447,
+      "triangles": 3058795,
+      "geometries": 381,
+      "textures": 56,
+      "programs": 68,
+      "towerMeshes": {
+        "tower:aurelia": 584
+      }
+    }
+  },
+  {
+    "name": "simultaneous-failures",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+    ],
+    "requests": {
+      "50f21b06c6e644e196b2ac828eda97dc": 2,
+      "f943ba2828a64b7d858ee6e4bdacedc6": 2
+    },
+    "graphics": {
+      "tier": "low",
+      "fps": 46,
+      "calls": 1460,
+      "triangles": 6317731,
+      "geometries": 402,
+      "textures": 60,
+      "programs": 73,
+      "towerMeshes": {
+        "tower:aurelia": 584
+      }
+    }
+  },
+  {
+    "name": "switch-away-cleans-failure-state",
+    "passed": true,
+    "errors": [
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found",
+      "Error: Could not load /models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb: fetch for \"http://127.0.0.1:3161/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb\" responded with 404: Not Found"
+    ]
+  }
+]

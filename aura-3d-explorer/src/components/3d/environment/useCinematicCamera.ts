@@ -42,6 +42,8 @@ interface Options {
   duration?: number;
   /** Bump this number to force a re-run even if the goal is unchanged (e.g. "Reset view"). */
   nonce?: number;
+  /** Recompose when mapped context becomes available or the site pin changes. */
+  resetKey?: string;
   /** While false the rig is idle (e.g. walk mode owns the camera); re-enabling flies back to the goal. */
   enabled?: boolean;
   /** Opening shot: start here on first run and dolly to the goal over `duration` seconds. */
@@ -51,13 +53,13 @@ interface Options {
 // Keep tweens time-accurate on slow frames (no GSAP lag-smoothing slow-motion).
 gsap.ticker.lagSmoothing(0);
 
-export function useCinematicCamera(goal: CameraGoal, { duration = 1.4, nonce = 0, enabled = true, intro }: Options = {}) {
+export function useCinematicCamera(goal: CameraGoal, { duration = 1.4, nonce = 0, resetKey = "", enabled = true, intro }: Options = {}) {
   const camera = useThree((s) => s.camera);
   const controls = useThree((s) => s.controls) as OrbitControlsImpl | null;
   const tween = useRef<gsap.core.Tween | null>(null);
-  const idleTimer = useRef<number | null>(null);
   const firstRun = useRef(true);
   const lastNonce = useRef(nonce);
+  const lastResetKey = useRef(resetKey);
 
   // Serialise the goal so the effect only fires on real changes.
   const goalKey = JSON.stringify(goal);
@@ -79,7 +81,7 @@ export function useCinematicCamera(goal: CameraGoal, { duration = 1.4, nonce = 0
       toCamera = new THREE.Vector3(...g.position);
     } else {
       // Canonical angle on first load / reset, otherwise keep the user's orbit.
-      const snap = firstRun.current || nonce !== lastNonce.current;
+      const snap = firstRun.current || nonce !== lastNonce.current || resetKey !== lastResetKey.current;
       const dir = snap ? new THREE.Vector3(...g.resetDirection) : camera.position.clone().sub(controls.target);
       if (dir.lengthSq() < 1e-6) dir.set(1, 0.6, 1);
       toCamera = toTarget.clone().add(dir.normalize().multiplyScalar(g.distance));
@@ -116,36 +118,15 @@ export function useCinematicCamera(goal: CameraGoal, { duration = 1.4, nonce = 0
     });
     firstRun.current = false;
     lastNonce.current = nonce;
-  }, [goalKey, nonce, controls, camera, duration, enabled]);
+    lastResetKey.current = resetKey;
+  }, [goalKey, nonce, resetKey, controls, camera, duration, enabled]);
 
   useEffect(() => {
-    if (!controls) return;
-    controls.autoRotate = false;
-    controls.autoRotateSpeed = 0.18;
-    const restartIdleOrbit = () => {
-      controls.autoRotate = false;
-      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
-      idleTimer.current = null;
-      if (!enabled || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      idleTimer.current = window.setTimeout(() => {
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.18;
-        controls.update();
-      }, 20_000);
-    };
-    const interact = () => {
-      tween.current?.kill();
-      restartIdleOrbit();
-    };
-    restartIdleOrbit();
+    const interact = () => tween.current?.kill();
     const events = ["pointerdown", "wheel", "keydown"] as const;
-    events.forEach(e => window.addEventListener(e, interact, { passive: true }));
-    return () => {
-      events.forEach(e => window.removeEventListener(e, interact));
-      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
-      controls.autoRotate = false;
-    };
-  }, [controls, enabled]);
+    events.forEach(event => window.addEventListener(event, interact, { passive: true }));
+    return () => events.forEach(event => window.removeEventListener(event, interact));
+  }, []);
 
   // Clean up on unmount.
   useEffect(() => () => void tween.current?.kill(), []);

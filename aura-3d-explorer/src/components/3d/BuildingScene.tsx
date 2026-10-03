@@ -12,7 +12,7 @@
  * the plot it was imported onto, and the hero camera frames its real height.
  * Loaded with `next/dynamic({ ssr: false })` because Three.js needs `window`.
  */
-import { Suspense, useCallback, useEffect, useRef, useState, type MutableRefObject } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { createPortal } from "react-dom";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -28,24 +28,32 @@ import { CinematicContext, SUN, type SunPreset, type Tier } from "./environment/
 import Telemetry from "./environment/Telemetry";
 import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
-import SiteContext, { type SiteEdits } from "./SiteContext";
+import { type SiteEdits } from "./SiteContext";
 import PostEffects from "./PostEffects";
 import WalkControls, { type LiftLink } from "./WalkControls";
 import ImportedModel from "./ImportedModel";
+import { PresentationContext, type ModelCut } from "./presentationContext";
 import LibraryModel from "./LibraryModel";
-import SketchfabCityCredits from "./SketchfabCityCredits";
+import MappedContext from "./context/MappedContext";
+import type { DowntownProgress } from "./context/DowntownContext";
+import { useDowntownMap } from "@/hooks/useDowntownMap";
+import MappedSiteDetails from "./context/MappedSiteDetails";
+import type { MapSnapshot, ProjectLocation } from "@/lib/geographicContext";
+import { ContextModelRecoveryProvider } from "./ContextModelRecovery";
 import { libraryModel } from "@/lib/modelLibrary";
 import { MODEL_SCALE } from "@/lib/tower";
 import ArchitectLayer from "./ArchitectLayer";
 import type { ArchitectSceneState } from "@/lib/architecture";
 import { consumeShadowUpdate, invalidateShadows, SHADOW_SETTLE_MS } from "./staticShadows";
 import { DETAIL_LAYER, RAYCAST_LAYER } from "./layers";
+import { chooseMappedOverviewDirection } from "@/lib/mappedOverview";
+import { downtownCameraPose, downtownFarPlane, downtownNearPlane, downtownWorldBounds, DOWNTOWN_MAX_DISTANCE } from "@/lib/downtownView";
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
 export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
 
-/** Hero overview direction: across the water, from a slightly low angle. */
-const OVERVIEW_DIRECTION: Vec3 = [1, 0.22, 1];
+/** An oblique skyline view gives the city a horizon and layered facades. */
+const OVERVIEW_DIRECTION: Vec3 = [1, 0.25, 1];
 
 
 /** Screen-frame (u, w) of a building from its world position. */
@@ -82,8 +90,14 @@ function photoPose(angle: PhotoAngle | "crown", b: Building, explosion: number, 
 }
 
 interface Props {
+  presentation?: boolean;
+  presentationSun?: SunPreset;
+  modelCut?: ModelCut;
+  location: ProjectLocation;
+  mapSnapshot: MapSnapshot | null;
   showPresentationControls?: boolean;
   contextModel?: string | null;
+  onContextChange?: (existing: boolean) => void;
   buildings: Building[];
   activeBuildingId: BuildingId;
   explosion: number;
@@ -127,6 +141,9 @@ interface Props {
 /** Translates app state into a camera goal and hands it to the GSAP tween hook. */
 function CameraRig({
   building,
+  buildings,
+  mapSnapshot,
+  location,
   siteH,
   explosion,
   selectedIndex,
@@ -139,6 +156,9 @@ function CameraRig({
   hold = false,
 }: {
   building: Building;
+  buildings: Building[];
+  mapSnapshot: MapSnapshot | null;
+  location: ProjectLocation;
   /** Height of the tallest building on the site (un-exploded). */
   siteH: number;
   explosion: number;
@@ -154,29 +174,41 @@ function CameraRig({
   hold?: boolean;
 }) {
   const h = heightOverride ?? buildingHeight(building, explosion);
+  const aspect = useThree(state => state.size.width / state.size.height);
+  const overviewHeight = Math.max(h, siteH);
+  const downtownBounds = useMemo(() => downtownWorldBounds(mapSnapshot, location, overviewHeight), [mapSnapshot?.id, location, overviewHeight]);
+  const overviewDistance = Math.max(overviewHeight * 1.8 + 40, 96) / Math.min(1, Math.max(0.7, aspect));
+  const overviewDirection = useMemo(() => chooseMappedOverviewDirection({
+    snapshot: mapSnapshot, location, buildings,
+    target: [building.position[0] * .6, overviewHeight * .42, building.position[1] * .6],
+    distance: overviewDistance, preferredDirection: OVERVIEW_DIRECTION,
+  }), [mapSnapshot, location, buildings, building.position, overviewHeight, overviewDistance]);
   let goal: CameraGoal;
   if (selectedIndex !== null) {
     goal = { kind: "focus", target: floorCentre(building, building.floors[selectedIndex], explosion), offset: FOCUS_OFFSET };
   } else if (photoAngle) {
-    goal = { kind: "pose", ...photoPose(photoAngle, building, explosion, siteH) };
+    goal = { kind: "pose", ...(photoAngle === "skyline" && downtownBounds ? downtownCameraPose(downtownBounds, aspect) : photoPose(photoAngle, building, explosion, siteH)) };
   } else {
     // Hero view: across the water, far enough back to keep the neighbours in frame.
     goal = {
       kind: "overview",
-      target: [building.position[0] * 0.6, h * 0.42, building.position[1] * 0.6],
-      distance: Math.max(h * 1.25 + 40, 96),
-      resetDirection: OVERVIEW_DIRECTION,
+      target: [building.position[0] * 0.6, overviewHeight * 0.42, building.position[1] * 0.6],
+      distance: overviewDistance,
+      resetDirection: overviewDirection,
     };
   }
   const held = useRef<CameraGoal | null>(null);
   if (hold && held.current) goal = held.current;
   else held.current = goal;
-  // Opening shot: eye height (1.6 m) at the water's edge, then dolly out.
-  const [ix, iz] = uwToXZ(20, Math.max(150, h * 2));
+  // A short move between two elevated viewpoints avoids starting inside mapped
+  // streets or neighboring geometry, which are no longer an invented backdrop.
+  const introDistance = Math.max(overviewHeight * 1.8 + 40, 96);
+  const introTarget: Vec3 = [building.position[0] * .6, overviewHeight * .42, building.position[1] * .6];
   useCameraTween(goal, {
     nonce: resetNonce + photoNonce * 1000,
+    resetKey: `${mapSnapshot?.id ?? "pending"}:${location.latitude}:${location.longitude}`,
     enabled: !walking,
-    intro: intro ? { position: [ix, 0.45, iz], target: [building.position[0], h * 0.55, building.position[1]], duration: 4 } : undefined,
+    intro: intro ? { position: [introTarget[0] + introDistance * .325, introTarget[1] + introDistance * .32, introTarget[2] + introDistance * .9], target: introTarget, duration: 2.2 } : undefined,
   });
   return null;
 }
@@ -188,8 +220,19 @@ function CameraRig({
  */
 function GroundClamp() {
   const camera = useThree((s) => s.camera);
+  const controls = useThree((s) => s.controls) as { target?: THREE.Vector3 } | null;
   useFrame(() => {
     if (camera.position.y < 0.35) camera.position.y = 0.35;
+    if (camera instanceof THREE.PerspectiveCamera && controls?.target) {
+      const distance = camera.position.distanceTo(controls.target);
+      const near = downtownNearPlane(distance, camera.position.y);
+      const far = downtownFarPlane(distance);
+      if (Math.abs(camera.near - near) > .001 || Math.abs(camera.far - far) > 1) {
+        camera.near = near;
+        camera.far = far;
+        camera.updateProjectionMatrix();
+      }
+    }
   });
   return null;
 }
@@ -218,7 +261,13 @@ function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Pro
       ctx.drawImage(gl.domElement, 0, 0);
       ctx.font = `${Math.max(18, canvas.width * 0.013)}px Georgia`;
       ctx.fillStyle = "#C7A66C"; ctx.textAlign = "right";
-      ctx.fillText("A U R A", canvas.width - 36, canvas.height - 32);
+      ctx.fillText("A U R A", canvas.width - 36, canvas.height - 48);
+      const creditSize = Math.max(10, Math.min(22, canvas.width / 65));
+      ctx.fillStyle = "#f5f3ed";
+      ctx.fillRect(0, canvas.height - creditSize * 2, canvas.width, creditSize * 2);
+      ctx.font = `${creditSize}px sans-serif`;
+      ctx.textAlign = "left"; ctx.fillStyle = "#201f1b";
+      ctx.fillText("Map data: © OpenStreetMap contributors · Overture Maps · ODbL / CC BY", 12, canvas.height - creditSize * .6, canvas.width - 24);
       const url = canvas.toDataURL("image/png");
       setDpr(prev);
       const a = document.createElement("a");
@@ -252,7 +301,15 @@ function StaticShadows({ deps }: { deps: unknown[] }) {
     // Runs inside gl.render() just before three draws the shadow maps.
     scene.onBeforeRender = function (...args) {
       prev.apply(this, args);
-      if (args[2] === get().camera && consumeShadowUpdate()) gl.shadowMap.needsUpdate = true;
+      // Reflections can draw a newly mounted light before the main camera. Three's
+      // comparison sampler cannot bind its regular fallback texture for a null map.
+      // Initialize once in that pass, without consuming the main-camera refresh.
+      let missingMap = false;
+      scene.traverse((object) => {
+        const light = object as THREE.DirectionalLight;
+        if (light.isLight && light.castShadow && light.shadow && !light.shadow.map) missingMap = true;
+      });
+      if (missingMap || (args[2] === get().camera && consumeShadowUpdate())) gl.shadowMap.needsUpdate = true;
     };
     return () => {
       scene.onBeforeRender = prev;
@@ -304,8 +361,9 @@ function InteriorLight({ building, floor, explosion }: { building: Building; flo
 }
 
 function Dock({host,focused,timeLabel,children}:{host:HTMLElement|null;focused:boolean;timeLabel:string;children:import("react").ReactNode}) {
-  if(focused) return <details style={{position:"absolute",right:12,bottom:16,zIndex:30,maxWidth:"calc(100% - 24px)",background:"#111620",color:"#E8DCC6",border:"1px solid #5c503c",borderRadius:6}}><summary aria-label="Scene presentation settings" style={{cursor:"pointer",padding:"10px 12px",fontSize:12}}>Sun · {timeLabel}</summary>{children}</details>;
-  return host ? createPortal(children,host) : children;
+  const debug = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("graphics") === "1";
+  const content = <details open={debug} className="border-t border-plaster bg-paper text-ink"><summary aria-label="Scene presentation settings" className="cursor-pointer px-1 py-2 text-xs">Scene settings <span className="ml-2 text-ash">{timeLabel}</span></summary>{children}</details>;
+  return host && !focused ? createPortal(content,host) : <div className="absolute bottom-5 right-3 z-30 max-w-[calc(100%-1.5rem)] bg-paper p-2">{content}</div>;
 }
 function LoadingSignal({onChange}:{onChange:(loading:boolean)=>void}) {
   useEffect(()=>{onChange(true);return()=>onChange(false);},[onChange]);
@@ -336,6 +394,8 @@ function IdleOrbit({enabled}:{enabled:boolean}) {
 const NO_LIFT: LiftLink = { ride: { target: -1, nonce: 0 }, arrival: { index: -1, nonce: 0 }, onInside: () => {}, onFloor: () => {}, onArrive: () => {} };
 
 export default function BuildingScene({
+  location,
+  mapSnapshot,
   buildings,
   activeBuildingId,
   explosion,
@@ -362,7 +422,16 @@ export default function BuildingScene({
   fit = DEFAULT_FIT,
   contextModel,
   showPresentationControls = true,
+  onContextChange,
+  presentation = false,
+  presentationSun = "golden",
+  modelCut,
 }: Props) {
+  const downtown = useDowntownMap(mapSnapshot?.id);
+  const [downtownProgress, setDowntownProgress] = useState<DowntownProgress | null>(null);
+  const downtownCurrent = downtownProgress?.id === mapSnapshot?.id ? downtownProgress : null;
+  const downtownFailed = !!downtown.error || !!downtownCurrent?.failed;
+  const downtownLoading = downtown.loading || !!downtownCurrent?.pending;
   const [loading, setLoading] = useState(true);
   const dockAnchor = useRef<HTMLSpanElement>(null);
   const [dockHost, setDockHost] = useState<HTMLElement | null>(null);
@@ -373,6 +442,7 @@ export default function BuildingScene({
     const q = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("sun");
     return q && q in SUN ? q as SunPreset : "golden";
   });
+  useEffect(() => { if (presentation) setTime(presentationSun); }, [presentation, presentationSun]);
   const [override, setOverride] = useState<Tier | "auto">("auto");
   const [automatic, setAutomatic] = useState<Tier>(quality);
   const tier = override === "auto" ? automatic : override;
@@ -395,6 +465,14 @@ export default function BuildingScene({
   // The imported model stands on the plot it was imported onto (tagged by useExplorer).
   const importedOn: BuildingId | null = importedModel ? (importedModel.userData.buildingId as BuildingId | undefined) ?? activeBuildingId : null;
   const importedBuilding = importedOn ? buildings.find((b) => b.id === importedOn) ?? null : null;
+  const contextBuildings = useMemo(() => {
+    if (!importedModel || !importedBuilding) return buildings;
+    const box = new THREE.Box3().setFromObject(importedModel);
+    const size = box.getSize(new THREE.Vector3());
+    const proxy = { ...importedBuilding, floors: [{ ...importedBuilding.floors[0], width: size.x, depth: size.z, rotationY: 0, shape: { kind: "rect" as const } }] };
+    return [proxy];
+  }, [buildings, importedModel, importedBuilding]);
+
 
   // Architect mode: orthographic drawing views take over the camera; the measure tool takes clicks.
   const drawingView = !!architect && architect.view !== "perspective";
@@ -416,6 +494,8 @@ export default function BuildingScene({
 
   return (
     <CinematicContext.Provider value={{time,tier,legacy}}>
+    <PresentationContext.Provider value={presentation}>
+    <ContextModelRecoveryProvider>
     <span ref={dockAnchor} hidden />
     <Canvas
       shadows="percentage"
@@ -439,16 +519,18 @@ export default function BuildingScene({
       <CameraLayers />
       <Telemetry tier={tier} />
       <StaticShadows
-        deps={[buildings, activeBuildingId, explosion, selectedIndex, xray, section, walking, quality, tier, city, siteEdits, importedModel, lift.ride.nonce, lift.arrival.nonce]}
+        deps={[buildings, activeBuildingId, explosion, selectedIndex, xray, section, walking, quality, tier, city, location, mapSnapshot, siteEdits, importedModel, lift.ride.nonce, lift.arrival.nonce]}
       />
 
       <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} extent={Math.max(45,...buildings.map(b=>buildingHeight(b,explosion)+Math.hypot(...b.position)))} />
-      <SiteContext quality={quality} preset={preset} edits={siteEdits} buildings={buildings} />
-      {asset && <group position={asset.category === "skylines" ? [0, 0, -180] : [30, 0, -30]} scale={MODEL_SCALE}>
+      <MappedContext snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} downtown={downtown.manifest} downtownRetry={downtown.tileAttempt} onDowntownProgress={setDowntownProgress} />
+      <MappedSiteDetails snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />
+      {asset && asset.category !== "skylines" && <group position={[30, 0, -30]} scale={MODEL_SCALE}>
         <LibraryModel model={asset} />
       </group>}
-      {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} />}
+      {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} cut={modelCut} />}
       {buildings.map((b) => {
+        if (importedModel) return null;
         const active = b.id === activeBuildingId;
         if (importedBuilding && b.id === importedBuilding.id) return null;
         return (
@@ -475,14 +557,17 @@ export default function BuildingScene({
         explosion={explosion}
       />
       {walking && selectedIndex !== null && (
-        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} fit={fit} />
+        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} fit={fit} siteContext="mapped" />
       )}
-      <OrbitControls enabled={!walking} enableRotate={!drawingView} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={drawingView ? 5000 : 320} maxPolarAngle={Math.PI - 0.08} />
+      <OrbitControls enabled={!walking} enableRotate={!drawingView} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={drawingView ? 5000 : DOWNTOWN_MAX_DISTANCE} maxPolarAngle={Math.PI - 0.08} />
       <IdleOrbit enabled={!walking && !drawingView && selectedIndex === null && !cameraHold} />
       {!walking && <GroundClamp />}
       <CameraRig
         building={building}
-        siteH={Math.max(...buildings.map((b) => buildingHeight(b, 0)))}
+        buildings={contextBuildings}
+        mapSnapshot={mapSnapshot}
+        location={location}
+        siteH={importedModel ? Number(importedModel.userData.heightUnits) || 30 : Math.max(...buildings.map((b) => buildingHeight(b, 0)))}
         explosion={explosion}
         selectedIndex={selectedIndex}
         resetNonce={resetNonce}
@@ -495,18 +580,23 @@ export default function BuildingScene({
       />
       {architect && <ArchitectLayer state={architect} buildings={buildings} building={building} explosion={explosion} />}
       {captureRef && <CaptureBridge captureRef={captureRef} />}
-      {tier !== "low" && <PostEffects focus={high ? focus : null} />}
+      {tier !== "low" && <PostEffects focus={high && !presentation ? focus : null} />}
       </Suspense>
     </Canvas>
     {loading && <PreparingSite />}
-    {(showPresentationControls || (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("graphics")==="1")) && !walking && <Dock host={dockHost} focused={selectedIndex!==null} timeLabel={SUN[time].label}><div data-cinematic-dock role="group" aria-label="Scene presentation" style={{position:dockHost||selectedIndex!==null?"relative":"absolute",right:dockHost||selectedIndex!==null?undefined:12,top:dockHost||selectedIndex!==null?undefined:12,zIndex:dockHost?undefined:30,display:"flex",flexWrap:"wrap",gap:8,maxWidth:dockHost||selectedIndex!==null?"100%":"min(560px,calc(100% - 24px))",padding:"8px 10px",background:"#111620ee",border:"1px solid #5c503c",borderRadius:6,color:"#E8DCC6",fontSize:11}}>
-      <label>Sun <select aria-label="Sun" value={time} onChange={e=>setTime(e.target.value as SunPreset)} style={{background:"#111620",color:"#E8DCC6",border:0,padding:5}}>{Object.entries(SUN).map(([id,p])=><option key={id} value={id}>{p.label}</option>)}</select></label>
-      <label>Quality <select aria-label="Scene quality" value={override} onChange={e=>setOverride(e.target.value as Tier|"auto")} style={{background:"#111620",color:"#E8DCC6",border:0,padding:5}}><option value="auto">Auto · {tier}</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label>
-      <label>Context <select aria-label="Site context" value={legacy?"existing":"cinematic"} onChange={e=>setLegacy(e.target.value==="existing")} style={{background:"#111620",color:"#E8DCC6",border:0,padding:5}}><option value="cinematic">Cinematic</option><option value="existing">Existing city</option></select></label>
-      <label>Photo <select aria-label="Photo angle" value={localAngle??""} onChange={e=>{onSelect(null);setLocalAngle(e.target.value as PhotoAngle|"crown");setLocalNonce(n=>n+1);}} style={{background:"#111620",color:"#E8DCC6",border:0,padding:5}}><option value="" disabled>Choose angle</option>{["street","waterfront","aerial","podium","crown"].map(a=><option key={a} value={a}>{a[0].toUpperCase()+a.slice(1)}</option>)}</select></label>
-      {captureRef&&<button onClick={()=>void captureRef.current?.()} style={{color:"#D6B87C",padding:5}} aria-label="Capture cinematic PNG">Capture</button>}
-      {!legacy&&<SketchfabCityCredits/>}
+    {!loading && (downtownFailed || downtownLoading) && <div data-downtown-status className={`absolute left-1/2 z-30 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-3 border border-plaster bg-paper px-3 py-2 text-xs text-ink ${presentation ? "top-36 sm:top-8" : "top-3"}`}>
+      <span role="status">{downtownFailed ? "Some downtown areas could not load." : "Loading downtown…"}</span>
+      {downtownFailed && <button onClick={downtown.retry} className="min-h-9 shrink-0 px-2 font-medium underline underline-offset-4">Retry downtown</button>}
+    </div>}
+    {!presentation && (showPresentationControls || (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("graphics")==="1")) && !walking && <Dock host={dockHost} focused={selectedIndex!==null} timeLabel={SUN[time].label}><div data-cinematic-dock role="group" aria-label="Scene presentation" className="flex flex-wrap items-center gap-x-3 gap-y-2 pb-2 text-xs text-ink">
+      <label>Sun <select aria-label="Sun" value={time} onChange={e=>setTime(e.target.value as SunPreset)} className="min-h-9 border border-plaster bg-paper px-2 text-ink">{Object.entries(SUN).map(([id,p])=><option key={id} value={id}>{p.label}</option>)}</select></label>
+      <label>Quality <select aria-label="Scene quality" value={override} onChange={e=>setOverride(e.target.value as Tier|"auto")} className="min-h-9 border border-plaster bg-paper px-2 text-ink"><option value="auto">Auto · {tier}</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label>
+      <label>Lighting <select aria-label="Scene lighting" value={legacy?"existing":"cinematic"} onChange={e=>{const existing=e.target.value==="existing";setLegacy(existing);onContextChange?.(existing);}} className="min-h-9 border border-plaster bg-paper px-2 text-ink"><option value="cinematic">Cinematic</option><option value="existing">Daylight</option></select></label>
+      <label>Photo <select aria-label="Photo angle" value={localAngle??""} onChange={e=>{onSelect(null);setLocalAngle(e.target.value as PhotoAngle|"crown");setLocalNonce(n=>n+1);}} className="min-h-9 border border-plaster bg-paper px-2 text-ink"><option value="" disabled>Choose angle</option>{["street","waterfront","aerial","skyline","podium","crown"].map(a=><option key={a} value={a}>{a === "skyline" ? "Downtown" : a[0].toUpperCase()+a.slice(1)}</option>)}</select></label>
+      {captureRef&&<button onClick={()=>void captureRef.current?.()} className="min-h-9 px-2 text-ink underline" aria-label="Capture cinematic PNG">Capture</button>}
     </div></Dock>}
+    </ContextModelRecoveryProvider>
+    </PresentationContext.Provider>
     </CinematicContext.Provider>
   );
 }

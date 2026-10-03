@@ -256,7 +256,7 @@ export default function MappedSiteMap({ explorer: x, onClose }: { explorer: Expl
         </div>
 
         {/* Feedback messages */}
-        {invalid && <p role="alert" className="text-xs font-medium text-negative">{invalid}</p>}
+        {(invalid || x.locationError) && <p role="alert" className="text-xs font-medium text-negative">{invalid || x.locationError}</p>}
         {notice && <p role="status" className="text-xs font-medium text-emerald-700">{notice}</p>}
       </form>
 
@@ -406,7 +406,7 @@ export default function MappedSiteMap({ explorer: x, onClose }: { explorer: Expl
       )}
       {x.mapSnapshot && (
         <p className="mt-2 text-[10px] text-ash/80 leading-normal">
-          {counts.provided.toLocaleString()} 3D buildings · {counts.estimated.toLocaleString()} estimated floors · {counts.unknown.toLocaleString()} footprints
+          {counts.provided.toLocaleString()} building parts with source heights · {counts.estimated.toLocaleString()} floor-count estimates · {counts.unknown.toLocaleString()} footprints without height. Flat terrain; facade and roof details are illustrative.
         </p>
       )}
 
@@ -418,6 +418,10 @@ export default function MappedSiteMap({ explorer: x, onClose }: { explorer: Expl
           <span>·</span>
           <a href="https://docs.overturemaps.org/attribution/" target="_blank" rel="noreferrer" className="underline">
             Overture Maps
+          </a>
+          <span>·</span>
+          <a href="/maps/ATTRIBUTION.md" target="_blank" rel="noreferrer" className="underline">
+            Sources and license
           </a>
         </div>
         <a

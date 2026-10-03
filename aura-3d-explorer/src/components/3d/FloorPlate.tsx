@@ -36,14 +36,16 @@
  * are eased per frame with frame-rate-independent damping, without React
  * re-renders.
  */
-import { memo, useEffect, useMemo, useRef, type RefObject } from "react";
+import { memo, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { FacadeSpec, FloorData, ZoneId } from "@/types";
-import { explodedY } from "@/lib/tower";
+import { explodedY, MODEL_SCALE } from "@/lib/tower";
 import { DEFAULT_FIT, type FloorFit } from "@/lib/apartmentFit";
 import { designForFloor } from "@/lib/projectFloorPlan";
 import { useProjectFloorPlans } from "./floorPlanContext";
+import { usePresentation } from "./presentationContext";
+import { useCinematic } from "./environment/settings";
 import ImportedFloorDesign from "./ImportedFloorDesign";
 import FurnitureOverlay, { SLAB_THICKNESS } from "./FurnitureOverlay";
 import LiftCore from "./LiftCore";
@@ -112,9 +114,9 @@ interface GlassLook {
 
 const LOOKS: Record<ZoneId, GlassLook> = {
   podium: { color: "#8fa4a7", roughness: 0.18, fin: null, finish: "#f0e9de" },
-  office: { color: "#9fb6ba", roughness: 0.16, fin: { spacing: 3, thickness: 0.12, depth: 0.6 }, finish: "#cfcac2" },
-  residential: { color: "#a9bec1", roughness: 0.2, fin: { spacing: 1.5, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
-  crown: { color: "#c6d6d8", roughness: 0.14, fin: { spacing: 1.5, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
+  office: { color: "#9fb6ba", roughness: 0.16, fin: { spacing: 3 * MODEL_SCALE, thickness: 0.12 * MODEL_SCALE, depth: 0.6 * MODEL_SCALE }, finish: "#cfcac2" },
+  residential: { color: "#a9bec1", roughness: 0.2, fin: { spacing: 1.5 * MODEL_SCALE, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
+  crown: { color: "#c6d6d8", roughness: 0.14, fin: { spacing: 1.5 * MODEL_SCALE, thickness: 0.014, depth: 0.022 }, finish: "#ffffff" },
 };
 
 const lerp = THREE.MathUtils.lerp;
@@ -183,7 +185,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
   const fin =
     floor.zone === "office" && look.fin
       ? facade.finSpacing > 0
-        ? { ...look.fin, spacing: 3 }
+        ? { ...look.fin, spacing: 3 * MODEL_SCALE }
         : null
       : floor.zone === "podium" && !arcade
         ? { spacing: 1.2, thickness: 0.06, depth: 0.2 }
@@ -193,8 +195,27 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
   const inset = arcade ? 0.7 : floor.amenity ? 0.5 : 0;
 
   const group = useRef<THREE.Group>(null);
+  const presenting = usePresentation();
+  const { tier } = useCinematic();
+  const [nearCamera, setNearCamera] = useState(false);
+  const nextDetailCheck = useRef(0);
+  const world = useMemo(() => new THREE.Vector3(), []);
+  useFrame(({ camera, clock, scene }) => {
+    const glass = glassMat.current;
+    if (glass) {
+      if (glass.envMap !== scene.environment) { glass.envMap = scene.environment; glass.needsUpdate = true; }
+      glass.envMapIntensity = scene.environmentIntensity * 1.6;
+    }
+    if (!group.current || clock.elapsedTime < nextDetailCheck.current) return;
+    nextDetailCheck.current = clock.elapsedTime + .6;
+    group.current.getWorldPosition(world);
+    const close = Math.abs(camera.position.y - world.y) < floor.height * 1.6 && Math.hypot(camera.position.x - world.x, camera.position.z - world.z) < Math.max(floor.width, floor.depth) * 1.2;
+    setNearCamera(current => current === close ? current : close);
+  });
+  const furnished = selected || (presenting && tier !== "low" && !dimmed && !xray && (nearCamera || floor.index === 0));
+
   const glassMat = useRef<THREE.MeshPhysicalMaterial>(null);
-  const glassColor = useMemo(() => new THREE.Color("#BFD3D8"), [look.color]);
+  const glassColor = useMemo(() => new THREE.Color(look.color), [look.color]);
   const slabMat = useRef<THREE.MeshStandardMaterial>(null);
   const slabMesh = useRef<THREE.Mesh>(null);
   const edgeMat = useRef<THREE.LineBasicMaterial>(null);
@@ -393,16 +414,16 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
           <meshPhysicalMaterial
             ref={glassMat as RefObject<THREE.MeshPhysicalMaterial>}
             {...GLASS_BLEND}
-            color="#BFD3D8"
-            transmission={0.85}
-            thickness={0.6}
+            color={look.color}
+            transmission={nearCamera ? .75 : 0}
+            thickness={0.18}
             attenuationColor="#9FC2CC"
             attenuationDistance={5}
             clearcoat={1}
             ior={1.5}
-            roughness={0.05}
-            metalness={0}
-            envMapIntensity={1.3}
+            roughness={nearCamera ? .08 : .14}
+            metalness={nearCamera ? 0 : .25}
+            envMapIntensity={1.6}
             specularIntensity={0.65}
             emissive={HIGHLIGHT}
             emissiveIntensity={0}
@@ -450,7 +471,7 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         )}
 
         {/* Interior walls & doors (isolated) + balconies (always) */}
-        <InteriorShell floor={floor} coreSize={coreSize} facade={facade} crownFloors={crownFloors} isolated={selected} dimmed={dimmed} xray={xray} fit={fit} rooms={!fitted} />
+        <InteriorShell floor={floor} coreSize={coreSize} facade={facade} crownFloors={crownFloors} isolated={furnished} dimmed={dimmed} xray={xray} fit={fit} rooms={!fitted} />
 
         {/* Hover / selection outline */}
         <lineSegments ref={edgeMesh} geometry={edges} raycast={() => null} layers={DETAIL} visible={false}>
@@ -481,8 +502,8 @@ function FloorPlate({ floor, explosion, coreSize, facade, selected, dimmed, hove
         </mesh>
 
         {/* Interior: floor finish and furniture — only when isolated (its warm light is <InteriorLight> in BuildingScene) */}
-        {selected && fitted && <ImportedFloorDesign fitted={fitted} />}
-        {selected && !fitted && (
+        {furnished && fitted && <ImportedFloorDesign fitted={fitted} />}
+        {furnished && !fitted && (
           <>
             <mesh
               geometry={shaped ? plateFloor(shape, w, d, -inset / 2 - 0.01) : undefined}

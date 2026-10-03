@@ -65,12 +65,13 @@ export function runAction(a: AssistantAction, reg: AssistantRegistration, userTe
         if (!city) return { label: "Unknown city model", ok: false };
         x.setCity(city.id);
         x.setContextModel(null);
-        return { label: `Selected the Sketchfab model of ${city.label}`, ok: true };
+        return { label: `Selected the mapped example area for ${city.label}`, ok: true };
       }
       if (model.category === "water") {
         x.choosePhotoAngle("waterfront");
-        return { label: "Showing the Sketchfab ocean surface already used by every city", ok: true };
+        return { label: "Changed the camera angle; water appears only where the map records it", ok: true };
       }
+      if (model.category === "skylines") return { label: "This skyline has no geographic registration. Use a mapped area to keep buildings correctly positioned.", ok: false };
       if (!INTERIOR_CATEGORIES.includes(model.category)) {
         x.setContextModel(model.uid);
         x.choosePhotoAngle("aerial");
@@ -134,7 +135,7 @@ export function runAction(a: AssistantAction, reg: AssistantRegistration, userTe
       const id = resolveCity(a.id);
       if (!id) return { label: `Unknown city “${a.id}”`, ok: false };
       x.setCity?.(id);
-      return { label: `City backdrop → ${CITY_PRESETS.find((c) => c.id === id)?.label ?? id}`, ok: true };
+      return { label: `Selected example map area: ${CITY_PRESETS.find((c) => c.id === id)?.label ?? id}`, ok: true };
     }
     case "reset":
       x.resetView?.();

@@ -1,7 +1,10 @@
 # Map data attribution and license
 
+© OpenStreetMap contributors, Overture Maps Foundation.
 
 These neighborhood map databases are derived from Overture Maps release **2026-09-23.1**. They are made available under the **Open Database License (ODbL) 1.0**. The map data license is separate from AURA's application code license.
+
+The surrounding city is supplied by the additional [downtown map databases](./downtown/ATTRIBUTION.md), from the same pinned release and under the same database license. Their manifests list all geographic tiles; each area's provenance file records its original source features. Detailed near-site data and outer downtown data meet at the original neighborhood boundary without overlapping interiors.
 
 - [OpenStreetMap copyright and attribution](https://www.openstreetmap.org/copyright)
 - [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/) · [bundled license text](./LICENSE-ODbL-1.0.txt)

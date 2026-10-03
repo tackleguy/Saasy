@@ -1,0 +1,225 @@
+[
+  {
+    "browser": "chrome",
+    "measurements": [
+      {
+        "width": 390,
+        "graphics": {
+          "tier": "medium",
+          "fps": 59,
+          "calls": 96,
+          "triangles": 895696,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 768,
+        "graphics": {
+          "tier": "medium",
+          "fps": 59,
+          "calls": 98,
+          "triangles": 895735,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 1280,
+        "graphics": {
+          "tier": "medium",
+          "fps": 60,
+          "calls": 99,
+          "triangles": 895746,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 1920,
+        "graphics": {
+          "tier": "medium",
+          "fps": 41,
+          "calls": 100,
+          "triangles": 895748,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      }
+    ],
+    "errors": [],
+    "warnings": [
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+    ],
+    "skylineModelRequests": []
+  },
+  {
+    "browser": "firefox",
+    "measurements": [
+      {
+        "width": 390,
+        "graphics": {
+          "tier": "medium",
+          "fps": 58,
+          "calls": 97,
+          "triangles": 895709,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 42,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 768,
+        "graphics": {
+          "tier": "medium",
+          "fps": 46,
+          "calls": 99,
+          "triangles": 895746,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 42,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 1280,
+        "graphics": {
+          "tier": "medium",
+          "fps": 56,
+          "calls": 99,
+          "triangles": 895746,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 42,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 1920,
+        "graphics": {
+          "tier": "medium",
+          "fps": 34,
+          "calls": 100,
+          "triangles": 895747,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 42,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      }
+    ],
+    "errors": [],
+    "warnings": [
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: texSubImage: Alpha-premult and y-flip are deprecated for non-DOM-Element uploads.\"]",
+      "[JavaScript Warning: \"WebGL warning: drawArraysInstanced: Depth texture comparison requests (e.g. `LINEAR`) Filtering, but behavior is implementation-defined, and so on some systems will sometimes behave as `NEAREST`. (warns once)\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"The resource at “http://127.0.0.1:3150/_next/static/media/7cb8e1b9ab81be17-s.p.woff2” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:3150/render/aurelia-tower?city=new-york&graphics=1\" line: 0}]",
+      "[JavaScript Warning: \"The resource at “http://127.0.0.1:3150/_next/static/media/e872e3f251959e82-s.p.woff2” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:3150/render/aurelia-tower?city=new-york&graphics=1\" line: 0}]",
+      "[JavaScript Warning: \"The resource at “http://127.0.0.1:3150/_next/static/media/6c596dfcddeca1e9-s.p.woff2” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:3150/render/aurelia-tower?city=new-york&graphics=1\" line: 0}]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]",
+      "[JavaScript Warning: \"WebGL warning: generateMipmap: Tex image TEXTURE_2D level 0 is incurring lazy initialization.\"]"
+    ],
+    "skylineModelRequests": []
+  },
+  {
+    "browser": "webkit",
+    "measurements": [
+      {
+        "width": 390,
+        "graphics": {
+          "tier": "medium",
+          "fps": 56,
+          "calls": 97,
+          "triangles": 895714,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 768,
+        "graphics": {
+          "tier": "medium",
+          "fps": 60,
+          "calls": 99,
+          "triangles": 895746,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 1280,
+        "graphics": {
+          "tier": "medium",
+          "fps": 49,
+          "calls": 99,
+          "triangles": 895746,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      },
+      {
+        "width": 1920,
+        "graphics": {
+          "tier": "medium",
+          "fps": 34,
+          "calls": 100,
+          "triangles": 895748,
+          "geometries": 355,
+          "textures": 66,
+          "programs": 43,
+          "towerMeshes": {
+            "tower:aurelia": 25
+          }
+        }
+      }
+    ],
+    "errors": [],
+    "warnings": [
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+    ],
+    "skylineModelRequests": []
+  }
+]
