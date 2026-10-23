@@ -45,8 +45,10 @@ function hash01(s: string) {
 
 const ORIENTATIONS = ["North", "East", "South", "West"];
 
-export function buildUnits(slug: string, status: ProjectStatus, building: Building, metrics: YieldMetrics): UnitInfo[][] {
-  const mix = MIX[status];
+/** `sample`: illustrative sold / reserved shares by project status (sample projects).
+ * `none`: no sales data is connected, so every unit is listed as available (customer projects). */
+export function buildUnits(slug: string, status: ProjectStatus, building: Building, metrics: YieldMetrics, availability: "sample" | "none" = "sample"): UnitInfo[][] {
+  const mix = availability === "none" ? { sold: 0, reserved: 0 } : MIX[status];
   const prefix = building.short.slice(0, 3).toUpperCase();
 
   // The whole crown is ONE penthouse: every crown row shows the same unit.

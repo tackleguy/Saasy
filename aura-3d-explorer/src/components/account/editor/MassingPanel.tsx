@@ -48,7 +48,13 @@ export function newBuilding(index: number, name: string): ProjectMassing {
 }
 
 export default function MassingPanel({ massing, onChange }: { massing: ProjectMassing[]; onChange: (next: ProjectMassing[], added?: ProjectMassing, removed?: string) => void }) {
-  const update = (i: number, patch: Partial<ProjectMassing>) => onChange(massing.map((m, k) => (k === i ? { ...m, ...patch } : m)));
+  // The tagline under the building name follows its storey count.
+  const update = (i: number, patch: Partial<ProjectMassing>) => onChange(massing.map((m, k) => {
+    if (k !== i) return m;
+    const next = { ...m, ...patch };
+    const storeys = ZONES.reduce((s, z) => s + next.floors[z.id], 0);
+    return { ...next, tagline: `${storeys}-storey ${next.floors.office > next.floors.residential ? "office" : next.floors.office > 1 ? "mixed-use" : "residential"} building` };
+  }));
   return (
     <div className="space-y-6">
       {massing.map((m, i) => {

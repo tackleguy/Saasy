@@ -49,7 +49,43 @@ const BuildingScene = dynamic(() => import("@/components/3d/BuildingScene"), {
   ),
 });
 
+/**
+ * Boardroom shortcuts while presenting (walking keeps its own arrow / WASD
+ * movement, so view and walk keys are inactive then):
+ *   ← / →  previous / next photo view      F / Shift+F  next / previous floor
+ *   E      explode or close the stack      W            walk the selected floor
+ * Returns true when the key was handled.
+ */
+function presentationKey(event: KeyboardEvent, x: ExplorerState): boolean {
+  if (x.walking) return false;
+  const key = event.key.toLowerCase();
+  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+    const i = PHOTO_ANGLES.findIndex((a) => a.id === x.photoAngle);
+    const step = event.key === "ArrowRight" ? 1 : -1;
+    x.choosePhotoAngle(PHOTO_ANGLES[(i + step + PHOTO_ANGLES.length) % PHOTO_ANGLES.length].id);
+    return true;
+  }
+  const floors = x.building.floors;
+  if (key === "f") {
+    const current = x.selectedIndex ?? (event.shiftKey ? floors.length : -1);
+    x.selectFloor(floors[(current + (event.shiftKey ? -1 : 1) + floors.length) % floors.length]);
+    return true;
+  }
+  if (key === "e") {
+    x.setExplosion(x.explosion > 0.05 ? 0 : 1.2);
+    return true;
+  }
+  if (key === "w") {
+    if (x.selectedIndex === null) x.selectFloor(floors.find((f) => f.zone === "residential") ?? floors[Math.min(1, floors.length - 1)]);
+    x.startWalk();
+    return true;
+  }
+  return false;
+}
+
 interface Props {
+  /** Open straight into full-screen presentation (the /present pages). */
+  presentOnOpen?: boolean;
   explorer: ExplorerState;
   /** Per-building yield, for the floor inspector's figures. */
   metricsById?: Record<BuildingId, YieldMetrics>;
@@ -61,19 +97,26 @@ interface Props {
   architect?: ArchitectSceneState;
 }
 
-export default function ExplorerViewport({ explorer: x, metricsById, variant = "full", className, intro = true, architect }: Props) {
+export default function ExplorerViewport({ explorer: x, metricsById, variant = "full", className, intro = true, architect, presentOnOpen = false }: Props) {
   const viewportRef = useRef<HTMLElement>(null);
   const [existingCity, setExistingCity] = useState(false);
-  const [presenting, setPresenting] = useState(false);
+  const [presenting, setPresenting] = useState(presentOnOpen);
   const [presentationSun, setPresentationSun] = useState<SunPreset>("golden");
   const [modelCut, setModelCut] = useState<ModelCut>({ mode: "exterior", fraction: .35 });
+  const latest = useRef(x);
+  latest.current = x;
   useEffect(() => {
     if (!presenting) return;
     const restore = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     viewportRef.current?.querySelector<HTMLButtonElement>('button[aria-label="Exit presentation"]')?.focus();
     const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { event.preventDefault(); setPresenting(false); }
+      const ex = latest.current;
+      // Esc leaves the walk-through first, then presentation.
+      if (event.key === "Escape") { event.preventDefault(); if (ex.walking) ex.stopWalk(); else setPresenting(false); return; }
+      const target = event.target as HTMLElement | null;
+      const typing = !!target && (/^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName) || target.isContentEditable);
+      if (!typing && !event.metaKey && !event.ctrlKey && !event.altKey && presentationKey(event, ex)) { event.preventDefault(); return; }
       if (event.key !== "Tab") return;
       const elements = [...(viewportRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], select, input, summary, [tabindex="0"]') ?? [])].filter(element => element.getClientRects().length > 0);
       const first = elements[0], last = elements.at(-1);

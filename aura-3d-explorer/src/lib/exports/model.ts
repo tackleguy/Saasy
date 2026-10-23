@@ -116,10 +116,10 @@ export function appraisalRows(i: YieldInputs, m: YieldMetrics): ExportAppraisalR
 
 /** Sellable units of a building, each once (the penthouse spans every crown floor), in floor order bottom-up.
  * Derived from the same `buildUnits` the on-screen stacking plan uses. */
-export function stackingUnits(slug: string, status: ProjectStatus, building: Building, metrics: YieldMetrics): (ExportUnit & { floorIndex: number })[] {
+export function stackingUnits(slug: string, status: ProjectStatus, building: Building, metrics: YieldMetrics, availability: "sample" | "none" = "sample"): (ExportUnit & { floorIndex: number })[] {
   const seen = new Set<string>();
   const out: (ExportUnit & { floorIndex: number })[] = [];
-  for (const u of buildUnits(slug, status, building, metrics).flat()) {
+  for (const u of buildUnits(slug, status, building, metrics, availability).flat()) {
     if (seen.has(u.code)) continue;
     seen.add(u.code);
     const [first, last] = u.levels ?? [u.floorNumber, u.floorNumber];
@@ -170,7 +170,7 @@ export function buildExportModel({ project, inputsById, branding, generatedAt = 
   const site = computeSite(rows.map((r) => r.metrics));
 
   const out: ExportBuilding[] = rows.map(({ b, inputs, usedDefaults, metrics: m }) => {
-    const units = stackingUnits(project.slug, project.status, b, m);
+    const units = stackingUnits(project.slug, project.status, b, m, project.placeholder ? "sample" : "none");
     const { cashflow, floors, zones: _zones, ...headline } = m; // eslint-disable-line @typescript-eslint/no-unused-vars
     return {
       id: b.id,

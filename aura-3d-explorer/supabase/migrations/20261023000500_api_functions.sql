@@ -5,7 +5,7 @@ create function public.create_organization(org_name text, org_slug text) returns
 language sql volatile security invoker as $$ select aura.create_organization(org_name, org_slug) $$;
 
 create function public.resolve_share(token text, password text default null)
-returns table (project_id uuid, project jsonb, share_financials boolean, org_name text, org_slug text, org_logo text, org_accent text, needs_password boolean)
+returns table (project_id uuid, project jsonb, share_financials boolean, org_name text, org_slug text, org_logo text, org_accent text, needs_password boolean, site_snapshot jsonb, model_path text)
 language sql stable security invoker as $$ select * from aura.resolve_share(token, password) $$;
 
 create function public.hash_share_password(password text) returns text

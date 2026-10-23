@@ -8,7 +8,10 @@
  * All four share one explorer and one yield state, so choosing a unit can
  * fly the camera to its floor and pre-fill the enquiry.
  */
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { Object3D } from "three";
+import type { ProjectSiteOverride } from "@/hooks/useProjectMap";
+import ExportButtons from "@/components/ui/ExportButtons";
 import clsx from "clsx";
 import type { Project } from "@/content/projects";
 import { projectSite } from "@/content/projects";
@@ -32,10 +35,24 @@ function scrollToSection(id: string) {
   });
 }
 
-export default function ProjectWorkspace({ project }: { project: Project }) {
+interface WorkspaceProps {
+  project: Project;
+  /** A customer project's own address and surroundings (share links). */
+  site?: ProjectSiteOverride;
+  /** A customer's own building model, shown in place of the first building. */
+  model?: Object3D | null;
+  /** Show the development appraisal and unit guide prices (false on share links without financials). */
+  financials?: boolean;
+  /** Where the appraisal's PDF / Excel buttons post, with extra body fields. */
+  exportTo?: { endpoint: string; body: Record<string, unknown> } | null;
+}
+
+export default function ProjectWorkspace({ project, site: siteOverride, model = null, financials = true, exportTo = null }: WorkspaceProps) {
   const site = projectSite(project);
   const yieldCalc = useYieldCalculator(site, project.finance);
-  const x = useExplorer(site, { city: project.backdrop, projectSlug: project.slug });
+  const x = useExplorer(site, { city: project.backdrop, projectSlug: project.slug, site: siteOverride });
+  const { setImportedModel } = x;
+  useEffect(() => { setImportedModel(model ? model.clone(true) : null); }, [model, setImportedModel]);
   useRegisterExplorer(x, { project, yieldCalc }); // lets the AURA assistant see + drive this explorer
   const [enquiryUnit, setEnquiryUnit] = useState<string | null>(null);
 
@@ -100,7 +117,7 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
             ))}
           </div>
         )}
-        <StackingPlan slug={project.slug} status={project.status} building={building} metrics={metrics} onShowFloor={showFloor} onEnquire={enquire} />
+        <StackingPlan slug={project.slug} status={project.status} building={building} metrics={metrics} onShowFloor={showFloor} onEnquire={enquire} showPrices={financials} sample={project.placeholder} />
       </section>
 
       {/* 3 — Enquiry follows unit selection directly. */}
@@ -111,7 +128,7 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
               Request more information.
             </h2>
             <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ash">
-              Choose a viewing enquiry or a pro forma for {project.name}. This demo form does not send a request.
+              Choose a viewing or ask for the pro forma for {project.name}. Your request goes to the sales team.
             </p>
           </div>
           <div className="lg:col-span-6 lg:col-start-7">
@@ -121,10 +138,11 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
       </section>
 
       {/* 4 — Complete development tools remain available, after the buyer journey. */}
-      <section aria-labelledby="appraisal" className="shell py-20 sm:py-28">
+      {financials && <section aria-labelledby="appraisal" className="shell py-20 sm:py-28">
         <SectionHeading id="appraisal" title="Development appraisal" size="md" className="mb-10">
           Adjust the assumptions and review the pro forma for {project.name}. Figures update with your selections.
         </SectionHeading>
+        {exportTo && <div className="-mt-6 mb-8"><ExportButtons endpoint={exportTo.endpoint} body={{ ...exportTo.body, inputsById: yieldCalc.inputsById }} /></div>}
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)] lg:gap-8">
           <FinancialSidebar
             buildings={site}
@@ -145,7 +163,7 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
             <CommissionModelCard metrics={metrics} site={yieldCalc.site} buildingName={building.short} />
           </div>
         </div>
-      </section>
+      </section>}
 
     </>
   );

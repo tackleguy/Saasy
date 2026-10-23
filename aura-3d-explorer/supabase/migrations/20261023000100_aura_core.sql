@@ -149,6 +149,8 @@ begin
   return new_id;
 end $$;
 
+-- (site_snapshot / model_path columns are added in 20261023000400; this
+-- function is redefined there to return them.)
 -- Resolve a share token for anyone (no sign-in). Returns nothing for an
 -- unknown, revoked or expired token, or a wrong password. Revocation is
 -- therefore effective on the very next request.

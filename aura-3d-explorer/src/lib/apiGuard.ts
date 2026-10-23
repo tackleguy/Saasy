@@ -90,3 +90,16 @@ export function guardRequest(req: Request, scope: string, rule: RateLimit, { req
   }
   return null;
 }
+
+/**
+ * The origin the browser used (scheme + host), from the forwarded / Host
+ * headers. `new URL(request.url).origin` can be the server's own bind address
+ * (e.g. localhost) behind a proxy, which would send users — and their session
+ * cookies — to a different host.
+ */
+export function requestOrigin(req: Request): string {
+  const h = req.headers;
+  const host = (h.get("x-forwarded-host") ?? h.get("host") ?? "").split(",")[0].trim();
+  const proto = (h.get("x-forwarded-proto") ?? "").split(",")[0].trim() || new URL(req.url).protocol.replace(":", "");
+  return host && /^[a-z0-9.\-:[\]]+$/i.test(host) ? `${proto}://${host}` : new URL(req.url).origin;
+}

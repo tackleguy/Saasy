@@ -93,3 +93,10 @@ test('engine route refuses cross-site uploads before reading the body', async ()
   });
   assert.equal((await POST(req)).status, 403);
 });
+
+test('requestOrigin follows the Host the browser used, not the server bind address', async () => {
+  const { requestOrigin } = await import('../../src/lib/apiGuard');
+  assert.equal(requestOrigin(new Request('http://localhost:3137/auth/callback', { headers: { host: '127.0.0.1:3137' } })), 'http://127.0.0.1:3137');
+  assert.equal(requestOrigin(new Request('http://localhost:3000/x', { headers: { host: 'internal', 'x-forwarded-host': 'aura.example.com', 'x-forwarded-proto': 'https' } })), 'https://aura.example.com');
+  assert.equal(requestOrigin(new Request('http://localhost:3000/x', { headers: { host: 'evil.example/<script>' } })), 'http://localhost:3000');
+});

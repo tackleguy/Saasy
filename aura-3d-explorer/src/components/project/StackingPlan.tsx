@@ -36,10 +36,14 @@ interface Props {
   onShowFloor: (floorIndex: number) => void;
   /** Prefill the enquiry form with a unit. */
   onEnquire: (unit: UnitInfo) => void;
+  /** Guide prices come from the pro forma; share links without financials hide them. */
+  showPrices?: boolean;
+  /** Sample projects show illustrative availability; customer projects list every unit as available. */
+  sample?: boolean;
 }
 
-export default function StackingPlan({ slug, status, building, metrics, onShowFloor, onEnquire }: Props) {
-  const rows = useMemo(() => buildUnits(slug, status, building, metrics), [slug, status, building, metrics]);
+export default function StackingPlan({ slug, status, building, metrics, onShowFloor, onEnquire, showPrices = true, sample = true }: Props) {
+  const rows = useMemo(() => buildUnits(slug, status, building, metrics, sample ? "sample" : "none"), [slug, status, building, metrics, sample]);
   const [unit, setUnit] = useState<UnitInfo | null>(null);
 
   const counts = useMemo(() => {
@@ -59,7 +63,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
             {k} <span className="tabular-nums text-ash">{counts[k]}</span>
           </span>
         ))}
-        <span className="ml-auto text-xs text-ash">Sample availability · {building.name}</span>
+        <span className="ml-auto text-xs text-ash">{sample ? "Sample availability" : "Unit status tracking is not connected yet: all units listed as available"} · {building.name}</span>
       </div>
 
       <div className="thin-scroll max-h-[560px] overflow-y-auto border-y border-plaster">
@@ -142,14 +146,14 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                     <X size={18} />
                   </Dialog.Close>
                 </div>
-                <Dialog.Description className="caption mt-1">Sample unit sheet — figures derived from the current pro forma.</Dialog.Description>
+                <Dialog.Description className="caption mt-1">{sample ? "Sample unit sheet — figures derived from the current pro forma." : "Unit sheet — area from the massing; guide price from the project's pro forma."}</Dialog.Description>
                 <dl className="mt-4 grid grid-cols-2 border-t border-plaster text-sm">
                   {[
                     ["Status", unit.status],
                     ["Floor", unit.levels && unit.levels[0] !== unit.levels[1] ? `F${unit.levels[0]}–F${unit.levels[1]}` : `F${unit.floorNumber}`],
                     ...(unit.beds ? [["Bedrooms / baths", `${unit.beds} bed / ${unit.baths} bath`]] : []),
                     ["Area", `${fmtNum(unit.sqFt)} sf`],
-                    ["Guide price", fmtMoney(unit.price)],
+                    ...(showPrices ? [["Guide price", fmtMoney(unit.price)] as [string, string]] : []),
                     ["Orientation", unit.orientation],
                     ["View", unit.view],
                   ].map(([k, v]) => (

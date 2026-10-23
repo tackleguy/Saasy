@@ -7,13 +7,15 @@
 import { NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { supabaseServer } from "@/lib/supabase/server";
+import { requestOrigin } from "@/lib/apiGuard";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  const origin = requestOrigin(request);
   const nextParam = url.searchParams.get("next") ?? "/app";
   const next = nextParam.startsWith("/app") ? nextParam : "/app";
   const supabase = await supabaseServer();
-  if (!supabase) return NextResponse.redirect(new URL("/sign-in", url.origin));
+  if (!supabase) return NextResponse.redirect(new URL("/sign-in", origin));
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
@@ -22,5 +24,5 @@ export async function GET(request: Request) {
     : tokenHash && type
       ? await supabase.auth.verifyOtp({ token_hash: tokenHash, type })
       : { error: new Error("missing code") };
-  return NextResponse.redirect(new URL(error ? `/sign-in?error=link&next=${encodeURIComponent(next)}` : next, url.origin));
+  return NextResponse.redirect(new URL(error ? `/sign-in?error=link&next=${encodeURIComponent(next)}` : next, origin));
 }
