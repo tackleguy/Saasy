@@ -96,6 +96,9 @@ try {
     await press(result);
     await press(page.getByRole('button', { name: 'Save project' }));
     await page.getByText(/^Saved /).waitFor();
+    // Onboarding screenshot: the address step (/developers).
+    await page.waitForTimeout(6000);
+    await page.screenshot({ path: `${out}/step-1-address.png`, clip: { x: 0, y: 150, width: 1440, height: 850 }, timeout: 180000 });
   });
   await step('edit the massing (more residential floors, a second building) and save', async () => {
     await press(page.locator('summary').filter({ hasText: /^Massing/ }));
@@ -107,6 +110,8 @@ try {
     await page.getByText(/^Saved /).waitFor();
     await page.waitForTimeout(8000);
     await page.screenshot({ path: `${out}/editor.png` });
+    await page.getByRole('group', { name: 'Building 2' }).scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${out}/step-2-massing.png`, timeout: 180000 });
   });
   await step('save a scenario to the database', async () => {
     await press(page.getByRole('button', { name: 'Saved scenarios' }));

@@ -83,8 +83,11 @@ export default function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <Link href="/app" className="btn-ghost hidden text-[13px] sm:inline-flex">
+            Sign in
+          </Link>
           <Link href="/developers#demo" className="btn-primary hidden sm:inline-flex">
-            Request a demo
+            Request early access
           </Link>
           <button
             className="-mr-2 inline-flex h-11 w-11 items-center justify-center text-ink md:hidden"
@@ -134,7 +137,10 @@ export default function SiteHeader() {
             </ul>
             <div className="shell py-8">
               <Link href="/developers#demo" className="btn-primary btn-lg w-full">
-                Request a demo
+                Request early access
+              </Link>
+              <Link href="/app" className="btn-secondary btn-lg mt-3 w-full">
+                Sign in
               </Link>
             </div>
           </motion.nav>

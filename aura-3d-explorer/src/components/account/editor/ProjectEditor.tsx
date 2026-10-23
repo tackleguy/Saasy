@@ -77,7 +77,7 @@ function Preview({ projectId, project, location, snapshot, onLocation, modelObje
   const building = x.building;
   return (
     <>
-      <ExplorerViewport explorer={x} metricsById={yieldCalc.metricsById} className="h-[56dvh] min-h-[380px] lg:sticky lg:top-20" />
+      <ExplorerViewport explorer={x} metricsById={yieldCalc.metricsById} className="h-[56dvh] min-h-[380px]" />
       <div className="mt-6"><RenderGallery orgId={gallery.orgId} projectId={projectId} userId={gallery.userId} items={gallery.items} capture={x.captureStill} onUse={gallery.onUse} /></div>
       <div key={financeKey} className="mt-6 space-y-4">
         <div className="flex flex-wrap items-center gap-2">
