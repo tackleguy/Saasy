@@ -14,6 +14,7 @@ import type { Building, BuildingId, FloorData, ViewMode, ZoneId } from "@/types"
 import type { PhotoAngle, Quality } from "@/lib/explorer";
 import type { Object3D } from "three";
 import { defaultMapLocation } from "@/lib/mapLocations";
+import type { CaptureFn } from "@/components/3d/BuildingScene";
 import { useProjectMap, type ProjectSiteOverride } from "./useProjectMap";
 import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
 import { buildingClearing, PLINTH, type UWRect } from "@/lib/siteLayout";
@@ -91,7 +92,7 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
   // Photo-angle presets and PNG capture
   const [photoAngle, setPhotoAngle] = useState<PhotoAngle | null>(null);
   const [photoNonce, setPhotoNonce] = useState(0);
-  const captureRef = useRef<(() => Promise<void>) | null>(null);
+  const captureRef = useRef<CaptureFn | null>(null);
   const [capturing, setCapturing] = useState(false);
   // Imported CAD model (normalised Object3D from lib/importNormalize) + visibility
   const [importedModel, setImportedModelState] = useState<Object3D | null>(null);
@@ -197,6 +198,16 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     setCapturing(true);
     try {
       await captureRef.current();
+    } finally {
+      setCapturing(false);
+    }
+  }, []);
+  /** The current frame at 2× as a PNG, without downloading it (for a project's gallery). */
+  const captureStill = useCallback(async () => {
+    if (!captureRef.current) return null;
+    setCapturing(true);
+    try {
+      return await captureRef.current({ download: false });
     } finally {
       setCapturing(false);
     }
@@ -385,6 +396,7 @@ export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPa
     photoNonce,
     choosePhotoAngle,
     captureRef,
+    captureStill,
     capture,
     capturing,
     city,

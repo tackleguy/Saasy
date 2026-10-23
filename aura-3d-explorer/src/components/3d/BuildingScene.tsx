@@ -130,8 +130,8 @@ interface Props {
   onPerformanceDecline?: () => void;
   photoAngle: PhotoAngle | "crown" | null;
   photoNonce: number;
-  /** Receives a function that exports the current view as a 2× PNG. */
-  captureRef?: MutableRefObject<(() => Promise<void>) | null>;
+  /** Receives a function that exports the current view as a 2× PNG (downloaded unless `download: false`). */
+  captureRef?: MutableRefObject<CaptureFn | null>;
   /** Play the eye-level dolly-out opening shot. */
   intro?: boolean;
   /** City backdrop (lib/cityPresets). */
@@ -252,13 +252,16 @@ function GroundClamp() {
  * reads the canvas (preserveDrawingBuffer keeps the last frame readable),
  * downloads it as PNG, then restores the resolution.
  */
-function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Promise<void>) | null> }) {
+/** Capture the current frame at 2× as a watermarked PNG. Resolves with the image (null when busy). */
+export type CaptureFn = (options?: { download?: boolean }) => Promise<Blob | null>;
+
+function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<CaptureFn | null> }) {
   const gl = useThree((s) => s.gl);
   const setDpr = useThree((s) => s.setDpr);
   useEffect(() => {
     let capturing = false;
-    captureRef.current = async () => {
-      if (capturing) return;
+    captureRef.current = async ({ download = true } = {}) => {
+      if (capturing) return null;
       capturing = true;
       const prev = gl.getPixelRatio();
       try {
@@ -278,12 +281,17 @@ function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Pro
       ctx.font = `${creditSize}px sans-serif`;
       ctx.textAlign = "left"; ctx.fillStyle = "#201f1b";
       ctx.fillText("Map data: © OpenStreetMap contributors · Overture Maps · ODbL / CC BY", 12, canvas.height - creditSize * .6, canvas.width - 24);
-      const url = canvas.toDataURL("image/png");
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
       setDpr(prev);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `aura-render-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.png`;
-      a.click();
+      if (download && blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `aura-render-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.png`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      return blob;
       } finally { setDpr(prev); capturing = false; }
     };
     return () => {

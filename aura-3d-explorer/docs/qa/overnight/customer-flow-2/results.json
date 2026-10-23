@@ -1,0 +1,53 @@
+{
+  "base": "http://127.0.0.1:3137",
+  "finishedAt": "2026-10-23T08:49:44.278Z",
+  "steps": [
+    {
+      "name": "sign in and create a branded company",
+      "ok": true,
+      "ms": 1602
+    },
+    {
+      "name": "create a project at an address outside the bundled map areas",
+      "ok": true,
+      "ms": 1188
+    },
+    {
+      "name": "load the surroundings from OpenStreetMap and keep them with the project",
+      "ok": true,
+      "ms": 7240
+    },
+    {
+      "name": "upload the customer model (STL) through the import review",
+      "ok": true,
+      "ms": 23998
+    },
+    {
+      "name": "reload: model and surroundings persist",
+      "ok": true,
+      "ms": 2078
+    },
+    {
+      "name": "save a 2× still to the gallery and use it as a project image",
+      "ok": true,
+      "ms": 19335
+    },
+    {
+      "name": "create a password-protected link that shares financials",
+      "ok": true,
+      "ms": 7249
+    },
+    {
+      "name": "private window: password gate, branded page, appraisal and Excel export",
+      "ok": true,
+      "ms": 94471
+    },
+    {
+      "name": "another company cannot open the project or its branded page",
+      "ok": true,
+      "ms": 2026
+    }
+  ],
+  "pageErrors": [],
+  "overpass": "see server env"
+}

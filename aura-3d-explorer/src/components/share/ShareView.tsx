@@ -50,7 +50,10 @@ export default function ShareView({ share, exportTo }: { share: ResolvedShare; e
         {project.heroImages.length > 0 && <HeroCarousel project={project} />}
         <section aria-label="Overview" className="shell grid gap-12 py-14 sm:py-20 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-5">
-            <h1 className="font-serif text-display-md text-ink">{project.name}</h1>
+            {/* The carousel carries the page's h1 when there are images. */}
+            {project.heroImages.length > 0
+              ? <h2 className="font-serif text-display-md text-ink">{project.name}</h2>
+              : <h1 className="font-serif text-display-md text-ink">{project.name}</h1>}
             <p className="mt-2 text-[13px] text-ash">{[project.city, project.status, project.completion].filter(Boolean).join(" · ")}</p>
             {project.summary && <p className="mt-6 font-serif text-2xl leading-snug text-ink">{project.summary}</p>}
             {!share.filesAvailable && <p className="caption mt-4">Uploaded images and models are not available on this deployment yet.</p>}

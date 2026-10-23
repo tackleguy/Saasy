@@ -31,8 +31,22 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
   const model = rawModel && typeof rawModel.path === "string" && validModelSettings(rawModel.settings) ? { path: rawModel.path, settings: rawModel.settings } : null;
   const modelUrl = model ? (await member.supabase.storage.from("project-models").createSignedUrl(model.path, 3600)).data?.signedUrl ?? null : null;
 
+  const { data: renders } = await member.supabase.from("renders").select("id, storage_path, width, height, created_at").eq("project_id", stored.id).order("created_at", { ascending: false }).limit(24);
+  const gallery = (await Promise.all((renders ?? []).map(async (r) => {
+    const { data } = await member.supabase.storage.from("project-renders").createSignedUrl(r.storage_path, 3600);
+    return data?.signedUrl ? { id: r.id, path: r.storage_path, url: data.signedUrl, width: r.width, height: r.height, createdAt: r.created_at } : null;
+  }))).filter((g): g is NonNullable<typeof g> => !!g);
+  for (const image of stored.project.heroImages) {
+    const ref = parseStorageRef(image.src);
+    if (ref && !imageUrls[image.src]) {
+      const { data } = await member.supabase.storage.from(ref.bucket).createSignedUrl(ref.path, 3600);
+      if (data?.signedUrl) imageUrls[image.src] = data.signedUrl;
+    }
+  }
+
   return (
     <ProjectEditor initial={{
+      gallery,
       id: stored.id, orgId: member.org.id, userId: member.user.id, project: stored.project,
       location: stored.location, snapshot: stored.siteSnapshot, model, modelUrl, imageUrls,
       links: await listShareLinks(stored.id), updatedAt: stored.updatedAt,

@@ -30,6 +30,7 @@ import MassingPanel from "./MassingPanel";
 import SitePanel from "./SitePanel";
 import MediaPanel, { type StoredModelRef } from "./MediaPanel";
 import SharePanel from "./SharePanel";
+import RenderGallery, { type GalleryItem } from "./RenderGallery";
 import type { ShareLinkSummary } from "@/app/(site)/app/projects/[id]/actions";
 
 const STATUSES: ProjectStatus[] = ["Concept", "Approved", "Under Construction", "Selling"];
@@ -57,10 +58,12 @@ export interface EditorInitial {
   /** Signed URLs for stored images, keyed by their storage reference. */
   imageUrls: Record<string, string>;
   links: ShareLinkSummary[];
+  gallery: GalleryItem[];
   updatedAt: string | null;
 }
 
-function Preview({ projectId, project, location, snapshot, onLocation, modelObject, financeKey, onSaveFigures, store }: {
+function Preview({ projectId, project, location, snapshot, onLocation, modelObject, financeKey, onSaveFigures, store, gallery }: {
+  gallery: { orgId: string; userId: string; items: GalleryItem[]; onUse: (src: string, url: string) => void };
   projectId: string; project: Project; location: ProjectLocation | null; snapshot: MapSnapshot | null; onLocation: (l: ProjectLocation) => void;
   modelObject: Object3D | null; financeKey: string; onSaveFigures: (finance: Project["finance"]) => void; store: Parameters<typeof ScenarioDrawer>[0]["store"];
 }) {
@@ -75,6 +78,7 @@ function Preview({ projectId, project, location, snapshot, onLocation, modelObje
   return (
     <>
       <ExplorerViewport explorer={x} metricsById={yieldCalc.metricsById} className="h-[56dvh] min-h-[380px] lg:sticky lg:top-20" />
+      <div className="mt-6"><RenderGallery orgId={gallery.orgId} projectId={projectId} userId={gallery.userId} items={gallery.items} capture={x.captureStill} onUse={gallery.onUse} /></div>
       <div key={financeKey} className="mt-6 space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <ScenarioDrawer projectSlug={project.slug} current={yieldCalc.inputsById} onLoad={yieldCalc.load} explorer={x} store={store} />
@@ -163,7 +167,10 @@ export default function ProjectEditor({ initial }: { initial: EditorInitial }) {
       </header>
       <div className="mt-6 grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <Preview projectId={initial.id} project={displayProject} location={location} snapshot={snapshot} onLocation={onLocation} modelObject={modelObject} financeKey={financeKey} store={store}
+          <Preview projectId={initial.id} gallery={{ orgId: initial.orgId, userId: initial.userId, items: initial.gallery, onUse: (src, url) => {
+              if (project.heroImages.length >= 3) { setStatus("Projects show up to three images. Remove one under Model and images first."); return; }
+              setImageUrls((u) => ({ ...u, [src]: url })); edit({ heroImages: [...project.heroImages, { src, alt: `${project.name} — view from the live model` }] });
+            } }} project={displayProject} location={location} snapshot={snapshot} onLocation={onLocation} modelObject={modelObject} financeKey={financeKey} store={store}
             onSaveFigures={(finance) => { edit({ finance }); setStatus("Figures set as defaults. Save the project to keep them."); }} />
         </div>
         <div className="lg:col-span-5">
