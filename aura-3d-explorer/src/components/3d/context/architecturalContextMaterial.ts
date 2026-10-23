@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { MODEL_SCALE } from "@/lib/tower";
 import type { CityPreset } from "@/lib/cityPresets";
+import { perFragmentFog } from "./fragmentFog";
 
 export interface FacadeOptions {
   night?: { value: number };
@@ -195,8 +196,9 @@ export function contextFacadeMaterial(preset?: CityPreset) {
       .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = mix(.82,.2,glazing);")
       .replace("#include <metalnessmap_fragment>", "#include <metalnessmap_fragment>\nmetalnessFactor = mix(.015,.48,glazing);")
       .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\ntotalEmissiveRadiance += vec3(1.0,.62,.29)*auraGlow*1.7;");
+    perFragmentFog(shader);
   };
-  material.customProgramCacheKey = () => "aura-local-architecture-v4";
+  material.customProgramCacheKey = () => "aura-local-architecture-v5";
   return { material, uniforms };
 }
 

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { MAP_SURFACE_DEPTH } from "@/lib/renderDepth";
 import { CARRIAGEWAY_WIDTH_M, STREET_WIDTH_M } from "@/lib/mappedGeometry";
+import { perFragmentFog } from "./fragmentFog";
 
 /**
  * Street finishes for the mapped street ribbons (see mappedGeometry.streetRibbon).
@@ -32,6 +33,7 @@ function decorate(material: THREE.MeshStandardMaterial, body: string, key: strin
   material.onBeforeCompile = (shader) => {
     shader.vertexShader = VERTEX_HEADER + shader.vertexShader.replace("#include <begin_vertex>", VERTEX_BODY);
     shader.fragmentShader = FRAGMENT_HEADER + shader.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>\n${body}`);
+    perFragmentFog(shader);
   };
   material.customProgramCacheKey = () => key;
   return material;

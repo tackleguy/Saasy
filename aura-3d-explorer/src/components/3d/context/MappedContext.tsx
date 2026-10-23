@@ -16,6 +16,7 @@ import { streetCarriagewayMaterial, streetPavingMaterial } from "./streetMateria
 import { MAP_RENDER_ORDER, MAP_SURFACE_DEPTH } from "@/lib/renderDepth";
 import { invalidateShadows } from "../staticShadows";
 import { noRaycast } from "./shared";
+import { perFragmentFog, withFragmentFog } from "./fragmentFog";
 
 const IGNORE_DOWNTOWN_PROGRESS = (_progress: DowntownProgress) => {};
 const FINISHES = { footprints: "#9c9585", parks: "#55703f" } as const;
@@ -42,8 +43,9 @@ float auraGroundNoise(vec2 p) {
       diffuseColor.rgb *= mix(0.84, 1.08, broad) * mix(0.95, 1.03, grain);
       diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.33, 0.38, 0.26), green * 0.4);
     `);
+    perFragmentFog(shader);
   };
-  material.customProgramCacheKey = () => "aura-urban-ground-v1";
+  material.customProgramCacheKey = () => "aura-urban-ground-v2";
   return material;
 }
 
@@ -62,7 +64,7 @@ export default function MappedContext({ snapshot, location, buildings, preset, s
   }, []);
   const { materials, facade, water, ground } = useMemo(() => {
     const facade = contextFacadeMaterial(preset), water = mappedWaterMaterial();
-    const surface = (kind: keyof typeof FINISHES) => new THREE.MeshStandardMaterial({ color: FINISHES[kind], roughness: .93, metalness: 0, envMapIntensity: .45, ...MAP_SURFACE_DEPTH });
+    const surface = (kind: keyof typeof FINISHES) => withFragmentFog(new THREE.MeshStandardMaterial({ color: FINISHES[kind], roughness: .93, metalness: 0, envMapIntensity: .45, ...MAP_SURFACE_DEPTH }), kind);
     const ground = urbanGroundMaterial();
     const materials: MappedMaterials = { walls: facade.material, roofs: contextRoofMaterial(), footprints: surface("footprints"), water: water.material, parks: surface("parks"), roads: streetPavingMaterial(), carriageway: streetCarriagewayMaterial() };
     return { materials, facade, water, ground };
