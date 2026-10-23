@@ -28,6 +28,10 @@ async function audit(page, label) {
   console.log(`${r.length || overflow ? '✗' : '✓'} ${label}${r.length ? `: ${r.map((v) => `${v.id}(${v.nodes.length})`).join(', ')}` : ''}${overflow ? ' horizontal overflow' : ''}`);
 }
 
+// Measure only once finite CSS/Web animations have finished (colour fades and
+// sliding pills report mid-transition colours otherwise); endless ones such as
+// spinners are ignored. Gives up after 10 s and audits anyway.
+const settled = (p) => p.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().endTime === Infinity), null, { timeout: 10000 }).catch(() => {});
 const routes = ['/', '/projects', '/projects/meridian-tower', '/developers', '/studio', '/engine', '/tour', '/sign-in'];
 for (const width of [390, 768, 1280, 1920]) {
   const context = await browser.newContext({ viewport: { width, height: width < 800 ? 844 : 1000 } });
@@ -36,6 +40,7 @@ for (const width of [390, 768, 1280, 1920]) {
   for (const route of routes) {
     await page.goto(base + route, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(3500);
+    await settled(page);
     await audit(page, `${route} @${width}`);
   }
   await context.close();
@@ -45,8 +50,7 @@ for (const width of [390, 768, 1280, 1920]) {
 const context = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
 const page = await context.newPage();
 page.setDefaultTimeout(120000);
-// 3 s lets animated controls (sliding segmented-control pills) settle before contrast is measured.
-const state = async (label, fn) => { try { await fn(); await page.waitForTimeout(3000); await audit(page, label); } catch (e) { results.push({ label, error: String(e).slice(0, 300) }); console.log(`! ${label}: ${String(e).slice(0, 200)}`); } };
+const state = async (label, fn) => { try { await fn(); await page.waitForTimeout(1000); await settled(page); await audit(page, label); } catch (e) { results.push({ label, error: String(e).slice(0, 300) }); console.log(`! ${label}: ${String(e).slice(0, 200)}`); } };
 await page.goto(`${base}/studio`, { waitUntil: 'domcontentloaded' });
 await page.locator('canvas').first().waitFor();
 await page.waitForTimeout(6000);
@@ -91,7 +95,7 @@ if (link) {
 if (process.env.QA_SHARE) {
   const guest = await (await browser.newContext({ viewport: { width: 1280, height: 1000 } })).newPage();
   guest.setDefaultTimeout(120000);
-  await guest.goto(process.env.QA_SHARE); await guest.waitForTimeout(4000);
+  await guest.goto(process.env.QA_SHARE); await guest.waitForTimeout(4000); await settled(guest);
   await audit(guest, 'share page (private window)');
 }
 await browser.close();
