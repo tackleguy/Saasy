@@ -1,7 +1,6 @@
 import { geographicToWorld, type MapSnapshot, type ProjectLocation } from "./geographicContext";
-import { createMappedStreetPlacement, streetDetailFootprint } from "./mappedStreetPlacement";
 import { CARRIAGEWAY_WIDTH_M, STREET_WIDTH_M } from "./mappedGeometry";
-import { MODEL_SCALE as M, pointInPolygon, type PlanPoint } from "./tower";
+import { MODEL_SCALE as M, planOutline, pointInPolygon, type PlanPoint } from "./tower";
 import type { Building } from "@/types";
 
 /** One illustrative tree: scene position, height (scene units) and a 0…1 variant seed. */
@@ -28,17 +27,87 @@ function random(seed: number) {
   };
 }
 
-/** Deterministic tree layout for a map snapshot, kept clear of every mapped
+/**
+ * Occupancy raster of everything a tree must not stand in: mapped buildings,
+ * mapped water and the proposal's floor outlines. One byte per ~1.4 m cell.
+ * Rasterising once makes each candidate an O(1) lookup, so thousands of trees
+ * are planned in tens of milliseconds instead of seconds of polygon tests.
+ */
+function occupancy(snapshot: MapSnapshot, location: ProjectLocation, buildings: Building[], extent: number) {
+  const cell = 0.4, size = Math.ceil((extent * 2) / cell);
+  const grid = new Uint8Array(size * size);
+  // Even-odd scanline fill across every ring, so holes (courtyards, islands) stay open.
+  const fill = (rings: PlanPoint[][]) => {
+    if (!rings[0] || rings[0].length < 3) return;
+    let minZ = Infinity, maxZ = -Infinity, minX = Infinity, maxX = -Infinity;
+    for (const [x, z] of rings[0]) { minX = Math.min(minX, x); maxX = Math.max(maxX, x); minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z); }
+    if (maxX < -extent || maxZ < -extent || minX > extent || minZ > extent) return;
+    const j0 = Math.max(0, Math.floor((minZ + extent) / cell)), j1 = Math.min(size - 1, Math.floor((maxZ + extent) / cell));
+    const crossings: number[] = [];
+    for (let j = j0; j <= j1; j++) {
+      const z = -extent + (j + 0.5) * cell;
+      crossings.length = 0;
+      for (const ring of rings) for (let k = 0, n = ring.length; k < n; k++) {
+        const [ax, az] = ring[k], [bx, bz] = ring[(k + 1) % n];
+        if ((az <= z) !== (bz <= z)) crossings.push(ax + ((z - az) / (bz - az)) * (bx - ax));
+      }
+      crossings.sort((p, q) => p - q);
+      for (let k = 0; k + 1 < crossings.length; k += 2) {
+        const i0 = Math.max(0, Math.ceil((crossings[k] + extent) / cell - 0.5)), i1 = Math.min(size - 1, Math.floor((crossings[k + 1] + extent) / cell - 0.5));
+        if (i1 >= i0) grid.fill(1, j * size + i0, j * size + i1 + 1);
+      }
+    }
+  };
+  for (const feature of snapshot.features) {
+    if (feature.kind !== "building" && feature.kind !== "water") continue;
+    const polygons = feature.geometry.type === "Polygon" ? [feature.geometry.coordinates] : feature.geometry.type === "MultiPolygon" ? feature.geometry.coordinates : [];
+    for (const polygon of polygons) fill(polygon.map((ring) => ring.map((point) => geographicToWorld(point, location)) as PlanPoint[]));
+  }
+  for (const building of buildings) {
+    const seen = new Set<string>();
+    for (const floor of building.floors) {
+      const key = JSON.stringify([floor.shape, floor.width, floor.depth, floor.rotationY]);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const c = Math.cos(floor.rotationY), s = Math.sin(floor.rotationY);
+      fill([planOutline(floor.shape, floor.width, floor.depth).map(([x, z]): PlanPoint => [building.position[0] + x * c + z * s, building.position[1] - x * s + z * c])]);
+    }
+  }
+  /** True when a crown of this radius around (x, z) touches nothing occupied. */
+  return (x: number, z: number, radius: number) => {
+    const i0 = Math.floor((x - radius + extent) / cell), i1 = Math.floor((x + radius + extent) / cell);
+    const j0 = Math.floor((z - radius + extent) / cell), j1 = Math.floor((z + radius + extent) / cell);
+    if (i0 < 0 || j0 < 0 || i1 >= size || j1 >= size) return false;
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) if (grid[j * size + i]) return false;
+    return true;
+  };
+}
+
+/** Deterministic tree layout for a map snapshot
  * building and water polygon, the proposal footprints and each other.
  * `extent` bounds the square (scene units around the pin) that receives trees. */
 export function planCityTrees(snapshot: MapSnapshot | null, location: ProjectLocation, buildings: Building[], budget: { park: number; street: number }, extent = 560): CityTree[] {
   if (!snapshot) return [];
-  const placement = createMappedStreetPlacement(snapshot, location, buildings, extent);
+  const clear = occupancy(snapshot, location, buildings, extent);
   const rand = random(0x5eed + snapshot.features.length);
   const trees: CityTree[] = [];
+  // Spacing between trees: a hash of 4-unit buckets holds the trees already placed.
+  const placed = new Map<string, CityTree[]>();
+  const bucket = (x: number, z: number) => `${Math.floor(x / 4)}:${Math.floor(z / 4)}`;
+  const crowded = (x: number, z: number, radius: number) => {
+    const bx = Math.floor(x / 4), bz = Math.floor(z / 4);
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+      for (const t of placed.get(`${bx + dx}:${bz + dz}`) ?? []) if (Math.hypot(t.x - x, t.z - z) < radius + t.height * 0.275) return true;
+    }
+    return false;
+  };
   const place = (x: number, z: number, height: number) => {
-    if (!placement.reserve(streetDetailFootprint(x, z, height * 0.55))) return false;
-    trees.push({ x, z, height, variant: rand() });
+    const radius = height * 0.275;
+    if (!clear(x, z, radius) || crowded(x, z, radius)) return false;
+    const tree = { x, z, height, variant: rand() };
+    trees.push(tree);
+    const key = bucket(x, z);
+    (placed.get(key) ?? placed.set(key, []).get(key)!).push(tree);
     return true;
   };
   const inside = (x: number, z: number) => Math.abs(x) < extent - 2 && Math.abs(z) < extent - 2;

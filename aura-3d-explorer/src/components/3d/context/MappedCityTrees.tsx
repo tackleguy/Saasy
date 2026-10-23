@@ -6,7 +6,7 @@
  * trees. The city preset sets crown hues, palm share and density. Crowns get a
  * world-space clump pattern in the shader so they read as foliage, not balls.
  */
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { CityPreset } from "@/lib/cityPresets";
 import type { MapSnapshot, ProjectLocation } from "@/lib/geographicContext";
@@ -56,9 +56,14 @@ function Batch({ geometry, material, matrices, colors, shadows }: { geometry: TH
 
 export default function MappedCityTrees({ snapshot, location, buildings, preset }: { snapshot: MapSnapshot | null; location: ProjectLocation; buildings: Building[]; preset: CityPreset }) {
   const { tier } = useCinematic();
-  const trees = useMemo<CityTree[]>(() => {
+  // Planned after the first frame (≈0.1 s of work on a full city) so trees never delay the city appearing.
+  const [trees, setTrees] = useState<CityTree[]>([]);
+  useEffect(() => {
     const base = CITY_TREE_BUDGET[tier], density = preset.trees.density;
-    return planCityTrees(snapshot, location, buildings, { park: Math.round(base.park * density), street: Math.round(base.street * density) });
+    const run = () => setTrees(planCityTrees(snapshot, location, buildings, { park: Math.round(base.park * density), street: Math.round(base.street * density) }));
+    const idle = typeof requestIdleCallback === "function" ? requestIdleCallback(run, { timeout: 1500 }) : null;
+    const timer = idle === null ? setTimeout(run, 300) : null;
+    return () => { if (idle !== null) cancelIdleCallback(idle); if (timer !== null) clearTimeout(timer); };
   }, [snapshot, location.latitude, location.longitude, buildings, tier, preset]);
 
   const assets = useMemo(() => ({

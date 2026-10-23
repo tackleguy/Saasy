@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Environment } from "@react-three/drei";
 import Sky from "./OwnedSky";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -12,10 +12,6 @@ import LegacyLightingEnvironment from "./LegacyLightingEnvironment";
 import { SUN, useCinematic } from "./environment/settings";
 import { downtownFogDensity, DOWNTOWN_SKY_SIZE } from "@/lib/downtownView";
 import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-export function sunDirection(elevation: number) {
-  const e = THREE.MathUtils.degToRad(elevation);
-  return new THREE.Vector3(Math.cos(e)*0.313, Math.sin(e), Math.cos(e)*0.95);
-}
 function CinematicLightingEnvironment({ preset, sun, noFog=false, extent=80 }: {quality: "high"|"low"; preset: CityPreset; sun?: {elevation:number;azimuth:number}|null; noFog?:boolean; extent?:number}) {
   const {time,tier} = useCinematic();
   const p = SUN[time];
@@ -73,7 +69,8 @@ function CinematicLightingEnvironment({ preset, sun, noFog=false, extent=80 }: {
     <color attach="background" args={[p.haze]}/>
     {!noFog&&<fogExp2 attach="fog" args={[p.haze,0.00075]}/>}
     <Sky ref={sky} distance={DOWNTOWN_SKY_SIZE} sunPosition={[60,80,180]} turbidity={p.turbidity} rayleigh={p.rayleigh} mieCoefficient={0.004} mieDirectionalG={0.85}/>
-    <Environment files="/hdri/dusk.hdr" background={false}/>
+    {/* Reflections arrive when the HDR has decoded; the first frame does not wait for it. */}
+    <Suspense fallback={null}><Environment files="/hdri/dusk.hdr" background={false}/></Suspense>
     {/* Sky above, warm ground bounce below: shaded facades keep colour instead of going grey. */}
     <hemisphereLight ref={hemi} args={["#a9c1dd","#5a4c3b",p.fill]}/>
     <directionalLight ref={key} castShadow position={[60,80,180]} color={p.color} intensity={p.intensity}

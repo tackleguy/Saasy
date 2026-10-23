@@ -53,7 +53,7 @@ float auraGroundNoise(vec2 p) {
 /** Geographic envelopes preserve mapped skyline and waterfront. Facade, roof
  * and street finishes are illustrative. Missing map data
  * leaves a neutral ground plane; unknown building heights remain footprints. */
-export default function MappedContext({ snapshot, location, buildings, preset, showGround = true, downtown = null, downtownRetry = 0, onDowntownProgress = IGNORE_DOWNTOWN_PROGRESS }: { snapshot: MapSnapshot | null; location: ProjectLocation; buildings: Building[]; preset: CityPreset; showGround?: boolean; downtown?: DowntownManifest | null; downtownRetry?: number; onDowntownProgress?: (progress: DowntownProgress) => void }) {
+export default function MappedContext({ snapshot, location, buildings, preset, showGround = true, downtown = null, downtownRetry = 0, onDowntownProgress = IGNORE_DOWNTOWN_PROGRESS, details = true }: { snapshot: MapSnapshot | null; location: ProjectLocation; buildings: Building[]; preset: CityPreset; showGround?: boolean; downtown?: DowntownManifest | null; downtownRetry?: number; onDowntownProgress?: (progress: DowntownProgress) => void; /** Roof equipment and the outer downtown tiles (mounted after the first frames). */ details?: boolean }) {
   const [prepared, setPrepared] = useState<{ snapshot: MapSnapshot; latitude: number; longitude: number; buildings: Building[]; data: MappedGeometry } | null>(null);
   const { time, tier } = useCinematic();
   const { materials, facade, water, ground } = useMemo(() => {
@@ -103,8 +103,8 @@ export default function MappedContext({ snapshot, location, buildings, preset, s
       <planeGeometry args={[1000000, 1000000]} />
       <primitive object={ground} attach="material" />
     </mesh>}
-    {current && snapshot && <MappedRoofDetails snapshot={snapshot} location={location} buildings={buildings} />}
-    {snapshot && downtown?.id === snapshot.id && <DowntownContext manifest={downtown} location={location} buildings={buildings} materials={materials} retry={downtownRetry} onProgress={onDowntownProgress} />}
+    {details && current && snapshot && <MappedRoofDetails snapshot={snapshot} location={location} buildings={buildings} />}
+    {details && snapshot && downtown?.id === snapshot.id && <DowntownContext manifest={downtown} location={location} buildings={buildings} materials={materials} retry={downtownRetry} onProgress={onDowntownProgress} />}
     {current?.batches.map(batch => batch.kind === "roads"
       ? <group key={batch.kind}>
           <mesh name="mapped-roads" renderOrder={MAP_RENDER_ORDER.roads} geometry={batch.geometry} material={materials.roads} receiveShadow raycast={noRaycast} dispose={null} />

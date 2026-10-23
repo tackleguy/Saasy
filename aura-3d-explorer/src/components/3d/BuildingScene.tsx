@@ -400,6 +400,29 @@ function IdleOrbit({enabled}:{enabled:boolean}) {
   return null;
 }
 
+/**
+ * Staged start-up. Stage 0 draws sky, ground, light and the proposal: few
+ * shader programs, so the first frame is not held back by compiling all ~50.
+ * Two rendered frames later the mapped city's street dressing and the
+ * post-processing stack mount (stage 1); once the browser is idle the trees,
+ * roof equipment and outer downtown tiles follow (stage 2).
+ */
+function StartupStages({ stage, onStage }: { stage: number; onStage: (stage: number) => void }) {
+  const frames = useRef(0);
+  useFrame(() => {
+    frames.current++;
+    if (stage === 0 && frames.current >= 2) onStage(1);
+  });
+  useEffect(() => {
+    if (stage !== 1) return;
+    const advance = () => onStage(2);
+    const idle = typeof requestIdleCallback === "function" ? requestIdleCallback(advance, { timeout: 2500 }) : null;
+    const timer = idle === null ? setTimeout(advance, 800) : null;
+    return () => { if (idle !== null) cancelIdleCallback(idle); if (timer !== null) clearTimeout(timer); };
+  }, [stage, onStage]);
+  return null;
+}
+
 /** Default when a caller doesn't wire the lift (no rides, no-op callbacks). */
 const NO_LIFT: LiftLink = { ride: { target: -1, nonce: 0 }, arrival: { index: -1, nonce: 0 }, onInside: () => {}, onFloor: () => {}, onArrive: () => {} };
 
@@ -444,6 +467,7 @@ export default function BuildingScene({
   const downtownFailed = !!downtown.error || !!downtownCurrent?.failed;
   const downtownLoading = downtown.loading || !!downtownCurrent?.pending;
   const [loading, setLoading] = useState(true);
+  const [stage, setStage] = useState(0);
   const dockAnchor = useRef<HTMLSpanElement>(null);
   const [dockHost, setDockHost] = useState<HTMLElement | null>(null);
   useEffect(() => {
@@ -527,6 +551,7 @@ export default function BuildingScene({
       <PerformanceMonitor onDecline={handleDecline} />
       <Suspense fallback={<LoadingSignal onChange={setLoading} />} >
       <SceneReady onChange={setLoading} />
+      {stage < 2 && <StartupStages stage={stage} onStage={setStage} />}
       <CameraLayers />
       <Telemetry tier={tier} />
       <StaticShadows
@@ -534,9 +559,9 @@ export default function BuildingScene({
       />
 
       <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} extent={Math.max(150,...buildings.map(b=>buildingHeight(b,explosion)+Math.hypot(...b.position)))} />
-      <MappedContext snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} downtown={downtown.manifest} downtownRetry={downtown.tileAttempt} onDowntownProgress={setDowntownProgress} />
-      <MappedSiteDetails snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />
-      <MappedCityTrees snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />
+      <MappedContext snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} details={stage >= 2} downtown={downtown.manifest} downtownRetry={downtown.tileAttempt} onDowntownProgress={setDowntownProgress} />
+      {stage >= 1 && <MappedSiteDetails snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />}
+      {stage >= 2 && <MappedCityTrees snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />}
       {asset && asset.category !== "skylines" && <group position={[30, 0, -30]} scale={MODEL_SCALE}>
         <LibraryModel model={asset} />
       </group>}
@@ -592,7 +617,7 @@ export default function BuildingScene({
       />
       {architect && <Suspense fallback={null}><ArchitectLayer state={architect} buildings={buildings} building={building} explosion={explosion} /></Suspense>}
       {captureRef && <CaptureBridge captureRef={captureRef} />}
-      {tier !== "low" && <Suspense fallback={null}><PostEffects focus={high && !presentation ? focus : null} /></Suspense>}
+      {tier !== "low" && stage >= 1 && <Suspense fallback={null}><PostEffects focus={high && !presentation ? focus : null} /></Suspense>}
       </Suspense>
     </Canvas>
     {loading && <PreparingSite />}

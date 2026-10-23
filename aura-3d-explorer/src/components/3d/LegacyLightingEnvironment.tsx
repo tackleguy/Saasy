@@ -14,7 +14,7 @@
  *   • Haze       — exponential fog matching the horizon so distant blocks
  *                  recede gradually while the skyline stays legible.
  */
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Environment } from "@react-three/drei";
 import Sky from "./OwnedSky";
 import * as THREE from "three";
@@ -86,7 +86,7 @@ export default function LightingEnvironment({ quality, preset, sun = null, noFog
       <Sky distance={4500} sunPosition={sunPos.toArray()} turbidity={sky.turbidity} rayleigh={sky.rayleigh} mieCoefficient={0.004} mieDirectionalG={0.85} />
 
       {/* Image-based lighting + reflections from a bundled city HDR (not shown as background). */}
-      <Environment files="/hdri/potsdamer_platz_1k.hdr" environmentIntensity={sky.envIntensity * (0.35 + 0.65 * light)} />
+      <Suspense fallback={null}><Environment files="/hdri/potsdamer_platz_1k.hdr" environmentIntensity={sky.envIntensity * (0.35 + 0.65 * light)} /></Suspense>
 
       {/* Skylight fill */}
       <hemisphereLight args={[sky.hemiSky, sky.hemiGround, 0.45 * (0.4 + 0.6 * light)]} />
