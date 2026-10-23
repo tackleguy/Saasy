@@ -392,3 +392,7 @@ New `/api/enquiries`: validated, same-origin, rate-limited, honeypot field; stor
 ### QA-041 — not testable on this machine
 
 Firefox, WebKit/Safari and Edge are not installed and installing browsers is not allowed here, so the Firefox darkness report (QA-030), the browser matrix and physical iPad/phone checks are **untested**. The live Overpass map service is unreachable from this machine (tested against a mock). Resend was not tested with a real key.
+
+### QA-042 P1 — presentation walk could not be steered or left on a touch screen (fixed)
+
+Presentation mode hid every overlay, so after **W** (or "Walk inside") an iPad user had no movement controls and no way out of the walk except leaving presentation; the bottom panel and title card also covered the walk's controls. Now the walk controls (movement pad, viewpoints, Exit) show while walking and the presentation panel/title step aside; **F / Shift+F** shows a one-line floor label. `scripts/qa/presentation-keys.mjs` passes 9/9 checks at 1920 × 1080 and 1024 × 768 (touch), including a hit-test that the walk controls are not covered. **Open:** a transient "Loading downtown…" notice briefly overlaps the walk title while the city streams in; not tested on a physical iPad.

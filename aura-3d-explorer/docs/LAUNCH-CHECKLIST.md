@@ -82,7 +82,7 @@ Date: 2026-10-01 (America/Los_Angeles). This is an evidence checklist, not a lau
 - [x] Every map/model/HDR file returns 200 with immutable caching on a production build (576/576). *(Live site returns 402 — QA-032.)*
 - [x] Magic-link sign-in, companies, row-level security, projects saved to the database, real address + surroundings, CAD in storage, share links, scenarios in the database, PDF and XLSX exports — two end-to-end flows pass.
 - [ ] Live OpenStreetMap Overpass lookups. *(Tested against a mock only — D-15.)*
-- [ ] Presentation keys at 1920 and on iPad 1024. *(See `docs/qa/overnight/presentation/results.json`.)*
+- [x] Presentation keys at 1920 and at iPad size 1024 × 768 (touch emulation in Chrome, not a physical iPad): ← → F Shift+F E W Esc, walk controls usable by touch and not covered — `docs/qa/overnight/presentation/`.
 - [x] White-label: logo, accent (readable text on any colour), `/o/<company>/projects/<id>`, "Powered by AURA".
 - [x] 2× still capture saved to the project gallery (customer-flow-2).
 - [x] Early-access page with real product screenshots, three steps, sign-up form.
