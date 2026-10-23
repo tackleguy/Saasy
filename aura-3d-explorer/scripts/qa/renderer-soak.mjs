@@ -26,9 +26,18 @@ try {
       await quality.selectOption(tier);
       await page.waitForTimeout(settle);
       const graphics = await page.locator('canvas').first().evaluate((c) => JSON.parse(c.dataset.graphics));
-      result.samples.push({ cycle, tier, geometries: graphics.geometries, textures: graphics.textures, programs: graphics.programs });
-      console.log(`cycle ${cycle + 1}/5 ${tier}: ${graphics.geometries} geometries / ${graphics.textures} textures / ${graphics.programs} programs`);
+      result.samples.push({ cycle, tier, calls: graphics.calls, triangles: graphics.triangles, geometries: graphics.geometries, textures: graphics.textures, programs: graphics.programs });
+      console.log(`cycle ${cycle + 1}/5 ${tier}: ${graphics.calls} draw calls / ${graphics.geometries} geometries / ${graphics.textures} textures / ${graphics.programs} programs`);
     }
+  }
+  // Draw calls per frame at each tier (1280 × 800, default camera), for the record.
+  result.drawCalls = {};
+  for (const tier of ['medium', 'high', 'low']) {
+    await quality.selectOption(tier);
+    await page.waitForTimeout(settle);
+    const graphics = await page.locator('canvas').first().evaluate((c) => JSON.parse(c.dataset.graphics));
+    result.drawCalls[tier] = { calls: graphics.calls, triangles: graphics.triangles };
+    console.log(`${tier}: ${graphics.calls} draw calls, ${graphics.triangles} triangles`);
   }
   for (const tier of ['high', 'low']) {
     const series = result.samples.filter((s) => s.tier === tier);
