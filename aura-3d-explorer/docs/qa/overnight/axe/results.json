@@ -1,7 +1,7 @@
 {
   "base": "http://127.0.0.1:3137",
   "checked": 47,
-  "failing": 3,
+  "failing": 1,
   "results": [
     {
       "label": "/ @390",
@@ -165,24 +165,7 @@
     },
     {
       "label": "studio: floor selected",
-      "violations": [
-        {
-          "id": "color-contrast",
-          "impact": "serious",
-          "help": "Elements must meet minimum color contrast ratio thresholds",
-          "nodes": [
-            "div[aria-label=\"Viewport mode\"] > .text-paper.whitespace-nowrap[role=\"radio\"] > .gap-1\\.5.relative.items-center"
-          ]
-        },
-        {
-          "id": "nested-interactive",
-          "impact": "serious",
-          "help": "Interactive controls must not be nested",
-          "nodes": [
-            ".h-auto"
-          ]
-        }
-      ],
+      "violations": [],
       "overflow": false
     },
     {
@@ -194,14 +177,6 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             "div[aria-label=\"Viewport mode\"] > .text-paper.flex-1[role=\"radio\"] > .gap-1\\.5.relative.items-center"
-          ]
-        },
-        {
-          "id": "nested-interactive",
-          "impact": "serious",
-          "help": "Interactive controls must not be nested",
-          "nodes": [
-            ".h-auto"
           ]
         }
       ],
@@ -254,16 +229,7 @@
     },
     {
       "label": "branding settings",
-      "violations": [
-        {
-          "id": "color-contrast",
-          "impact": "serious",
-          "help": "Elements must meet minimum color contrast ratio thresholds",
-          "nodes": [
-            ".pointer-events-none"
-          ]
-        }
-      ],
+      "violations": [],
       "overflow": false
     },
     {
