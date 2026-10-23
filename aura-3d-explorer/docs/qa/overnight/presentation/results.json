@@ -1,0 +1,93 @@
+[
+  {
+    "name": "desktop-1920",
+    "checks": [
+      {
+        "label": "→ moves to the next camera view",
+        "ok": true
+      },
+      {
+        "label": "← moves back",
+        "ok": false,
+        "error": "TimeoutError: locator.screenshot: Timeout 119991.28099999996ms exceeded.\nCall log:\n\u001b[2m  - taking element screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    - waiting for element to be stable\u001b[22m\n"
+      },
+      {
+        "label": "F selects a floor (inspector opens)",
+        "ok": false,
+        "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Close floor inspector' }) to be visible\u001b[22m\n"
+      },
+      {
+        "label": "Shift+F steps back a floor",
+        "ok": false,
+        "error": "TimeoutError: locator.innerText: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h4').first()\u001b[22m\n"
+      },
+      {
+        "label": "E explodes the stack",
+        "ok": true
+      },
+      {
+        "label": "W starts the walk-through",
+        "ok": false,
+        "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('group', { name: 'Lift panel' }) to be visible\u001b[22m\n"
+      },
+      {
+        "label": "Esc leaves the walk, still presenting",
+        "ok": true
+      },
+      {
+        "label": "Esc again leaves presentation",
+        "ok": true
+      },
+      {
+        "label": "no horizontal overflow",
+        "ok": true
+      }
+    ],
+    "pageErrors": []
+  },
+  {
+    "name": "ipad-1024",
+    "checks": [
+      {
+        "label": "→ moves to the next camera view",
+        "ok": true
+      },
+      {
+        "label": "← moves back",
+        "ok": true
+      },
+      {
+        "label": "F selects a floor (inspector opens)",
+        "ok": false,
+        "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Close floor inspector' }) to be visible\u001b[22m\n"
+      },
+      {
+        "label": "Shift+F steps back a floor",
+        "ok": false,
+        "error": "TimeoutError: locator.innerText: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h4').first()\u001b[22m\n"
+      },
+      {
+        "label": "E explodes the stack",
+        "ok": true
+      },
+      {
+        "label": "W starts the walk-through",
+        "ok": false,
+        "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('group', { name: 'Lift panel' }) to be visible\u001b[22m\n"
+      },
+      {
+        "label": "Esc leaves the walk, still presenting",
+        "ok": true
+      },
+      {
+        "label": "Esc again leaves presentation",
+        "ok": true
+      },
+      {
+        "label": "no horizontal overflow",
+        "ok": true
+      }
+    ],
+    "pageErrors": []
+  }
+]

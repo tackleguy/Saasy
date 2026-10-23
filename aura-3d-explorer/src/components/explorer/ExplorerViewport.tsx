@@ -26,6 +26,7 @@ import ImportedModelHud from "@/components/ui/ImportedModelHud";
 import CityPicker from "@/components/ui/CityPicker";
 import StackingBar from "@/components/ui/StackingBar";
 import { PHOTO_ANGLES } from "@/lib/explorer";
+import { ZONES } from "@/lib/tower";
 import { ProjectFloorPlansProvider } from "@/components/3d/floorPlanContext";
 import FloorPlanImportModal from "@/components/ui/FloorPlanImportModal";
 import PresentationControls from "@/components/ui/PresentationControls";
@@ -169,7 +170,17 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
         contextModel={x.contextModel}
       />
 
-      {variant === "bare" || presenting ? null : variant === "hero" ? (
+      {variant === "bare" ? null : presenting ? (
+        // Presenting keeps the frame clean, except what a touch screen needs: the walk
+        // controls (no arrow keys on an iPad) and a one-line floor label after F.
+        x.walking && x.selectedFloor ? (
+          <WalkHud building={x.building} floor={x.selectedFloor} viewIndex={x.viewIndex} onView={x.goToView} onExit={x.stopWalk} inLift={x.inLift} liftFloor={x.liftFloor} onRide={x.rideTo} fit={x.selectedFit} />
+        ) : x.selectedFloor ? (
+          <p role="status" className="overlay pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 whitespace-nowrap rounded-[3px] px-3 py-1.5 text-xs text-ink">
+            {x.building.short} · {ZONES[x.selectedFloor.zone].label} · Floor {x.selectedFloor.number} / {x.building.floors.length}
+          </p>
+        ) : null
+      ) : variant === "hero" ? (
         // Minimal chrome for the landing hero: the city backdrop and photo-angle presets.
         <>
         <details className="absolute bottom-20 left-4 z-30 max-w-[240px] bg-paper p-3 text-xs text-ink sm:bottom-auto sm:top-5 sm:left-5">
