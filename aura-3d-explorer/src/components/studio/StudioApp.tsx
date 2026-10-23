@@ -26,7 +26,6 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { FileDown } from "lucide-react";
 import type { Project } from "@/content/projects";
 import { projectSite } from "@/content/projects";
 import { siteFloorCount } from "@/lib/tower";
@@ -43,6 +42,7 @@ import SensitivityTable from "@/components/ui/SensitivityTable";
 import { SegmentedControl } from "@/components/ui/primitives";
 import StudioToolbar from "./StudioToolbar";
 import ScenarioDrawer from "./ScenarioDrawer";
+import ExportButtons from "@/components/ui/ExportButtons";
 import ProFormaReport from "./ProFormaReport";
 import ArchitectPanel from "./ArchitectPanel";
 
@@ -93,12 +93,7 @@ export default function StudioApp({ project }: { project: Project }) {
         summary={architect ? { label: "Site GFA · FAR", value: `${Math.round(arch.schedule.gfaM2).toLocaleString("en-US")} m²`, sub: `FAR ${arch.schedule.far.toFixed(2)}` } : undefined}
       >
         <ScenarioDrawer projectSlug={project.slug} current={yieldCalc.inputsById} onLoad={yieldCalc.load} explorer={x} />
-        {!architect && (
-          <button onClick={() => window.print()} className="btn-secondary py-2 text-xs" aria-label="Export pro forma as PDF">
-            <FileDown size={14} aria-hidden />
-            <span className="hidden sm:inline">Export PDF</span>
-          </button>
-        )}
+        {!architect && <ExportButtons compact endpoint="/api/exports/proforma" body={{ projectSlug: project.slug, inputsById: yieldCalc.inputsById }} />}
         <div className="hidden w-[132px] xl:block" title={x.autoLowered ? "Switched to Low automatically to keep the frame rate smooth" : undefined}>
           <SegmentedControl
             ariaLabel="Rendering quality"

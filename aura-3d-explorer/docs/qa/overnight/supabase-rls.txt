@@ -1,54 +1,60 @@
 TAP version 13
-# NOTICE:  database "aura_rls_11723" does not exist, skipping
+# NOTICE:  database "aura_rls_20104" does not exist, skipping
 # Subtest: tenant isolation and share links
     # Subtest: each organization sees only its own organization, members and projects
     ok 1 - each organization sees only its own organization, members and projects
       ---
-      duration_ms: 191.085034
+      duration_ms: 219.245858
       type: 'test'
       ...
     # Subtest: a member cannot write into another organization
     ok 2 - a member cannot write into another organization
       ---
-      duration_ms: 336.681036
+      duration_ms: 336.357285
       type: 'test'
       ...
     # Subtest: storage objects are confined to the organization's folder
     ok 3 - storage objects are confined to the organization's folder
       ---
-      duration_ms: 114.579683
+      duration_ms: 170.799167
       type: 'test'
       ...
     # Subtest: anonymous visitors read public samples only and nothing else
     ok 4 - anonymous visitors read public samples only and nothing else
       ---
-      duration_ms: 142.691204
+      duration_ms: 287.221813
       type: 'test'
       ...
     # Subtest: share links resolve by token, hide financials by default, revoke and expire immediately
     ok 5 - share links resolve by token, hide financials by default, revoke and expire immediately
       ---
-      duration_ms: 726.569179
+      duration_ms: 770.054602
+      type: 'test'
+      ...
+    # Subtest: the public API wrappers behave like the aura functions
+    ok 6 - the public API wrappers behave like the aura functions
+      ---
+      duration_ms: 265.876216
       type: 'test'
       ...
     # Subtest: enquiries written by the server are visible to that organization only
-    ok 6 - enquiries written by the server are visible to that organization only
+    ok 7 - enquiries written by the server are visible to that organization only
       ---
-      duration_ms: 93.219531
+      duration_ms: 101.651595
       type: 'test'
       ...
-    1..6
+    1..7
 ok 1 - tenant isolation and share links
   ---
-  duration_ms: 2366.125735
+  duration_ms: 2943.859455
   type: 'test'
   ...
 1..1
-# tests 7
+# tests 8
 # suites 0
-# pass 7
+# pass 8
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 2749.965756
+# duration_ms 3262.325237

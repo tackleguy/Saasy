@@ -14,7 +14,7 @@ import type { Building, BuildingId, FloorData, ViewMode, ZoneId } from "@/types"
 import type { PhotoAngle, Quality } from "@/lib/explorer";
 import type { Object3D } from "three";
 import { defaultMapLocation } from "@/lib/mapLocations";
-import { useProjectMap } from "./useProjectMap";
+import { useProjectMap, type ProjectSiteOverride } from "./useProjectMap";
 import { DEFAULT_CITY, type CityId } from "@/lib/cityPresets";
 import { buildingClearing, PLINTH, type UWRect } from "@/lib/siteLayout";
 import { APARTMENT_SCHEMES, DEFAULT_FIT, FURNISHED_SETS, fitKey, type FloorFit } from "@/lib/apartmentFit";
@@ -33,11 +33,13 @@ interface Options {
   /** Initial city backdrop (usually the project's own city). */
   city?: CityId;
   projectSlug?: string;
+  /** A customer project's saved address and surroundings (see useProjectMap). */
+  site?: ProjectSiteOverride;
 }
 
-export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY, projectSlug }: Options = {}) {
+export function useExplorer(baseSite: Building[], { keyboard = false, keyboardPaused = false, lockQuality = false, city: initialCity = DEFAULT_CITY, projectSlug, site: siteOverride }: Options = {}) {
   // City backdrop for the urban context (New York, Miami, …)
-  const geographic = useProjectMap(initialCity, projectSlug);
+  const geographic = useProjectMap(initialCity, projectSlug, siteOverride);
   const city = (geographic.mapCoverage?.city ?? initialCity) as CityId;
   const setLocation = geographic.setLocation;
   const setCity = useCallback((next: CityId) => {

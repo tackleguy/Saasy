@@ -52,13 +52,16 @@ test("tenant isolation and share links", { skip }, async (t) => {
     const orgB = as(userB, `select aura.create_organization('Beta Partners', 'beta')`)[0];
     const projectA = as(userA, `insert into projects (org_id, slug, name, data, created_by) values ('${orgA}', 'harbor', 'Harbor', '{"name":"Harbor","finance":{"x":1},"massing":[]}', '${A}') returning id`)[0];
     as(userB, `insert into projects (org_id, slug, name, data, created_by) values ('${orgB}', 'quay', 'Quay', '{"name":"Quay"}', '${B}')`);
-    as(service, `insert into projects (slug, name, data, is_public) values ('meridian-tower', 'The Meridian Tower', '{"name":"The Meridian Tower"}', true)`);
+    // The seed migration provides the public sample portfolio (all of src/content/projects.ts).
+    const samples = Number(as(service, `select count(*) from projects where is_public`)[0]);
+    assert.ok(samples >= 8, `seeded samples: ${samples}`);
 
     await t.test("each organization sees only its own organization, members and projects", () => {
       assert.deepEqual(as(userA, `select name from organizations`), ["Alpha Developments"]);
       assert.deepEqual(as(userB, `select name from organizations`), ["Beta Partners"]);
       assert.deepEqual(as(userA, `select user_id from memberships`), [A]);
       assert.deepEqual(as(userA, `select name from projects where not is_public order by name`), ["Harbor"]);
+      assert.ok(Number(as(userA, `select count(*) from projects where is_public`)[0]) >= 8, "members still see the public samples");
       assert.deepEqual(as(userB, `select name from projects where not is_public order by name`), ["Quay"]);
       assert.deepEqual(as(userB, `select count(*) from projects where id = '${projectA}'`), ["0"]);
     });
@@ -84,7 +87,9 @@ test("tenant isolation and share links", { skip }, async (t) => {
     });
 
     await t.test("anonymous visitors read public samples only and nothing else", () => {
-      assert.deepEqual(as(anon, `select name from projects`), ["The Meridian Tower"]);
+      assert.deepEqual(as(anon, `select count(*) from projects`), [String(samples)]);
+      assert.deepEqual(as(anon, `select count(*) from projects where not is_public`), ["0"]);
+      assert.deepEqual(as(anon, `select name from projects where slug = 'meridian-tower'`), ["The Meridian Tower"]);
       denied(() => as(anon, `select * from organizations`), /permission denied/);
       denied(() => as(anon, `select * from share_links`), /permission denied/);
       denied(() => as(anon, `select * from enquiries`), /permission denied/);
@@ -113,6 +118,15 @@ test("tenant isolation and share links", { skip }, async (t) => {
       assert.deepEqual(resolve(open), []);
       // Tokens are never stored: only the SHA-256 is.
       assert.deepEqual(as(service, `select count(*) from share_links where token_hash = '${open}'`), ["0"]);
+    });
+
+    await t.test("the public API wrappers behave like the aura functions", () => {
+      const live = token();
+      as(userA, `insert into share_links (project_id, org_id, token_hash) values ('${projectA}', '${orgA}', '${sha(live)}')`);
+      assert.deepEqual(as(anon, `select project->>'name' from public.resolve_share('${live}')`), ["Harbor"]);
+      denied(() => as(anon, `select public.create_organization('X', 'x')`), /permission denied/);
+      denied(() => as(anon, `select public.hash_share_password('x')`), /permission denied/);
+      assert.match(as(userA, `select public.hash_share_password('pw')`)[0], /^\$2[aby]\$/);
     });
 
     await t.test("enquiries written by the server are visible to that organization only", () => {

@@ -6,13 +6,14 @@
  * private to the viewer and survive reloads. Storage failures are reported
  * without claiming a successful save; persisted inputs are validated on read.
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { FolderOpen, Trash2, X } from "lucide-react";
 import type { BuildingId, YieldInputs } from "@/types";
 import type { ExplorerState } from "@/hooks/useExplorer";
 
-import { readScenarios, writeScenarios, type Scenario, type SiteLayout } from "@/lib/scenarioStorage";
+import { type Scenario, type SiteLayout } from "@/lib/scenarioStorage";
+import { browserScenarioStore, type ScenarioStore } from "@/lib/scenarioStore";
 export type { Scenario, SiteLayout } from "@/lib/scenarioStorage";
 
 /** The buildings whose position differs from the project's original site. */
@@ -42,39 +43,51 @@ interface Props {
   onLoad: (inputsById: Record<BuildingId, YieldInputs>) => void;
   /** The explorer whose site layout is saved with each scenario and restored on load. */
   explorer?: ExplorerState;
+  /** Where scenarios are kept (default: this browser). Customer projects pass the database store. */
+  store?: ScenarioStore;
 }
 
-export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer }: Props) {
+export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer, store: given }: Props) {
+  const store = useMemo(() => given ?? (typeof window === "undefined" ? null : browserScenarioStore(projectSlug)), [given, projectSlug]);
+  const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
   const [list, setList] = useState<Scenario[]>([]);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
 
+  const local = !given;
   useEffect(() => {
-    if (open) {
-      setError(""); setStatus("");
-      try { setList(readScenarios(window.localStorage, projectSlug)); }
-      catch { setError("Saved scenarios could not be read. Enable browser storage or restore a valid backup, then reopen this panel. Your current work is unchanged."); }
-    }
-  }, [open, projectSlug]);
+    if (!open || !store) return;
+    let cancelled = false;
+    setError(""); setStatus("");
+    store.read().then((items) => { if (!cancelled) setList(items); }).catch(() => {
+      if (!cancelled) setError(local
+        ? "Saved scenarios could not be read. Enable browser storage or restore a valid backup, then reopen this panel. Your current work is unchanged."
+        : "Saved scenarios could not be loaded. Check your connection, then reopen this panel. Your current work is unchanged.");
+    });
+    return () => { cancelled = true; };
+  }, [open, store, local]);
 
-  const update = useCallback(
-    (next: Scenario[]) => {
-      try {
-        writeScenarios(window.localStorage, projectSlug, next);
-        setList(next); setError(""); setStatus("Saved scenarios updated in this browser.");
-        return true;
-      } catch {
-        setError("Changes could not be saved. Enable browser storage or free space, then try again. Keep this page open to retain your current work.");
-        setStatus("");
-        return false;
-      }
-    },
-    [projectSlug]
-  );
+  const failed = local
+    ? "Changes could not be saved. Enable browser storage or free space, then try again. Keep this page open to retain your current work."
+    : "Changes could not be saved. Check your connection and try again. Keep this page open to retain your current work.";
 
-  const save = () => {
+  const run = useCallback(async (change: () => Promise<void>) => {
+    if (!store) return false;
+    setBusy(true);
+    try {
+      await change();
+      setList(await store.read());
+      setError(""); setStatus(local ? "Saved scenarios updated in this browser." : "Saved scenarios updated for your company.");
+      return true;
+    } catch {
+      setError(failed); setStatus("");
+      return false;
+    } finally { setBusy(false); }
+  }, [store, local, failed]);
+
+  const save = async () => {
     const s: Scenario = {
       id: crypto.randomUUID(),
       name: name.trim() || `Scenario ${list.length + 1}`,
@@ -82,7 +95,7 @@ export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer 
       inputsById: current,
       ...(explorer ? { layout: currentLayout(explorer) } : {}),
     };
-    if (update([s, ...list])) setName("");
+    if (await run(() => store!.add(s))) setName("");
   };
 
   return (
@@ -98,7 +111,7 @@ export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer 
             <div>
               <Dialog.Title className="font-serif text-3xl text-ink">Scenarios</Dialog.Title>
               <Dialog.Description className="caption mt-1">
-                Pro-forma assumptions{explorer ? " and site layout" : ""}, saved in this browser only.
+                Pro-forma assumptions{explorer ? " and site layout" : ""}, {store?.where ?? "saved in this browser only"}.
               </Dialog.Description>
             </div>
             <Dialog.Close className="btn-ghost" aria-label="Close">
@@ -110,14 +123,14 @@ export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer 
             className="mt-6 flex gap-2"
             onSubmit={(e) => {
               e.preventDefault();
-              save();
+              void save();
             }}
           >
             <label className="sr-only" htmlFor="scenario-name">
               Scenario name
             </label>
             <input id="scenario-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Base case, 60% LTC" className="field" />
-            <button type="submit" className="btn-primary shrink-0">
+            <button type="submit" className="btn-primary shrink-0" disabled={busy} aria-busy={busy}>
               Save
             </button>
           </form>
@@ -148,7 +161,7 @@ export default function ScenarioDrawer({ projectSlug, current, onLoad, explorer 
                 >
                   Load
                 </button>
-                <button className="btn-ghost" aria-label={`Delete ${s.name}`} onClick={() => update(list.filter((x) => x.id !== s.id))}>
+                <button className="btn-ghost" aria-label={`Delete ${s.name}`} disabled={busy} onClick={() => void run(() => store!.remove(s.id))}>
                   <Trash2 size={14} />
                 </button>
               </li>

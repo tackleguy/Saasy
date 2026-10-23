@@ -29,12 +29,16 @@ const ONLY = opt("only", null);
 const SHOT = opt("shot", null);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "projects");
 
-const SLUGS = ["meridian-tower", "seaform-hotel", "chess-towers", "infiniti", "refad-place", "broadway-bayonne", "lorenskog-quarter", "sports-world"];
+const SLUGS = ["meridian-tower", "seaform-hotel", "chess-towers", "infiniti", "refad-place", "broadway-bayonne", "lorenskog-quarter", "sports-world", "aurelia-tower", "hexa-gardens", "lexington-deco"];
 const SHOTS = [
   { file: "hero-1.jpg", query: "angle=waterfront" },
   { file: "hero-2.jpg", query: "angle=street" },
   { file: "hero-3.jpg", query: "walk=1&view=0" },
 ];
+// Override angles per project with --shots "hero-1.jpg=angle=aerial,hero-2.jpg=angle=drone,hero-3.jpg=walk=1&view=2"
+// when the default camera ends up behind a mapped neighbour (dense city sites).
+const OVERRIDES = Object.fromEntries((opt("shots", "") || "").split(",").filter(Boolean).map((pair) => { const i = pair.indexOf("="); return [pair.slice(0, i), pair.slice(i + 1)]; }));
+for (const shot of SHOTS) if (OVERRIDES[shot.file]) shot.query = OVERRIDES[shot.file];
 
 const browser = await chromium.launch({ channel: "chrome", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
