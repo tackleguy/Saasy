@@ -170,22 +170,23 @@
     },
     {
       "label": "studio: exploded",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "studio: walk-through",
       "violations": [
         {
           "id": "color-contrast",
           "impact": "serious",
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
-            "div[aria-label=\"Viewport mode\"] > .text-paper.flex-1[role=\"radio\"] > .gap-1\\.5.relative.items-center"
+            ".text-paper.font-medium.transition"
           ]
         }
       ],
-      "overflow": false
-    },
-    {
-      "label": "studio: walk-through",
-      "violations": [],
-      "overflow": false
+      "overflow": false,
+      "measuredMidAnimation": true
     },
     {
       "label": "studio: scenario drawer",
