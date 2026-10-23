@@ -9,7 +9,15 @@ const nextConfig = {
   distDir: process.env.AURA_BUILD_DIR || ".next",
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: [
+    // Large static 3D assets are cached for a year. Their URLs are not content
+    // hashed, so replacing one means giving it a new file name (or path) —
+    // see README "Static assets and caching".
+    const immutable = [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }];
+    return [
+      { source: "/maps/:path*", headers: immutable },
+      { source: "/models/:path*", headers: immutable },
+      { source: "/hdri/:path*", headers: immutable },
+      { source: "/:path*", headers: [
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "X-Frame-Options", value: "DENY" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

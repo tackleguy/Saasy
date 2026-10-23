@@ -20,9 +20,10 @@ await check('QA-004 headers and fresh nonces block injected scripts',async()=>{
  await page.unroute(base+'/developers');
  const r2=await page.reload();assert.notEqual(r2.headers()['content-security-policy'],csp);
 });
-await check('QA-005 demo form does not claim delivery',async()=>{
+await check('QA-005 demo form reports the true delivery outcome',async()=>{
+ // With no database or email key configured, the server answers 503 and the form must say nothing was sent.
  await page.getByLabel('Full name').fill('QA Tester');await page.getByLabel('Work email').fill('qa@example.com');await page.getByLabel('Company',{exact:true}).fill('QA');
- await page.locator('form').getByRole('button',{name:'Request a demo'}).click();await page.getByText('Demo complete — no request sent.').waitFor();
+ await page.locator('form').getByRole('button',{name:'Request early access'}).click();await page.getByRole('alert').filter({hasText:'not sent'}).waitFor();
 });
 await check('QA-003 scenario storage failure retains draft and gives recovery',async()=>{
  await page.goto(base+'/studio');await page.getByRole('button',{name:'Saved scenarios'}).click();await page.getByLabel('Scenario name').fill('Do not lose this');

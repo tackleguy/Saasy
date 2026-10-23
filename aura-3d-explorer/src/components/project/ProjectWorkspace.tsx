@@ -115,7 +115,7 @@ export default function ProjectWorkspace({ project }: { project: Project }) {
             </p>
           </div>
           <div className="lg:col-span-6 lg:col-start-7">
-            <EnquiryForm projectName={project.name} unitCode={enquiryUnit} />
+            <EnquiryForm projectName={project.name} projectSlug={project.slug} unitCode={enquiryUnit} />
           </div>
         </div>
       </section>
