@@ -20,7 +20,8 @@ export default function PresentationControls({ explorer: x, active, onActive, cu
   };
   if (!active) return <button data-presentation-trigger onClick={open} className="absolute top-16 left-4 z-20 flex min-h-11 items-center gap-2 border border-plaster bg-paper px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-stone sm:left-5"><Maximize2 size={14}/> Present building</button>;
   return <>
-    <div className="absolute left-4 top-4 z-40 max-w-[calc(100%-5.5rem)] bg-paper px-4 py-3 text-ink sm:left-8 sm:top-8 sm:max-w-[420px] sm:px-5 sm:py-4"><p className="font-serif text-2xl leading-tight sm:text-3xl">{x.building.name}</p><p className="mt-1 text-xs text-ash">{x.location.label}</p><p className="mt-1 text-[11px] text-ash">{imported ? "Authored import · reviewed scale and materials" : "Illustrative sample design · mapped context"}</p></div>
+    {/* The walk has its own title bar and viewpoint chips across the top. */}
+    {!x.walking && <div className="absolute left-4 top-4 z-40 max-w-[calc(100%-5.5rem)] bg-paper px-4 py-3 text-ink sm:left-8 sm:top-8 sm:max-w-[420px] sm:px-5 sm:py-4"><p className="font-serif text-2xl leading-tight sm:text-3xl">{x.building.name}</p><p className="mt-1 text-xs text-ash">{x.location.label}</p><p className="mt-1 text-[11px] text-ash">{imported ? "Authored import · reviewed scale and materials" : "Illustrative sample design · mapped context"}</p></div>}
     <button onClick={() => { onActive(false); x.stopWalk(); }} aria-label="Exit presentation" className="absolute right-4 top-4 z-50 flex min-h-11 min-w-11 items-center justify-center bg-paper p-3 text-ink transition-colors hover:bg-stone sm:right-8 sm:top-8"><X size={20}/></button>
     {/* While walking, the walk controls (movement pad, views, Exit) own the bottom of the screen. */}
     {!x.walking && <div className="absolute bottom-6 left-1/2 z-40 w-[min(720px,calc(100%-2rem))] -translate-x-1/2 bg-paper p-3 text-ink sm:bottom-8 sm:px-5 sm:py-4">
