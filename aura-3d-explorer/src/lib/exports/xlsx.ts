@@ -5,6 +5,7 @@
  * with number formats, never as pre-formatted strings.
  */
 import ExcelJS from "exceljs";
+import { brandTextOnWhite } from "@/lib/brandColor";
 import type { ExportModel } from "./model";
 import { footerNote, generatedDate } from "./model";
 
@@ -28,7 +29,7 @@ function header(ws: Cells, model: ExportModel, title: string): number {
   let row = 3;
   if (p.placeholder) {
     ws.getCell(`A${row}`).value = "Illustrative figures only — sample project. Not investment, valuation or financial advice.";
-    ws.getCell(`A${row}`).font = { name: FONT, size: 10, italic: true, color: { argb: argb(model.branding.accent) } };
+    ws.getCell(`A${row}`).font = { name: FONT, size: 10, italic: true, color: { argb: argb(brandTextOnWhite(model.branding.accent)) } };
     row++;
   }
   return row + 1;

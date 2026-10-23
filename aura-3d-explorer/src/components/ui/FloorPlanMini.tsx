@@ -129,7 +129,7 @@ export default function FloorPlanMini({ floor, coreSize, crownFloors, onViewpoin
         <span>Plan · L{floor.number}</span>
         {onViewpoint && <span className="text-[10px]">Click a view to walk in</span>}
       </figcaption>
-      <svg viewBox={vb.join(" ")} className="block h-auto max-h-[200px] w-full" role="img" aria-label={`Floor plan of level ${floor.number}`}>
+      <svg viewBox={vb.join(" ")} className="block h-auto max-h-[200px] w-full" role={onViewpoint ? "group" : "img"} aria-label={`Floor plan of level ${floor.number}`}>
         {/* Plate */}
         <polygon points={pts(outline)} className="fill-paper stroke-ink" strokeWidth={1.4} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
 

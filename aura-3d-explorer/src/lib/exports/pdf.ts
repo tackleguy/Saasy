@@ -14,6 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
 import PDFDocument from "pdfkit";
+import { brandTextOnWhite } from "@/lib/brandColor";
 import { fmtMoney, fmtNum } from "@/lib/format";
 import type { ExportModel, ExportUnitStatus } from "./model";
 import { footerNote, generatedDate } from "./model";
@@ -125,6 +126,7 @@ export async function buildProformaPdf(model: ExportModel, options: PdfOptions =
   const f = fonts();
   const p = model.project;
   const accent = model.branding.accent;
+  const accentText = brandTextOnWhite(accent);
   const doc = new PDFDocument({
     size: "A4",
     margins: { top: M, bottom: M, left: M, right: M },
@@ -206,7 +208,7 @@ export async function buildProformaPdf(model: ExportModel, options: PdfOptions =
   };
 
   const kicker = (text: string, y: number) => {
-    doc.font(BOLD).fontSize(8).fillColor(accent).text(t(text.toUpperCase()), M, y, { width: W - 140, characterSpacing: 1.2, lineBreak: false });
+    doc.font(BOLD).fontSize(8).fillColor(accentText).text(t(text.toUpperCase()), M, y, { width: W - 140, characterSpacing: 1.2, lineBreak: false });
   };
 
   /* ---------------------------------------------------------------- page 1 */
@@ -224,7 +226,7 @@ export async function buildProformaPdf(model: ExportModel, options: PdfOptions =
   doc.font(SANS).fontSize(9).fillColor(ASH).text(t(`Client ${p.client} · Architect ${p.architect} · generated ${generatedDate(model)}`), { width: W });
   if (p.placeholder) {
     doc.moveDown(0.3);
-    doc.font(SANS).fontSize(9).fillColor(accent).text("Sample project — illustrative figures only. Not investment, valuation or financial advice.", { width: W });
+    doc.font(SANS).fontSize(9).fillColor(accentText).text("Sample project — illustrative figures only. Not investment, valuation or financial advice.", { width: W });
   }
   doc.moveTo(M, doc.y + 8).lineTo(M + W, doc.y + 8).lineWidth(1).strokeColor(INK).stroke();
   doc.y += 22;

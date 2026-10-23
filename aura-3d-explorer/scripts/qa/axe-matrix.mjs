@@ -45,7 +45,8 @@ for (const width of [390, 768, 1280, 1920]) {
 const context = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
 const page = await context.newPage();
 page.setDefaultTimeout(120000);
-const state = async (label, fn) => { try { await fn(); await page.waitForTimeout(1500); await audit(page, label); } catch (e) { results.push({ label, error: String(e).slice(0, 300) }); console.log(`! ${label}: ${String(e).slice(0, 200)}`); } };
+// 3 s lets animated controls (sliding segmented-control pills) settle before contrast is measured.
+const state = async (label, fn) => { try { await fn(); await page.waitForTimeout(3000); await audit(page, label); } catch (e) { results.push({ label, error: String(e).slice(0, 300) }); console.log(`! ${label}: ${String(e).slice(0, 200)}`); } };
 await page.goto(`${base}/studio`, { waitUntil: 'domcontentloaded' });
 await page.locator('canvas').first().waitFor();
 await page.waitForTimeout(6000);

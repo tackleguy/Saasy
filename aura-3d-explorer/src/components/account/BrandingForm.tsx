@@ -1,4 +1,5 @@
 "use client";
+import { brandButtonStyle } from "@/lib/brandColor";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
@@ -33,7 +34,7 @@ export default function BrandingForm({ orgId, name, slug, accent, logoUrl, canEd
       <div className="flex flex-wrap items-end gap-6">
         <label className="block"><span className="caption">Accent colour</span><input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="mt-1 block h-11 w-20 cursor-pointer border border-plaster bg-paper" disabled={!canEdit} /></label>
         <span className="text-sm tabular-nums text-ash">{color.toUpperCase()}</span>
-        <span className="btn-primary pointer-events-none py-2 text-xs" style={{ background: color }} aria-hidden>Enquire</span>
+        <span className="btn-primary pointer-events-none py-2 text-xs" style={brandButtonStyle(color)} aria-hidden>Enquire</span>
       </div>
       <div>
         <span className="caption">Logo</span>

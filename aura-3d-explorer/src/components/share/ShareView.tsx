@@ -5,6 +5,7 @@
  * explorer on the real site, availability and enquiry. The development
  * appraisal appears only when the owner shared financials.
  */
+import { brandButtonStyle } from "@/lib/brandColor";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { Object3D } from "three";
 import HeroCarousel from "@/components/project/HeroCarousel";
@@ -43,7 +44,7 @@ export default function ShareView({ share, exportTo }: { share: ResolvedShare; e
             // eslint-disable-next-line @next/next/no-img-element
             ? <img src={branding.logoUrl} alt={branding.name} className="h-8 w-auto max-w-[180px] object-contain" />
             : <span className="font-serif text-2xl text-ink">{branding.name}</span>}
-          <a href="#enquire" className="btn-primary py-2 text-[13px]" style={branding.accent ? { background: branding.accent } : undefined}>Enquire</a>
+          <a href="#enquire" className="btn-primary py-2 text-[13px]" style={brandButtonStyle(branding.accent)}>Enquire</a>
         </div>
       </header>
       <main id="main">
