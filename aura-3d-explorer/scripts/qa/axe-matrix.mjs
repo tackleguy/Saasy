@@ -80,7 +80,7 @@ for (let i = 0; i < 30 && !link; i++) {
 if (link) {
   await page.goto(link); await page.waitForURL(/\/app$/);
   await state('dashboard: company setup', async () => {});
-  await page.getByLabel('Company name').fill('Axe Developments'); await page.getByRole('button', { name: 'Create company' }).click();
+  await page.getByLabel('Company name').fill('Axe Developments'); await page.getByLabel(/Short name for links/).fill(`axe-${Date.now().toString(36)}`); await page.getByRole('button', { name: 'Create company' }).click();
   await state('dashboard: projects', async () => { await page.getByRole('heading', { name: 'Your projects' }).waitFor(); });
   await state('branding settings', async () => { await page.goto(`${base}/app/settings`); });
   await page.goto(`${base}/app`); await page.getByLabel('Project name').fill('Axe Tower'); await page.getByRole('button', { name: 'Create project' }).click();
