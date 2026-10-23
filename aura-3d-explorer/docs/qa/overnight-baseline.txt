@@ -1,0 +1,65 @@
+# Overnight baseline — 2026-10-23T06:35:36Z
+commit 2f4325d, node v22.22.0
+
+## npm run lint
+
+> aura-3d-explorer@1.0.0 lint
+> tsc --noEmit
+
+exit=0
+
+## npm test
+exit=0
+# tests 131
+# pass 131
+# fail 0
+# skipped 0
+
+## npm run build
+exit=0
+
+> aura-3d-explorer@1.0.0 build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.mjs took 14ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 13.3s
+  Running TypeScript ...
+  Finished TypeScript in 9.8s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/33) ...
+  Generating static pages using 3 workers (8/33) 
+  Generating static pages using 3 workers (16/33) 
+  Generating static pages using 3 workers (24/33) 
+✓ Generating static pages using 3 workers (33/33) in 365ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /api/assistant
+├ ƒ /api/engine
+├ ƒ /api/site/context
+├ ƒ /api/site/geocode
+├ ƒ /developers
+├ ƒ /engine
+├ ○ /icon.svg
+├ ƒ /projects
+├ ƒ /projects/[slug]
+├ ƒ /render/[slug]
+├ ƒ /studio
+└ ƒ /tour
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
