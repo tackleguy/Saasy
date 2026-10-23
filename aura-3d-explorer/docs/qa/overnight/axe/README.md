@@ -8,9 +8,10 @@ The one failure ("studio: walk-through", `color-contrast` on the active
 segmented-control label) is flagged `measuredMidAnimation: true`: CSS
 animations were still running 30 s after the action because software WebGL
 (no GPU on this machine) starves the page. Across five full runs the single
-contrast hit moved between different Studio states each time, and was always a
-label's 300 ms colour fade from grey to white over the dark pill (measured
-foreground #625E57 on #1C1B19, i.e. part-way through the fade).
+contrast hit moved between different Studio states each time, always on an
+element with a colour transition. When captured in detail it was a
+segmented-control label part-way through its 300 ms fade from grey to white over
+the dark pill (foreground #625E57 on #1C1B19, 2.67:1; settled it is white on ink).
 
 Isolated re-checks of the same sequences, auditing after animations finished,
 report **0 violations**:
