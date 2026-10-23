@@ -341,12 +341,12 @@ All14 areas load every manifest tile in Chrome; captured near and whole views sh
 
 Branch `feat/product-pass-2026-10-23`. Baseline before changes: TypeScript pass, 131/131 tests, production build pass (`qa/overnight-baseline.txt`).
 
-### QA-031 P0 — the assistant is dead in production (found before fix)
+### QA-031 P0 — the assistant tells website visitors to run Ollama (found before fix)
 
-`/api/assistant` only called Ollama/LM Studio on `127.0.0.1`. On Vercel neither exists, so every visitor saw "Local AI offline — run ollama serve". Both paid endpoints (`/api/assistant`, `/api/engine`) also lacked origin checks and rate limits (open part of QA-004).
+`/api/assistant` only calls Ollama/LM Studio on `127.0.0.1`. On Vercel neither exists, so every visitor saw "Local AI offline — run ollama serve". Both inference endpoints (`/api/assistant`, `/api/engine`) also lacked origin checks and rate limits (open part of QA-004).
 
-**Fix:** Anthropic provider first (`@anthropic-ai/sdk`, streamed text deltas only, thinking never forwarded, `[[action:…]]` protocol unchanged), then Ollama, then LM Studio in development only. Health reports `provider` and `setup`; production shows a neutral unavailable message, never Ollama instructions. New `src/lib/apiGuard.ts`: same-origin check (Origin + Sec-Fetch-Site), per-IP fixed-window limits; existing 12-message / 2,000-character / 64 KB caps kept.
+**Owner decision:** keep the assistant local-only for now (no hosted provider). **Fix:** on a Vercel deployment the panel shows "The assistant is not available on this site yet" and the route skips localhost probes; local `next dev`/`next start` behave as before. New `src/lib/apiGuard.ts`: same-origin check (Origin + Sec-Fetch-Site) and per-IP fixed-window limits on both endpoints; existing 12-message / 2,000-character / 64 KB caps kept.
 
-**Evidence:** `scripts/qa/api-guard.test.ts` (6 tests): production health reports Anthropic with `setup: hosted`; a mocked Anthropic SSE stream is relayed as plain text containing the action line and none of the thinking text; request uses `claude-opus-5-5`, `fallbacks: "default"` and its beta header; history trimmed to ≤12 messages, each ≤2,000 chars, first message `user`; cross-site POST → 403; 4th message from one IP → 429 with `Retry-After` while another IP still gets 200; cross-site `/api/engine` upload → 403.
+**Evidence:** `scripts/qa/api-guard.test.ts` (5 tests): same-origin rules; limiter window/reset; a mocked Ollama stream is relayed verbatim with its `[[action:…]]` line, system context attached, history ≤12 messages of ≤2,000 chars; cross-site POST → 403; 4th message from one IP → 429 with `Retry-After` while another IP gets 200; cross-site `/api/engine` upload → 403.
 
-**Not verified:** a real call to Anthropic's API (no key in this environment) and the live Vercel deployment. Morning check: add `ANTHROPIC_API_KEY` in Vercel, redeploy, open "Ask AURA" and ask "show me the aerial view".
+**Open:** the assistant does nothing on the public site until a hosted provider is chosen (D-01).

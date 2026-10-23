@@ -4,21 +4,19 @@
  * POST { messages: {role, content}[], context?: object }
  *   → text/plain stream of the model's reply (tokens as they arrive).
  * GET
- *   → { online, provider, model, setup } health check. `setup` is "local" only
- *     when local-model instructions are meaningful (development, or
- *     AURA_LOCAL_AI=1); production visitors never see Ollama instructions.
+ *   → { online, provider, model, setup } health check. `setup` is "hosted" on a
+ *     Vercel deployment, where no local model exists: visitors then see a neutral
+ *     unavailable message instead of Ollama instructions.
  *
- * Providers, in order:
- *   1. Anthropic      ANTHROPIC_API_KEY set; model AURA_ASSISTANT_MODEL (default claude-opus-5-5)
- *   2. Ollama         OLLAMA_URL     (default http://127.0.0.1:11434), model AURA_AI_MODEL (default llama3.2:latest)
- *   3. LM Studio      LMSTUDIO_URL   (default http://127.0.0.1:1234), OpenAI-compatible; model LMSTUDIO_MODEL
+ * Runs against a LOCAL model — nothing leaves the machine:
+ *   1. Ollama         OLLAMA_URL     (default http://127.0.0.1:11434), model AURA_AI_MODEL (default llama3.2:latest)
+ *   2. LM Studio      LMSTUDIO_URL   (default http://127.0.0.1:1234), OpenAI-compatible; model LMSTUDIO_MODEL
  *                     (default: the first model the server lists)
  *
  * Every request is same-origin checked and rate limited per IP (src/lib/apiGuard.ts).
  * Needs a Node server (`next dev` / `next start`). A `STATIC_EXPORT=1` build
  * has no API routes; the client then shows the offline state.
  */
-import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { guardRequest } from "@/lib/apiGuard";
 import { readJsonObject, RequestBodyError } from "@/lib/requestBody";
@@ -29,9 +27,8 @@ export const dynamic = "force-dynamic";
 const OLLAMA_URL = (process.env.OLLAMA_URL ?? "http://127.0.0.1:11434").replace(/\/$/, "");
 const LMSTUDIO_URL = (process.env.LMSTUDIO_URL ?? "http://127.0.0.1:1234").replace(/\/$/, "");
 const MODEL = process.env.AURA_AI_MODEL ?? "llama3.2:latest";
-const ANTHROPIC_MODEL = process.env.AURA_ASSISTANT_MODEL ?? "claude-opus-5-5";
-/** Local-model setup hints only make sense on a developer's machine. */
-const LOCAL_SETUP = process.env.NODE_ENV !== "production" || process.env.AURA_LOCAL_AI === "1";
+/** Local-model setup hints only make sense on a machine that can run one (not a Vercel deployment). */
+const LOCAL_SETUP = process.env.VERCEL !== "1" || process.env.AURA_LOCAL_AI === "1";
 
 /** 20 messages per IP per 10 minutes; health checks are cheap but still bounded. */
 const CHAT_LIMIT = { limit: Number(process.env.AURA_ASSISTANT_RATE_LIMIT ?? 20), windowMs: 10 * 60_000 };
@@ -41,7 +38,7 @@ const MAX_MESSAGES = 12;
 const MAX_MESSAGE_CHARS = 2_000;
 const MAX_CONTEXT_CHARS = 5_000;
 
-type Provider = "anthropic" | "ollama" | "lmstudio";
+type Provider = "ollama" | "lmstudio";
 interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -215,48 +212,6 @@ const openAiExtract = (line: string) => {
   }
 };
 
-/** Stream Claude's text deltas as plain text. Thinking blocks are never forwarded. */
-function anthropicStream(system: string, history: ChatMessage[], signal: AbortSignal): ReadableStream<Uint8Array> {
-  const client = new Anthropic();
-  const encoder = new TextEncoder();
-  const stream = client.beta.messages.stream(
-    {
-      model: ANTHROPIC_MODEL,
-      max_tokens: 2_000,
-      system,
-      output_config: { effort: "low" },
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      messages: history.slice(history.findIndex((m) => m.role === "user")).map((m) => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content })),
-    },
-    { signal }
-  );
-  return new ReadableStream<Uint8Array>({
-    async start(controller) {
-      try {
-        for await (const event of stream) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") controller.enqueue(encoder.encode(event.delta.text));
-        }
-        const final = await stream.finalMessage();
-        if (final.stop_reason === "refusal") controller.enqueue(encoder.encode("\n\nAURA can't help with that request."));
-        if (final.stop_reason === "max_tokens") controller.enqueue(encoder.encode("…"));
-        controller.close();
-      } catch (err) {
-        if ((err as Error).name === "AbortError" || signal.aborted) {
-          controller.close();
-          return;
-        }
-        console.warn(`[assistant] Anthropic stream failed: ${(err as Error).message}`);
-        controller.enqueue(encoder.encode("\n[AURA error: the assistant service did not finish this reply. Try again.]"));
-        controller.close();
-      }
-    },
-    cancel() {
-      stream.abort();
-    },
-  });
-}
-
 function streamResponse(stream: ReadableStream<Uint8Array>, provider: Provider, model: string) {
   return new Response(stream, {
     headers: {
@@ -274,7 +229,7 @@ const offline = () =>
     LOCAL_SETUP
       ? {
           error: "Local AI offline",
-          hint: `Set ANTHROPIC_API_KEY, or start Ollama with \`ollama serve\` and \`ollama pull ${MODEL}\` (or LM Studio's local server on ${LMSTUDIO_URL}).`,
+          hint: `Start Ollama with \`ollama serve\` and \`ollama pull ${MODEL}\` (or LM Studio's local server on ${LMSTUDIO_URL}).`,
         }
       : { error: "The AURA assistant is not available right now." },
     { status: 503 }
@@ -286,7 +241,6 @@ export async function GET(req: Request) {
   const blocked = guardRequest(req, "assistant-health", HEALTH_LIMIT, { requireOrigin: false });
   if (blocked) return blocked;
   const setup = LOCAL_SETUP ? "local" : "hosted";
-  if (process.env.ANTHROPIC_API_KEY) return NextResponse.json({ online: true, provider: "anthropic", model: ANTHROPIC_MODEL, setup });
   if (!LOCAL_SETUP) return NextResponse.json({ online: false, provider: null, model: null, setup });
   const o = await ollamaHealth();
   if (o.online) return NextResponse.json({ online: true, provider: "ollama", model: MODEL, modelInstalled: o.hasModel, setup });
@@ -308,16 +262,11 @@ export async function POST(req: Request) {
   if (!history.length || history[history.length - 1].role !== "user") {
     return NextResponse.json({ error: "Send at least one user message" }, { status: 400 });
   }
-  const system = buildSystem(body.context);
-  const messages: ChatMessage[] = [{ role: "system", content: system }, ...history];
+  const messages: ChatMessage[] = [{ role: "system", content: buildSystem(body.context) }, ...history];
 
-  // 1. Anthropic (the hosted path; the only one used in production)
-  if (process.env.ANTHROPIC_API_KEY) {
-    return streamResponse(anthropicStream(system, history, req.signal), "anthropic", ANTHROPIC_MODEL);
-  }
   if (!LOCAL_SETUP) return offline();
 
-  // 2. Ollama
+  // 1. Ollama
   try {
     const res = await fetch(`${OLLAMA_URL}/api/chat`, {
       method: "POST",
@@ -342,7 +291,7 @@ export async function POST(req: Request) {
     // Unreachable — try LM Studio.
   }
 
-  // 3. LM Studio (OpenAI-compatible)
+  // 2. LM Studio (OpenAI-compatible)
   const lmModel = await lmStudioModel();
   if (lmModel) {
     try {

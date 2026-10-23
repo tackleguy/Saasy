@@ -1,16 +1,16 @@
 "use client";
 /**
- * AssistantPanel — "Ask AURA", the AI assistant.
+ * AssistantPanel — "Ask AURA", the local AI assistant.
  * -----------------------------------------------------------------------------
  * Floating launcher (bottom-right, status dot = assistant online) that opens
- * a non-modal slide-over chat. Replies stream from /api/assistant (Anthropic
- * when configured, otherwise Ollama or LM Studio on a developer's machine). `[[action:…]]` commands in the stream drive the
+ * a non-modal slide-over chat. Replies stream from /api/assistant (Ollama or
+ * LM Studio on this machine). `[[action:…]]` commands in the stream drive the
  * page's registered 3D explorer (see AssistantBridge + protocol.ts) and are
  * shown as small chips instead of text.
  *
  * Needs `next dev` / `next start`: on a static export the route 404s and the
  * panel shows the offline state. Local-model instructions appear only when the
- * health check reports `setup: "local"` (development), never on production.
+ * health check reports `setup: "local"`, never on a Vercel deployment.
  */
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -99,9 +99,9 @@ function OfflineCard({ onRetry, local }: { onRetry: () => void; local: boolean }
     return (
       <div className="space-y-3 border border-plaster bg-paper p-4">
         <p className="flex items-center gap-2 text-sm font-medium text-ink">
-          <StatusDot status="offline" /> The assistant is unavailable right now
+          <StatusDot status="offline" /> The assistant is not available on this site yet
         </p>
-        <p className="caption">The 3D explorer, figures and enquiry form all work without it. Try again in a minute.</p>
+        <p className="caption">The 3D explorer, figures and enquiry form all work without it.</p>
         <button type="button" className="btn-secondary w-full py-2 text-xs" onClick={onRetry}>
           Check again
         </button>
@@ -113,7 +113,7 @@ function OfflineCard({ onRetry, local }: { onRetry: () => void; local: boolean }
         <StatusDot status="offline" /> Local AI offline — run <code className="font-mono text-xs">ollama serve</code>
       </p>
       <p className="caption">
-        No ANTHROPIC_API_KEY is set, so AURA looks for a model on this machine. Start Ollama (or LM Studio&apos;s local server) and make sure the site runs
+        AURA runs on a model on this machine; nothing is sent to the cloud. Start Ollama (or LM Studio&apos;s local server) and make sure the site runs
         with <code className="font-mono">next dev</code> / <code className="font-mono">next start</code> (static exports have no assistant).
       </p>
       <CopyCommand command="ollama serve" />
@@ -156,7 +156,7 @@ export default function AssistantPanel() {
       const data = (await res.json()) as { online?: boolean; model?: string | null; provider?: string | null; setup?: string };
       setLocalSetup(data.setup === "local");
       setStatus(data.online ? "online" : "offline");
-      setModel(data.online ? (data.provider === "anthropic" ? "Claude" : `${data.model ?? "local model"}${data.provider === "lmstudio" ? " · LM Studio" : " · on this machine"}`) : null);
+      setModel(data.online ? `${data.model ?? "local model"}${data.provider === "lmstudio" ? " · LM Studio" : ""}` : null);
     } catch {
       setStatus("offline");
       setModel(null);
@@ -344,7 +344,7 @@ export default function AssistantPanel() {
               <div>
                 <p className="caption mb-1 flex items-center gap-1.5">
                   <StatusDot status={status} />
-                  {status === "online" ? `AI · ${model}` : status === "checking" ? "Checking assistant…" : "Assistant offline"}
+                  {status === "online" ? `Local AI · ${model}` : status === "checking" ? "Checking assistant…" : "Assistant offline"}
                 </p>
                 <h2 id={titleId} className="font-serif text-[26px] leading-tight text-ink">
                   Ask AURA
@@ -376,7 +376,7 @@ export default function AssistantPanel() {
               {!messages.length && status !== "offline" && (
                 <div className="space-y-4">
                   <p className="text-sm leading-relaxed text-ash">
-                    Ask about the programme, the pro-forma or the massing — or ask AURA to show you something in 3D. Answers come from this page's figures; they are illustrative, not advice.
+                    Ask about the programme, the pro-forma or the massing — or ask AURA to show you something in 3D. Runs entirely on this machine; figures are illustrative, not advice.
                   </p>
                   <ul className="space-y-1.5" aria-label="Suggested questions">
                     {SUGGESTIONS.map((s) => (

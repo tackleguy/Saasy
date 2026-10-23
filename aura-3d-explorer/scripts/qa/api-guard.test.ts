@@ -2,10 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { isSameOrigin, resetRateLimits, takeToken } from '../../src/lib/apiGuard';
 
-// Route modules read NODE_ENV / keys at import time: production, hosted, no local model.
-(process.env as Record<string, string>).NODE_ENV = 'production';
-process.env.ANTHROPIC_API_KEY = 'test-key';
+// Route modules read env at import time: a local machine (not Vercel), Ollama only.
 process.env.AURA_ASSISTANT_RATE_LIMIT = '3';
+delete process.env.VERCEL;
 
 const post = (body: unknown, headers: Record<string, string> = {}) =>
   new Request('https://aura.example/api/assistant', {
@@ -14,21 +13,10 @@ const post = (body: unknown, headers: Record<string, string> = {}) =>
     body: JSON.stringify(body),
   });
 
-/** A minimal Anthropic streaming response (SSE), as the Messages API sends it. */
-function sse(text: string[], stop = 'end_turn') {
-  const events: [string, unknown][] = [
-    ['message_start', { type: 'message_start', message: { id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-opus-5-5', content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 10, output_tokens: 0 } } }],
-    ['content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'thinking', thinking: '', signature: '' } }],
-    ['content_block_delta', { type: 'content_block_delta', index: 0, delta: { type: 'thinking_delta', thinking: 'SECRET-REASONING' } }],
-    ['content_block_stop', { type: 'content_block_stop', index: 0 }],
-    ['content_block_start', { type: 'content_block_start', index: 1, content_block: { type: 'text', text: '' } }],
-    ...text.map((t): [string, unknown] => ['content_block_delta', { type: 'content_block_delta', index: 1, delta: { type: 'text_delta', text: t } }]),
-    ['content_block_stop', { type: 'content_block_stop', index: 1 }],
-    ['message_delta', { type: 'message_delta', delta: { stop_reason: stop, stop_sequence: null }, usage: { output_tokens: 5 } }],
-    ['message_stop', { type: 'message_stop' }],
-  ];
-  const body = events.map(([e, d]) => `event: ${e}\ndata: ${JSON.stringify(d)}\n\n`).join('');
-  return new Response(body, { status: 200, headers: { 'content-type': 'text/event-stream', 'request-id': 'req_test' } });
+/** A minimal Ollama /api/chat streaming response (newline-delimited JSON). */
+function ndjson(text: string[]) {
+  const lines = [...text.map((t) => ({ message: { role: 'assistant', content: t }, done: false })), { message: { role: 'assistant', content: '' }, done: true }];
+  return new Response(lines.map((l) => JSON.stringify(l)).join('\n') + '\n', { status: 200, headers: { 'content-type': 'application/x-ndjson' } });
 }
 
 test('same-origin check rejects cross-site and origin-less POSTs', () => {
@@ -50,44 +38,28 @@ test('rate limiter blocks after the limit and resets after the window', () => {
   assert.equal(takeToken('t', 'ip', rule, 1001), null);
 });
 
-test('assistant health in production reports Anthropic and never local setup', async () => {
-  resetRateLimits();
-  const { GET } = await import('../../src/app/api/assistant/route');
-  const res = await GET(new Request('https://aura.example/api/assistant', { headers: { host: 'aura.example' } }));
-  const data = await res.json();
-  assert.deepEqual({ online: data.online, provider: data.provider, setup: data.setup }, { online: true, provider: 'anthropic', setup: 'hosted' });
-});
-
-test('assistant streams Claude text only, keeps [[action]] lines, and bounds history', async () => {
+test('assistant streams the local model reply, keeps [[action]] lines, and bounds history', async () => {
   resetRateLimits();
   const { POST } = await import('../../src/app/api/assistant/route');
   const original = globalThis.fetch;
-  let sent: { model: string; messages: { role: string; content: string }[]; system: string; fallbacks: unknown } | null = null;
-  let headers: Headers | null = null;
+  let sent: { messages: { role: string; content: string }[] } | null = null;
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-    assert.match(String(input), /api\.anthropic\.com\/v1\/messages/);
+    assert.match(String(input), /127\.0\.0\.1:11434\/api\/chat/);
     sent = JSON.parse(String(init?.body));
-    headers = new Headers(init?.headers);
-    return sse(['Here is the aerial view.\n', '[[action:photo angle=aerial]]\n']);
+    return ndjson(['Here is the aerial view.\n', '[[action:photo angle=aerial]]\n']);
   }) as typeof fetch;
   try {
     const long = Array.from({ length: 20 }, (_, i) => ({ role: i % 2 ? 'assistant' : 'user', content: `m${i} ${'x'.repeat(2500)}` }));
     long.push({ role: 'user', content: 'show me from above' });
     const res = await POST(post({ messages: long, context: { project: 'meridian' } }));
     assert.equal(res.status, 200);
-    assert.equal(res.headers.get('x-aura-provider'), 'anthropic');
-    const text = await res.text();
-    assert.equal(text, 'Here is the aerial view.\n[[action:photo angle=aerial]]\n');
-    assert.ok(!text.includes('SECRET-REASONING'));
-    assert.ok(sent);
-    const body = sent as unknown as { model: string; messages: { role: string; content: string }[]; system: string; fallbacks: unknown };
-    assert.equal(body.model, 'claude-opus-5-5');
-    assert.equal(body.fallbacks, 'default');
-    assert.match(String((headers as unknown as Headers).get('anthropic-beta')), /server-side-fallback-2026-07-01/);
-    assert.ok(body.messages.length <= 12, `history ${body.messages.length}`);
-    assert.equal(body.messages[0].role, 'user');
-    assert.ok(body.messages.every((m) => m.content.length <= 2000));
-    assert.match(body.system, /CONTEXT:\n\{"project":"meridian"\}/);
+    assert.equal(res.headers.get('x-aura-provider'), 'ollama');
+    assert.equal(await res.text(), 'Here is the aerial view.\n[[action:photo angle=aerial]]\n');
+    const body = sent as unknown as { messages: { role: string; content: string }[] };
+    assert.equal(body.messages[0].role, 'system');
+    assert.match(body.messages[0].content, /CONTEXT:\n\{"project":"meridian"\}/);
+    assert.ok(body.messages.length <= 13, `history ${body.messages.length}`);
+    assert.ok(body.messages.slice(1).every((m) => m.content.length <= 2000));
   } finally {
     globalThis.fetch = original;
   }
@@ -97,7 +69,7 @@ test('assistant refuses cross-site POSTs and rate limits per IP', async () => {
   resetRateLimits();
   const { POST } = await import('../../src/app/api/assistant/route');
   const original = globalThis.fetch;
-  globalThis.fetch = (async () => sse(['ok'])) as typeof fetch;
+  globalThis.fetch = (async () => ndjson(['ok'])) as typeof fetch;
   try {
     const msg = { messages: [{ role: 'user', content: 'hi' }] };
     assert.equal((await POST(post(msg, { origin: 'https://evil.example', 'sec-fetch-site': 'cross-site' }))).status, 403);
