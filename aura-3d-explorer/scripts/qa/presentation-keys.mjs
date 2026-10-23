@@ -1,0 +1,44 @@
+// Presentation mode keyboard check at 1920 × 1080 (desktop) and 1024 × 768 (iPad
+// landscape, touch). ← / → camera views, F / Shift+F floors, E explode, W walk,
+// Esc leaves the walk then presentation. Screenshots to docs/qa/overnight/presentation/.
+//   QA_URL=http://127.0.0.1:3137 node scripts/qa/presentation-keys.mjs
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { chromium } from 'playwright-core';
+
+const base = process.env.QA_URL || 'http://127.0.0.1:3137';
+const out = 'docs/qa/overnight/presentation';
+await fs.mkdir(out, { recursive: true });
+const browser = await chromium.launch({ headless: true, channel: 'chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const results = [];
+for (const [name, options] of [['desktop-1920', { viewport: { width: 1920, height: 1080 } }], ['ipad-1024', { viewport: { width: 1024, height: 768 }, hasTouch: true, isMobile: false }]]) {
+  const page = await (await browser.newContext(options)).newPage();
+  page.setDefaultTimeout(120000);
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  const checks = [];
+  const check = async (label, fn) => { try { await fn(); checks.push({ label, ok: true }); } catch (e) { checks.push({ label, ok: false, error: String(e).slice(0, 300) }); } };
+  await page.goto(`${base}/projects/meridian-tower`);
+  await page.getByRole('button', { name: 'Present building' }).first().click();
+  const exit = page.getByRole('button', { name: 'Exit presentation' });
+  await exit.waitFor();
+  await page.waitForTimeout(6000);
+  await page.screenshot({ path: `${out}/${name}-open.png` });
+  const pressedAngle = () => page.getByRole('group', { name: 'Photo angles' }).locator('[aria-pressed="true"]').innerText().catch(() => null);
+  const frame = () => page.locator('canvas').first().screenshot();
+  await check('→ moves to the next camera view', async () => { const angle = await pressedAngle(); const before = await frame(); await page.keyboard.press('ArrowRight'); await page.waitForTimeout(3000); if (angle) assert.notEqual(await pressedAngle(), angle); else assert.ok(!before.equals(await frame()), 'view changed'); });
+  await check('← moves back', async () => { const before = await frame(); await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(3000); assert.ok(!before.equals(await frame()), 'view changed'); });
+  await check('F selects a floor (inspector opens)', async () => { await page.keyboard.press('f'); await page.getByRole('button', { name: 'Close floor inspector' }).waitFor({ timeout: 15000 }); });
+  await check('Shift+F steps back a floor', async () => { const before = await page.locator('h4').first().innerText(); await page.keyboard.press('Shift+F'); await page.waitForTimeout(1500); assert.notEqual(await page.locator('h4').first().innerText(), before); });
+  await check('E explodes the stack', async () => { const before = await frame(); await page.keyboard.press('e'); await page.waitForTimeout(3500); await page.screenshot({ path: `${out}/${name}-exploded.png` }); assert.ok(!before.equals(await frame()), 'scene changed'); await page.keyboard.press('e'); await page.waitForTimeout(2000); });
+  await check('W starts the walk-through', async () => { await page.keyboard.press('w'); await page.getByRole('group', { name: 'Lift panel' }).waitFor({ timeout: 20000 }); await page.waitForTimeout(3000); await page.screenshot({ path: `${out}/${name}-walk.png` }); });
+  await check('Esc leaves the walk, still presenting', async () => { await page.keyboard.press('Escape'); await page.waitForTimeout(2000); assert.equal(await page.getByRole('group', { name: 'Lift panel' }).count(), 0); assert.ok(await exit.isVisible()); });
+  await check('Esc again leaves presentation', async () => { await page.keyboard.press('Escape'); await page.waitForTimeout(2000); assert.equal(await exit.count(), 0); });
+  await check('no horizontal overflow', async () => assert.ok(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1))));
+  results.push({ name, checks, pageErrors: errors });
+  console.log(name, checks.map((c) => `${c.ok ? '✓' : '✗'} ${c.label}${c.error ? ' — ' + c.error.slice(0, 160) : ''}`).join('\n  '));
+  await page.context().close();
+}
+await browser.close();
+await fs.writeFile(`${out}/results.json`, JSON.stringify(results, null, 2));
+if (results.some((r) => r.checks.some((c) => !c.ok) || r.pageErrors.length)) process.exitCode = 1;

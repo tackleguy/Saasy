@@ -1,0 +1,116 @@
+{
+  "started": "2026-10-23T10:21:32.010Z",
+  "url": "http://127.0.0.1:3137",
+  "passed": true,
+  "samples": [
+    {
+      "cycle": 0,
+      "tier": "high",
+      "calls": 174,
+      "triangles": 1739983,
+      "geometries": 799,
+      "textures": 59,
+      "programs": 61
+    },
+    {
+      "cycle": 0,
+      "tier": "low",
+      "calls": 168,
+      "triangles": 2410640,
+      "geometries": 795,
+      "textures": 26,
+      "programs": 69
+    },
+    {
+      "cycle": 1,
+      "tier": "high",
+      "calls": 187,
+      "triangles": 1984600,
+      "geometries": 799,
+      "textures": 59,
+      "programs": 78
+    },
+    {
+      "cycle": 1,
+      "tier": "low",
+      "calls": 135,
+      "triangles": 1458041,
+      "geometries": 795,
+      "textures": 26,
+      "programs": 70
+    },
+    {
+      "cycle": 2,
+      "tier": "high",
+      "calls": 187,
+      "triangles": 1984600,
+      "geometries": 799,
+      "textures": 59,
+      "programs": 79
+    },
+    {
+      "cycle": 2,
+      "tier": "low",
+      "calls": 135,
+      "triangles": 1458041,
+      "geometries": 795,
+      "textures": 26,
+      "programs": 70
+    },
+    {
+      "cycle": 3,
+      "tier": "high",
+      "calls": 174,
+      "triangles": 1739983,
+      "geometries": 799,
+      "textures": 59,
+      "programs": 79
+    },
+    {
+      "cycle": 3,
+      "tier": "low",
+      "calls": 135,
+      "triangles": 1458041,
+      "geometries": 795,
+      "textures": 26,
+      "programs": 70
+    },
+    {
+      "cycle": 4,
+      "tier": "high",
+      "calls": 187,
+      "triangles": 1984600,
+      "geometries": 799,
+      "textures": 59,
+      "programs": 79
+    },
+    {
+      "cycle": 4,
+      "tier": "low",
+      "calls": 135,
+      "triangles": 1458041,
+      "geometries": 795,
+      "textures": 26,
+      "programs": 70
+    }
+  ],
+  "pageErrors": [],
+  "consoleWarnings": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ],
+  "drawCalls": {
+    "medium": {
+      "calls": 214,
+      "triangles": 2571178
+    },
+    "high": {
+      "calls": 174,
+      "triangles": 1739983
+    },
+    "low": {
+      "calls": 135,
+      "triangles": 1458041
+    }
+  },
+  "finished": "2026-10-23T10:23:58.851Z"
+}
