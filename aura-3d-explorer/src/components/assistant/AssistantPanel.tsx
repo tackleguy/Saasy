@@ -1,15 +1,16 @@
 "use client";
 /**
- * AssistantPanel — "Ask AURA", the local AI assistant.
+ * AssistantPanel — "Ask AURA", the AI assistant.
  * -----------------------------------------------------------------------------
- * Floating launcher (bottom-right, status dot = local model online) that opens
- * a non-modal slide-over chat. Replies stream from /api/assistant (Ollama or
- * LM Studio on this machine). `[[action:…]]` commands in the stream drive the
+ * Floating launcher (bottom-right, status dot = assistant online) that opens
+ * a non-modal slide-over chat. Replies stream from /api/assistant (Anthropic
+ * when configured, otherwise Ollama or LM Studio on a developer's machine). `[[action:…]]` commands in the stream drive the
  * page's registered 3D explorer (see AssistantBridge + protocol.ts) and are
  * shown as small chips instead of text.
  *
  * Needs `next dev` / `next start`: on a static export the route 404s and the
- * panel shows the "Local AI offline" state.
+ * panel shows the offline state. Local-model instructions appear only when the
+ * health check reports `setup: "local"` (development), never on production.
  */
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -93,14 +94,26 @@ function CopyCommand({ command }: { command: string }) {
   );
 }
 
-function OfflineCard({ onRetry }: { onRetry: () => void }) {
+function OfflineCard({ onRetry, local }: { onRetry: () => void; local: boolean }) {
+  if (!local)
+    return (
+      <div className="space-y-3 border border-plaster bg-paper p-4">
+        <p className="flex items-center gap-2 text-sm font-medium text-ink">
+          <StatusDot status="offline" /> The assistant is unavailable right now
+        </p>
+        <p className="caption">The 3D explorer, figures and enquiry form all work without it. Try again in a minute.</p>
+        <button type="button" className="btn-secondary w-full py-2 text-xs" onClick={onRetry}>
+          Check again
+        </button>
+      </div>
+    );
   return (
     <div className="space-y-3 border border-plaster bg-paper p-4">
       <p className="flex items-center gap-2 text-sm font-medium text-ink">
         <StatusDot status="offline" /> Local AI offline — run <code className="font-mono text-xs">ollama serve</code>
       </p>
       <p className="caption">
-        AURA runs on a model on this machine; nothing is sent to the cloud. Start Ollama (or LM Studio&apos;s local server) and make sure the site runs
+        No ANTHROPIC_API_KEY is set, so AURA looks for a model on this machine. Start Ollama (or LM Studio&apos;s local server) and make sure the site runs
         with <code className="font-mono">next dev</code> / <code className="font-mono">next start</code> (static exports have no assistant).
       </p>
       <CopyCommand command="ollama serve" />
@@ -121,6 +134,7 @@ export default function AssistantPanel() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>("checking");
   const [model, setModel] = useState<string | null>(null);
+  const [localSetup, setLocalSetup] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -139,9 +153,10 @@ export default function AssistantPanel() {
     try {
       const res = await fetch(ENDPOINT, { cache: "no-store" });
       if (!res.ok) throw new Error(String(res.status));
-      const data = (await res.json()) as { online?: boolean; model?: string | null; provider?: string | null };
+      const data = (await res.json()) as { online?: boolean; model?: string | null; provider?: string | null; setup?: string };
+      setLocalSetup(data.setup === "local");
       setStatus(data.online ? "online" : "offline");
-      setModel(data.online ? `${data.model ?? "local model"}${data.provider === "lmstudio" ? " · LM Studio" : ""}` : null);
+      setModel(data.online ? (data.provider === "anthropic" ? "Claude" : `${data.model ?? "local model"}${data.provider === "lmstudio" ? " · LM Studio" : " · on this machine"}`) : null);
     } catch {
       setStatus("offline");
       setModel(null);
@@ -305,7 +320,7 @@ export default function AssistantPanel() {
             <Sparkles className="h-4 w-4 text-oak" aria-hidden />
             <span className="font-serif text-[17px] leading-none">Ask AURA</span>
             <StatusDot status={status} />
-            <span className="sr-only">{status === "online" ? "(local AI online)" : status === "checking" ? "(checking local AI)" : "(local AI offline)"}</span>
+            <span className="sr-only">{status === "online" ? "(assistant online)" : status === "checking" ? "(checking assistant)" : "(assistant offline)"}</span>
           </motion.button>
         )}
       </AnimatePresence>
@@ -329,7 +344,7 @@ export default function AssistantPanel() {
               <div>
                 <p className="caption mb-1 flex items-center gap-1.5">
                   <StatusDot status={status} />
-                  {status === "online" ? `Local AI · ${model}` : status === "checking" ? "Checking local AI…" : "Local AI offline"}
+                  {status === "online" ? `AI · ${model}` : status === "checking" ? "Checking assistant…" : "Assistant offline"}
                 </p>
                 <h2 id={titleId} className="font-serif text-[26px] leading-tight text-ink">
                   Ask AURA
@@ -356,12 +371,12 @@ export default function AssistantPanel() {
               aria-busy={streaming}
               aria-relevant="additions text"
             >
-              {status === "offline" && <OfflineCard onRetry={checkHealth} />}
+              {status === "offline" && <OfflineCard onRetry={checkHealth} local={localSetup} />}
 
               {!messages.length && status !== "offline" && (
                 <div className="space-y-4">
                   <p className="text-sm leading-relaxed text-ash">
-                    Ask about the programme, the pro-forma or the massing — or ask AURA to show you something in 3D. Runs entirely on this machine.
+                    Ask about the programme, the pro-forma or the massing — or ask AURA to show you something in 3D. Answers come from this page's figures; they are illustrative, not advice.
                   </p>
                   <ul className="space-y-1.5" aria-label="Suggested questions">
                     {SUGGESTIONS.map((s) => (
@@ -411,7 +426,7 @@ export default function AssistantPanel() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={onInputKey}
-                  placeholder={status === "offline" ? "Local AI offline" : "Ask about yield, floors, views…"}
+                  placeholder={status === "offline" ? "Assistant offline" : "Ask about yield, floors, views…"}
                   className="max-h-40 min-h-[24px] flex-1 resize-none bg-transparent text-sm leading-6 text-ink placeholder:text-ash/70 focus:outline-none [field-sizing:content]"
                 />
                 {streaming ? (

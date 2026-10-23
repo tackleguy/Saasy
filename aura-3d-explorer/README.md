@@ -16,9 +16,32 @@ npm run build && npm start
 
 Node 20+. `STATIC_EXPORT=1 npm run build` also writes a static site to `/out`.
 
-## Local AI assistant
+## AI assistant
 
-"Ask AURA" (bottom-right on every page) is a chat assistant that runs on a **local** model, so nothing leaves the machine. It answers from the page's project, massing and pro-forma, and can drive the 3D explorer: views, floors, explode, walk-through, city backdrop, tour.
+"Ask AURA" (bottom-right on every page) is a chat assistant. It answers from the page's project, massing and pro-forma, and can drive the 3D explorer: views, floors, explode, walk-through, city backdrop, tour.
+
+Providers are tried in order:
+
+1. **Anthropic** (the production path) when `ANTHROPIC_API_KEY` is set. Model `AURA_ASSISTANT_MODEL`, default `claude-opus-5-5`. The question and the page's figures are sent to Anthropic's API.
+2. **Ollama**, then **LM Studio**, on the developer's own machine. Used only in development (or with `AURA_LOCAL_AI=1`); nothing leaves the machine.
+
+| Env var | Default | |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | — | Enables the hosted assistant and blueprint/PDF reading on `/engine`. **Required on Vercel.** |
+| `AURA_ASSISTANT_MODEL` | `claude-opus-5-5` | Chat model |
+| `AURA_ENGINE_MODEL` | `claude-sonnet-5-5` | Vision model for `/engine` |
+| `AURA_ASSISTANT_RATE_LIMIT` | `20` | Chat messages per IP per 10 minutes |
+| `AURA_ENGINE_RATE_LIMIT` | `10` | Blueprint vision reads per IP per 10 minutes |
+| `AURA_ALLOWED_ORIGINS` | — | Extra origins (comma separated) allowed to call the APIs, e.g. a custom domain behind a proxy |
+| `OLLAMA_URL` | `http://127.0.0.1:11434` | Local Ollama server (development) |
+| `AURA_AI_MODEL` | `llama3.2:latest` | Ollama model tag |
+| `LMSTUDIO_URL` | `http://127.0.0.1:1234` | Fallback: LM Studio's OpenAI-compatible server |
+| `LMSTUDIO_MODEL` | first loaded model | LM Studio model id |
+| `AURA_LOCAL_AI` | — | `1` allows local models in a production build |
+
+All names are listed in `.env.example`. Because both `/api/assistant` and `/api/engine` now cost money per call, they refuse requests from other websites (same-origin check), cap message count (12) and length (2,000 characters each, 64 KB per request), and rate-limit per IP. The rate limit lives in each server instance's memory: on Vercel that bounds bursts per warm instance rather than enforcing one global quota (see `docs/DECISIONS.md`). Set a monthly spend limit in the Anthropic console as the hard ceiling.
+
+Local development without a key:
 
 ```bash
 ollama serve                 # or open the Ollama app
@@ -26,14 +49,7 @@ ollama pull llama3.2         # ~2 GB, 3B params; any chat model works
 npm run dev                  # the assistant needs a server: `next dev` or `next start`
 ```
 
-| Env var | Default | |
-|---|---|---|
-| `OLLAMA_URL` | `http://127.0.0.1:11434` | Ollama server |
-| `AURA_AI_MODEL` | `llama3.2:latest` | Ollama model tag |
-| `LMSTUDIO_URL` | `http://127.0.0.1:1234` | Fallback: LM Studio's OpenAI-compatible server, used if Ollama is unreachable |
-| `LMSTUDIO_MODEL` | first loaded model | LM Studio model id |
-
-The route is `src/app/api/assistant/route.ts` (`GET` = health, `POST` = streamed reply). The UI and the explorer bridge live in `src/components/assistant/`. A page shares its explorer with one line, `useRegisterExplorer(x, { project, yieldCalc })`. The model controls the scene by writing commands such as `[[action:photo angle=aerial]]` or `[[action:floor n=12]]` on their own line (full list in `protocol.ts`). If no local model is running, or the site is a static export (which has no API routes), the panel shows "Local AI offline" with the commands to copy.
+The route is `src/app/api/assistant/route.ts` (`GET` = health, `POST` = streamed reply). The UI and the explorer bridge live in `src/components/assistant/`. A page shares its explorer with one line, `useRegisterExplorer(x, { project, yieldCalc })`. The model controls the scene by writing commands such as `[[action:photo angle=aerial]]` or `[[action:floor n=12]]` on their own line (full list in `protocol.ts`). If no provider is available, visitors see "The assistant is unavailable right now"; Ollama instructions appear only in development.
 
 ## Sketchfab assets for the local AI
 
