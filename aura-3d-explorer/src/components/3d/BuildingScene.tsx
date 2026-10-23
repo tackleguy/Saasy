@@ -12,7 +12,7 @@
  * the plot it was imported onto, and the hero camera frames its real height.
  * Loaded with `next/dynamic({ ssr: false })` because Three.js needs `window`.
  */
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { createPortal } from "react-dom";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -28,10 +28,8 @@ import { CinematicContext, SUN, type SunPreset, type Tier } from "./environment/
 import Telemetry from "./environment/Telemetry";
 import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
-import { type SiteEdits } from "./SiteContext";
-import PostEffects from "./PostEffects";
-import WalkControls, { type LiftLink } from "./WalkControls";
-import ImportedModel from "./ImportedModel";
+import type { SiteEdits } from "./SiteContext";
+import type { LiftLink } from "./WalkControls";
 import { PresentationContext, type ModelCut } from "./presentationContext";
 import LibraryModel from "./LibraryModel";
 import MappedContext from "./context/MappedContext";
@@ -43,12 +41,21 @@ import type { MapSnapshot, ProjectLocation } from "@/lib/geographicContext";
 import { ContextModelRecoveryProvider } from "./ContextModelRecovery";
 import { libraryModel } from "@/lib/modelLibrary";
 import { MODEL_SCALE } from "@/lib/tower";
-import ArchitectLayer from "./ArchitectLayer";
 import type { ArchitectSceneState } from "@/lib/architecture";
 import { consumeShadowUpdate, invalidateShadows, SHADOW_SETTLE_MS } from "./staticShadows";
 import { DETAIL_LAYER, RAYCAST_LAYER } from "./layers";
 import { chooseMappedOverviewDirection } from "@/lib/mappedOverview";
 import { downtownCameraPose, downtownFarPlane, downtownNearPlane, downtownWorldBounds, DOWNTOWN_MAX_DISTANCE } from "@/lib/downtownView";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+
+// Loaded only when used: the post-processing stack (postprocessing + n8ao), the
+// first-person walk, CAD imports and Architect tools are separate chunks, so the
+// first frame of the city does not wait for them. Each has its own Suspense
+// boundary so loading one never blanks the scene.
+const PostEffects = lazy(() => import("./PostEffects"));
+const WalkControls = lazy(() => import("./WalkControls"));
+const ImportedModel = lazy(() => import("./ImportedModel"));
+const ArchitectLayer = lazy(() => import("./ArchitectLayer"));
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
 export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
@@ -91,6 +98,8 @@ function photoPose(angle: PhotoAngle | "crown", b: Building, explosion: number, 
 }
 
 interface Props {
+  /** Automatic quality tier to start from instead of `quality` (the landing hero starts at Medium). */
+  startTier?: Tier;
   presentation?: boolean;
   presentationSun?: SunPreset;
   modelCut?: ModelCut;
@@ -387,7 +396,7 @@ function IdleOrbit({enabled}:{enabled:boolean}) {
     window.addEventListener("wheel",wake,{passive:true});window.addEventListener("keydown",wake);
     return ()=>{window.removeEventListener("pointerdown",start);window.removeEventListener("pointerup",end);window.removeEventListener("pointercancel",end);window.removeEventListener("wheel",wake);window.removeEventListener("keydown",wake);if(controls)controls.autoRotate=false;};
   },[controls]);
-  useFrame(()=>{if(controls){controls.autoRotate=enabled&&!down.current&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&performance.now()-last.current>20000;controls.autoRotateSpeed=0.12;}});
+  useFrame(()=>{if(controls){controls.autoRotate=enabled&&!down.current&&!prefersReducedMotion()&&performance.now()-last.current>20000;controls.autoRotateSpeed=0.12;}});
   return null;
 }
 
@@ -427,6 +436,7 @@ export default function BuildingScene({
   presentation = false,
   presentationSun = "golden",
   modelCut,
+  startTier,
 }: Props) {
   const downtown = useDowntownMap(mapSnapshot?.id);
   const [downtownProgress, setDowntownProgress] = useState<DowntownProgress | null>(null);
@@ -445,13 +455,13 @@ export default function BuildingScene({
   });
   useEffect(() => { if (presentation) setTime(presentationSun); }, [presentation, presentationSun]);
   const [override, setOverride] = useState<Tier | "auto">("auto");
-  const [automatic, setAutomatic] = useState<Tier>(quality);
+  const [automatic, setAutomatic] = useState<Tier>(startTier ?? quality);
   const tier = override === "auto" ? automatic : override;
   const [legacy, setLegacy] = useState(false);
   const [localAngle, setLocalAngle] = useState<PhotoAngle | "crown" | null>(null);
   const [localNonce, setLocalNonce] = useState(0);
   useEffect(()=>{setLocalAngle(null);},[photoNonce,resetNonce]);
-  useEffect(()=>{setAutomatic(quality);},[quality]);
+  useEffect(()=>{setAutomatic(startTier ?? quality);},[quality, startTier]);
   const asset = contextModel ? libraryModel(contextModel) : undefined;
   const [hovered, setHovered] = useState<FloorData | null>(null);
   // Ignore frame-rate dips during the first seconds (shader compile, HDR decode).
@@ -530,7 +540,7 @@ export default function BuildingScene({
       {asset && asset.category !== "skylines" && <group position={[30, 0, -30]} scale={MODEL_SCALE}>
         <LibraryModel model={asset} />
       </group>}
-      {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} cut={modelCut} />}
+      {importedModel && importedBuilding && <Suspense fallback={null}><ImportedModel object={importedModel} position={importedBuilding.position} cut={modelCut} /></Suspense>}
       {buildings.map((b) => {
         if (importedModel) return null;
         const active = b.id === activeBuildingId;
@@ -559,7 +569,7 @@ export default function BuildingScene({
         explosion={explosion}
       />
       {walking && selectedIndex !== null && (
-        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} fit={fit} siteContext="mapped" />
+        <Suspense fallback={null}><WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} fit={fit} siteContext="mapped" /></Suspense>
       )}
       <OrbitControls enabled={!walking} enableRotate={!drawingView} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={drawingView ? 5000 : DOWNTOWN_MAX_DISTANCE} maxPolarAngle={Math.PI - 0.08} />
       <IdleOrbit enabled={!walking && !drawingView && selectedIndex === null && !cameraHold} />
@@ -580,9 +590,9 @@ export default function BuildingScene({
         heightOverride={importedModel && importedOn === building.id ? (importedModel.userData.heightUnits as number | undefined) : undefined}
         hold={cameraHold}
       />
-      {architect && <ArchitectLayer state={architect} buildings={buildings} building={building} explosion={explosion} />}
+      {architect && <Suspense fallback={null}><ArchitectLayer state={architect} buildings={buildings} building={building} explosion={explosion} /></Suspense>}
       {captureRef && <CaptureBridge captureRef={captureRef} />}
-      {tier !== "low" && <PostEffects focus={high && !presentation ? focus : null} />}
+      {tier !== "low" && <Suspense fallback={null}><PostEffects focus={high && !presentation ? focus : null} /></Suspense>}
       </Suspense>
     </Canvas>
     {loading && <PreparingSite />}

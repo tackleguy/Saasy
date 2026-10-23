@@ -17,6 +17,7 @@ import { MAP_RENDER_ORDER, MAP_SURFACE_DEPTH } from "@/lib/renderDepth";
 import { invalidateShadows } from "../staticShadows";
 import { noRaycast } from "./shared";
 import { perFragmentFog, withFragmentFog } from "./fragmentFog";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const IGNORE_DOWNTOWN_PROGRESS = (_progress: DowntownProgress) => {};
 const FINISHES = { footprints: "#9c9585", parks: "#55703f" } as const;
@@ -55,13 +56,6 @@ float auraGroundNoise(vec2 p) {
 export default function MappedContext({ snapshot, location, buildings, preset, showGround = true, downtown = null, downtownRetry = 0, onDowntownProgress = IGNORE_DOWNTOWN_PROGRESS }: { snapshot: MapSnapshot | null; location: ProjectLocation; buildings: Building[]; preset: CityPreset; showGround?: boolean; downtown?: DowntownManifest | null; downtownRetry?: number; onDowntownProgress?: (progress: DowntownProgress) => void }) {
   const [prepared, setPrepared] = useState<{ snapshot: MapSnapshot; latitude: number; longitude: number; buildings: Building[]; data: MappedGeometry } | null>(null);
   const { time, tier } = useCinematic();
-  const reduced = useRef(false);
-  useEffect(() => {
-    const media = matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => { reduced.current = media.matches; };
-    update(); media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
   const { materials, facade, water, ground } = useMemo(() => {
     const facade = contextFacadeMaterial(preset), water = mappedWaterMaterial();
     const surface = (kind: keyof typeof FINISHES) => withFragmentFog(new THREE.MeshStandardMaterial({ color: FINISHES[kind], roughness: .93, metalness: 0, envMapIntensity: .45, ...MAP_SURFACE_DEPTH }), kind);
@@ -80,8 +74,8 @@ export default function MappedContext({ snapshot, location, buildings, preset, s
       if (surface.envMap !== scene.environment) { surface.envMap = scene.environment; surface.needsUpdate = true; }
       surface.envMapIntensity = scene.environmentIntensity * strength;
     }
-    facade.uniforms.auraNight.value = reduced.current ? SUN[time].night : THREE.MathUtils.damp(facade.uniforms.auraNight.value, SUN[time].night, 3, delta);
-    if (!reduced.current && tier !== "low") water.uniforms.auraWaterTime.value += Math.min(delta, .05);
+    facade.uniforms.auraNight.value = prefersReducedMotion() ? SUN[time].night : THREE.MathUtils.damp(facade.uniforms.auraNight.value, SUN[time].night, 3, delta);
+    if (!prefersReducedMotion() && tier !== "low") water.uniforms.auraWaterTime.value += Math.min(delta, .05);
   });
 
   useEffect(() => {

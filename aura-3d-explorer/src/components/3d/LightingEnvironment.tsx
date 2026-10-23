@@ -11,6 +11,7 @@ import { invalidateShadows } from "./staticShadows";
 import LegacyLightingEnvironment from "./LegacyLightingEnvironment";
 import { SUN, useCinematic } from "./environment/settings";
 import { downtownFogDensity, DOWNTOWN_SKY_SIZE } from "@/lib/downtownView";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 export function sunDirection(elevation: number) {
   const e = THREE.MathUtils.degToRad(elevation);
   return new THREE.Vector3(Math.cos(e)*0.313, Math.sin(e), Math.cos(e)*0.95);
@@ -29,7 +30,7 @@ function CinematicLightingEnvironment({ preset, sun, noFog=false, extent=80 }: {
   const haze = useMemo(()=>new THREE.Color(p.haze),[]);
   const pos = useMemo(()=>new THREE.Vector3(),[]);
   useEffect(()=>{
-    const duration = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1.5;
+    const duration = prefersReducedMotion() ? 0 : 1.5;
     const tween = gsap.to(values,{intensity:p.intensity,fill:p.fill,env:p.env,turbidity:p.turbidity,rayleigh:p.rayleigh,night:p.night,elevation:sun?.elevation??p.elevation,azimuth:sun?.azimuth??p.azimuth,duration,ease:"power2.inOut",onUpdate:()=>invalidateShadows(100)});
     const c = new THREE.Color(p.color), h = new THREE.Color(p.haze);
     if (p.night === 0) h.lerp(new THREE.Color(preset.sky.haze), .22);

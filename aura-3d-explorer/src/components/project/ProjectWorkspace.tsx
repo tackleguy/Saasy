@@ -23,10 +23,11 @@ import SensitivityTable from "@/components/ui/SensitivityTable";
 import StackingPlan, { type UnitInfo } from "./StackingPlan";
 import EnquiryForm from "./EnquiryForm";
 import SectionHeading from "@/components/site/SectionHeading";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
     block: "start",
   });
 }

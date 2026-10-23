@@ -22,8 +22,6 @@ import type { BuildingId, YieldMetrics } from "@/types";
 import type { ExplorerState } from "@/hooks/useExplorer";
 import type { ArchitectSceneState } from "@/lib/architecture";
 import ViewportHud from "@/components/ui/ViewportHud";
-import FloorInspectorCard from "@/components/ui/FloorInspectorCard";
-import WalkHud from "@/components/ui/WalkHud";
 import ImportedModelHud from "@/components/ui/ImportedModelHud";
 import CityPicker from "@/components/ui/CityPicker";
 import StackingBar from "@/components/ui/StackingBar";
@@ -35,6 +33,10 @@ import type { SunPreset } from "@/components/3d/environment/settings";
 import type { ModelCut } from "@/components/3d/presentationContext";
 
 // The site map reads the 3D city plan, so it loads only when first opened.
+// The inspector's mini plan and the walk HUD's viewpoints pull in the furniture/interior kit
+// (three.js); load them when a floor is opened or a walk starts, not with the page.
+const WalkHud = dynamic(() => import("@/components/ui/WalkHud"), { ssr: false });
+const FloorInspectorCard = dynamic(() => import("@/components/ui/FloorInspectorCard"), { ssr: false });
 const MappedSiteMap = dynamic(() => import("./MappedSiteMap"), { ssr: false });
 
 const BuildingScene = dynamic(() => import("@/components/3d/BuildingScene"), {
@@ -87,6 +89,9 @@ export default function ExplorerViewport({ explorer: x, metricsById, variant = "
     <ProjectFloorPlansProvider plans={x.floorPlans}>
     <section ref={viewportRef} role={presenting ? "dialog" : undefined} aria-modal={presenting ? true : undefined} aria-label={`3D model of ${x.building.name}`} className={clsx("overflow-hidden bg-stone", presenting ? "fixed inset-0 z-[60]" : ["relative", className])}>
       <BuildingScene
+        // The landing hero starts one tier lower than Studio (no DoF, 1.5× pixels, 2048 shadows) so the
+        // first frame arrives sooner; presenting it full screen restores the caller's quality.
+        startTier={variant === "hero" && !presenting && x.quality === "high" ? "medium" : undefined}
         presentation={presenting}
         presentationSun={presentationSun}
         modelCut={presenting ? modelCut : undefined}

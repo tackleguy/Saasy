@@ -14,6 +14,7 @@ import Water from "../context/Water";
 import MappedContext from "../context/MappedContext";
 import { useProjectMap } from "@/hooks/useProjectMap";
 import type { Building } from "@/types";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 function Batch({matrices,color,emissive=false,round=false}:{matrices:THREE.Matrix4[];color:string;emissive?:boolean;round?:boolean}) {
   const mat=useRef<THREE.MeshStandardMaterial>(null);const {time}=useCinematic();
@@ -41,7 +42,7 @@ function Landscape({edits,preset}:{edits:SiteEdits;preset:CityPreset}) {
     return {trunks,leaves,lamps,bulbs,marks,paving};
   },[edits]);
   const mat=useMemo(()=>new THREE.Matrix4(),[]),rotation=useMemo(()=>new THREE.Matrix4(),[]);
-  useFrame(({clock})=>{const mesh=canopy.current;if(!mesh)return;data.leaves.forEach((m,i)=>{rotation.makeRotationZ(Math.sin(clock.elapsedTime*.55+i)*.018);mat.copy(m).multiply(rotation);mesh.setMatrixAt(i,mat);});mesh.instanceMatrix.needsUpdate=true;});
+  useFrame(({clock})=>{const mesh=canopy.current;if(!mesh||prefersReducedMotion())return;data.leaves.forEach((m,i)=>{rotation.makeRotationZ(Math.sin(clock.elapsedTime*.55+i)*.018);mat.copy(m).multiply(rotation);mesh.setMatrixAt(i,mat);});mesh.instanceMatrix.needsUpdate=true;});
   return <>
     <mesh rotation-x={-Math.PI/2} position-y={-.05} receiveShadow raycast={noRaycast}><planeGeometry args={[1600,1600]}/><meshStandardMaterial color={preset.ground} roughness={.95}/></mesh>
     <group rotation-y={SITE_ROTATION_Y}><mesh position={[0,-.005,23]} receiveShadow raycast={noRaycast}><boxGeometry args={[420,.02,8]}/><meshStandardMaterial color="#121720" roughness={.96}/></mesh></group>
@@ -57,8 +58,10 @@ function Traffic() {
   const {time}=useCinematic();
   const matrix=useMemo(()=>new THREE.Matrix4(),[]);
   useFrame(({clock},dt)=>{
+    // Reduced motion: cars are drawn where they would be at t = 0 and stay there.
+    const t=prefersReducedMotion()?0:clock.elapsedTime;
     for(let i=0;i<12;i++){
-      const dir=i%2?1:-1,u=((i*31+clock.elapsedTime*2.1*dir+3600)%360)-180,w=i%2?21:25;
+      const dir=i%2?1:-1,u=((i*31+t*2.1*dir+3600)%360)-180,w=i%2?21:25;
       body.current?.setMatrixAt(i,placeUW(u,w,.24,ALONG_U,new THREE.Vector3(1.25,.38,.58),matrix));
       front.current?.setMatrixAt(i,placeUW(u+dir*.63,w,.27,ALONG_U,new THREE.Vector3(.025,.1,.44),matrix));
       back.current?.setMatrixAt(i,placeUW(u-dir*.63,w,.27,ALONG_U,new THREE.Vector3(.025,.09,.44),matrix));
@@ -72,7 +75,7 @@ function Clouds() {
   const {time}=useCinematic();const group=useRef<THREE.Group>(null);
   const texture=useMemo(()=>{const c=document.createElement("canvas");c.width=128;c.height=64;const ctx=c.getContext("2d")!;const g=ctx.createRadialGradient(64,32,2,64,32,55);g.addColorStop(0,"rgba(175,184,196,.3)");g.addColorStop(1,"rgba(175,184,196,0)");ctx.fillStyle=g;ctx.fillRect(0,0,128,64);return new THREE.CanvasTexture(c);},[]);
   useEffect(()=>()=>texture.dispose(),[texture]);
-  useFrame(({clock})=>{if(group.current)group.current.position.x=Math.sin(clock.elapsedTime*.007)*18;});
+  useFrame(({clock})=>{if(group.current&&!prefersReducedMotion())group.current.position.x=Math.sin(clock.elapsedTime*.007)*18;});
   return <group ref={group} visible={time==="dawn"||time==="golden"}>{[-130,0,160].map((x,i)=><sprite key={x} position={[x,100+i*12,-290]} scale={[150,30,1]} raycast={noRaycast}><spriteMaterial map={texture} transparent opacity={.3} depthWrite={false}/></sprite>)}</group>;
 }
 export default function CinematicSite({edits,preset,buildings=[]}:{edits:SiteEdits;preset:CityPreset;buildings?:Building[]}) {

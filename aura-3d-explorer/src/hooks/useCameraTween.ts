@@ -29,6 +29,7 @@ import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import gsap from "gsap";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import { prefersReducedMotion } from "./usePrefersReducedMotion";
 
 export type Vec3 = [number, number, number];
 
@@ -85,7 +86,7 @@ export function useCameraTween(goal: CameraGoal, { duration = 1.2, nonce = 0, en
     }
 
     // Opening shot: jump to the intro pose, then dolly out from there.
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = prefersReducedMotion();
     const playIntro = firstRun.current && !!intro && !reduceMotion;
     if (playIntro) {
       camera.position.set(...intro!.position);

@@ -11,6 +11,7 @@ import { LAYOUT, SITE_ROTATION_Y, uwToXZ } from "@/lib/siteLayout";
 import { waterNormalTexture } from "../textures";
 import { noRaycast, placeUW, rng } from "./shared";
 import WaterReflector from "./WaterReflector";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const WATER_WIDTH = 1200;
 const WATER_DEPTH = 480;
@@ -82,6 +83,7 @@ function PhysicalWaterSurface({ quality, color }: { quality: "high" | "low"; col
 
   // Animate physical 3D wave displacement across vertices in real time
   useFrame(({ clock }, dt) => {
+    if (prefersReducedMotion()) return; // reduced motion: the surface holds still
     const t = clock.elapsedTime;
     normal.offset.x += dt * 0.012;
     normal.offset.y += dt * 0.007;
@@ -198,6 +200,7 @@ function BuoyantBoats() {
   }, [boats]);
 
   useFrame(({ clock }, dt) => {
+    if (prefersReducedMotion()) return; // reduced motion: boats stay moored
     const t = clock.elapsedTime;
     const clampedDt = Math.min(dt, 0.05);
 

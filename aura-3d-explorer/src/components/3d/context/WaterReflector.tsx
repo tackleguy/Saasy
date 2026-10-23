@@ -106,6 +106,8 @@ export default function WaterReflector({
       blurPass.renderTargetA.dispose();
       blurPass.renderTargetB.dispose();
       blurPass.convolutionMaterial.dispose();
+      // Drei's BlurPass owns a full-screen triangle; it is not disposed by the pass itself.
+      blurPass.screen.geometry.dispose();
     },
     [fbo1, fbo2, blurPass]
   );
