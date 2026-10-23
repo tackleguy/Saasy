@@ -24,14 +24,17 @@ async function audit(page, label) {
     return res.violations.map((v) => ({ id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.slice(0, 5).map((n) => n.target.join(' ')) }));
   });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
-  results.push({ label, violations: r, overflow });
+  results.push({ label, violations: r, overflow, ...(unsettled ? { measuredMidAnimation: true } : {}) });
+  unsettled = false;
   console.log(`${r.length || overflow ? '✗' : '✓'} ${label}${r.length ? `: ${r.map((v) => `${v.id}(${v.nodes.length})`).join(', ')}` : ''}${overflow ? ' horizontal overflow' : ''}`);
 }
 
 // Measure only once finite CSS/Web animations have finished (colour fades and
 // sliding pills report mid-transition colours otherwise); endless ones such as
-// spinners are ignored. Gives up after 10 s and audits anyway.
-const settled = (p) => p.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().endTime === Infinity), null, { timeout: 10000 }).catch(() => {});
+// spinners are ignored. Software WebGL can stall the page for several seconds,
+// so allow 30 s; if animations are still running then, audit anyway and flag it.
+let unsettled = false;
+const settled = (p) => p.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().endTime === Infinity), null, { timeout: 30000 }).then(() => { unsettled = false; }, () => { unsettled = true; });
 const routes = ['/', '/projects', '/projects/meridian-tower', '/developers', '/studio', '/engine', '/tour', '/sign-in'];
 for (const width of [390, 768, 1280, 1920]) {
   const context = await browser.newContext({ viewport: { width, height: width < 800 ? 844 : 1000 } });
