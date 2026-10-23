@@ -8,6 +8,12 @@ export default function Telemetry({tier}:{tier:Tier}) {
   const gl=useThree(s=>s.gl), scene=useThree(s=>s.scene);
   const sample=useRef({at:performance.now(),frames:0,calls:0,triangles:0});
   useEffect(()=>{gl.info.autoReset=false;return()=>{gl.info.autoReset=true;delete gl.domElement.dataset.graphics;};},[gl]);
+  // QA hook (?graphics=1 only): lets capture scripts inspect lights and shadow maps.
+  useEffect(()=>{
+    if(new URLSearchParams(location.search).get("graphics")!=="1")return;
+    const w=window as unknown as {__auraScene?:unknown};w.__auraScene={scene,gl};
+    return()=>{delete w.__auraScene;};
+  },[gl,scene]);
   useFrame(()=>{
     const s=sample.current;s.frames++;s.calls+=gl.info.render.calls;s.triangles+=gl.info.render.triangles;
     const now=performance.now();

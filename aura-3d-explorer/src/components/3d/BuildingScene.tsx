@@ -38,6 +38,7 @@ import MappedContext from "./context/MappedContext";
 import type { DowntownProgress } from "./context/DowntownContext";
 import { useDowntownMap } from "@/hooks/useDowntownMap";
 import MappedSiteDetails from "./context/MappedSiteDetails";
+import MappedCityTrees from "./context/MappedCityTrees";
 import type { MapSnapshot, ProjectLocation } from "@/lib/geographicContext";
 import { ContextModelRecoveryProvider } from "./ContextModelRecovery";
 import { libraryModel } from "@/lib/modelLibrary";
@@ -522,9 +523,10 @@ export default function BuildingScene({
         deps={[buildings, activeBuildingId, explosion, selectedIndex, xray, section, walking, quality, tier, city, location, mapSnapshot, siteEdits, importedModel, lift.ride.nonce, lift.arrival.nonce]}
       />
 
-      <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} extent={Math.max(45,...buildings.map(b=>buildingHeight(b,explosion)+Math.hypot(...b.position)))} />
+      <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} extent={Math.max(150,...buildings.map(b=>buildingHeight(b,explosion)+Math.hypot(...b.position)))} />
       <MappedContext snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} downtown={downtown.manifest} downtownRetry={downtown.tileAttempt} onDowntownProgress={setDowntownProgress} />
       <MappedSiteDetails snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />
+      <MappedCityTrees snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />
       {asset && asset.category !== "skylines" && <group position={[30, 0, -30]} scale={MODEL_SCALE}>
         <LibraryModel model={asset} />
       </group>}

@@ -2,7 +2,7 @@
  * These layers do not compete for almost identical perspective depth values.
  * The base ground still writes depth for occlusion and post-processing. */
 export const MAP_RENDER_ORDER = {
-  ground: -30, water: -24, parks: -23, footprints: -22, roads: -21,
+  ground: -30, water: -24, parks: -23, footprints: -22, roads: -21, carriageway: -20,
   paving: -19, street: -18, markings: -17, walls: 0, roofs: 0,
 } as const;
 

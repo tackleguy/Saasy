@@ -81,7 +81,7 @@ test("multipolygons preserve detached parts and clear only the part intersecting
   result.dispose();
 });
 
-test("water, parks and road centerlines retain map coordinates without a site rotation", () => {
+test("water, parks and street corridors retain map coordinates without a site rotation", () => {
   const a = worldToGeographic([10, -20], origin), b = worldToGeographic([20, -30], origin);
   const result = buildMappedGeometry(snapshot([
     { id: "road", kind: "road", geometry: { type: "LineString", coordinates: [a, b] } },
@@ -90,7 +90,15 @@ test("water, parks and road centerlines retain map coordinates without a site ro
   ]), origin);
   assert.deepEqual(result.batches.map(batch => batch.kind), ["water", "parks", "roads"]);
   const road = result.batches.find(batch => batch.kind === "roads")!.geometry.getAttribute("position");
-  assert.equal(road.count, 2); near(road.getX(0), 10); near(road.getZ(0), -20); near(road.getX(1), 20); near(road.getZ(1), -30);
+  // One mapped centerline piece becomes a flat, upward-facing 16 m street ribbon centred on it.
+  assert.equal(road.count, 6);
+  const streets = result.batches.find(batch => batch.kind === "roads")!.geometry;
+  const box = streets.boundingBox!, half = 8 * 0.28 / Math.SQRT2, extend = 5 * 0.28 / Math.SQRT2;
+  near(box.min.x, 10 - half - extend); near(box.max.x, 20 + half + extend); near(box.min.z, -30 - half - extend); near(box.max.z, -20 + half + extend);
+  const normals = streets.getAttribute("normal");
+  for (let i = 0; i < normals.count; i++) assert.ok(normals.getY(i) > 0.99, "street faces up");
+  const across = streets.getAttribute("auraRoad");
+  for (let i = 0; i < across.count; i++) assert.ok(Math.abs(across.getX(i)) === 1);
   assert.ok(b[0] > a[0] && b[1] > a[1], "northeast must be +X, −Z");
   const [x, z] = geographicToWorld([origin.longitude, origin.latitude], origin); near(x, 0); near(z, 0);
   result.dispose();

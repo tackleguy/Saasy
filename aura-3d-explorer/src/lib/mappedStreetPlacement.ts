@@ -30,9 +30,9 @@ export function streetDetailFootprint(x: number, z: number, length: number, widt
 
 /** A near-site spatial index keeps full-polygon clearance checks inexpensive.
  * Holes are preserved: a courtyard or an island is usable, its edge is not. */
-export function createMappedStreetPlacement(snapshot: MapSnapshot | null, location: ProjectLocation, buildings: Building[]) {
+export function createMappedStreetPlacement(snapshot: MapSnapshot | null, location: ProjectLocation, buildings: Building[], extent = 220) {
   const grid = new Map<string, Obstacle[]>(), occupied: Obstacle[] = [];
-  const region = { minX: -220, minZ: -220, maxX: 220, maxZ: 220 }, cellSize = 16;
+  const region = { minX: -extent, minZ: -extent, maxX: extent, maxZ: extent }, cellSize = 16;
   const keys = (bounds: Bounds) => {
     const result: string[] = [];
     for (let x = Math.floor(Math.max(region.minX, bounds.minX) / cellSize); x <= Math.floor(Math.min(region.maxX, bounds.maxX) / cellSize); x++) {

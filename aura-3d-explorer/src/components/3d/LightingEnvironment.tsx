@@ -39,7 +39,7 @@ function CinematicLightingEnvironment({ preset, sun, noFog=false, extent=80 }: {
   },[p,preset,sun?.elevation,sun?.azimuth,values,color,haze]);
   useFrame((_, delta)=>{
     const e = THREE.MathUtils.degToRad(values.elevation), a = THREE.MathUtils.degToRad(values.azimuth);
-    pos.set(Math.cos(e)*Math.sin(a),Math.sin(e),-Math.cos(e)*Math.cos(a)).multiplyScalar(200);
+    pos.set(Math.cos(e)*Math.sin(a),Math.sin(e),-Math.cos(e)*Math.cos(a)).multiplyScalar(500);
     if(key.current){key.current.position.copy(pos);key.current.color.copy(color);key.current.intensity=values.intensity;}
     if(hemi.current)hemi.current.intensity=values.fill;
     if(sky.current){const u=sky.current.material.uniforms;u.sunPosition.value.copy(pos);u.turbidity.value=values.turbidity;u.rayleigh.value=values.rayleigh;if(u.auraNight)u.auraNight.value=values.night;if(u.auraDirectOutput)u.auraDirectOutput.value=tier==="low"?1:0;sky.current.visible=values.night<0.98;}
@@ -58,7 +58,7 @@ function CinematicLightingEnvironment({ preset, sun, noFog=false, extent=80 }: {
       // The stock sky assumes a camera at the world origin. Whole-city views
       // can move kilometres away; keep the atmospheric horizon camera-relative.
       material.fragmentShader=material.fragmentShader.replace("vWorldPosition - cameraPos", "vWorldPosition - cameraPosition");
-      material.fragmentShader="uniform vec3 auraHaze; uniform float auraNight; uniform float auraDirectOutput;\n"+material.fragmentShader.replace("gl_FragColor = vec4( retColor, 1.0 );", "float horizon = pow(1.0 - abs(direction.y), 12.0); vec3 graded = mix(retColor * mix(0.38, 0.055, auraNight), auraHaze, mix(0.42, 0.78, auraNight)); graded += vec3(0.085, 0.024, 0.008) * horizon * (1.0 - abs(auraNight - 0.5) * 2.0); graded = mix(auraHaze, graded, smoothstep(0.0, 0.22, direction.y)); gl_FragColor = vec4(graded, 1.0);");
+      material.fragmentShader="uniform vec3 auraHaze; uniform float auraNight; uniform float auraDirectOutput;\n"+material.fragmentShader.replace("gl_FragColor = vec4( retColor, 1.0 );", "float horizon = pow(1.0 - abs(direction.y), 12.0); vec3 graded = mix(retColor * mix(0.5, 0.055, auraNight), auraHaze, mix(0.3, 0.78, auraNight)); graded += vec3(0.085, 0.024, 0.008) * horizon * (1.0 - abs(auraNight - 0.5) * 2.0); graded = mix(auraHaze, graded, smoothstep(0.0, 0.22, direction.y)); gl_FragColor = vec4(graded, 1.0);");
       // Direct rendering applies ground fog after tone mapping in output color
       // space. Match that path at the sky horizon without double tone mapping.
       material.fragmentShader = material.fragmentShader.replace("#include <colorspace_fragment>", `#include <colorspace_fragment>
@@ -73,11 +73,12 @@ function CinematicLightingEnvironment({ preset, sun, noFog=false, extent=80 }: {
     {!noFog&&<fogExp2 attach="fog" args={[p.haze,0.00075]}/>}
     <Sky ref={sky} distance={DOWNTOWN_SKY_SIZE} sunPosition={[60,80,180]} turbidity={p.turbidity} rayleigh={p.rayleigh} mieCoefficient={0.004} mieDirectionalG={0.85}/>
     <Environment files="/hdri/dusk.hdr" background={false}/>
-    <hemisphereLight ref={hemi} args={["#9EB7D9","#14171D",p.fill]}/>
+    {/* Sky above, warm ground bounce below: shaded facades keep colour instead of going grey. */}
+    <hemisphereLight ref={hemi} args={["#a9c1dd","#5a4c3b",p.fill]}/>
     <directionalLight ref={key} castShadow position={[60,80,180]} color={p.color} intensity={p.intensity}
       shadow-mapSize={[map,map]} shadow-bias={-0.00008} shadow-normalBias={0.035}
       shadow-camera-left={-extent} shadow-camera-right={extent} shadow-camera-top={extent} shadow-camera-bottom={-extent}
-      shadow-camera-near={0.5} shadow-camera-far={450} />
+      shadow-camera-near={1} shadow-camera-far={1100} />
   </>;
 }
 
