@@ -1,0 +1,252 @@
+{
+  "base": "http://127.0.0.1:3137",
+  "checked": 47,
+  "failing": 1,
+  "results": [
+    {
+      "label": "/ @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects/meridian-tower @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/developers @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/studio @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/engine @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/tour @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/sign-in @390",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/ @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects/meridian-tower @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/developers @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/studio @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/engine @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/tour @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/sign-in @768",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/ @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects/meridian-tower @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/developers @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/studio @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/engine @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/tour @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/sign-in @1280",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/ @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/projects/meridian-tower @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/developers @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/studio @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/engine @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/tour @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "/sign-in @1920",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "studio: floor selected",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "studio: exploded",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "studio: walk-through",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            ".text-paper.font-medium.transition"
+          ]
+        }
+      ],
+      "overflow": false,
+      "measuredMidAnimation": true
+    },
+    {
+      "label": "studio: scenario drawer",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "studio: CAD import modal",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "assistant panel open",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "presentation mode",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "enquiry error state",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "sign-in: link sent",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "dashboard: company setup",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "dashboard: projects",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "branding settings",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "project editor (all sections open)",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "project present page",
+      "violations": [],
+      "overflow": false
+    },
+    {
+      "label": "share page (private window)",
+      "violations": [],
+      "overflow": false
+    }
+  ]
+}

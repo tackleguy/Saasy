@@ -1,0 +1,3469 @@
+{
+  "base": "http://127.0.0.1:3137",
+  "checked": 576,
+  "ok": 576,
+  "failures": 0,
+  "notImmutable": 0,
+  "statuses": {
+    "200": 576
+  },
+  "failuresSample": [],
+  "results": [
+    {
+      "path": "/hdri/dusk.hdr",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1540678
+    },
+    {
+      "path": "/hdri/potsdamer_platz_1k.hdr",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1540678
+    },
+    {
+      "path": "/maps/bayonne.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2249335
+    },
+    {
+      "path": "/maps/boston.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1836712
+    },
+    {
+      "path": "/maps/chicago.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1584578
+    },
+    {
+      "path": "/maps/downtown/bayonne/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 7183
+    },
+    {
+      "path": "/maps/downtown/bayonne/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 28174569
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1838020
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 8200
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 16034
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 66875
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 80321
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/0-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 161296
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2327515
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 688248
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 488400
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 6767
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 120048
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/1-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 136379
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2270712
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 593833
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 260105
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 222705
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 58045
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/2-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 89077
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1506557
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 771355
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 9009
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 604122
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1393741
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/3-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 912842
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1582770
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 719381
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 52685
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 83043
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 546336
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/4-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1939896
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 9356
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 19169
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 31383
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 17021
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/5-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 136944
+    },
+    {
+      "path": "/maps/downtown/bayonne/tiles/5-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 658459
+    },
+    {
+      "path": "/maps/downtown/boston/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 5786
+    },
+    {
+      "path": "/maps/downtown/boston/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 36102465
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 979160
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 871285
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 693579
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1206605
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1271124
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 887480
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 942620
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 643726
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1122817
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1104809
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 716976
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1059495
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 905129
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 604707
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1014734
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 846253
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 967582
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 286472
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 416705
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 412995
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 580939
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 22770
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 474116
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1057466
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 9862
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 38942
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 26630
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 64322
+    },
+    {
+      "path": "/maps/downtown/boston/tiles/5-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 153391
+    },
+    {
+      "path": "/maps/downtown/chicago/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3976
+    },
+    {
+      "path": "/maps/downtown/chicago/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 18308310
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1148417
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1079796
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1055479
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 765889
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1802903
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 846373
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 521457
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 331394
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1129557
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1371384
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 497676
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 160057
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 15792
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 140876
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 10350
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 5073
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4707
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 49425
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2962
+    },
+    {
+      "path": "/maps/downtown/chicago/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 716
+    },
+    {
+      "path": "/maps/downtown/dubai/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 7779
+    },
+    {
+      "path": "/maps/downtown/dubai/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 25114160
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 373576
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 871676
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 808795
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 611440
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 241623
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/0-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 20787
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/0-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 964
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 915098
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1398037
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 409629
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1017093
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 983119
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/1-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 614778
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/1-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 157154
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 992724
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 384599
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 69517
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 20447
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 906034
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/2-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1069410
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/2-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 709360
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 255139
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 173422
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 53235
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 75550
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 496332
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/3-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 491828
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/3-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1103949
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 177182
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 233489
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 272396
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 74670
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 121905
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/4-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 684066
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/4-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 548178
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 310987
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 170300
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 106046
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 43625
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/5-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 211556
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/5-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 446110
+    },
+    {
+      "path": "/maps/downtown/dubai/tiles/5-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 495838
+    },
+    {
+      "path": "/maps/downtown/jersey-city/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 9744
+    },
+    {
+      "path": "/maps/downtown/jersey-city/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 60282638
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 170788
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 815452
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1397368
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1081191
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 280336
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/0-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 238135
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/0-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 451139
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 77176
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 77520
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 968831
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1482566
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2241551
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/1-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 632193
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/1-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 339045
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 34381
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 60778
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 997609
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1030209
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/2-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1859531
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/2-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1398787
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 120696
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 255003
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 975557
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 360818
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/3-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 332308
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/3-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1744283
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1512622
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 800359
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2033379
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1865013
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1450141
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/4-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 941638
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/4-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 203517
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1279176
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 494454
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 748048
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 872313
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/5-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2093141
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/5-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1320602
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/5-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1230459
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/6-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1610081
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/6-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1950730
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/6-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1402789
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/6-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 826827
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/6-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 454642
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/6-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1450973
+    },
+    {
+      "path": "/maps/downtown/jersey-city/tiles/6-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1182746
+    },
+    {
+      "path": "/maps/downtown/london/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 6546
+    },
+    {
+      "path": "/maps/downtown/london/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 61209878
+    },
+    {
+      "path": "/maps/downtown/london/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1332455
+    },
+    {
+      "path": "/maps/downtown/london/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1516106
+    },
+    {
+      "path": "/maps/downtown/london/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1990579
+    },
+    {
+      "path": "/maps/downtown/london/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 956937
+    },
+    {
+      "path": "/maps/downtown/london/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1035246
+    },
+    {
+      "path": "/maps/downtown/london/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1349807
+    },
+    {
+      "path": "/maps/downtown/london/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2720983
+    },
+    {
+      "path": "/maps/downtown/london/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1249264
+    },
+    {
+      "path": "/maps/downtown/london/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1518265
+    },
+    {
+      "path": "/maps/downtown/london/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1555933
+    },
+    {
+      "path": "/maps/downtown/london/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1891450
+    },
+    {
+      "path": "/maps/downtown/london/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1914843
+    },
+    {
+      "path": "/maps/downtown/london/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1181411
+    },
+    {
+      "path": "/maps/downtown/london/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 244812
+    },
+    {
+      "path": "/maps/downtown/london/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 580599
+    },
+    {
+      "path": "/maps/downtown/london/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1526965
+    },
+    {
+      "path": "/maps/downtown/london/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1298783
+    },
+    {
+      "path": "/maps/downtown/london/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 634180
+    },
+    {
+      "path": "/maps/downtown/london/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1163175
+    },
+    {
+      "path": "/maps/downtown/london/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1352829
+    },
+    {
+      "path": "/maps/downtown/london/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1223345
+    },
+    {
+      "path": "/maps/downtown/london/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 808251
+    },
+    {
+      "path": "/maps/downtown/london/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1547213
+    },
+    {
+      "path": "/maps/downtown/london/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1361242
+    },
+    {
+      "path": "/maps/downtown/london/tiles/6-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1241510
+    },
+    {
+      "path": "/maps/downtown/london/tiles/6-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 896661
+    },
+    {
+      "path": "/maps/downtown/london/tiles/6-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1063694
+    },
+    {
+      "path": "/maps/downtown/london/tiles/6-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1010103
+    },
+    {
+      "path": "/maps/downtown/london/tiles/7-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1880363
+    },
+    {
+      "path": "/maps/downtown/london/tiles/7-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 319731
+    },
+    {
+      "path": "/maps/downtown/london/tiles/7-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1298630
+    },
+    {
+      "path": "/maps/downtown/london/tiles/7-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1986976
+    },
+    {
+      "path": "/maps/downtown/lorenskog/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4011
+    },
+    {
+      "path": "/maps/downtown/lorenskog/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 12899852
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 7544
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 129962
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 330766
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1063695
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 643778
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 22774
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 73433
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 247916
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 863822
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 658444
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 68295
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 165681
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 175517
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1122048
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 212647
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 25723
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 25380
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 257002
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1116326
+    },
+    {
+      "path": "/maps/downtown/lorenskog/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 995943
+    },
+    {
+      "path": "/maps/downtown/los-angeles/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 6239
+    },
+    {
+      "path": "/maps/downtown/los-angeles/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 32271033
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 556605
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1271071
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1571411
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 994889
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1560516
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/0-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2208498
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1814287
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 775821
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 270642
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 487718
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1664516
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/1-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2231266
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1291316
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 658813
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 55715
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1189945
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/2-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1110571
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 292963
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 395909
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 462645
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 169617
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 466030
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/3-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 800396
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 704398
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1520027
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1656931
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 767725
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1736101
+    },
+    {
+      "path": "/maps/downtown/los-angeles/tiles/4-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1465109
+    },
+    {
+      "path": "/maps/downtown/madrid/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 5576
+    },
+    {
+      "path": "/maps/downtown/madrid/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 43202946
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1300743
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 866903
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 351342
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 422959
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 382420
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/0-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1197739
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1949818
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1616648
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1481622
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1048753
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1264864
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/1-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1013688
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2227179
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2228398
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 895308
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1756223
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/2-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1404890
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1158978
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 686149
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 623035
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1363418
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1096633
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/3-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 845002
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1494575
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 738878
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1492385
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 945190
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1203926
+    },
+    {
+      "path": "/maps/downtown/madrid/tiles/4-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 985954
+    },
+    {
+      "path": "/maps/downtown/miami-beach/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 8929
+    },
+    {
+      "path": "/maps/downtown/miami-beach/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 20201129
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1208201
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1396412
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 814416
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 712786
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1220501
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/0-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1167703
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 392077
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 806266
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 569943
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 614713
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 987811
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/1-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1210224
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 18361
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 97148
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 227325
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 173924
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 175346
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/2-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 514551
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4331
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 66574
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 419592
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 224792
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2791
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/3-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1758
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 123418
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 192082
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 144862
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 207024
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 171619
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/4-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2307
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 14966
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 233930
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 115539
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 129470
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/5-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 746051
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/5-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 702578
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/6-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 767
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/6-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 815
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/6-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 801
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/6-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 801
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/6-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 6298
+    },
+    {
+      "path": "/maps/downtown/miami-beach/tiles/6-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 50992
+    },
+    {
+      "path": "/maps/downtown/new-york/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 9801
+    },
+    {
+      "path": "/maps/downtown/new-york/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 59961419
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 170777
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 815441
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1397357
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1081180
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 280325
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/0-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 238124
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/0-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 451128
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 81710
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 196035
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1301982
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1482555
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2241540
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/1-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 632182
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/1-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 339034
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 34378
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 77973
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 180190
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 997598
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1030198
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/2-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1859520
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/2-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1398776
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 133628
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1302754
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 885198
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 975546
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 360807
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/3-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 332297
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/3-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1744272
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1512548
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 837942
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2090000
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1669674
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 827763
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/4-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 941627
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/4-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 203506
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1279165
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 494443
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 748037
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 463868
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/5-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 185211
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/5-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1320591
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/5-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1230448
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/6-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1610070
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/6-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1950719
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/6-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1402778
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/6-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 826884
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/6-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 340570
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/6-5.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1450962
+    },
+    {
+      "path": "/maps/downtown/new-york/tiles/6-6.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1182735
+    },
+    {
+      "path": "/maps/downtown/san-francisco/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 6163
+    },
+    {
+      "path": "/maps/downtown/san-francisco/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 23776492
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2187450
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2375996
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2380883
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1808282
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 104581
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2888498
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2391358
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1609081
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2175643
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 154090
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2372042
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1047132
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 452605
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 676883
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 154136
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1353811
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 701528
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 101946
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1909
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 113504
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 30535
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1167
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2092
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 25343
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/5-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1067
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/5-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1091
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/5-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1067
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/5-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1091
+    },
+    {
+      "path": "/maps/downtown/san-francisco/tiles/5-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 95620
+    },
+    {
+      "path": "/maps/downtown/seattle/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3884
+    },
+    {
+      "path": "/maps/downtown/seattle/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 18049302
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 149535
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1020
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 940
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 315242
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1585646
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 136519
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1208
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 642640
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1707603
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 246471
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/2-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 193923
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 156572
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 478917
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 522246
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1108794
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 972706
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1220581
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1570943
+    },
+    {
+      "path": "/maps/downtown/seattle/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1137432
+    },
+    {
+      "path": "/maps/downtown/toronto/manifest.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4777
+    },
+    {
+      "path": "/maps/downtown/toronto/provenance.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 27372380
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/0-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 175595
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/0-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1211505
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/0-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2055649
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/0-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2039970
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/0-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1938108
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/1-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 79138
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/1-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 682067
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/1-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1605162
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/1-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1745316
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/1-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1577336
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/2-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 48287
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/2-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 206973
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/2-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1318953
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/2-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1376044
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/3-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 164750
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/3-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 27645
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/3-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 353319
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/3-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 908810
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/3-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 902020
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/4-0.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 13694
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/4-1.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 67974
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/4-2.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 331741
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/4-3.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1782031
+    },
+    {
+      "path": "/maps/downtown/toronto/tiles/4-4.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1849590
+    },
+    {
+      "path": "/maps/dubai.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1462441
+    },
+    {
+      "path": "/maps/jersey-city.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2686768
+    },
+    {
+      "path": "/maps/london.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3457338
+    },
+    {
+      "path": "/maps/lorenskog.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2503780
+    },
+    {
+      "path": "/maps/los-angeles.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2618947
+    },
+    {
+      "path": "/maps/madrid.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4057559
+    },
+    {
+      "path": "/maps/miami-beach.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1151692
+    },
+    {
+      "path": "/maps/new-york.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3263222
+    },
+    {
+      "path": "/maps/provenance/bayonne.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3948487
+    },
+    {
+      "path": "/maps/provenance/boston.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3021231
+    },
+    {
+      "path": "/maps/provenance/chicago.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2398500
+    },
+    {
+      "path": "/maps/provenance/dubai.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1910013
+    },
+    {
+      "path": "/maps/provenance/jersey-city.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3687955
+    },
+    {
+      "path": "/maps/provenance/london.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 5004121
+    },
+    {
+      "path": "/maps/provenance/lorenskog.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3927904
+    },
+    {
+      "path": "/maps/provenance/los-angeles.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3242395
+    },
+    {
+      "path": "/maps/provenance/madrid.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4315715
+    },
+    {
+      "path": "/maps/provenance/miami-beach.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1736133
+    },
+    {
+      "path": "/maps/provenance/new-york.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4044584
+    },
+    {
+      "path": "/maps/provenance/san-francisco.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4723266
+    },
+    {
+      "path": "/maps/provenance/seattle.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2309580
+    },
+    {
+      "path": "/maps/provenance/toronto.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2875775
+    },
+    {
+      "path": "/maps/san-francisco.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 4207668
+    },
+    {
+      "path": "/maps/seattle.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1570942
+    },
+    {
+      "path": "/maps/toronto.json",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2196706
+    },
+    {
+      "path": "/models/city/building-a.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 108936
+    },
+    {
+      "path": "/models/city/building-b.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 106408
+    },
+    {
+      "path": "/models/city/building-c.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 102788
+    },
+    {
+      "path": "/models/city/building-d.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 95160
+    },
+    {
+      "path": "/models/city/building-e.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 128208
+    },
+    {
+      "path": "/models/city/building-f.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 148952
+    },
+    {
+      "path": "/models/city/building-g.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 166356
+    },
+    {
+      "path": "/models/city/building-h.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 127384
+    },
+    {
+      "path": "/models/city/building-i.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 209728
+    },
+    {
+      "path": "/models/city/building-j.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 440652
+    },
+    {
+      "path": "/models/city/building-k.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 246976
+    },
+    {
+      "path": "/models/city/building-l.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 290516
+    },
+    {
+      "path": "/models/city/building-m.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 301004
+    },
+    {
+      "path": "/models/city/building-n.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 341232
+    },
+    {
+      "path": "/models/city/building-skyscraper-a.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 111336
+    },
+    {
+      "path": "/models/city/building-skyscraper-b.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 138480
+    },
+    {
+      "path": "/models/city/building-skyscraper-c.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 149524
+    },
+    {
+      "path": "/models/city/building-skyscraper-d.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 167148
+    },
+    {
+      "path": "/models/city/building-skyscraper-e.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 101880
+    },
+    {
+      "path": "/models/city/low-detail-building-a.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 14340
+    },
+    {
+      "path": "/models/city/low-detail-building-b.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 16336
+    },
+    {
+      "path": "/models/city/low-detail-building-c.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 12284
+    },
+    {
+      "path": "/models/city/low-detail-building-d.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 8716
+    },
+    {
+      "path": "/models/city/low-detail-building-e.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 8240
+    },
+    {
+      "path": "/models/city/low-detail-building-f.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 6932
+    },
+    {
+      "path": "/models/city/low-detail-building-g.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 16320
+    },
+    {
+      "path": "/models/city/low-detail-building-h.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 26812
+    },
+    {
+      "path": "/models/city/low-detail-building-i.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 11768
+    },
+    {
+      "path": "/models/city/low-detail-building-j.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 16404
+    },
+    {
+      "path": "/models/city/low-detail-building-k.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 7556
+    },
+    {
+      "path": "/models/city/low-detail-building-l.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 12128
+    },
+    {
+      "path": "/models/city/low-detail-building-m.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 15112
+    },
+    {
+      "path": "/models/city/low-detail-building-n.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 5904
+    },
+    {
+      "path": "/models/city/low-detail-building-wide-a.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 12736
+    },
+    {
+      "path": "/models/city/low-detail-building-wide-b.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 18736
+    },
+    {
+      "path": "/models/city/Textures/colormap.png",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 11002
+    },
+    {
+      "path": "/models/sketchfab/013c2e21e61c4a598c6d279f05953819/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 24201308
+    },
+    {
+      "path": "/models/sketchfab/013c2e21e61c4a598c6d279f05953819/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 12652988
+    },
+    {
+      "path": "/models/sketchfab/0e60e12f253442ee8baffa3d9afb2c3d/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 31049548
+    },
+    {
+      "path": "/models/sketchfab/1128db3b12bd470eb6b2d1421a70e732/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 33835864
+    },
+    {
+      "path": "/models/sketchfab/1128db3b12bd470eb6b2d1421a70e732/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 16881812
+    },
+    {
+      "path": "/models/sketchfab/14e3d5743f7546d5bb7f3befc72c9057/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1819848
+    },
+    {
+      "path": "/models/sketchfab/16070c2e6faa405391ab7ada8bb0aed6/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2644124
+    },
+    {
+      "path": "/models/sketchfab/191cf9a66d204ccc941e097bcfe90f27/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 960392
+    },
+    {
+      "path": "/models/sketchfab/20c73feebd91436ea9c2efebee8a5661/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 26419932
+    },
+    {
+      "path": "/models/sketchfab/20c73feebd91436ea9c2efebee8a5661/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 13192860
+    },
+    {
+      "path": "/models/sketchfab/2cfe4f4c192f4dd08229bd7460532b09/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 828604
+    },
+    {
+      "path": "/models/sketchfab/372bc495b3a941308f4a3198bc45e17b/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 28387404
+    },
+    {
+      "path": "/models/sketchfab/372bc495b3a941308f4a3198bc45e17b/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 22168420
+    },
+    {
+      "path": "/models/sketchfab/395d4a8639de411592797890e219dbd2/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 31274004
+    },
+    {
+      "path": "/models/sketchfab/395d4a8639de411592797890e219dbd2/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 15543668
+    },
+    {
+      "path": "/models/sketchfab/50f21b06c6e644e196b2ac828eda97dc/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 139856
+    },
+    {
+      "path": "/models/sketchfab/570076f49f0c4b63a51948db40e92c31/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 56783992
+    },
+    {
+      "path": "/models/sketchfab/5910afb517bd4d2cafd8f280dabf37a4/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 26847868
+    },
+    {
+      "path": "/models/sketchfab/5910afb517bd4d2cafd8f280dabf37a4/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 13089700
+    },
+    {
+      "path": "/models/sketchfab/74cc9216f2c24efa96fe2554897e5966/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 40327580
+    },
+    {
+      "path": "/models/sketchfab/74cc9216f2c24efa96fe2554897e5966/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 27830188
+    },
+    {
+      "path": "/models/sketchfab/8b60d8c189274a1cac07fa3f4b066e1f/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 159740
+    },
+    {
+      "path": "/models/sketchfab/8dcb87c24b1e48ea9c253f3e37eff413/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 198424
+    },
+    {
+      "path": "/models/sketchfab/9359c41541814b968360fc4f3823892c/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1806836
+    },
+    {
+      "path": "/models/sketchfab/99d83e48af2a4e4cbaf624b742ef4ceb/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 3931428
+    },
+    {
+      "path": "/models/sketchfab/9cde1025662e4954b1f803c2d4bb719d/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 43600
+    },
+    {
+      "path": "/models/sketchfab/a7a5b99638f143af84bc646ae2d270c1/model-hq.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 23249336
+    },
+    {
+      "path": "/models/sketchfab/a7a5b99638f143af84bc646ae2d270c1/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 11851964
+    },
+    {
+      "path": "/models/sketchfab/b00abd35578e4f628f4bcd3625ce5951/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 105676
+    },
+    {
+      "path": "/models/sketchfab/b33e54d616c44c1795fb86f433c0dfc0/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 11052
+    },
+    {
+      "path": "/models/sketchfab/f0162201004b4aea8e29b754459d9f75/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 218232
+    },
+    {
+      "path": "/models/sketchfab/f822f0c500a24ca9ac2af183d2e630b4/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 240720
+    },
+    {
+      "path": "/models/sketchfab/f943ba2828a64b7d858ee6e4bdacedc6/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 325308
+    },
+    {
+      "path": "/models/sketchfab/fa82b5beb9a9427698dafd2c3867ebf9/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 2127792
+    },
+    {
+      "path": "/models/sketchfab/ff93086fa20345d4b4562ce95095e292/model.glb",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 110956
+    }
+  ]
+}

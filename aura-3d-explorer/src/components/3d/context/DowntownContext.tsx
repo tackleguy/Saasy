@@ -6,7 +6,7 @@ import type { Building } from "@/types";
 import { geographicToWorld, type ProjectLocation } from "@/lib/geographicContext";
 import { fetchDowntownTile, type DowntownManifest, type DowntownTile } from "@/lib/downtownContext";
 import { createDowntownGeometryBuilder } from "@/lib/downtownGeometry";
-import type { MapBatchKind, MappedGeometry } from "@/lib/mappedGeometry";
+import type { MappedGeometry, MappedMaterials } from "@/lib/mappedGeometry";
 import { MAP_RENDER_ORDER } from "@/lib/renderDepth";
 import { abortUnwantedDowntownLoads, outerProposalSignature } from "@/lib/downtownStreaming";
 import { useCinematic } from "../environment/settings";
@@ -22,7 +22,7 @@ const release = (record: Record, host: THREE.Group) => { if (record.group) host.
  * is evicted; a memory preference never silently removes visible geography. */
 export default function DowntownContext({ manifest, location, buildings, materials, retry, onProgress }: {
   manifest: DowntownManifest; location: ProjectLocation; buildings: Building[];
-  materials: { [K in MapBatchKind]: THREE.Material }; retry: number;
+  materials: MappedMaterials; retry: number;
   onProgress: (progress: DowntownProgress) => void;
 }) {
   const host = useRef<THREE.Group>(null);
@@ -78,11 +78,17 @@ export default function DowntownContext({ manifest, location, buildings, materia
             if (disposed || controller.signal.aborted) throw new DOMException("Downtown tile no longer needed", "AbortError");
             const data = builder.finish(), tileGroup = new THREE.Group(); tileGroup.name = record.tile.id;
             for (const batch of data.batches) {
-              const mesh = batch.kind === "roads" ? new THREE.LineSegments(batch.geometry, materials.roads) : new THREE.Mesh(batch.geometry, materials[batch.kind]);
+              const mesh = new THREE.Mesh(batch.geometry, materials[batch.kind]);
               mesh.name = `downtown-${batch.kind}`; mesh.renderOrder = MAP_RENDER_ORDER[batch.kind]; mesh.raycast = noRaycast;
               // The distant city never participates in the project's shadow map.
               mesh.castShadow = false; mesh.receiveShadow = false;
               tileGroup.add(mesh);
+              if (batch.kind === "roads") {
+                // Asphalt over every pavement piece keeps junctions continuous.
+                const carriageway = new THREE.Mesh(batch.geometry, materials.carriageway);
+                carriageway.name = "downtown-carriageway"; carriageway.renderOrder = MAP_RENDER_ORDER.carriageway; carriageway.raycast = noRaycast;
+                tileGroup.add(carriageway);
+              }
             }
             // Cached geometry stays available every frame. Three's mesh-level
             // frustum culling follows the live camera; the slower tile planner

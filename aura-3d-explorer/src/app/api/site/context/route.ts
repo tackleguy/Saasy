@@ -1,4 +1,7 @@
-import { validateMapSnapshot, type MapFeature, type MapSnapshot } from "@/lib/geographicContext";
+import { isProjectLocation, validateMapSnapshot, type MapFeature, type MapSnapshot } from "@/lib/geographicContext";
+import { guardRequest } from "@/lib/apiGuard";
+import { readJsonObject, RequestBodyError } from "@/lib/requestBody";
+import { currentMember } from "@/lib/supabase/server";
 interface Element { id: number; tags?: Record<string, string>; geometry?: { lat: number; lon: number }[] }
 const cache = new Map<string, { expires: number; data: MapSnapshot }>();
 const pending = new Map<string, Promise<MapSnapshot>>();
@@ -39,6 +42,46 @@ async function context(lat: number, lon: number): Promise<MapSnapshot> {
   if (!snapshot) throw new Error("Unsupported map geometry");
   return snapshot;
 }
+/**
+ * POST { projectId } — signed-in owners only (docs/DECISIONS.md D-06). Looks up
+ * the surroundings of the project's saved address on OpenStreetMap (Overpass),
+ * after the owner pressed "Load surroundings", and stores the snapshot with the
+ * project so viewers and share links never trigger another lookup. Anonymous
+ * visitors and sample projects keep using the bundled map areas.
+ */
+export async function POST(request: Request) {
+  const blocked = guardRequest(request, "site-context", { limit: 10, windowMs: 60 * 60_000 });
+  if (blocked) return blocked;
+  const member = await currentMember();
+  if (!member?.org) return Response.json({ error: "Sign in to load a project's surroundings." }, { status: 401 });
+  let body: Record<string, unknown>;
+  try { body = await readJsonObject(request, 2_000); }
+  catch (error) { return Response.json({ error: error instanceof RequestBodyError ? error.message : "Could not read the request." }, { status: 400 }); }
+  const projectId = typeof body.projectId === "string" ? body.projectId : "";
+  // Row-level security: only a project in the member's own organization is found.
+  const { data: row } = await member.supabase.from("projects").select("id, data").eq("id", projectId).maybeSingle();
+  const location = (row?.data as { location?: unknown } | undefined)?.location;
+  if (!row || !isProjectLocation(location)) return Response.json({ error: "Save the project's address first." }, { status: 400 });
+  const key = `${location.latitude.toFixed(5)},${location.longitude.toFixed(5)}`;
+  try {
+    let snapshot = cache.get(key)?.expires! > Date.now() ? cache.get(key)!.data : undefined;
+    if (!snapshot) {
+      let job = pending.get(key);
+      if (!job) { job = context(location.latitude, location.longitude); pending.set(key, job); }
+      try { snapshot = await job; } finally { pending.delete(key); }
+      cache.set(key, { data: snapshot, expires: Date.now() + 86_400_000 });
+    }
+    const { error } = await member.supabase.from("projects").update({ site_snapshot: snapshot, site_snapshot_at: new Date().toISOString() }).eq("id", row.id);
+    if (error) return Response.json({ error: "The surroundings loaded but could not be saved. Try again." }, { status: 500 });
+    return Response.json({ snapshot });
+  } catch (error) {
+    const message = error instanceof Error && /No mapped geometry/.test(error.message)
+      ? "OpenStreetMap has no buildings or streets mapped around this address."
+      : "OpenStreetMap could not be reached. Try again in a minute; your project is unchanged.";
+    return Response.json({ error: message }, { status: 502 });
+  }
+}
+
 export async function GET() {
-  return Response.json({ error: "Live coordinate lookups are disabled. Project pins stay on this device; use a downloaded map area." }, { status: 503 });
+  return Response.json({ error: "Use POST with a projectId (signed-in owners only)." }, { status: 405 });
 }

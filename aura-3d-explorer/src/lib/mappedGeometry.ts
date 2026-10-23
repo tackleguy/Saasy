@@ -4,6 +4,8 @@ import { MODEL_SCALE, planOutline, pointInPolygon, signedArea, type PlanPoint } 
 import type { Building } from "@/types";
 
 export type MapBatchKind = "walls" | "roofs" | "footprints" | "water" | "parks" | "roads";
+/** One material per batch, plus the asphalt drawn over the street paving. */
+export type MappedMaterials = Record<MapBatchKind, THREE.Material> & { carriageway: THREE.Material };
 export interface MapGeometryBatch { kind: MapBatchKind; geometry: THREE.BufferGeometry }
 export interface MappedGeometry {
   batches: MapGeometryBatch[];
@@ -20,6 +22,11 @@ type SurfaceAttributes = { facade: number[]; building: number[] };
 type SurfaceIdentity = { seed: number; height: number };
 type CapAttributes = SurfaceIdentity & { target: SurfaceAttributes; bounds: Bounds; width: number };
 const EPSILON = 1e-8;
+/** Street cross-section in metres: 10 m carriageway inside a 16 m kerb-to-kerb
+ * corridor (3 m pavements). OSM/Overture centerlines carry no width, so this is
+ * an illustrative urban street, drawn at the mapped centerline position. */
+export const STREET_WIDTH_M = 16;
+export const CARRIAGEWAY_WIDTH_M = 10;
 const boundsOf = (ring: PlanPoint[]): Bounds => ring.reduce((b, [x, z]) => ({ minX: Math.min(b.minX, x), minZ: Math.min(b.minZ, z), maxX: Math.max(b.maxX, x), maxZ: Math.max(b.maxZ, z) }), { minX: Infinity, minZ: Infinity, maxX: -Infinity, maxZ: -Infinity });
 const overlaps = (a: Bounds, b: Bounds) => a.minX <= b.maxX && a.maxX >= b.minX && a.minZ <= b.maxZ && a.maxZ >= b.minZ;
 
@@ -95,6 +102,32 @@ function cap(target: number[], rings: PlanPoint[][], y: number, up = true, attri
   }
 }
 
+/** One straight street piece as a flat ribbon. Ends extend by half the
+ * carriageway so consecutive pieces and junctions close without gaps.
+ * auraRoad = (across −1…1 of the full corridor, along metres, piece length metres). */
+function streetRibbon(target: number[], road: number[], a: PlanPoint, b: PlanPoint): void {
+  const dx = b[0] - a[0], dz = b[1] - a[1];
+  const length = Math.hypot(dx, dz);
+  if (length < EPSILON) return;
+  const ux = dx / length, uz = dz / length;
+  const half = STREET_WIDTH_M / 2 * MODEL_SCALE, extend = CARRIAGEWAY_WIDTH_M / 2 * MODEL_SCALE;
+  const nx = -uz * half, nz = ux * half;
+  const sx = a[0] - ux * extend, sz = a[1] - uz * extend, ex = b[0] + ux * extend, ez = b[1] + uz * extend;
+  const metres = (length + 2 * extend) / MODEL_SCALE;
+  const corners: [number, number, number, number][] = [
+    [sx - nx, sz - nz, -1, 0], [sx + nx, sz + nz, 1, 0], [ex + nx, ez + nz, 1, metres], [ex - nx, ez - nz, -1, metres],
+  ];
+  for (const triangle of [[0, 1, 2], [0, 2, 3]]) {
+    const [p, q, r] = triangle.map(i => corners[i]);
+    // Same orientation test as cap(), which keeps a positive value for upward faces.
+    const up = (q[1] - p[1]) * (r[0] - p[0]) - (q[0] - p[0]) * (r[1] - p[1]) > 0;
+    for (const c of up ? [p, q, r] : [p, r, q]) {
+      target.push(c[0], 0.04, c[1]);
+      road.push(c[2], c[3], metres);
+    }
+  }
+}
+
 function walls(target: number[], rings: PlanPoint[][], bottom: number, top: number, attributes: SurfaceAttributes, identity: SurfaceIdentity): void {
   for (const ring of rings) for (let i = 0; i < ring.length; i++) {
     const a = ring[i], b = ring[(i + 1) % ring.length];
@@ -114,6 +147,7 @@ export function createMappedGeometryBuilder(snapshot: MapSnapshot, origin: Proje
   const proposals = proposalFootprints(buildings);
   const positions: Record<MapBatchKind, number[]> = { walls: [], roofs: [], footprints: [], water: [], parks: [], roads: [] };
   const attributes: Record<"walls" | "roofs", SurfaceAttributes> = { walls: { facade: [], building: [] }, roofs: { facade: [], building: [] } };
+  let road: number[] = [];
   let index = 0, buildingPolygons = 0, hiddenBuildingPolygons = 0, unknownHeightFootprints = 0;
 
   function add(feature: MapFeature) {
@@ -121,7 +155,7 @@ export function createMappedGeometryBuilder(snapshot: MapSnapshot, origin: Proje
       const lines = feature.geometry.type === "LineString" ? [feature.geometry.coordinates] : feature.geometry.type === "MultiLineString" ? feature.geometry.coordinates : [];
       for (const line of lines) for (let i = 1; i < line.length; i++) {
         const a = geographicToWorld(line[i - 1], origin), b = geographicToWorld(line[i], origin);
-        positions.roads.push(a[0], 0.04, a[1], b[0], 0.04, b[1]);
+        streetRibbon(positions.roads, road, a, b);
       }
       return;
     }
@@ -171,7 +205,11 @@ export function createMappedGeometryBuilder(snapshot: MapSnapshot, origin: Proje
           attributes[kind].facade = [];
           attributes[kind].building = [];
         }
-        if (kind !== "roads") geometry.computeVertexNormals();
+        if (kind === "roads") {
+          geometry.setAttribute("auraRoad", new THREE.Float32BufferAttribute(road, 3));
+          road = [];
+        }
+        geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
         positions[kind] = [];

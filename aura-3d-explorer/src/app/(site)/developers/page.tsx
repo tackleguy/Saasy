@@ -1,39 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Check } from "lucide-react";
 import DemoRequestForm from "@/components/developers/DemoRequestForm";
 import SectionHeading from "@/components/site/SectionHeading";
 
 export const metadata: Metadata = {
   title: "For Developers",
-  description: "How AURA works for real estate developers: live 3D marketing, stacking plans and a developer-grade pro forma — for a 1% success fee.",
+  description: "Early access for real estate developers: your project on its real site in live 3D, with a stacking plan, a pro forma and branded share links.",
 };
 
 const STEPS = [
-  { n: "01", title: "Send massing or CAD", body: "Drop an STL, DXF or DWG — or give us floor counts and plate sizes. We build the procedural model and interiors." },
-  { n: "02", title: "Underwrite in the Studio", body: "Tune land, hard and soft costs, financing and zone pricing. See IRR, profit on cost and residual land value update live." },
-  { n: "03", title: "Launch the project page", body: "A shareable page with renders, the live 3D model, walk-throughs, a stacking plan and enquiry capture." },
-  { n: "04", title: "Sell, then pay", body: "Our fee is 1% of gross revenue on units that sell. No retainer, no licence, no setup fee." },
+  { n: "01", title: "Enter the address", body: "Search your site's address. AURA places the scheme on its real footprint with the surrounding buildings, streets and water from OpenStreetMap and Overture map data.", image: "/developers/step-1-address.jpg", alt: "The AURA project editor with a project placed at 200 Hudson Street, Jersey City, among the mapped surrounding buildings" },
+  { n: "02", title: "Shape the massing or upload your model", body: "Set floors, plate sizes, shape, twist and taper per building, or upload your own GLB, STL or DXF. The pro forma recalculates as you go.", image: "/developers/step-2-massing.jpg", alt: "The massing editor beside the live 3D model and the development appraisal" },
+  { n: "03", title: "Send a live link", body: "Create a share link with your logo: the 3D model, renders, key facts and availability. Add a password or an expiry, and choose whether to share the pro forma.", image: "/developers/step-3-link.jpg", alt: "A company-branded share link opened in a private browser window, with key facts and the live 3D model" },
 ];
 
 const INCLUDED = [
-  "Procedural 3D model of every building and floor",
+  "Live 3D model of every building on its real site",
+  "Your own model (GLB, STL, DXF) or editable massing",
   "Furnished interiors and first-person walk-throughs",
   "Developer pro forma with IRR and sensitivities",
   "Stacking plan, unit sheets and enquiry capture",
-  "Photo-angle presets and 2× render capture",
-  "Saved scenarios and PDF pro-forma export",
+  "Branded share links with passwords and expiry",
+  "PDF and Excel pro forma exports",
+  "2× stills saved to the project gallery",
 ];
 
 const FAQ = [
   {
     q: "What exactly is the 1% success fee?",
-    a: "1% of gross revenue from units that actually sell or lease through the marketing period. If nothing sells, you pay nothing. Compared with a typical 5% sales-and-marketing load it leaves more of the upside with the developer.",
+    a: "1% of gross revenue from units that actually sell or lease through the marketing period. If nothing sells, you pay nothing. Compared with a typical 5% sales-and-marketing load it leaves more of the upside with the developer. There is no billing in the product today; terms are agreed with each early-access developer.",
   },
-  { q: "Do I need a finished BIM model?", a: "No. Early massing is enough — floor counts and plate sizes per zone. CAD files (STL, DXF, DWG) can be ingested to speed things up." },
-  { q: "Can I use my own renders?", a: "Yes. Project pages show your renders in the hero carousel alongside the live model. Drop them in and they replace the placeholders." },
-  { q: "Are the figures on this site real?", a: "No. All sample projects, names and numbers are illustrative placeholders. Nothing here is investment or valuation advice." },
-  { q: "Does it work on phones?", a: "Yes. The 3D viewport adapts its quality automatically, and the Studio stacks into a single column on small screens." },
+  { q: "Do I need a finished BIM model?", a: "No. Early massing is enough: floor counts and plate sizes per zone. If you have a model, upload it as GLB, STL or DXF (up to 50 MB) and it replaces the generated tower." },
+  { q: "How accurate are the surroundings?", a: "Building footprints, streets, parks and water come from OpenStreetMap and Overture map data. Heights are mapped heights or estimated from floor counts; buildings with neither are flat footprints. Facades, roofs and street furniture are illustrative." },
+  { q: "Can I use my own renders?", a: "Yes. Upload up to three images per project, or save stills from the live model. They appear on the project page and its share links." },
+  { q: "Who can see my projects?", a: "Only members of your company, plus anyone you send a share link to. Links can carry a password and an expiry and can be revoked at any time; revoking takes effect immediately." },
+  { q: "Are the sample projects on this site real?", a: "No. The portfolio's projects, names and numbers are illustrative samples. Nothing here is investment or valuation advice." },
 ];
 
 export default function DevelopersPage() {
@@ -41,19 +44,20 @@ export default function DevelopersPage() {
     <>
       <section className="shell grid gap-8 pb-20 pt-12 sm:pb-28 sm:pt-20 lg:grid-cols-12 lg:items-end">
         <h1 className="font-serif text-display-xl text-ink lg:col-span-8">
-          <span className="rise-line"><span>Market, explore and</span></span>
-          <span className="rise-line"><span style={{ animationDelay: "90ms" }}>underwrite <em className="italic text-oak">every</em> project.</span></span>
+          <span className="rise-line"><span>Your address, your massing,</span></span>
+          <span className="rise-line"><span style={{ animationDelay: "90ms" }}>a <em className="italic text-oak">live</em> link.</span></span>
         </h1>
         <div className="fade-in lg:col-span-4 lg:pb-2" style={{ animationDelay: "250ms" }}>
+          <p className="caption mb-3 uppercase tracking-[0.18em] text-oak">Early access</p>
           <p className="max-w-md text-[17px] leading-relaxed text-ink/80">
-            One live model carries the renders, the pro forma and the sales desk. You pay 1% of gross revenue, only on units that sell.
+            Put your own project into a live 3D presentation on its real site, with a stacking plan and a pro forma you can hand to investors, lenders and buyers.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Link href="#demo" className="btn-primary btn-lg">
-              Request a demo
+              Request early access
             </Link>
-            <Link href="/studio" className="btn-secondary btn-lg">
-              Try the Studio
+            <Link href="/sign-in" className="btn-secondary btn-lg">
+              Sign in
             </Link>
           </div>
         </div>
@@ -63,14 +67,19 @@ export default function DevelopersPage() {
       <section aria-labelledby="how">
         <div className="shell pb-20 sm:pb-28">
           <SectionHeading id="how" title="How it works">
-            Four steps from massing study to sold-out launch. You can start with nothing more than floor counts.
+            Three steps from an address to a link you can send. Screens below are from AURA itself.
           </SectionHeading>
-          <ol className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          <ol className="mt-14 space-y-16">
             {STEPS.map((s) => (
-              <li key={s.n} className="border-t border-plaster pt-5">
-                <span className="font-serif text-[40px] leading-none tabular-nums text-oak">{s.n}</span>
-                <h3 className="mt-4 font-serif text-[26px] leading-tight text-ink">{s.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-ash">{s.body}</p>
+              <li key={s.n} className="grid gap-6 border-t border-plaster pt-6 lg:grid-cols-12 lg:gap-10">
+                <div className="lg:col-span-4">
+                  <span className="font-serif text-[40px] leading-none tabular-nums text-oak">{s.n}</span>
+                  <h3 className="mt-4 font-serif text-[30px] leading-tight text-ink">{s.title}</h3>
+                  <p className="mt-3 text-[15px] leading-relaxed text-ash">{s.body}</p>
+                </div>
+                <div className="relative aspect-[16/10] overflow-hidden border border-plaster bg-stone lg:col-span-8">
+                  <Image src={s.image} alt={s.alt} fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover object-top" />
+                </div>
               </li>
             ))}
           </ol>
@@ -105,26 +114,6 @@ export default function DevelopersPage() {
         </div>
       </section>
 
-      {/* Testimonials — clearly labelled placeholders */}
-      <section aria-labelledby="testimonials">
-        <div className="shell py-20 sm:py-28">
-          <div className="flex flex-wrap items-end justify-between gap-2">
-            <h2 id="testimonials" className="font-serif text-display-md text-ink">
-              What developers say
-            </h2>
-            <p className="caption">Placeholder testimonials — replace with real, attributed quotes before launch.</p>
-          </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {[1, 2, 3].map((n) => (
-              <figure key={n} className="panel p-6">
-                <blockquote className="font-serif text-xl leading-snug text-ink">“Placeholder quote about faster approvals, clearer investor conversations or better sales velocity.”</blockquote>
-                <figcaption className="caption mt-4">Placeholder name · Placeholder Developments</figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
       <section aria-labelledby="faq">
         <div className="shell grid gap-10 py-20 sm:py-28 lg:grid-cols-[1fr_2fr]">
@@ -152,9 +141,9 @@ export default function DevelopersPage() {
         <div className="shell grid gap-10 py-20 sm:py-28 lg:grid-cols-[1fr_1.4fr]">
           <div>
             <h2 id="demo-title" className="font-serif text-display-md text-ink">
-              Request a demo
+              Request early access
             </h2>
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ash">See your own project in AURA. We&apos;ll set up a walkthrough with your massing and numbers.</p>
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ash">Tell us about your next project. We will reply by email to set up your company and bring your first project in with you.</p>
           </div>
           <DemoRequestForm />
         </div>

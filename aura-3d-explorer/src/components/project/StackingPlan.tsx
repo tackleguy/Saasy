@@ -13,104 +13,13 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import clsx from "clsx";
 import type { Building, FloorYield, ProjectStatus, YieldMetrics } from "@/types";
-import { UNIT_MIX, ZONES } from "@/lib/tower";
+import { ZONES } from "@/lib/tower";
 import { fmtMoney, fmtNum } from "@/lib/format";
 import { AMENITY_ACCENT, amenityName } from "@/lib/amenities";
 import AmenityIcon from "@/components/ui/AmenityIcon";
 
-export type UnitStatus = "Available" | "Reserved" | "Sold";
-
-export interface UnitInfo {
-  code: string;
-  floorIndex: number;
-  floorNumber: number;
-  unitIndex: number;
-  zone: FloorYield["zone"];
-  sqFt: number;
-  price: number;
-  status: UnitStatus;
-  orientation: string;
-  view: string;
-  /** Bedrooms / bathrooms for residences and the penthouse. */
-  beds?: number;
-  baths?: number;
-  /** Floor numbers the unit spans (the penthouse covers every crown floor). */
-  levels?: [number, number];
-}
-
-const MAX_PER_ROW = 8;
-
-/** Share of units sold / reserved by project status (sample data). */
-const MIX: Record<ProjectStatus, { sold: number; reserved: number }> = {
-  Concept: { sold: 0, reserved: 0.05 },
-  Approved: { sold: 0.12, reserved: 0.12 },
-  "Under Construction": { sold: 0.35, reserved: 0.15 },
-  Selling: { sold: 0.48, reserved: 0.14 },
-};
-
-/** Small deterministic hash → [0, 1). */
-function hash01(s: string) {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
-  return ((h >>> 0) % 10000) / 10000;
-}
-
-const ORIENTATIONS = ["North", "East", "South", "West"];
-
-export function buildUnits(slug: string, status: ProjectStatus, building: Building, metrics: YieldMetrics): UnitInfo[][] {
-  const mix = MIX[status];
-  const prefix = building.short.slice(0, 3).toUpperCase();
-
-  // The whole crown is ONE penthouse: every crown row shows the same unit.
-  const crown = building.floors.filter((f) => f.zone === "crown");
-  const phStatus = (() => {
-    const r = hash01(`${slug}:${building.id}:penthouse`) * 0.85;
-    return r < mix.sold ? "Sold" : r < mix.sold + mix.reserved ? "Reserved" : "Available";
-  })() as UnitStatus;
-  const penthouse: UnitInfo | null = crown.length
-    ? {
-        code: `${prefix}-PH`,
-        floorIndex: crown[0].index,
-        floorNumber: crown[0].number,
-        unitIndex: 0,
-        zone: "crown",
-        sqFt: crown.reduce((s, f) => s + metrics.floors[f.index].sqFt, 0),
-        price: crown.reduce((s, f) => s + metrics.floors[f.index].revenue, 0),
-        status: phStatus,
-        orientation: "All four",
-        view: "360° skyline & water",
-        beds: UNIT_MIX.penthouse.beds,
-        baths: UNIT_MIX.penthouse.baths,
-        levels: [crown[0].number, crown[crown.length - 1].number],
-      }
-    : null;
-
-  return building.floors.map((f) => {
-    // Shared amenity floors are not sold: no unit cells (the row shows an amenity band).
-    if (f.amenity) return [];
-    if (f.zone === "crown" && penthouse) return [penthouse];
-    const fy = metrics.floors[f.index];
-    const count = Math.max(1, Math.min(MAX_PER_ROW, fy.units));
-    return Array.from({ length: count }, (_, u) => {
-      // Higher floors sell first.
-      const r = hash01(`${slug}:${building.id}:${f.index}:${u}`) * (1.15 - (f.index / building.floors.length) * 0.3);
-      const st: UnitStatus = r < mix.sold ? "Sold" : r < mix.sold + mix.reserved ? "Reserved" : "Available";
-      return {
-        code: `${prefix}-${String(f.number).padStart(2, "0")}${String(u + 1).padStart(2, "0")}`,
-        floorIndex: f.index,
-        floorNumber: f.number,
-        unitIndex: u,
-        zone: f.zone,
-        sqFt: fy.sqFt / count,
-        price: fy.revenue / count,
-        status: st,
-        orientation: ORIENTATIONS[u % 4],
-        view: f.index > building.floors.length * 0.55 ? "Skyline & water" : f.zone === "podium" ? "Street & plaza" : "City & park",
-        ...(f.zone === "residential" ? { beds: UNIT_MIX.residential.beds, baths: UNIT_MIX.residential.baths } : {}),
-      };
-    });
-  });
-}
+import { buildUnits, type UnitInfo, type UnitStatus } from "@/lib/stackingUnits";
+export { buildUnits, type UnitInfo, type UnitStatus } from "@/lib/stackingUnits";
 
 const CELL: Record<UnitStatus, string> = {
   Available: "border-ink/40 bg-paper text-ink hover:bg-stone",
@@ -127,10 +36,14 @@ interface Props {
   onShowFloor: (floorIndex: number) => void;
   /** Prefill the enquiry form with a unit. */
   onEnquire: (unit: UnitInfo) => void;
+  /** Guide prices come from the pro forma; share links without financials hide them. */
+  showPrices?: boolean;
+  /** Sample projects show illustrative availability; customer projects list every unit as available. */
+  sample?: boolean;
 }
 
-export default function StackingPlan({ slug, status, building, metrics, onShowFloor, onEnquire }: Props) {
-  const rows = useMemo(() => buildUnits(slug, status, building, metrics), [slug, status, building, metrics]);
+export default function StackingPlan({ slug, status, building, metrics, onShowFloor, onEnquire, showPrices = true, sample = true }: Props) {
+  const rows = useMemo(() => buildUnits(slug, status, building, metrics, sample ? "sample" : "none"), [slug, status, building, metrics, sample]);
   const [unit, setUnit] = useState<UnitInfo | null>(null);
 
   const counts = useMemo(() => {
@@ -150,7 +63,7 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
             {k} <span className="tabular-nums text-ash">{counts[k]}</span>
           </span>
         ))}
-        <span className="ml-auto text-xs text-ash">Sample availability · {building.name}</span>
+        <span className="ml-auto text-xs text-ash">{sample ? "Sample availability" : "Unit status tracking is not connected yet: all units listed as available"} · {building.name}</span>
       </div>
 
       <div className="thin-scroll max-h-[560px] overflow-y-auto border-y border-plaster">
@@ -233,14 +146,14 @@ export default function StackingPlan({ slug, status, building, metrics, onShowFl
                     <X size={18} />
                   </Dialog.Close>
                 </div>
-                <Dialog.Description className="caption mt-1">Sample unit sheet — figures derived from the current pro forma.</Dialog.Description>
+                <Dialog.Description className="caption mt-1">{sample ? "Sample unit sheet — figures derived from the current pro forma." : "Unit sheet — area from the massing; guide price from the project's pro forma."}</Dialog.Description>
                 <dl className="mt-4 grid grid-cols-2 border-t border-plaster text-sm">
                   {[
                     ["Status", unit.status],
                     ["Floor", unit.levels && unit.levels[0] !== unit.levels[1] ? `F${unit.levels[0]}–F${unit.levels[1]}` : `F${unit.floorNumber}`],
                     ...(unit.beds ? [["Bedrooms / baths", `${unit.beds} bed / ${unit.baths} bath`]] : []),
                     ["Area", `${fmtNum(unit.sqFt)} sf`],
-                    ["Guide price", fmtMoney(unit.price)],
+                    ...(showPrices ? [["Guide price", fmtMoney(unit.price)] as [string, string]] : []),
                     ["Orientation", unit.orientation],
                     ["View", unit.view],
                   ].map(([k, v]) => (

@@ -1,20 +1,24 @@
 /**
- * /api/assistant — AURA, the local AI assistant.
+ * /api/assistant — AURA, the AI assistant.
  * -----------------------------------------------------------------------------
  * POST { messages: {role, content}[], context?: object }
  *   → text/plain stream of the model's reply (tokens as they arrive).
  * GET
- *   → { online, provider, model } health check.
+ *   → { online, provider, model, setup } health check. `setup` is "hosted" on a
+ *     Vercel deployment, where no local model exists: visitors then see a neutral
+ *     unavailable message instead of Ollama instructions.
  *
  * Runs against a LOCAL model — nothing leaves the machine:
  *   1. Ollama         OLLAMA_URL     (default http://127.0.0.1:11434), model AURA_AI_MODEL (default llama3.2:latest)
  *   2. LM Studio      LMSTUDIO_URL   (default http://127.0.0.1:1234), OpenAI-compatible; model LMSTUDIO_MODEL
  *                     (default: the first model the server lists)
  *
+ * Every request is same-origin checked and rate limited per IP (src/lib/apiGuard.ts).
  * Needs a Node server (`next dev` / `next start`). A `STATIC_EXPORT=1` build
- * has no API routes; the client then shows the "Local AI offline" state.
+ * has no API routes; the client then shows the offline state.
  */
 import { NextResponse } from "next/server";
+import { guardRequest } from "@/lib/apiGuard";
 import { readJsonObject, RequestBodyError } from "@/lib/requestBody";
 
 export const runtime = "nodejs";
@@ -23,6 +27,12 @@ export const dynamic = "force-dynamic";
 const OLLAMA_URL = (process.env.OLLAMA_URL ?? "http://127.0.0.1:11434").replace(/\/$/, "");
 const LMSTUDIO_URL = (process.env.LMSTUDIO_URL ?? "http://127.0.0.1:1234").replace(/\/$/, "");
 const MODEL = process.env.AURA_AI_MODEL ?? "llama3.2:latest";
+/** Local-model setup hints only make sense on a machine that can run one (not a Vercel deployment). */
+const LOCAL_SETUP = process.env.VERCEL !== "1" || process.env.AURA_LOCAL_AI === "1";
+
+/** 20 messages per IP per 10 minutes; health checks are cheap but still bounded. */
+const CHAT_LIMIT = { limit: Number(process.env.AURA_ASSISTANT_RATE_LIMIT ?? 20), windowMs: 10 * 60_000 };
+const HEALTH_LIMIT = { limit: 60, windowMs: 60_000 };
 
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_CHARS = 2_000;
@@ -216,24 +226,32 @@ function streamResponse(stream: ReadableStream<Uint8Array>, provider: Provider, 
 
 const offline = () =>
   NextResponse.json(
-    {
-      error: "Local AI offline",
-      hint: `Start Ollama with \`ollama serve\` and \`ollama pull ${MODEL}\` (or start LM Studio's local server on ${LMSTUDIO_URL}).`,
-    },
+    LOCAL_SETUP
+      ? {
+          error: "Local AI offline",
+          hint: `Start Ollama with \`ollama serve\` and \`ollama pull ${MODEL}\` (or LM Studio's local server on ${LMSTUDIO_URL}).`,
+        }
+      : { error: "The AURA assistant is not available right now." },
     { status: 503 }
   );
 
 /* ------------------------------------------------------------------ routes */
 
-export async function GET() {
+export async function GET(req: Request) {
+  const blocked = guardRequest(req, "assistant-health", HEALTH_LIMIT, { requireOrigin: false });
+  if (blocked) return blocked;
+  const setup = LOCAL_SETUP ? "local" : "hosted";
+  if (!LOCAL_SETUP) return NextResponse.json({ online: false, provider: null, model: null, setup });
   const o = await ollamaHealth();
-  if (o.online) return NextResponse.json({ online: true, provider: "ollama", model: MODEL, modelInstalled: o.hasModel });
+  if (o.online) return NextResponse.json({ online: true, provider: "ollama", model: MODEL, modelInstalled: o.hasModel, setup });
   const lm = await lmStudioModel();
-  if (lm) return NextResponse.json({ online: true, provider: "lmstudio", model: lm });
-  return NextResponse.json({ online: false, provider: null, model: null });
+  if (lm) return NextResponse.json({ online: true, provider: "lmstudio", model: lm, setup });
+  return NextResponse.json({ online: false, provider: null, model: null, setup });
 }
 
 export async function POST(req: Request) {
+  const blocked = guardRequest(req, "assistant", CHAT_LIMIT);
+  if (blocked) return blocked;
   let body: { messages?: unknown; context?: unknown };
   try {
     body = await readJsonObject(req, 64_000);
@@ -245,6 +263,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Send at least one user message" }, { status: 400 });
   }
   const messages: ChatMessage[] = [{ role: "system", content: buildSystem(body.context) }, ...history];
+
+  if (!LOCAL_SETUP) return offline();
 
   // 1. Ollama
   try {

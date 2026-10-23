@@ -9,6 +9,7 @@ import type { ProjectLocation } from "@/lib/geographicContext";
 import { ACCEPTED, makeSampleStl, parseCadFile, type CadReport } from "@/lib/cadParser";
 import { applyArchMaterials, normalizeImport } from "@/lib/importNormalize";
 import { MODEL_PARTS, reviewModel, disposeModel, type ModelReview } from "@/lib/modelReview";
+import type { StoredModelSettings } from "@/lib/storedModel";
 import SiteAddressFields from "./SiteAddressFields";
 const ImportPreview = dynamic(() => import("@/components/3d/ImportPreview"), { ssr: false });
 // Kept for clients which expose the import stages in their own UI.
@@ -19,10 +20,12 @@ export const INGESTION_STAGES = [
 interface Props {
   open: boolean; onOpenChange: (open: boolean) => void; inputs: YieldInputs; building: Building;
   location?: ProjectLocation; onLocation?: (v: ProjectLocation) => boolean;
-  onComplete: (model: Object3D | null) => void;
+  /** The placed model, plus the original file and the review settings needed to rebuild it later. */
+  onComplete: (model: Object3D | null, source?: { file: File; settings: StoredModelSettings }) => void;
 }
 export default function CadUploadModal({ open, onOpenChange, onComplete, location: initialLocation, onLocation }: Props) {
   const [source, setSource] = useState<CadReport | null>(null);
+  const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [review, setReview] = useState<ModelReview | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -52,7 +55,7 @@ export default function CadUploadModal({ open, onOpenChange, onComplete, locatio
       if (id !== run.current) { if (report.model) disposeModel(report.model); return; }
       if (!report.model) throw new Error("This file contains no readable 3D geometry. Export the model as GLB, FBX, OBJ, STL, or 3D DXF.");
       const audit = reviewModel(report.model);
-      setReview(audit); setSource(report);
+      setReview(audit); setSource(report); setSourceFile(file);
       setUnit(report.metresPerUnit ?? 1);
       const suggested = audit.errors.length ? "Y" : normalizeImport(report.model.clone(true), { upHint: report.upHint === "y" ? "y" : "auto", metresPerUnit: report.metresPerUnit ?? 1 }).report.upAxis;
       setAxis(suggested === "Z" ? "z" : "y");
@@ -68,7 +71,7 @@ export default function CadUploadModal({ open, onOpenChange, onComplete, locatio
     model.userData = { ...model.userData, fileName: source?.fileName, review, normalization: prepared.report, materials, location,
       heading, reviewedAt: new Date().toISOString(), heightUnits: prepared.report.heightUnits };
     transferred.current = source!.model!;
-    onComplete(model);
+    onComplete(model, sourceFile ? { file: sourceFile, settings: { fileName: sourceFile.name, metresPerUnit: unit, upAxis: axis, heading } } : undefined);
   }
   const control = "w-full rounded border border-plaster bg-paper px-3 py-2 text-sm text-ink focus-visible:ring-2 focus-visible:ring-oak";
   return <Dialog.Root open={open} onOpenChange={onOpenChange}><Dialog.Portal>

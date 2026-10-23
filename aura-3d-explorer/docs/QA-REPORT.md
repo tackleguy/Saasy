@@ -336,3 +336,63 @@ All14 areas load every manifest tile in Chrome; captured near and whole views sh
 
 - **Medium — controls obscure the full-area boundary on desktop:** the independent review of all14 overview screenshots and four responsive sizes confirms that a raw viewport fit lets the lower corner sit behind the presentation bar at1280/1440/1920 widths. Evidence retained in `qa/downtown/before-safe-area`. Targeted correction: calculate the city fit using presentation-safe vertical space, with projected-bounds tests; no unrelated styling changes. Phone390 and tablet768 views already clear the controls.
 - This is a functional coverage-visibility correction found during confirmation, not a new visual redesign. Final screenshots will confirm the corrected safe-area fit.
+
+## Overnight product pass — 2026-10-23
+
+Branch `feat/product-pass-2026-10-23`. Baseline before changes: TypeScript pass, 131/131 tests, production build pass (`qa/overnight-baseline.txt`).
+
+### QA-031 P0 — the assistant tells website visitors to run Ollama (found before fix)
+
+`/api/assistant` only calls Ollama/LM Studio on `127.0.0.1`. On Vercel neither exists, so every visitor saw "Local AI offline — run ollama serve". Both inference endpoints (`/api/assistant`, `/api/engine`) also lacked origin checks and rate limits (open part of QA-004).
+
+**Owner decision:** keep the assistant local-only for now (no hosted provider). **Fix:** on a Vercel deployment the panel shows "The assistant is not available on this site yet" and the route skips localhost probes; local `next dev`/`next start` behave as before. New `src/lib/apiGuard.ts`: same-origin check (Origin + Sec-Fetch-Site) and per-IP fixed-window limits on both endpoints; existing 12-message / 2,000-character / 64 KB caps kept.
+
+**Evidence:** `scripts/qa/api-guard.test.ts` (5 tests): same-origin rules; limiter window/reset; a mocked Ollama stream is relayed verbatim with its `[[action:…]]` line, system context attached, history ≤12 messages of ≤2,000 chars; cross-site POST → 403; 4th message from one IP → 429 with `Retry-After` while another IP gets 200; cross-site `/api/engine` upload → 403.
+
+**Open:** the assistant does nothing on the public site until a hosted provider is chosen (D-01).
+
+### QA-032 P0 — the live Vercel site is switched off
+
+`https://saasy-mocha.vercel.app` returns **HTTP 402 `DEPLOYMENT_DISABLED`** for every page and for all 576 map/model/HDR files (`docs/qa/overnight/asset-check-live.json`). This is a Vercel account/billing state, not a code problem, and cannot be fixed from the repository. The same 576 files return 200 with `Cache-Control: public, max-age=31536000, immutable` on a local production build (`asset-check-local.json`). **Open:** re-enable the deployment in Vercel, then re-run `QA_URL=<live url> node scripts/qa/asset-check.mjs`.
+
+### QA-033 P1 — 3D first frame far slower than the 2 s goal (improved, not met)
+
+Home page, 4× CPU throttle, software (SwiftShader) WebGL on a GPU-less build machine, median of 3 runs: **21.6 s → 12.4 s** to the first rendered 3D frame (`first-frame-before.json`, `first-frame-final.json`). The canvas itself appears in ~1.8 s. Changes: post-processing, walk controls, CAD import, architect layer, floor inspector, walk HUD and the Recharts chart load on demand; the hero starts on the Medium tier; the scene starts in stages (tower and ground first, surroundings once the browser is idle); the street-tree planner went from 3–6 s to ~0.1 s. Two attempts made things worse and were reverted (a synchronous tower bake, a stand-in environment map; 17–18 s). Home-page JavaScript on first load roughly halved (≈2.0 MB → ≈1.0 MB); total home-page bytes in Lighthouse 6.36 MB → 3.26 MB. **Open:** the goal needs measuring on a real mid-range laptop GPU; software rendering on this machine dominates the number.
+
+### QA-034 P1 — draw calls above the Medium-tier target
+
+Measured at 1280 × 800 on `/render/meridian-tower`, default camera: **Medium 214, High 174, Low 135 draw calls per frame** (target < 60 on Medium). Renderer resources are stable: five High↔Low cycles keep 799 / 795 geometries and 59 / 26 textures (`renderer-soak.json`, PASS). Street paving, carriageways and trees are batched (one mesh per material; trees are instanced), but each mapped building batch, water, park and the tower's own floors are separate. See `renderer-soak.json` for the measured per-tier numbers. Most calls come from the towers' per-floor meshes (by scene-graph count, the four towers hold far more visible meshes than everything else); the mapped city, streets and trees are already batched or instanced. **Open:** merging tower floors per material is the largest remaining win and is a larger refactor than was safe overnight.
+
+### QA-035 P2 — `THREE.Clock` deprecation warning
+
+Comes from `@react-three/fiber` 9.8.2 itself (latest stable). Not suppressed; see D-05.
+
+### QA-036 P1 — three sample projects reused another project's photos (fixed)
+
+`aurelia-tower`, `hexa-gardens` and `lexington-deco` pointed at other projects' hero images. Each now has its own three images photographed from its live 3D scene (aerial, drone, interior) and its own alt text.
+
+### QA-037 P0 — enquiry and early-access forms did not deliver anywhere (fixed)
+
+New `/api/enquiries`: validated, same-origin, rate-limited, honeypot field; stored in Supabase `enquiries` and emailed via Resend when configured. The visitor sees exactly what happened (stored / emailed / not connected); no false "sent". Evidence: `scripts/qa/enquiries.test.ts`, browser regression updated. **Open:** not tested with a real Resend key.
+
+### QA-038 — finance reconciliation
+
+`scripts/qa/finance-reconciliation.test.ts` (5 tests, on The Meridian Tower): the sidebar and the printed pro forma show identical site and building figures; chart totals reconcile (costs + profit = GDV; zones sum to GDV); the sensitivity table's centre cell equals the sidebar's profit on cost; stacking-plan units add up to the building's saleable area and GDV; zero units sold keeps every surface finite and consistent. **Open:** the same reconciliation is not yet run for the other ten samples.
+
+### QA-039 — accounts, projects and share links (Supabase)
+
+- Row-level security: `scripts/qa/supabase-rls.test.ts` (8 checks against a throwaway Postgres with the real migrations): each company sees only its own company, members and projects; a member cannot update or delete another company's projects, company record or share links; stored files are confined to the company's folder; enquiries are visible to the receiving company only; anonymous visitors only see public samples; a share token resolves only while active, unexpired and with the right password. Output: `docs/qa/overnight/supabase-rls.txt`.
+- End-to-end, keyboard only, against local Supabase (`customer-flow/`, 11 steps, PASS): magic-link sign-in → company → project → details → real address → massing with a second building → scenario saved to the database → PDF and XLSX → share link without financials → private window sees the project and no finance data in the page → revoke → private window gets 404.
+- Second flow (`customer-flow-2/`, 9 steps, PASS): branded company → address outside the bundled map areas → load surroundings (mock Overpass, see D-15) → upload an STL model → reload keeps model and surroundings → save a 2× still and use it as a project image → password link that shares financials → private window: password gate, branded page, appraisal, Excel export → another company is refused.
+
+### QA-040 — accessibility matrix
+
+`scripts/qa/axe-matrix.mjs`: axe-core WCAG 2.0/2.1 A + AA on 8 public routes × 390/768/1280/1920 px, Studio states (floor selected, exploded, walk-through, scenario drawer, CAD modal), assistant panel, presentation mode, enquiry error, sign-in, dashboard, branding settings, project editor with every section open, present page, and a share page in a private window. First run: 3 failing states. Fixed: an interactive floor plan announced as an image containing buttons (`nested-interactive`); brand-coloured buttons with unreadable text on some accents (`color-contrast`; text colour now chosen per accent, tested on all 4,096 short hex colours, and applied to PDF/XLSX accent text too). One contrast hit was measured mid-animation on a sliding segmented control; the matrix now lets animations settle 3 s before measuring. Final results: `docs/qa/overnight/axe/results.json`.
+
+### QA-041 — not testable on this machine
+
+Firefox, WebKit/Safari and Edge are not installed and installing browsers is not allowed here, so the Firefox darkness report (QA-030), the browser matrix and physical iPad/phone checks are **untested**. The live Overpass map service is unreachable from this machine (tested against a mock). Resend was not tested with a real key.
+
+### QA-042 P1 — presentation walk could not be steered or left on a touch screen (fixed)
+
+Presentation mode hid every overlay, so after **W** (or "Walk inside") an iPad user had no movement controls and no way out of the walk except leaving presentation; the bottom panel and title card also covered the walk's controls. Now the walk controls (movement pad, viewpoints, Exit) show while walking and the presentation panel/title step aside; **F / Shift+F** shows a one-line floor label. `scripts/qa/presentation-keys.mjs` passes 9/9 checks at 1920 × 1080 and 1024 × 768 (touch), including a hit-test that the walk controls are not covered. **Open:** a transient "Loading downtown…" notice briefly overlaps the walk title while the city streams in; not tested on a physical iPad.

@@ -12,7 +12,7 @@
  * the plot it was imported onto, and the hero camera frames its real height.
  * Loaded with `next/dynamic({ ssr: false })` because Three.js needs `window`.
  */
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { createPortal } from "react-dom";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -28,26 +28,34 @@ import { CinematicContext, SUN, type SunPreset, type Tier } from "./environment/
 import Telemetry from "./environment/Telemetry";
 import ProceduralBuilding from "./ProceduralBuilding";
 import LightingEnvironment from "./LightingEnvironment";
-import { type SiteEdits } from "./SiteContext";
-import PostEffects from "./PostEffects";
-import WalkControls, { type LiftLink } from "./WalkControls";
-import ImportedModel from "./ImportedModel";
+import type { SiteEdits } from "./SiteContext";
+import type { LiftLink } from "./WalkControls";
 import { PresentationContext, type ModelCut } from "./presentationContext";
 import LibraryModel from "./LibraryModel";
 import MappedContext from "./context/MappedContext";
 import type { DowntownProgress } from "./context/DowntownContext";
 import { useDowntownMap } from "@/hooks/useDowntownMap";
 import MappedSiteDetails from "./context/MappedSiteDetails";
+import MappedCityTrees from "./context/MappedCityTrees";
 import type { MapSnapshot, ProjectLocation } from "@/lib/geographicContext";
 import { ContextModelRecoveryProvider } from "./ContextModelRecovery";
 import { libraryModel } from "@/lib/modelLibrary";
 import { MODEL_SCALE } from "@/lib/tower";
-import ArchitectLayer from "./ArchitectLayer";
 import type { ArchitectSceneState } from "@/lib/architecture";
 import { consumeShadowUpdate, invalidateShadows, SHADOW_SETTLE_MS } from "./staticShadows";
 import { DETAIL_LAYER, RAYCAST_LAYER } from "./layers";
 import { chooseMappedOverviewDirection } from "@/lib/mappedOverview";
 import { downtownCameraPose, downtownFarPlane, downtownNearPlane, downtownWorldBounds, DOWNTOWN_MAX_DISTANCE } from "@/lib/downtownView";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+
+// Loaded only when used: the post-processing stack (postprocessing + n8ao), the
+// first-person walk, CAD imports and Architect tools are separate chunks, so the
+// first frame of the city does not wait for them. Each has its own Suspense
+// boundary so loading one never blanks the scene.
+const PostEffects = lazy(() => import("./PostEffects"));
+const WalkControls = lazy(() => import("./WalkControls"));
+const ImportedModel = lazy(() => import("./ImportedModel"));
+const ArchitectLayer = lazy(() => import("./ArchitectLayer"));
 
 /** Camera offset from a focused floor:  P_camera = P_floor + [8, 4, 8]. */
 export const FOCUS_OFFSET: Vec3 = [8, 4, 8];
@@ -90,6 +98,8 @@ function photoPose(angle: PhotoAngle | "crown", b: Building, explosion: number, 
 }
 
 interface Props {
+  /** Automatic quality tier to start from instead of `quality` (the landing hero starts at Medium). */
+  startTier?: Tier;
   presentation?: boolean;
   presentationSun?: SunPreset;
   modelCut?: ModelCut;
@@ -120,8 +130,8 @@ interface Props {
   onPerformanceDecline?: () => void;
   photoAngle: PhotoAngle | "crown" | null;
   photoNonce: number;
-  /** Receives a function that exports the current view as a 2× PNG. */
-  captureRef?: MutableRefObject<(() => Promise<void>) | null>;
+  /** Receives a function that exports the current view as a 2× PNG (downloaded unless `download: false`). */
+  captureRef?: MutableRefObject<CaptureFn | null>;
   /** Play the eye-level dolly-out opening shot. */
   intro?: boolean;
   /** City backdrop (lib/cityPresets). */
@@ -242,13 +252,16 @@ function GroundClamp() {
  * reads the canvas (preserveDrawingBuffer keeps the last frame readable),
  * downloads it as PNG, then restores the resolution.
  */
-function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Promise<void>) | null> }) {
+/** Capture the current frame at 2× as a watermarked PNG. Resolves with the image (null when busy). */
+export type CaptureFn = (options?: { download?: boolean }) => Promise<Blob | null>;
+
+function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<CaptureFn | null> }) {
   const gl = useThree((s) => s.gl);
   const setDpr = useThree((s) => s.setDpr);
   useEffect(() => {
     let capturing = false;
-    captureRef.current = async () => {
-      if (capturing) return;
+    captureRef.current = async ({ download = true } = {}) => {
+      if (capturing) return null;
       capturing = true;
       const prev = gl.getPixelRatio();
       try {
@@ -268,12 +281,17 @@ function CaptureBridge({ captureRef }: { captureRef: MutableRefObject<(() => Pro
       ctx.font = `${creditSize}px sans-serif`;
       ctx.textAlign = "left"; ctx.fillStyle = "#201f1b";
       ctx.fillText("Map data: © OpenStreetMap contributors · Overture Maps · ODbL / CC BY", 12, canvas.height - creditSize * .6, canvas.width - 24);
-      const url = canvas.toDataURL("image/png");
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
       setDpr(prev);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `aura-render-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.png`;
-      a.click();
+      if (download && blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `aura-render-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.png`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      return blob;
       } finally { setDpr(prev); capturing = false; }
     };
     return () => {
@@ -386,7 +404,30 @@ function IdleOrbit({enabled}:{enabled:boolean}) {
     window.addEventListener("wheel",wake,{passive:true});window.addEventListener("keydown",wake);
     return ()=>{window.removeEventListener("pointerdown",start);window.removeEventListener("pointerup",end);window.removeEventListener("pointercancel",end);window.removeEventListener("wheel",wake);window.removeEventListener("keydown",wake);if(controls)controls.autoRotate=false;};
   },[controls]);
-  useFrame(()=>{if(controls){controls.autoRotate=enabled&&!down.current&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&performance.now()-last.current>20000;controls.autoRotateSpeed=0.12;}});
+  useFrame(()=>{if(controls){controls.autoRotate=enabled&&!down.current&&!prefersReducedMotion()&&performance.now()-last.current>20000;controls.autoRotateSpeed=0.12;}});
+  return null;
+}
+
+/**
+ * Staged start-up. Stage 0 draws sky, ground, light and the proposal: few
+ * shader programs, so the first frame is not held back by compiling all ~50.
+ * Two rendered frames later the mapped city's street dressing and the
+ * post-processing stack mount (stage 1); once the browser is idle the trees,
+ * roof equipment and outer downtown tiles follow (stage 2).
+ */
+function StartupStages({ stage, onStage }: { stage: number; onStage: (stage: number) => void }) {
+  const frames = useRef(0);
+  useFrame(() => {
+    frames.current++;
+    if (stage === 0 && frames.current >= 2) onStage(1);
+  });
+  useEffect(() => {
+    if (stage !== 1) return;
+    const advance = () => onStage(2);
+    const idle = typeof requestIdleCallback === "function" ? requestIdleCallback(advance, { timeout: 2500 }) : null;
+    const timer = idle === null ? setTimeout(advance, 800) : null;
+    return () => { if (idle !== null) cancelIdleCallback(idle); if (timer !== null) clearTimeout(timer); };
+  }, [stage, onStage]);
   return null;
 }
 
@@ -426,6 +467,7 @@ export default function BuildingScene({
   presentation = false,
   presentationSun = "golden",
   modelCut,
+  startTier,
 }: Props) {
   const downtown = useDowntownMap(mapSnapshot?.id);
   const [downtownProgress, setDowntownProgress] = useState<DowntownProgress | null>(null);
@@ -433,6 +475,7 @@ export default function BuildingScene({
   const downtownFailed = !!downtown.error || !!downtownCurrent?.failed;
   const downtownLoading = downtown.loading || !!downtownCurrent?.pending;
   const [loading, setLoading] = useState(true);
+  const [stage, setStage] = useState(0);
   const dockAnchor = useRef<HTMLSpanElement>(null);
   const [dockHost, setDockHost] = useState<HTMLElement | null>(null);
   useEffect(() => {
@@ -444,13 +487,13 @@ export default function BuildingScene({
   });
   useEffect(() => { if (presentation) setTime(presentationSun); }, [presentation, presentationSun]);
   const [override, setOverride] = useState<Tier | "auto">("auto");
-  const [automatic, setAutomatic] = useState<Tier>(quality);
+  const [automatic, setAutomatic] = useState<Tier>(startTier ?? quality);
   const tier = override === "auto" ? automatic : override;
   const [legacy, setLegacy] = useState(false);
   const [localAngle, setLocalAngle] = useState<PhotoAngle | "crown" | null>(null);
   const [localNonce, setLocalNonce] = useState(0);
   useEffect(()=>{setLocalAngle(null);},[photoNonce,resetNonce]);
-  useEffect(()=>{setAutomatic(quality);},[quality]);
+  useEffect(()=>{setAutomatic(startTier ?? quality);},[quality, startTier]);
   const asset = contextModel ? libraryModel(contextModel) : undefined;
   const [hovered, setHovered] = useState<FloorData | null>(null);
   // Ignore frame-rate dips during the first seconds (shader compile, HDR decode).
@@ -516,19 +559,21 @@ export default function BuildingScene({
       <PerformanceMonitor onDecline={handleDecline} />
       <Suspense fallback={<LoadingSignal onChange={setLoading} />} >
       <SceneReady onChange={setLoading} />
+      {stage < 2 && <StartupStages stage={stage} onStage={setStage} />}
       <CameraLayers />
       <Telemetry tier={tier} />
       <StaticShadows
         deps={[buildings, activeBuildingId, explosion, selectedIndex, xray, section, walking, quality, tier, city, location, mapSnapshot, siteEdits, importedModel, lift.ride.nonce, lift.arrival.nonce]}
       />
 
-      <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} extent={Math.max(45,...buildings.map(b=>buildingHeight(b,explosion)+Math.hypot(...b.position)))} />
-      <MappedContext snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} downtown={downtown.manifest} downtownRetry={downtown.tileAttempt} onDowntownProgress={setDowntownProgress} />
-      <MappedSiteDetails snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />
+      <LightingEnvironment quality={quality} preset={preset} sun={architect?.sun ?? null} noFog={drawingView} extent={Math.max(150,...buildings.map(b=>buildingHeight(b,explosion)+Math.hypot(...b.position)))} />
+      <MappedContext snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} details={stage >= 2} downtown={downtown.manifest} downtownRetry={downtown.tileAttempt} onDowntownProgress={setDowntownProgress} />
+      {stage >= 1 && <MappedSiteDetails snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />}
+      {stage >= 2 && <MappedCityTrees snapshot={mapSnapshot} location={location} buildings={contextBuildings} preset={preset} />}
       {asset && asset.category !== "skylines" && <group position={[30, 0, -30]} scale={MODEL_SCALE}>
         <LibraryModel model={asset} />
       </group>}
-      {importedModel && importedBuilding && <ImportedModel object={importedModel} position={importedBuilding.position} cut={modelCut} />}
+      {importedModel && importedBuilding && <Suspense fallback={null}><ImportedModel object={importedModel} position={importedBuilding.position} cut={modelCut} /></Suspense>}
       {buildings.map((b) => {
         if (importedModel) return null;
         const active = b.id === activeBuildingId;
@@ -557,7 +602,7 @@ export default function BuildingScene({
         explosion={explosion}
       />
       {walking && selectedIndex !== null && (
-        <WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} fit={fit} siteContext="mapped" />
+        <Suspense fallback={null}><WalkControls building={building} floor={building.floors[selectedIndex]} explosion={explosion} viewIndex={viewIndex} viewNonce={viewNonce} lift={lift} fit={fit} siteContext="mapped" /></Suspense>
       )}
       <OrbitControls enabled={!walking} enableRotate={!drawingView} makeDefault enableDamping dampingFactor={0.08} minDistance={2} maxDistance={drawingView ? 5000 : DOWNTOWN_MAX_DISTANCE} maxPolarAngle={Math.PI - 0.08} />
       <IdleOrbit enabled={!walking && !drawingView && selectedIndex === null && !cameraHold} />
@@ -578,9 +623,9 @@ export default function BuildingScene({
         heightOverride={importedModel && importedOn === building.id ? (importedModel.userData.heightUnits as number | undefined) : undefined}
         hold={cameraHold}
       />
-      {architect && <ArchitectLayer state={architect} buildings={buildings} building={building} explosion={explosion} />}
+      {architect && <Suspense fallback={null}><ArchitectLayer state={architect} buildings={buildings} building={building} explosion={explosion} /></Suspense>}
       {captureRef && <CaptureBridge captureRef={captureRef} />}
-      {tier !== "low" && <PostEffects focus={high && !presentation ? focus : null} />}
+      {tier !== "low" && stage >= 1 && <Suspense fallback={null}><PostEffects focus={high && !presentation ? focus : null} /></Suspense>}
       </Suspense>
     </Canvas>
     {loading && <PreparingSite />}

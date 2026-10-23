@@ -73,3 +73,7 @@ QA_URL=http://127.0.0.1:3161 node scripts/qa/context-model-recovery-studio.mjs
 The existing full-product launch blockers remain open. This is a focused, verified scenery-recovery fix, not launch certification.
 
 Final review timestamp: 2026-10-02 07:03:36 UTC.
+
+## Follow-up: assistant copy (2026-10-23)
+
+Re-checked during the overnight product pass. `src/components/assistant/context.ts`, `actions.ts` and the `/api/assistant` system prompt no longer claim that a named city loads an authored district or ocean: the prompt describes local Overture map snapshots, and the city action confirms "Selected example map area". A search for "authored district", "every named city" and "ocean" in `src/components/assistant` and `src/app/api/assistant` returns nothing. The assistant panel's offline/"runs on this machine" copy no longer shows Ollama instructions on a Vercel deployment (QA-031).

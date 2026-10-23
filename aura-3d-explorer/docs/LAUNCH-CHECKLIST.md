@@ -1,5 +1,7 @@
 # AURA launch checklist — NOT approved
 
+> **2026-10-23 overnight product pass:** items below were re-checked where evidence exists; nothing was ticked without it. Launch is still **not** approved: the live Vercel deployment is disabled (HTTP 402), the 3D first frame is ~12 s on this machine against a 2 s goal, draw calls are above target, and Firefox/Safari/Edge/physical devices are untested. See QA-032…QA-041.
+
 Date: 2026-10-01 (America/Los_Angeles). This is an evidence checklist, not a launch certificate. The requested zero-finding full pass has **not** occurred. Unchecked items are failures, unavailable coverage, or unfinished verification; none have been waived.
 
 ## Visual
@@ -22,7 +24,7 @@ Date: 2026-10-01 (America/Los_Angeles). This is an evidence checklist, not a lau
 - [ ] Every displayed rounded currency/area figure reconciles across all panels, charts and exports; zero-units-sold edge fully covered.
 
 ## Flows
-- [ ] Sign up → create project → edit massing → save scenario → share → private-window access → reserve → PDF and XLSX, first try.
+- [ ] Sign up → create project → edit massing → save scenario → share → private-window access → reserve → PDF and XLSX, first try. *(2026-10-23: everything except "reserve" passes keyboard-only against local Supabase — `docs/qa/overnight/customer-flow/`. Unit reservation is not built; units show "Available" with "Unit status tracking is not connected yet".)*
 - [x] Scenario save and reload persistence verified.
 - [x] Failed scenario writes show recovery instructions and retain the scenario-name draft.
 - [x] Corrupt scenario storage cannot crash the drawer.
@@ -30,7 +32,7 @@ Date: 2026-10-01 (America/Los_Angeles). This is an evidence checklist, not a lau
 - [ ] Every flow responds within 200ms, survives refresh, and works with keyboard only.
 
 ## Accessibility
-- [ ] Final axe run has zero violations on every page, viewport and interactive state.
+- [ ] Final axe run has zero violations on every page, viewport and interactive state. *(2026-10-23: 46 of 47 combinations clean in Chrome; the one hit was measured mid-animation and re-checks clean in isolation — `docs/qa/overnight/axe/README.md`. Firefox/WebKit not run.)*
 - [ ] All controls have verified screen-reader names and visible keyboard focus.
 - [ ] Reduced motion verified across every animation, including 3D.
 - [ ] Every text color and interactive state meets 4.5:1 contrast.
@@ -53,10 +55,10 @@ Date: 2026-10-01 (America/Los_Angeles). This is an evidence checklist, not a lau
 - [x] npm audit completed with zero known vulnerabilities at the recorded audit time.
 - [x] Malformed API objects return controlled errors (HTTP regression).
 - [x] Production security headers and fresh CSP script nonces verified; injected inline script blocked.
-- [ ] Public inference endpoint authentication/abuse controls verified.
-- [ ] Share-token entropy and access checks verified (share-token system absent).
+- [x] Public inference endpoint authentication/abuse controls verified. *(Same-origin check + per-IP rate limits on `/api/assistant`, `/api/engine`, `/api/enquiries`; `scripts/qa/api-guard.test.ts`. Limits are per server instance — D-02.)*
+- [x] Share-token entropy and access checks verified. *(32 random bytes, only the SHA-256 is stored; expiry, password, revoke, financials toggle — `supabase-rls.test.ts`, both customer flows.)*
 - [ ] Upload execution and all external-resource attack cases verified.
-- [ ] Cross-organization denial regression passes (organization/auth store absent).
+- [x] Cross-organization denial regression passes. *(`supabase-rls.test.ts` 8/8; customer-flow-2 last step: another company is refused.)*
 - [ ] HTTPS deployment headers and static-export host configuration verified.
 
 ## Browsers
@@ -66,6 +68,26 @@ Date: 2026-10-01 (America/Los_Angeles). This is an evidence checklist, not a lau
 - [ ] Complete Edge pixel comparison.
 - [ ] Complete physical iOS Safari pixel comparison.
 - [ ] Complete physical Android Chrome pixel comparison.
+
+## Overnight product pass (2026-10-23)
+- [x] Assistant does not show local-AI setup to website visitors; rate-limited and same-origin (QA-031).
+- [ ] 3D first frame < 2 s at 4× CPU throttle. *(12.4 s median, from 21.6 s; software WebGL — QA-033.)*
+- [ ] Medium tier < 60 draw calls. *(Medium 214, High 174, Low 135 — `renderer-soak.json`, QA-034.)*
+- [x] Renderer resources stable across 5 High↔Low cycles (no geometry/texture growth) — `renderer-soak.json`.
+- [x] WaterReflector disposes its blur geometry; shared reduced-motion helper applied to every animated 3D element.
+- [ ] `THREE.Clock` deprecation warning gone. *(From @react-three/fiber 9.8.2 itself — D-05.)*
+- [ ] Firefox darkness (QA-030) verified fixed. *(Firefox not available here.)*
+- [x] No sample project reuses another's photos (QA-036).
+- [x] Enquiry and early-access forms store to the database and email via Resend, with honest outcomes (QA-037). *(Real Resend key untested.)*
+- [x] Every map/model/HDR file returns 200 with immutable caching on a production build (576/576). *(Live site returns 402 — QA-032.)*
+- [x] Magic-link sign-in, companies, row-level security, projects saved to the database, real address + surroundings, CAD in storage, share links, scenarios in the database, PDF and XLSX exports — two end-to-end flows pass.
+- [ ] Live OpenStreetMap Overpass lookups. *(Tested against a mock only — D-15.)*
+- [x] Presentation keys at 1920 and at iPad size 1024 × 768 (touch emulation in Chrome, not a physical iPad): ← → F Shift+F E W Esc, walk controls usable by touch and not covered — `docs/qa/overnight/presentation/`.
+- [x] White-label: logo, accent (readable text on any colour), `/o/<company>/projects/<id>`, "Powered by AURA".
+- [x] 2× still capture saved to the project gallery (customer-flow-2).
+- [x] Early-access page with real product screenshots, three steps, sign-up form.
+- [ ] Keyboard-only completion of the whole flow. *(Customer flow is keyboard-only except file pickers, which cannot be typed into.)*
+- [ ] Chrome / Firefox / WebKit matrix. *(Chrome only.)*
 
 ## Release gate
 - [x] Findings recorded before fixes in QA-REPORT.md.

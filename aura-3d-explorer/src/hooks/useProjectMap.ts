@@ -41,18 +41,28 @@ export async function fetchProjectMap(id:string,{signal,request=fetch,timeoutMs=
  } finally {clearTimeout(timer);signal.removeEventListener('abort',cancel);}
 }
 
-export function useProjectMap(city:CityId,projectSlug?:string){
+/** A customer project's own site: its saved address pin and, once the owner
+ * loaded them, its OpenStreetMap surroundings. Replaces the browser-stored
+ * example pin; location changes go to `onLocationChange` (the project record). */
+export interface ProjectSiteOverride {
+ location: ProjectLocation | null;
+ snapshot: MapSnapshot | null;
+ onLocationChange?: (location: ProjectLocation) => void;
+}
+
+export function useProjectMap(city:CityId,projectSlug?:string,override?:ProjectSiteOverride){
  const key=`aura:project-location:v1:${projectSlug??'preview'}`;
  const fallback=useMemo(()=>defaultMapLocation(city,projectSlug),[city,projectSlug]);
  const [stored,setStored]=useState<{key:string;location:ProjectLocation}|null>(null);
  const [locationError,setLocationError]=useState('');
- const location=stored?.key===key?stored.location:fallback;
+ const location=override?.location ?? (stored?.key===key?stored.location:fallback);
  const coverage=useMemo(()=>mapCoverage(location),[location]);
  const sourceId=coverage?.id??`site-${location.latitude.toFixed(5)}-${location.longitude.toFixed(5)}`;
  const [loaded,setLoaded]=useState<{id:string;snapshot:MapSnapshot}|null>(null);
  const [failure,setFailure]=useState<{id:string;message:string}|null>(null);
  const [attempt,setAttempt]=useState(0);
  useEffect(()=>{
+  if(override)return;
   // Clear stale in-memory pins even when a different project has no saved value.
   // Accessing localStorage itself may throw when browser storage is disabled.
   let restored:ReturnType<typeof readStoredProjectLocation>;
@@ -61,26 +71,31 @@ export function useProjectMap(city:CityId,projectSlug?:string){
   setStored(restored.location?{key,location:restored.location}:null);
   setLocationError(restored.error);
  },[key]);
+ const onOverride=override?.onLocationChange;
+ const overridden=!!override;
  const setLocation=useCallback((next:ProjectLocation)=>{
   if(!isProjectLocation(next)){setLocationError('Enter a valid latitude and longitude.');return false;}
+  if(overridden){onOverride?.(next);setLocationError('');return true;}
   try {localStorage.setItem(key,JSON.stringify(next));}
   catch {setLocationError('Your browser could not save the location. Free storage or enable site storage, then retry.');return false;}
   setStored({key,location:next});setLocationError('');return true;
- },[key]);
+ },[key,overridden,onOverride]);
  const resetLocation=useCallback(()=>setLocation(defaultMapLocation(city,projectSlug)),[city,projectSlug,setLocation]);
+ const ownSnapshot=override?.snapshot??null;
  useEffect(()=>{
 
   const controller=new AbortController();
   setFailure(null);setLoaded(null);
+  if (ownSnapshot) { setLoaded({id:sourceId,snapshot:ownSnapshot}); return()=>controller.abort(); }
   if (!coverage) {
-   setFailure({id:sourceId,message:'Map data is not installed for this location. Your pin is saved locally. Choose a downloaded map area to preview surroundings.'});
+   setFailure({id:sourceId,message:overridden?'No surroundings are loaded for this address yet. Load them from the Site panel; until then the building stands on neutral ground.':'Map data is not installed for this location. Your pin is saved locally. Choose a downloaded map area to preview surroundings.'});
    return()=>controller.abort();
   }
   void fetchProjectMap(sourceId,{signal:controller.signal}).then(data=>{
    if(!controller.signal.aborted)setLoaded({id:sourceId,snapshot:data});
   }).catch(error=>{if(!controller.signal.aborted)setFailure({id:sourceId,message:error instanceof Error?error.message:'Map context could not load. Your project is still available.'});});
   return()=>controller.abort();
- },[sourceId,attempt]);
+ },[sourceId,attempt,ownSnapshot,overridden]);
  const mapSnapshot=loaded&&loaded.id===sourceId?loaded.snapshot:null;
  const mapError=failure&&failure.id===sourceId?failure.message:'';
  return {location,setLocation,resetLocation,locationError,mapSnapshot,mapError,mapLoading:!mapSnapshot&&!mapError,retryMap:()=>setAttempt(n=>n+1),mapCoverage:coverage};

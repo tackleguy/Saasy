@@ -1,31 +1,35 @@
 "use client";
 /**
- * DemoRequestForm — demo request for developers.
- * Front-end mock: validates and confirms, sends nothing.
- * TODO: POST to your CRM / email service in the submit handler.
+ * DemoRequestForm — early-access / demo request for developers.
+ * Posts to /api/enquiries (stored, and emailed when connected); the
+ * confirmation states exactly what happened.
  */
-import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { useEnquirySubmit } from "@/components/project/useEnquirySubmit";
 
 export default function DemoRequestForm() {
-  const [sent, setSent] = useState(false);
-  if (sent) {
+  const { state, submit } = useEnquirySubmit((form) => ({
+    kind: "demo",
+    name: form.get("name"),
+    email: form.get("email"),
+    company: form.get("company"),
+    message: form.get("message"),
+    website: form.get("website"),
+    details: { pipeline: String(form.get("pipeline") ?? "") },
+  }));
+  if (state.phase === "sent") {
     return (
       <div className="panel flex flex-col gap-3 p-6" role="status">
         <CheckCircle2 className="text-positive" size={28} aria-hidden />
-        <p className="font-serif text-2xl text-ink">Demo complete — no request sent.</p>
-        <p className="caption">This preview does not send demo requests. Your details have not been submitted.</p>
+        <p className="font-serif text-2xl text-ink">Request received.</p>
+        <p className="caption">
+          {state.emailed ? `Thank you. Your request has been sent; we will reply to ${state.email}.` : `Thank you. Your request has been saved; we will reply to ${state.email}.`}
+        </p>
       </div>
     );
   }
   return (
-    <form
-      className="panel grid gap-3 p-6 sm:grid-cols-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-      }}
-    >
+    <form className="panel grid gap-3 p-6 sm:grid-cols-2" onSubmit={submit}>
       <label className="block">
         <span className="caption">Full name</span>
         <input required name="name" autoComplete="name" className="field mt-1" />
@@ -50,11 +54,18 @@ export default function DemoRequestForm() {
         <span className="caption">Tell us about your next project</span>
         <textarea name="message" rows={3} className="field mt-1" />
       </label>
+      {/* Spam trap: hidden from people and assistive technology. */}
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+      {state.phase === "error" && (
+        <p role="alert" className="flex items-start gap-2 text-sm text-negative sm:col-span-2">
+          <AlertCircle size={16} className="mt-0.5 shrink-0" aria-hidden /> {state.message}
+        </p>
+      )}
       <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
-        <button type="submit" className="btn-primary">
-          Request a demo
+        <button type="submit" className="btn-primary" disabled={state.phase === "sending"} aria-busy={state.phase === "sending"}>
+          {state.phase === "sending" ? "Sending…" : "Request early access"}
         </button>
-        <span className="caption">Demo form — submissions are not sent anywhere.</span>
+        <span className="caption">Your details are used only to reply to this request.</span>
       </div>
     </form>
   );

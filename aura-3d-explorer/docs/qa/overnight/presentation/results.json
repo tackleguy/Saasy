@@ -1,0 +1,86 @@
+[
+  {
+    "name": "desktop-1920",
+    "checks": [
+      {
+        "label": "→ moves to the next camera view",
+        "ok": true
+      },
+      {
+        "label": "← moves back",
+        "ok": true
+      },
+      {
+        "label": "F selects a floor (label shows it)",
+        "ok": true
+      },
+      {
+        "label": "F / Shift+F step floors",
+        "ok": true
+      },
+      {
+        "label": "E explodes the stack",
+        "ok": true
+      },
+      {
+        "label": "W starts the walk-through",
+        "ok": true
+      },
+      {
+        "label": "Esc leaves the walk, still presenting",
+        "ok": true
+      },
+      {
+        "label": "Esc again leaves presentation",
+        "ok": true
+      },
+      {
+        "label": "no horizontal overflow",
+        "ok": true
+      }
+    ],
+    "pageErrors": []
+  },
+  {
+    "name": "ipad-1024",
+    "checks": [
+      {
+        "label": "→ moves to the next camera view",
+        "ok": true
+      },
+      {
+        "label": "← moves back",
+        "ok": true
+      },
+      {
+        "label": "F selects a floor (label shows it)",
+        "ok": true
+      },
+      {
+        "label": "F / Shift+F step floors",
+        "ok": true
+      },
+      {
+        "label": "E explodes the stack",
+        "ok": true
+      },
+      {
+        "label": "W starts the walk-through",
+        "ok": true
+      },
+      {
+        "label": "Esc leaves the walk, still presenting",
+        "ok": true
+      },
+      {
+        "label": "Esc again leaves presentation",
+        "ok": true
+      },
+      {
+        "label": "no horizontal overflow",
+        "ok": true
+      }
+    ],
+    "pageErrors": []
+  }
+]

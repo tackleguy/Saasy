@@ -1,59 +1,66 @@
 "use client";
 /**
  * EnquiryForm — "Request Pro Forma" / "Book Viewing" call to action.
- * Front-end mock: validates and shows a confirmation, but sends nothing.
- * TODO: POST to your CRM (HubSpot, Salesforce, Resend…) in `submit`.
+ * Posts to /api/enquiries, which stores the request and emails the sales team
+ * when connected; the confirmation states exactly what happened.
  */
 import { useEffect, useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { SegmentedControl } from "@/components/ui/primitives";
+import { useEnquirySubmit } from "./useEnquirySubmit";
 
 type Intent = "proforma" | "viewing";
 
 interface Props {
   projectName: string;
+  /** Project the enquiry is about (stored with it). */
+  projectSlug?: string;
   /** Pre-filled unit reference (from the stacking plan). */
   unitCode?: string | null;
 }
 
-export default function EnquiryForm({ projectName, unitCode }: Props) {
+export default function EnquiryForm({ projectName, projectSlug, unitCode }: Props) {
   const [intent, setIntent] = useState<Intent>("viewing");
-  const [sent, setSent] = useState(false);
   const [unit, setUnit] = useState(unitCode ?? "");
   const [company, setCompany] = useState("");
+  const { state, submit, reset } = useEnquirySubmit((form) => ({
+    kind: "enquiry",
+    projectSlug,
+    name: form.get("name"),
+    email: form.get("email"),
+    company: intent === "proforma" ? company : null,
+    message: form.get("message"),
+    website: form.get("website"),
+    details: { intent, ...(intent === "viewing" ? { unit } : { role: String(form.get("role") ?? "") }) },
+  }));
 
   useEffect(() => {
     if (unitCode) {
       setUnit(unitCode);
       setIntent("viewing");
-      setSent(false);
+      reset();
     }
-  }, [unitCode]);
+  }, [unitCode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (sent) {
+  if (state.phase === "sent") {
     return (
       <div className="panel flex flex-col items-start gap-3 p-6" role="status">
         <CheckCircle2 className="text-positive" size={28} aria-hidden />
-        <p className="font-serif text-2xl text-ink">Demo complete — no request sent.</p>
+        <p className="font-serif text-2xl text-ink">{intent === "proforma" ? "Pro forma requested." : "Viewing requested."}</p>
         <p className="caption">
-          This is a demo form: nothing was sent. In production your {intent === "proforma" ? "pro forma pack" : "viewing request"} for {projectName} would go to the
-          sales team.
+          {state.emailed
+            ? `Your request for ${projectName} has been sent to the sales team. They will reply to ${state.email}.`
+            : `Your request for ${projectName} has been received and saved for the sales team, who will reply to ${state.email}.`}
         </p>
-        <button className="btn-secondary mt-2" onClick={() => setSent(false)}>
-          Return to form
+        <button className="btn-secondary mt-2" onClick={reset}>
+          Send another enquiry
         </button>
       </div>
     );
   }
 
   return (
-    <form
-      className="panel space-y-4 p-6"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-      }}
-    >
+    <form className="panel space-y-4 p-6" onSubmit={submit}>
       <SegmentedControl
         ariaLabel="Enquiry type"
         layoutId={`enquiry-${projectName}`}
@@ -91,14 +98,21 @@ export default function EnquiryForm({ projectName, unitCode }: Props) {
           )}
         </label>
       </div>
+      {/* Spam trap: hidden from people and assistive technology. */}
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
       <label className="block">
         <span className="caption">Message</span>
         <textarea name="message" rows={3} className="field mt-1" placeholder={`I'd like to know more about ${projectName}.`} />
       </label>
-      <button type="submit" className="btn-primary w-full sm:w-auto">
-        {intent === "proforma" ? "Request pro forma" : "Book a viewing"}
+      {state.phase === "error" && (
+        <p role="alert" className="flex items-start gap-2 text-sm text-negative">
+          <AlertCircle size={16} className="mt-0.5 shrink-0" aria-hidden /> {state.message}
+        </p>
+      )}
+      <button type="submit" className="btn-primary w-full sm:w-auto" disabled={state.phase === "sending"} aria-busy={state.phase === "sending"}>
+        {state.phase === "sending" ? "Sending…" : intent === "proforma" ? "Request pro forma" : "Book a viewing"}
       </button>
-      <p className="caption">Demo form — submissions are not sent anywhere.</p>
+      <p className="caption">Your details are used only to reply to this request.</p>
     </form>
   );
 }

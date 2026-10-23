@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProject, PROJECTS, projectSite } from "@/content/projects";
+import { PROJECTS, projectSite } from "@/content/projects";
+import { getPortfolioProject, listPortfolio } from "@/lib/data/portfolio";
 import { computeYield, DEFAULT_INPUTS } from "@/lib/finance";
 import HeroCarousel from "@/components/project/HeroCarousel";
 import KeyFacts from "@/components/project/KeyFacts";
@@ -16,9 +17,10 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const project = getProject((await params).slug);
+  const project = await getPortfolioProject((await params).slug);
   if (!project) return {};
   const hero = project.heroImages[0];
+  if (!hero) return { title: project.name, description: project.summary };
   return {
     title: project.name,
     description: project.summary,
@@ -39,15 +41,16 @@ const SECTIONS = [
 ];
 
 export default async function ProjectPage({ params }: Params) {
-  const project = getProject((await params).slug);
+  const project = await getPortfolioProject((await params).slug);
   if (!project) notFound();
+  const portfolio = await listPortfolio();
 
   // Estimated unit count from the default pro forma (server-side, pure).
   const units = projectSite(project).reduce((s, b) => s + computeYield(project.finance[b.id] ?? DEFAULT_INPUTS, b.floors).totalUnits, 0);
 
   // Next project in the portfolio, for the closing link.
-  const i = PROJECTS.findIndex((p) => p.slug === project.slug);
-  const next = PROJECTS[(i + 1) % PROJECTS.length];
+  const i = portfolio.findIndex((p) => p.slug === project.slug);
+  const next = portfolio[(i + 1) % portfolio.length];
 
   return (
     <>

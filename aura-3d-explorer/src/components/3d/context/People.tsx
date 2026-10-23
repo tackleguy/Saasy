@@ -25,6 +25,7 @@ import type { CityPreset } from "@/lib/cityPresets";
 import { ALONG_MINUS_U, ALONG_U, noRaycast, rng } from "./shared";
 import { SITE_ROTATION_Y, pointInRect, uwToXZ, type UWRect } from "@/lib/siteLayout";
 import { fabricBump, fabricTexture, hairTexture, repeatTexture, skinBump, skinTexture } from "../textures";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 interface Person {
   u: number;
@@ -230,6 +231,7 @@ function Crowd({ people, clearings, shadow }: { people: Person[]; clearings: UWR
 
     const refresh = uploadedHidden.current !== hidden;
     if (!anyWalking && !first.current && !refresh) return; // a standing crowd is static
+    if (prefersReducedMotion() && !first.current && !refresh) return; // reduced motion: walkers pause in place
     uploadedHidden.current = hidden;
     people.forEach((p, i) => {
       if (p.dir !== 0) {

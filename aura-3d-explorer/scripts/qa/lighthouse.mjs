@@ -2,7 +2,7 @@ import lighthouse from 'lighthouse';
 import { launch } from 'chrome-launcher';
 import fs from 'node:fs/promises';
 const base=process.env.QA_URL||'http://localhost:3137';
-const browser=await launch({chromePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',chromeFlags:['--headless','--no-first-run']});
+const browser=await launch({chromePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',chromeFlags:['--headless','--no-first-run']});
 const results=[];
 try {
  for(const route of ['/', '/projects', '/developers', '/studio', '/engine']){

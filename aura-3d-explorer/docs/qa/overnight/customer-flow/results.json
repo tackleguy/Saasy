@@ -1,0 +1,66 @@
+{
+  "base": "http://127.0.0.1:3137",
+  "email": "owner+1792745627287@harbor.example",
+  "finishedAt": "2026-10-23T08:55:43.637Z",
+  "totalMs": 116198,
+  "steps": [
+    {
+      "name": "sign in with an emailed magic link",
+      "ok": true,
+      "ms": 922
+    },
+    {
+      "name": "create the company",
+      "ok": true,
+      "ms": 387
+    },
+    {
+      "name": "create a project",
+      "ok": true,
+      "ms": 788
+    },
+    {
+      "name": "edit details and save",
+      "ok": true,
+      "ms": 5786
+    },
+    {
+      "name": "set the real address",
+      "ok": true,
+      "ms": 27306
+    },
+    {
+      "name": "edit the massing (more residential floors, a second building) and save",
+      "ok": true,
+      "ms": 24686
+    },
+    {
+      "name": "save a scenario to the database",
+      "ok": true,
+      "ms": 420
+    },
+    {
+      "name": "export the pro forma as PDF and Excel",
+      "ok": true,
+      "ms": 1287
+    },
+    {
+      "name": "create a share link without financials",
+      "ok": true,
+      "ms": 177
+    },
+    {
+      "name": "open the share link in a private window (no sign-in)",
+      "ok": true,
+      "ms": 33803
+    },
+    {
+      "name": "revoking the link blocks the private window on its next request",
+      "ok": true,
+      "ms": 20457
+    }
+  ],
+  "pageErrors": [],
+  "projectUrl": "http://127.0.0.1:3137/app/projects/7015da68-f9dc-4754-a51c-139e35279b23",
+  "shareUrlShape": "http://127.0.0.1:3137/s/<43-char token>"
+}

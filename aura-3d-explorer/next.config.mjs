@@ -9,7 +9,15 @@ const nextConfig = {
   distDir: process.env.AURA_BUILD_DIR || ".next",
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: [
+    // Large static 3D assets are cached for a year. Their URLs are not content
+    // hashed, so replacing one means giving it a new file name (or path) —
+    // see README "Static assets and caching".
+    const immutable = [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }];
+    return [
+      { source: "/maps/:path*", headers: immutable },
+      { source: "/models/:path*", headers: immutable },
+      { source: "/hdri/:path*", headers: immutable },
+      { source: "/:path*", headers: [
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "X-Frame-Options", value: "DENY" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -20,6 +28,13 @@ const nextConfig = {
   // `STATIC_EXPORT=1 npm run build` also emits a static site in /out (host anywhere).
   output: process.env.STATIC_EXPORT ? "export" : undefined,
   transpilePackages: ["three"],
+  // Export generators run in Node as-is; the PDF reads its fonts from disk, so
+  // the deployment must carry those files (see src/lib/exports/pdf.ts).
+  serverExternalPackages: ["pdfkit", "exceljs"],
+  outputFileTracingIncludes: {
+    "/api/exports/**": ["./node_modules/@fontsource/instrument-serif/files/*", "./node_modules/next/dist/compiled/@vercel/og/Geist-*.ttf", "./node_modules/pdfkit/js/data/*"],
+    "/api/projects/**": ["./node_modules/@fontsource/instrument-serif/files/*", "./node_modules/next/dist/compiled/@vercel/og/Geist-*.ttf", "./node_modules/pdfkit/js/data/*"],
+  },
   // Serve portfolio renders as AVIF/WebP at the sizes each card needs.
   images: { formats: ["image/avif", "image/webp"] },
   // A package-lock.json in the home directory would otherwise become the

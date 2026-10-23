@@ -32,8 +32,14 @@ npm run dev                  # the assistant needs a server: `next dev` or `next
 | `AURA_AI_MODEL` | `llama3.2:latest` | Ollama model tag |
 | `LMSTUDIO_URL` | `http://127.0.0.1:1234` | Fallback: LM Studio's OpenAI-compatible server, used if Ollama is unreachable |
 | `LMSTUDIO_MODEL` | first loaded model | LM Studio model id |
+| `AURA_ASSISTANT_RATE_LIMIT` | `20` | Chat messages per IP per 10 minutes |
+| `AURA_ENGINE_RATE_LIMIT` | `10` | Blueprint vision reads per IP per 10 minutes on `/engine` |
+| `AURA_ALLOWED_ORIGINS` | — | Extra origins (comma separated) allowed to call the APIs |
+| `AURA_LOCAL_AI` | — | `1` makes a Vercel deployment probe local model URLs anyway (for a self-hosted model reachable from the server) |
 
-The route is `src/app/api/assistant/route.ts` (`GET` = health, `POST` = streamed reply). The UI and the explorer bridge live in `src/components/assistant/`. A page shares its explorer with one line, `useRegisterExplorer(x, { project, yieldCalc })`. The model controls the scene by writing commands such as `[[action:photo angle=aerial]]` or `[[action:floor n=12]]` on their own line (full list in `protocol.ts`). If no local model is running, or the site is a static export (which has no API routes), the panel shows "Local AI offline" with the commands to copy.
+All names are listed in `.env.example`. A Vercel deployment has no local model, so the assistant there shows "The assistant is not available on this site yet" rather than Ollama instructions; everything else on the page works without it. A hosted model provider can be added later in `src/app/api/assistant/route.ts` (see `docs/DECISIONS.md`, D-01). `/api/assistant` and `/api/engine` refuse requests from other websites, cap message count (12) and length (2,000 characters, 64 KB per request), and rate-limit per IP in server memory.
+
+The route is `src/app/api/assistant/route.ts` (`GET` = health, `POST` = streamed reply). The UI and the explorer bridge live in `src/components/assistant/`. A page shares its explorer with one line, `useRegisterExplorer(x, { project, yieldCalc })`. The model controls the scene by writing commands such as `[[action:photo angle=aerial]]` or `[[action:floor n=12]]` on their own line (full list in `protocol.ts`).
 
 ## Sketchfab assets for the local AI
 
@@ -118,8 +124,49 @@ and geometry/material adaptations are recorded beside each model.
 | `/` | Full-bleed live 3D hero of the flagship (The Meridian Tower) with caption bar, portfolio grid, "For developers" strip |
 | `/projects` | Masonry portfolio (3 → 2 → 1 columns): image, name, client / architect, city, status |
 | `/projects/[slug]` | Render carousel, key facts, live 3D explorer + yield engine with the project's defaults, unit-availability stacking plan with unit sheets, "Request Pro Forma / Book Viewing" |
-| `/studio` | **AURA Studio**: explorer + full yield engine + CAD import, saved scenarios (localStorage) and Export Pro Forma (PDF, via print stylesheet) |
-| `/developers` | How it works, 1% success-fee pricing, placeholder testimonials (labelled), FAQ, demo request |
+| `/studio` | **AURA Studio**: explorer + full yield engine + CAD import, saved scenarios (in this browser) and PDF / Excel pro forma downloads |
+| `/developers` | Early access: three steps with real product screenshots, 1% success-fee pricing, FAQ, early-access request form |
+| `/sign-in` | Email sign-in link (Supabase) |
+| `/app` | Signed-in dashboard: create your company and projects |
+| `/app/projects/<id>` | Project editor: details, address and surroundings, massing or CAD upload, images, saved stills, share links, PDF/Excel export |
+| `/app/projects/<id>/present` | Full-screen presentation of your project |
+| `/app/settings` | Company logo, accent colour and link name |
+| `/s/<token>` | A share link: branded, optional password and expiry, revocable |
+| `/o/<company>/projects/<id>` | Company-branded project address (members, or `?t=<token>` for a share link) |
+
+Sign-in, customer projects and share links need Supabase; follow
+**[docs/SUPABASE-SETUP.md](docs/SUPABASE-SETUP.md)**. Without it the public site
+runs on the 11 built-in sample projects and the account pages say they are not
+connected.
+
+### Presentation keys
+
+In presentation mode: **← / →** step through camera views, **F / Shift+F** next /
+previous floor, **E** explode the stack, **W** walk inside, **Esc** leaves the walk,
+then leaves presentation mode.
+
+### Custom domains (white-label)
+
+Each company's pages live under `/o/<company>/…` and show its logo and accent
+colour with a small "Powered by AURA". To give a customer their own domain
+(e.g. `homes.harbor.com`), add the domain in Vercel → Project → **Settings →
+Domains**, point their DNS at Vercel as Vercel instructs, and add
+`https://homes.harbor.com/**` to Supabase's redirect URLs and to
+`AURA_ALLOWED_ORIGINS`. Mapping a whole domain to one company automatically is
+not built yet; for now share `/o/<company>/…` links on that domain.
+
+### Static files and caching
+
+`/maps`, `/models` and `/hdri` are served with `Cache-Control: public,
+max-age=31536000, immutable`. **Change the file name whenever a file's contents
+change**, or returning visitors keep the old copy for up to a year.
+
+These folders are large and ship inside every Vercel deployment. To move them to
+Vercel Blob later: upload each folder with the same relative paths, set the Blob
+base URL in one place (the asset loaders use `/maps/…`, `/models/…`, `/hdri/…`
+paths), add the Blob host to `img-src` / `connect-src` in `src/proxy.ts`, check
+every file returns 200 with `node scripts/qa/asset-check.mjs`, and only then stop
+shipping the folders. This migration has **not** been done.
 
 ## Project photos
 
@@ -144,6 +191,9 @@ public/projects/refad-place/hero-1.jpg        hero-2.jpg   hero-3.jpg
 public/projects/broadway-bayonne/hero-1.jpg   hero-2.jpg   hero-3.jpg
 public/projects/lorenskog-quarter/hero-1.jpg  hero-2.jpg   hero-3.jpg
 public/projects/sports-world/hero-1.jpg       hero-2.jpg   hero-3.jpg
+public/projects/aurelia-tower/hero-1.jpg      hero-2.jpg   hero-3.jpg
+public/projects/hexa-gardens/hero-1.jpg       hero-2.jpg   hero-3.jpg
+public/projects/lexington-deco/hero-1.jpg     hero-2.jpg   hero-3.jpg
 ```
 
 `hero-1` is the exterior hero (also the OpenGraph image), `hero-2` a secondary

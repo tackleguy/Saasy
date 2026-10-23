@@ -405,8 +405,7 @@ export const PROJECTS: Project[] = [
     siteAreaSqFt: 86_000,
     gfaSqFt: 1_020_000,
     programMix: { podium: 4, office: 34, residential: 56, crown: 6 },
-    // TODO: no renders yet — temporarily reuses the Infiniti hero images.
-    heroImages: heroes("infiniti", "Aurelia Tower", ["the tower above the river", "podium plaza", "sky residence"]),
+    heroImages: heroes("aurelia-tower", "Aurelia Tower", ["aerial view of the tower above the river", "the tower in the city skyline", "living room with city views"]),
     palette: { sky: "#e2e7ea", ground: "#d7d1c6", accent: "#9C7A52" },
     massing: [
       {
@@ -440,8 +439,7 @@ export const PROJECTS: Project[] = [
     siteAreaSqFt: 96_000,
     gfaSqFt: 540_000,
     programMix: { podium: 6, office: 8, residential: 78, crown: 8 },
-    // TODO: no renders yet — temporarily reuses the Lørenskog Quarter hero images.
-    heroImages: heroes("lorenskog-quarter", "Hexa Gardens", ["three towers over the garden", "garden pavilion", "corner living room"]),
+    heroImages: heroes("hexa-gardens", "Hexa Gardens", ["aerial view of the three towers on the waterfront", "the towers within the wider city", "corner living room"]),
     palette: { sky: "#e3e8ea", ground: "#d6d2c6", accent: "#8E9E86" },
     massing: [18, 27, 38].map((floors, i): ProjectMassing => ({
       id: `hexa-${i + 1}`,
@@ -476,8 +474,7 @@ export const PROJECTS: Project[] = [
     siteAreaSqFt: 52_000,
     gfaSqFt: 690_000,
     programMix: { podium: 5, office: 46, residential: 43, crown: 6 },
-    // TODO: no renders yet — temporarily reuses the Broadway in Bayonne hero images.
-    heroImages: heroes("broadway-bayonne", "The Lexington", ["setbacks at dusk", "arcaded base", "deco lobby"]),
+    heroImages: heroes("lexington-deco", "The Lexington", ["aerial view of the setback tower among its neighbours", "the tower within the surrounding blocks", "living room with city views"]),
     palette: { sky: "#e6e3dc", ground: "#d4c8b6", accent: "#a2694a" },
     massing: [
       {
@@ -511,11 +508,18 @@ export function getProject(slug: string): Project | undefined {
 
 export const FLAGSHIP: Project = PROJECTS.find((p) => p.flagship) ?? PROJECTS[0];
 
-/** Generated 3D site (buildings + floor plates) for a project — memoised. */
+/** Generated 3D site (buildings + floor plates) for a project — memoised by
+ * slug and massing, so an edited customer massing rebuilds instead of reusing
+ * a stale site. The cache keeps the most recent 32 sites. */
 const siteCache = new Map<string, Building[]>();
 export function projectSite(project: Project): Building[] {
-  let site = siteCache.get(project.slug);
-  if (!site) siteCache.set(project.slug, (site = buildSite(project.massing.map(buildingFromMassing))));
+  const key = `${project.slug}:${JSON.stringify(project.massing)}`;
+  let site = siteCache.get(key);
+  if (!site) {
+    site = buildSite(project.massing.map(buildingFromMassing));
+    if (siteCache.size >= 32) siteCache.delete(siteCache.keys().next().value!);
+    siteCache.set(key, site);
+  }
   return site;
 }
 

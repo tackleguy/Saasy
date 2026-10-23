@@ -22,6 +22,7 @@ import { LAYOUT } from "@/lib/siteLayout";
 import type { CityPreset } from "@/lib/cityPresets";
 import { ALONG_MINUS_U, ALONG_U, noRaycast, placeUW, rng } from "./shared";
 import { vehicleGeometry, type VehicleType } from "./vehicles";
+import { prefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 interface Car {
   type: VehicleType;
@@ -91,6 +92,7 @@ function VehicleFleet({ type, cars, shadow }: { type: VehicleType; cars: Car[]; 
 
   useFrame((_, dt) => {
     if (!moving && !first.current) return; // a parked fleet is uploaded once
+    if (prefersReducedMotion() && !first.current) return; // reduced motion: vehicles hold their places
     const { m } = tmp;
     const step = Math.min(dt, 0.05);
     cars.forEach((c, i) => {

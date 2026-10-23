@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PROJECTS } from "@/content/projects";
+import { listPortfolio } from "@/lib/data/portfolio";
 import ProjectIndex from "@/components/portfolio/ProjectIndex";
 
 export const metadata: Metadata = {
@@ -8,8 +9,9 @@ export const metadata: Metadata = {
   openGraph: { images: [PROJECTS[0].heroImages[0].src] },
 };
 
-export default function ProjectsPage() {
-  const cities = new Set(PROJECTS.map((p) => p.city.split(",").pop()?.trim())).size;
+export default async function ProjectsPage() {
+  const projects = await listPortfolio();
+  const cities = new Set(projects.map((p) => p.city.split(",").pop()?.trim())).size;
   return (
     <div className="shell pb-24 pt-12 sm:pt-20">
       <header className="mb-12 grid gap-8 lg:grid-cols-12 lg:items-end">
@@ -20,12 +22,12 @@ export default function ProjectsPage() {
             developer-grade pro forma.
           </p>
           <p className="mt-4 text-[13px] tabular-nums text-ink">
-            {PROJECTS.length} projects · {cities} {cities === 1 ? "region" : "regions"} · sample portfolio
+            {projects.length} projects · {cities} {cities === 1 ? "region" : "regions"} · sample portfolio
           </p>
         </div>
       </header>
       <h2 className="sr-only">All projects</h2>
-      <ProjectIndex projects={PROJECTS} />
+      <ProjectIndex projects={projects} />
     </div>
   );
 }

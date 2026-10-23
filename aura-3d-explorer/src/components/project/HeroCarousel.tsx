@@ -50,7 +50,7 @@ export default function HeroCarousel({ project }: { project: Project }) {
             aria-roledescription="slide"
             aria-label={`${index + 1} of ${images.length}`}
           >
-            <Image src={img.src} alt={img.alt} fill priority={index === 0} sizes="100vw" className="object-cover" />
+            <Image src={img.src} alt={img.alt} fill priority={index === 0} sizes="100vw" className="object-cover" unoptimized={/^https?:/.test(img.src)} />
           </motion.div>
         </AnimatePresence>
 

@@ -1,0 +1,77 @@
+[
+  {
+    "route": "/",
+    "scores": {
+      "performance": 35,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "fcp": 957.7337,
+    "lcp": 10651.736449999999,
+    "tbt": 30851,
+    "cls": 0,
+    "si": 15067.67949860344,
+    "bytes": 6356228
+  },
+  {
+    "route": "/projects",
+    "scores": {
+      "performance": 87,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "fcp": 929.6035999999999,
+    "lcp": 4079.009,
+    "tbt": 44.5,
+    "cls": 0,
+    "si": 1276.4550939999076,
+    "bytes": 451861
+  },
+  {
+    "route": "/developers",
+    "scores": {
+      "performance": 78,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "fcp": 1151.48965,
+    "lcp": 3932.9586,
+    "tbt": 395,
+    "cls": 0,
+    "si": 2900.207643938811,
+    "bytes": 362531
+  },
+  {
+    "route": "/studio",
+    "scores": {
+      "performance": 35,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "fcp": 924.3010000000002,
+    "lcp": 11556.505000000001,
+    "tbt": 36205.5,
+    "cls": 0,
+    "si": 18742.43712802491,
+    "bytes": 6431637
+  },
+  {
+    "route": "/engine",
+    "scores": {
+      "performance": 45,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "fcp": 774.7336,
+    "lcp": 5865.467199999999,
+    "tbt": 7385.5,
+    "cls": 0.08893098328963107,
+    "si": 3931.576990668918,
+    "bytes": 2214499
+  }
+]

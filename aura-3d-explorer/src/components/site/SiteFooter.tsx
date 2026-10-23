@@ -18,7 +18,8 @@ const GROUPS = [
     links: [
       { href: "/developers", label: "How AURA works" },
       { href: "/developers#pricing", label: "Pricing" },
-      { href: "/developers#demo", label: "Request a demo" },
+      { href: "/developers#demo", label: "Request early access" },
+      { href: "/app", label: "Sign in" },
     ],
   },
 ];

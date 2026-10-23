@@ -1,0 +1,26 @@
+{
+  "url": "http://127.0.0.1:3137/",
+  "cpuThrottle": 4,
+  "renderer": "SwiftShader (software WebGL, no GPU)",
+  "runs": [
+    {
+      "run": 0,
+      "canvas": 1841,
+      "frame": 23779,
+      "fcp": 684
+    },
+    {
+      "run": 1,
+      "canvas": 1881,
+      "frame": 22997,
+      "fcp": 192
+    },
+    {
+      "run": 2,
+      "canvas": 1877,
+      "frame": 22716,
+      "fcp": 280
+    }
+  ],
+  "medianFirstFrameMs": 22997
+}

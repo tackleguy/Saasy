@@ -18,6 +18,7 @@
  * DXF / JSON never need a model.
  */
 import { NextResponse } from "next/server";
+import { guardRequest } from "@/lib/apiGuard";
 import { readJsonObject, RequestBodyError } from "@/lib/requestBody";
 import { extractJson, repairScene, runEngine, summaryFacts } from "@/lib/engine";
 import { ENGINE_SYSTEM_PROMPT, engineUserNote } from "@/lib/engine/prompt";
@@ -30,6 +31,10 @@ const OLLAMA_URL = (process.env.OLLAMA_URL ?? "http://127.0.0.1:11434").replace(
 const ANTHROPIC_MODEL = process.env.AURA_ENGINE_MODEL ?? "claude-sonnet-5-5";
 const MAX_TEXT = 12_000_000;
 const MAX_B64 = 22_000_000; // ≈ 16 MB file
+
+/** Vision reads are the expensive path: 10 per IP per 10 minutes. DXF/JSON are local but still bounded. */
+const ENGINE_LIMIT = { limit: Number(process.env.AURA_ENGINE_RATE_LIMIT ?? 10), windowMs: 10 * 60_000 };
+const PARSE_LIMIT = { limit: 60, windowMs: 10 * 60_000 };
 
 const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
@@ -55,7 +60,9 @@ async function visionProvider(): Promise<Vision | null> {
   return local ? { provider: "ollama", model: local, pdf: false } : null;
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const blocked = guardRequest(req, "engine-health", { limit: 60, windowMs: 60_000 }, { requireOrigin: false });
+  if (blocked) return blocked;
   return NextResponse.json({ vision: await visionProvider() });
 }
 
@@ -107,6 +114,8 @@ async function askOllama(model: string, fileName: string, data: string): Promise
 }
 
 export async function POST(req: Request) {
+  const blocked = guardRequest(req, "engine-parse", PARSE_LIMIT);
+  if (blocked) return blocked;
   let body: Record<string, unknown>;
   try {
     body = await readJsonObject(req, 24_000_000);
@@ -130,6 +139,8 @@ export async function POST(req: Request) {
     if (!IMAGE_TYPES.includes(mediaType) && mediaType !== "application/pdf")
       return NextResponse.json({ error: `Unsupported file type ${mediaType || "(unknown)"}. Use PNG, JPEG, WebP, PDF, DXF or JSON.` }, { status: 415 });
 
+    const limited = guardRequest(req, "engine-vision", ENGINE_LIMIT);
+    if (limited) return limited;
     const vision = await visionProvider();
     if (!vision)
       return NextResponse.json(

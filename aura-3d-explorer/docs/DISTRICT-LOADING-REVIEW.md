@@ -78,3 +78,7 @@ Production build: `AURA_BUILD_DIR=.next-qa-district-final npm run build -- --web
 The changed-component design scan, JavaScript syntax checks and `git diff --check` pass. No dependencies, GLBs, candidate/installed manifests, attribution files or installer behavior were changed. Next.js updated its generated type-path files for the isolated build directories. Existing user work and concurrent commit `be717f5` are preserved. No commit or push was performed in this pass.
 
 Completed 2026-10-02 07:32:43 UTC; elapsed 25 minutes 10 seconds. Final local Studio returned HTTP 200.
+
+## Follow-up: assistant copy (2026-10-23)
+
+Re-checked during the overnight product pass. `src/components/assistant/context.ts`, `actions.ts` and the `/api/assistant` system prompt no longer claim that a named city loads an authored district or ocean: the prompt describes local Overture map snapshots, and the city action confirms "Selected example map area". A search for "authored district", "every named city" and "ocean" in `src/components/assistant` and `src/app/api/assistant` returns nothing. The assistant panel's offline/"runs on this machine" copy no longer shows Ollama instructions on a Vercel deployment (QA-031).
