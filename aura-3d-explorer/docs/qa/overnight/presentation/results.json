@@ -4,22 +4,21 @@
     "checks": [
       {
         "label": "→ moves to the next camera view",
-        "ok": true
+        "ok": false,
+        "error": "TimeoutError: locator.screenshot: Timeout 119991.95199999999ms exceeded.\nCall log:\n\u001b[2m  - taking element screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    - waiting for element to be stable\u001b[22m\n"
       },
       {
         "label": "← moves back",
         "ok": false,
-        "error": "TimeoutError: locator.screenshot: Timeout 119991.28099999996ms exceeded.\nCall log:\n\u001b[2m  - taking element screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    - waiting for element to be stable\u001b[22m\n"
+        "error": "TimeoutError: locator.screenshot: Timeout 119990.01400000002ms exceeded.\nCall log:\n\u001b[2m  - taking element screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    - waiting for element to be stable\u001b[22m\n"
       },
       {
-        "label": "F selects a floor (inspector opens)",
-        "ok": false,
-        "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Close floor inspector' }) to be visible\u001b[22m\n"
+        "label": "F selects a floor (label shows it)",
+        "ok": true
       },
       {
-        "label": "Shift+F steps back a floor",
-        "ok": false,
-        "error": "TimeoutError: locator.innerText: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h4').first()\u001b[22m\n"
+        "label": "F / Shift+F step floors",
+        "ok": true
       },
       {
         "label": "E explodes the stack",
@@ -57,14 +56,12 @@
         "ok": true
       },
       {
-        "label": "F selects a floor (inspector opens)",
-        "ok": false,
-        "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Close floor inspector' }) to be visible\u001b[22m\n"
+        "label": "F selects a floor (label shows it)",
+        "ok": true
       },
       {
-        "label": "Shift+F steps back a floor",
-        "ok": false,
-        "error": "TimeoutError: locator.innerText: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('h4').first()\u001b[22m\n"
+        "label": "F / Shift+F step floors",
+        "ok": true
       },
       {
         "label": "E explodes the stack",
